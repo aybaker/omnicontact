@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from django.db import models
 
 
@@ -8,5 +10,6 @@ class GrupoAtencionManager(models.Manager):
 
 class ActiveGrupoAtencionManager(GrupoAtencionManager):
     def get_query_set(self):
-        #TODO: Filtrar actives cuando se implemente.
-        return super(ActiveGrupoAtencionManager, self).get_query_set().all()
+        return super(ActiveGrupoAtencionManager, self).get_query_set().filter(
+            active=True
+        )

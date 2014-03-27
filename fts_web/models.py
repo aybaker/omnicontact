@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from django.db import models
 from fts_web import managers
 
@@ -24,9 +25,27 @@ class GrupoAtencion(models.Model):
         default=RINGALL,
         null=True, blank=True,
     )
+    active = models.BooleanField(
+        default=True,
+        editable=False,
+    )
 
     def __unicode__(self):
-        return self.nombre
+        if self.active:
+            return self.nombre
+        return '(ELiminado) {0}'.format(self.nombre)
+
+    def delete(self, *args, **kwargs):
+        if self.active:
+            self.active = False
+            self.save()
+
+    def get_ring_stratedy(self):
+        ring_strategy_dic = dict(self.RING_STRATEGY_CHOICES)
+        return ring_strategy_dic[self.ring_strategy]
+
+    def get_cantidad_agentes(self):
+        return self.agente_grupo_atencion.all().count()
 
 
 class AgenteGrupoAtencion(models.Model):
@@ -37,3 +56,19 @@ class AgenteGrupoAtencion(models.Model):
         'GrupoAtencion',
         related_name='agente_grupo_atencion'
     )
+    active = models.BooleanField(
+        default=True,
+        editable=False,
+    )
+
+    def __unicode__(self):
+        if self.active:
+            return '{0} >> {1}'.format(
+                self.grupo_atencion, self.numero_interno)
+        return '(ELiminado) {0} >> {1}'.format(
+                self.grupo_atencion, self.numero_interno)
+
+    def delete(self, *args, **kwargs):
+        if self.active:
+            self.active = False
+            self.save()
