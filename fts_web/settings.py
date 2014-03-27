@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for fts_web project.
 
@@ -19,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'uqe^e2bg^ys2ae&5*jw414_r!m*r7+6-mb%(d3hv+xy4hv^38l'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+#SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 TEMPLATE_DEBUG = True
@@ -37,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'fts_web',
+    'south',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -72,7 +74,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+#Crispy Forms
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
 try:
     from settings_local import *
-except ImportError:
-    pass
+except ImportError, e:
+    import warnings
+    warnings.warn("Couldn't import from 'fts_web.local_settings': {}".format(
+        e.args[0]), stacklevel=0)

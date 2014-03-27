@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# Django settings for cmpdelcarmen project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
