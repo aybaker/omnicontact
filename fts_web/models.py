@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from fts_web import managers
 
 
 class GrupoAtencion(models.Model):
+    objects = managers.GrupoAtencionManager()
+    actives = managers.ActiveGrupoAtencionManager()
+
     nombre = models.CharField(
         max_length=128,
         null=True, blank=True,
