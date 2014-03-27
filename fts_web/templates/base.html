@@ -1,0 +1,97 @@
+{% load url from future %}
+{% load staticfiles %}
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block title %} FTSender Web {% endblock %}</title>
+
+    <!-- Bootstrap's  -->
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/bootstrap-theme.min.css' %}"> 
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/main.css' %}">
+
+    
+     <!-- JS -->
+    <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui-1.10.4.custom.min.js' %}"></script>
+    <script src="{% static 'bootstrap3/js/bootstrap.min.js' %}"></script>
+
+    {% block extras_js %}
+    {% endblock %}
+
+</head>
+<body ng-controller="GlobalController">
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+
+        <div class="container-fluid col-lg-12">
+            <div class="navbar-header col-lg-2">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+                <a class="navbar-brand" href="#">FTSender Web</a>
+            </div>
+
+            <div class="navbar-collapse collapse">                
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle text-info" data-toggle="dropdown">
+                            {{ user.get_full_name }}
+                            <b class="caret"></b>
+                        </a> 
+                        <ul class="dropdown-menu">
+                            <li class="divider"></li>
+                        </ul>
+                    </li> 
+                </ul>
+                <ul class="nav navbar-nav">
+                    <li><a href="{% url 'grupo_atencion' %}">Grupo de Atención</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 main">          
+                {% for message in messages %}
+                    <div class="alert alert-dismissable {{ message.tags }}">
+                       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                       {{ message|safe }}
+                    </div>
+                {% endfor %}
+
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+   <!--  <div id="footer">
+        <div class="container">
+            <p class="text-center">
+                <small>Museo Arqueológico Pio Pablo Dias </small><br>
+                <small><a href="">www.piopablodias.com.ar</a></small>
+            </p>
+        </div>
+    </div> -->
+
+    <script type="text/javascript">
+        $(function(){
+            message_remove(function(){});
+            function message_remove(callback){
+                window.setTimeout(function() {
+                    $(".alert-dismissable").fadeTo(500, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                        callback();
+                    });
+                }, 8000);
+            }
+             
+        });
+    </script>
+</body>
+</html>
