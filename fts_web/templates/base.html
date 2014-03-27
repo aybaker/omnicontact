@@ -17,11 +17,11 @@
 
     
      <!-- JS -->
-    <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
-    <script src="{% static 'js/jquery-ui-1.10.4.custom.min.js' %}"></script>
+    <script src="{% static 'fts_web/js/jquery-1.10.2.min.js' %}"></script>
+    <script src="{% static 'fts_web/js/jquery-ui-1.10.4.custom.min.js' %}"></script>
     <script src="{% static 'bootstrap3/js/bootstrap.min.js' %}"></script>
 
-    {% block extras_js %}
+    {% block head_js %}
     {% endblock %}
 
 </head>
@@ -70,28 +70,17 @@
             </div>
         </div>
     </div>
-   <!--  <div id="footer">
+    <div id="footer">
         <div class="container">
             <p class="text-center">
-                <small>Museo Arqueológico Pio Pablo Dias </small><br>
-                <small><a href="">www.piopablodias.com.ar</a></small>
+                <small>Freetech Solutions</small><br>
+                <small><a href="">www.freetechsolutions.com.ar</a></small>
             </p>
         </div>
-    </div> -->
+    </div>
 
-    <script type="text/javascript">
-        $(function(){
-            message_remove(function(){});
-            function message_remove(callback){
-                window.setTimeout(function() {
-                    $(".alert-dismissable").fadeTo(500, 0).slideUp(500, function(){
-                        $(this).remove(); 
-                        callback();
-                    });
-                }, 8000);
-            }
-             
-        });
-    </script>
+    <script src="{% static 'fts_web/js/message-remove.js' %}"></script>
+    {% block bottom_js %}    
+    {% endblock %}
 </body>
 </html>
