@@ -1,15 +1,29 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.db.models import get_model
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
-from django.views.generic import UpdateView
+from django.views.generic import (
+    ListView, UpdateView, DeleteView)
 
 from fts_web.forms import (
     GrupoAtencionForm, AgentesGrupoAtencionFormSet)
 
 GrupoAtencion = get_model('fts_web', 'GrupoAtencion')
+
+
+class GrupoAtencionListView(ListView):
+
+    template_name = 'grupo_atencion/lista_grupo_atencion.html'
+    context_object_name = 'grupos_atencion'
+    model = GrupoAtencion
+
+    def get_queryset(self):
+        queryset = GrupoAtencion.actives.all()
+        return queryset
 
 
 class GrupoAtencionCreateUpdateView(UpdateView):
@@ -97,5 +111,24 @@ class GrupoAtencionCreateUpdateView(UpdateView):
         )
 
         return reverse(
-            'grupo_atencion',
+            'edita_grupo_atencion',
             kwargs={"pk": self.object.id})
+
+
+class GrupoAtencionDeleteView(DeleteView):
+
+    model = GrupoAtencion
+    template_name = 'grupo_atencion/elimina_grupo_atencion.html'
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación del\
+        Grupo de Atención.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+
+        return reverse('lista_grupo_atencion')

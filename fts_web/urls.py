@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#from __future__ import unicode_literals
+from __future__ import unicode_literals
 from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
@@ -9,12 +9,20 @@ from fts_web import views
 
 urlpatterns = patterns('',
     url(r'^grupo_atencion/$',
+        views.GrupoAtencionListView.as_view(),
+        name='lista_grupo_atencion',
+    ),
+    url(r'^grupo_atencion/nuevo$',
         views.GrupoAtencionCreateUpdateView.as_view(),
-        name='grupo_atencion',
+        name='nuevo_grupo_atencion',
     ),
     url(r'^grupo_atencion/(?P<pk>\d+)/$',
         views.GrupoAtencionCreateUpdateView.as_view(),
-        name='grupo_atencion',
+        name='edita_grupo_atencion',
+    ),
+     url(r'^grupo_atencion/elimina/(?P<pk>\d+)/$',
+        views.GrupoAtencionDeleteView.as_view(),
+        name='elimina_grupo_atencion',
     ),
 
     url(r'^admin/', include(admin.site.urls)),

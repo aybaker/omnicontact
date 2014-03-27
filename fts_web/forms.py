@@ -1,4 +1,6 @@
 #-*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.db.models import get_model
 from django import forms
 from django.forms.models import inlineformset_factory
