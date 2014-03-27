@@ -1,63 +1,101 @@
 # -*- coding: utf-8 -*-
 from django.db.models import get_model
 
-#from django.conf import settings
 from django.contrib import messages
-#from django.contrib.auth.decorators import login_required
-#from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
-#from django.utils.decorators import method_decorator
-from django.views.generic import (
-    CreateView, UpdateView)
+from django.shortcuts import redirect
+from django.views.generic import UpdateView
 
-#from fts_web.forms import (GrupoAtencionForm)
+from fts_web.forms import (
+    GrupoAtencionForm, AgentesGrupoAtencionFormSet)
 
 GrupoAtencion = get_model('fts_web', 'GrupoAtencion')
 
 
-class GrupoAtencionCreateView(CreateView):
+class GrupoAtencionCreateUpdateView(UpdateView):
 
     template_name = 'grupo_atencion/grupo_atencion.html'
     model = GrupoAtencion
     context_object_name = 'grupo_atencion'
-    #form_class = GrupoAtencionForm
+    form_class = GrupoAtencionForm
+    formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
+
+    def get_object(self, queryset=None):
+        self.creating = not 'pk' in self.kwargs
+
+        if not self.creating:
+            grupo_atencion = super(
+                GrupoAtencionCreateUpdateView, self).get_object(queryset)
+            return grupo_atencion
 
     def get_context_data(self, **kwargs):
-        context = super(GrupoAtencionCreateView, self).get_context_data(**kwargs)
+        context = super(
+            GrupoAtencionCreateUpdateView, self).get_context_data(**kwargs)
+
+        if 'formset_agente_grupo_atencion' not in context:
+            context['formset_agente_grupo_atencion'] = \
+            self.formset_agente_grupo_atencion(
+                instance=self.object
+            )
         return context
 
+    def form_valid(self, form):
+        return self.process_all_forms(form)
+
+    def form_invalid(self, form):
+        return self.process_all_forms(form)
+
+    def process_all_forms(self, form):
+        if form.is_valid():
+            self.object = form.save()
+
+        formset_agente_grupo_atencion = self.formset_agente_grupo_atencion(
+            self.request.POST, instance=self.object)
+
+        is_valid = all([
+            form.is_valid(),
+            formset_agente_grupo_atencion.is_valid(),
+        ])
+
+        if is_valid:
+            formset_agente_grupo_atencion.save()
+
+            return redirect(self.get_success_url())
+        else:
+            if form.is_valid():
+                self.object.delete()
+                self.object = None
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                '<strong>Operación Errónea!</strong>\
+                Revise y complete todos los campos obligatorios\
+                para la creación de una nuevo Grupo de Atención.',
+            )
+            context = self.get_context_data(
+                form=form,
+                formset_agente_grupo_atencion=formset_agente_grupo_atencion,
+            )
+
+            return self.render_to_response(context)
+
     def get_success_url(self):
+        if self.creating:
+            message = '<strong>Operación Exitosa!</strong>\
+            Se llevó a cabo con éxito la creación del\
+            Grupo de Atención.'
+        else:
+            message = '<strong>Operación Exitosa!</strong>\
+            Se llevó a cabo con éxito la actualización del\
+            Grupo de Atención.'
+
         messages.add_message(
             self.request,
             messages.SUCCESS,
-            '<strong>Operación Exitosa!</strong>\
-            Se llevó a cabo con éxito la creación del\
-            Grupo de Atención.',
+            message,
         )
+
         return reverse(
-            'edita_grupo_atencion',
-            args=(self.object.pk,))
-
-
-# class GrupoAtencionUpdateView(UpdateView):
-
-#     template_name = 'grupo_atencion/grupo_atencion.html'
-#     model = GrupoAtencion
-#     context_object_name = 'grupo_atencion'
-#     form_class = GrupoAtencionForm
-
-#     def get_context_data(self, **kwargs):
-#         context = super(GrupoAtencionUpdateView, self).get_context_data(**kwargs)
-#         return context
-
-#     def get_success_url(self):
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             '<strong>Operación Exitosa!</strong>\
-#             Se llevó a cabo con éxito la creación del\
-#             Grupo de Atención.',
-#         )
-#         return reverse(
-#             'edita_grupo_atencion',
-#             args=(self.object.pk,))
+            'grupo_atencion',
+            kwargs={"pk": self.object.id})
