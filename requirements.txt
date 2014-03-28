@@ -5,4 +5,4 @@ wsgiref==0.1.2
 psycopg2==2.5
 xlrd==0.9.2
 django-crispy-forms==1.4.0
-
+selenium==2.40.0
