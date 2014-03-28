@@ -105,6 +105,9 @@ class ListaContacto(models.Model):
             return self.nombre
         return '(ELiminado) {0}'.format(self.nombre)
 
+    def get_cantidad_contactos(self):
+        return self.contacto.all().count()
+
 
 class Contacto(models.Model):
     telefono = models.PositiveIntegerField()
@@ -113,7 +116,7 @@ class Contacto(models.Model):
     )
     lista_contacto = models.ForeignKey(
         'ListaContacto',
-        related_name='contactos'
+        related_name='contacto'
     )
     active = models.BooleanField(
         default=True,
