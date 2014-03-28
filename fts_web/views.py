@@ -249,5 +249,5 @@ class ListaContactoCreateUpdateView(UpdateView):
         )
 
         return reverse(
-            'edita_lista_contactos',
+            'edita_lista_contacto',
             kwargs={"pk": self.object.pk})
