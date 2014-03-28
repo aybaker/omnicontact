@@ -9,9 +9,11 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 
 
-"""
-Formularios Grupo de Atención.
-"""
+#===============================================================================
+# Grupos de Atención
+#===============================================================================
+
+
 GrupoAtencion = get_model('fts_web', 'GrupoAtencion')
 AgenteGrupoAtencion = get_model('fts_web', 'AgenteGrupoAtencion')
 
@@ -60,9 +62,11 @@ class GrupoAtencionForm(forms.ModelForm):
         return data
 
 
-"""
-Formularios Lista de Contactos.
-"""
+#===============================================================================
+# Lista Contactos
+#===============================================================================
+
+
 ListaContacto = get_model('fts_web', 'ListaContacto')
 Contacto = get_model('fts_web', 'Contacto')
 
@@ -86,9 +90,9 @@ class ListaContactoForm(forms.ModelForm):
         return data
 
 
-"""
-Formularios de archivo.
-"""
+#===============================================================================
+# Formulario File
+#===============================================================================
 
 
 class FileForm(forms.Form):
