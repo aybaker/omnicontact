@@ -9,6 +9,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 
 
+"""
+Formularios Grupo de Atención.
+"""
 GrupoAtencion = get_model('fts_web', 'GrupoAtencion')
 AgenteGrupoAtencion = get_model('fts_web', 'AgenteGrupoAtencion')
 
@@ -55,3 +58,49 @@ class GrupoAtencionForm(forms.ModelForm):
         if not data:
             raise forms.ValidationError("Este campo es requerido.")
         return data
+
+
+"""
+Formularios Lista de Contactos.
+"""
+ListaContacto = get_model('fts_web', 'ListaContacto')
+Contacto = get_model('fts_web', 'Contacto')
+
+
+class ListaContactoForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('nombre'),
+        )
+        super(ListaContactoForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = ListaContacto
+
+    def clean_nombre(self):
+        data = self.cleaned_data['nombre']
+        if not data:
+            raise forms.ValidationError("Este campo es requerido.")
+        return data
+
+
+"""
+Formularios de archivo.
+"""
+
+
+class FileForm(forms.Form):
+    file = forms.FileField(
+        label="Seleccione el archivo",
+        required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('file'),
+        )
+        super(FileForm, self).__init__(*args, **kwargs)
