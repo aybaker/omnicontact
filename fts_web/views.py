@@ -152,7 +152,7 @@ class GrupoAtencionDeleteView(DeleteView):
 class ListaContactoListView(ListView):
 
     template_name = 'lista_contacto/lista_listas_contacto.html'
-    context_object_name = 'lista_contacto'
+    context_object_name = 'listas_contacto'
     model = ListaContacto
 
     def get_queryset(self):
