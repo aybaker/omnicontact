@@ -25,5 +25,14 @@ urlpatterns = patterns('',
         name='elimina_grupo_atencion',
     ),
 
+    url(r'^lista_contacto/nueva$',
+        views.ListaContactoCreateUpdateView.as_view(),
+        name='nuevo_lista_contacto',
+    ),
+    url(r'^lista_contacto/(?P<pk>\d+)/$',
+        views.ListaContactoCreateUpdateView.as_view(),
+        name='edita_lista_contactos',
+    ),
+
     url(r'^admin/', include(admin.site.urls)),
 )
