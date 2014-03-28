@@ -85,8 +85,25 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    "fts_web.context_processors.testing_mode"
+)
+
+
 #Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+TEST_RUNNER = "fts_web.tests.FTSenderDiscoverRunner"
+
+# Testing mode
+TESTING_MODE = False
 
 try:
     from settings_local import *
