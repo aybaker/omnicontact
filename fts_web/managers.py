@@ -4,7 +4,12 @@ from django.db import models
 
 
 class GrupoAtencionManager(models.Manager):
-    """Manager para el modelo GrupoAtencion"""
+    """
+    Manager para el modelo GrupoAtencion
+
+    Sobreescribe el metodo `get_queryset()` para que, por default,
+    todas las consultas IGNOREN G.A. eliminados
+    """
 
     def get_queryset(self):
         """
