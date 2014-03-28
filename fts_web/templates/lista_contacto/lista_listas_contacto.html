@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">                
+            <h4 class="inline">Base de Datos Contactos</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-8">                                   
+                <table class="table table-bordered table-hover">
+                    <thead>
+                      <tr>                                
+                        <th>Base Datos Contactos</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for lista_contacto in listas_contacto %}
+                            <tr>
+                                <td>                          
+                                    {{ lista_contacto.nombre }}
+                                </td>
+                                <td>                                   
+  
+                                
+                                <td>
+                                    <a href="{% url 'edita_lista_contacto' lista_contacto.pk %}">
+                                        <button type="button" class="btn btn-primary btn-sm">
+                                            <span class="glyphicon glyphicon-pencil"></span> Editar
+                                        </button>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="#">
+                                        <button type="button" class="btn btn-danger btn-sm">
+                                            <span class="glyphicon glyphicon-remove"></span> Eliminar
+                                        </button>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron Bases de Datos de Contactos creadas.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
