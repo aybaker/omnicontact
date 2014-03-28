@@ -151,7 +151,7 @@ class GrupoAtencionDeleteView(DeleteView):
 
 class ListaContactoListView(ListView):
 
-    template_name = 'lista_contacto/lista_lista_contacto.html'
+    template_name = 'lista_contacto/lista_listas_contacto.html'
     context_object_name = 'lista_contacto'
     model = ListaContacto
 
@@ -162,7 +162,7 @@ class ListaContactoListView(ListView):
 
 class ListaContactoCreateUpdateView(UpdateView):
 
-    template_name = 'lista_contacto/nueva_edita_lista_contacto.html'
+    template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
     model = ListaContacto
     context_object_name = 'lista_contacto'
     form_class = ListaContactoForm
