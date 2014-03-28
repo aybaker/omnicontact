@@ -72,3 +72,39 @@ class AgenteGrupoAtencion(models.Model):
         if self.active:
             self.active = False
             self.save()
+
+
+class ListaContacto(models.Model):
+    nombre = models.CharField(
+        max_length=128,
+    )
+    active = models.BooleanField(
+        default=True,
+        editable=False,
+    )
+
+    def __unicode__(self):
+        if self.active:
+            return self.nombre
+        return '(ELiminado) {0}'.format(self.nombre)
+
+
+class Contacto(models.Model):
+    telefono = models.PositiveIntegerField()
+    datos = models.TextField(
+        blank=True, null=True,
+    )
+    lista_contacto = models.ForeignKey(
+        'ListaContacto',
+        related_name='contacto'
+    )
+    active = models.BooleanField(
+        default=True,
+        editable=False,
+    )
+
+    def __unicode__(self):
+        if self.active:
+            return '{0} >> {1}'.format(
+                self.lista_contacto, self.telefono)
+        return '(ELiminado) {0}'.format(self.telefono)

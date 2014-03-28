@@ -7,3 +7,6 @@ from fts_web import models
 
 admin.site.register(models.GrupoAtencion)
 admin.site.register(models.AgenteGrupoAtencion)
+
+admin.site.register(models.ListaContacto)
+admin.site.register(models.Contacto)
