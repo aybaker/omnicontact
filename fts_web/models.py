@@ -179,6 +179,7 @@ class Campana(models.Model):
 
     def finalizar(self):
         """Setea la campaña como finalizada"""
+        # TODO: esta bien generar error si el modo actual es 'ESTADO_FINALIZADA'?
         assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
