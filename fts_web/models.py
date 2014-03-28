@@ -4,6 +4,11 @@ from django.db import models
 from fts_web import managers
 
 
+#===============================================================================
+# Grupos de Atención
+#===============================================================================
+
+
 class GrupoAtencion(models.Model):
     objects = managers.GrupoAtencionManager()
     actives = managers.ActiveGrupoAtencionManager()
@@ -72,6 +77,11 @@ class AgenteGrupoAtencion(models.Model):
         if self.active:
             self.active = False
             self.save()
+
+
+#===============================================================================
+# Lista Contactos
+#===============================================================================
 
 
 class ListaContacto(models.Model):
