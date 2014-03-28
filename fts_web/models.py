@@ -10,6 +10,13 @@ from fts_web import managers
 
 
 class GrupoAtencion(models.Model):
+    """
+    Representa un Grupo de Atencion, o sea, un conjunto de agentes
+    a donde se puede derivar una llamada.
+
+    Se sobreescribe el método `delete()` para implementar
+    un borrado lógico.
+    """
     objects = managers.GrupoAtencionManager()
 
     nombre = models.CharField(
