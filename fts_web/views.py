@@ -31,9 +31,9 @@ class GrupoAtencionListView(ListView):
     context_object_name = 'grupos_atencion'
     model = GrupoAtencion
 
-    def get_queryset(self):
-        queryset = GrupoAtencion.objects.filtrar_activos()
-        return queryset
+    #def get_queryset(self):
+    #    queryset = GrupoAtencion.objects.filtrar_activos()
+    #    return queryset
 
 
 class GrupoAtencionCreateUpdateView(UpdateView):
