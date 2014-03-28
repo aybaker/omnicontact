@@ -108,3 +108,34 @@ class Contacto(models.Model):
             return '{0} >> {1}'.format(
                 self.lista_contacto, self.telefono)
         return '(ELiminado) {0}'.format(self.telefono)
+
+
+class Campana(models.Model):
+    """Una campaña del call center"""
+    ESTADO_EN_DEFINICION = 1
+    ESTADO_ACTIVA = 2
+    ESTADO_PAUSADA = 3
+    ESTADO_FINALIZADA = 4
+
+    ESTADOS = (
+        (ESTADO_EN_DEFINICION, '(en definicion)'),
+        (ESTADO_ACTIVA, 'Activa'),
+        (ESTADO_PAUSADA, 'Pausada'),
+        (ESTADO_FINALIZADA, 'Finalizada'),
+    )
+
+    nombre = models.CharField(
+        max_length=128,
+    )
+    estado = models.PositiveIntegerField(
+        choices=ESTADOS,
+        default=ESTADO_EN_DEFINICION,
+    )
+
+    bd_contacto = models.ForeignKey(
+        'ListaContacto',
+        related_name='campanas'
+    )
+
+    def __unicode__(self):
+        return self.nombre
