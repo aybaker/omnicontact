@@ -32,7 +32,7 @@ class GrupoAtencionListView(ListView):
     model = GrupoAtencion
 
     def get_queryset(self):
-        queryset = GrupoAtencion.actives.all()
+        queryset = GrupoAtencion.objects.filtrar_activos()
         return queryset
 
 

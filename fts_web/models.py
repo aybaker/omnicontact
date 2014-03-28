@@ -11,7 +11,6 @@ from fts_web import managers
 
 class GrupoAtencion(models.Model):
     objects = managers.GrupoAtencionManager()
-    actives = managers.ActiveGrupoAtencionManager()
 
     nombre = models.CharField(
         max_length=128,
