@@ -96,7 +96,7 @@ class Contacto(models.Model):
     )
     lista_contacto = models.ForeignKey(
         'ListaContacto',
-        related_name='contacto'
+        related_name='contactos'
     )
     active = models.BooleanField(
         default=True,
