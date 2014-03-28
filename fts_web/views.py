@@ -20,6 +20,11 @@ ListaContacto = get_model('fts_web', 'ListaContacto')
 Contacto = get_model('fts_web', 'Contacto')
 
 
+#===============================================================================
+# Grupos de Atención
+#===============================================================================
+
+
 class GrupoAtencionListView(ListView):
 
     template_name = 'grupo_atencion/lista_grupo_atencion.html'
@@ -137,6 +142,22 @@ class GrupoAtencionDeleteView(DeleteView):
         )
 
         return reverse('lista_grupo_atencion')
+
+
+#===============================================================================
+# Lista Contactos
+#===============================================================================
+
+
+class ListaContactoListView(ListView):
+
+    template_name = 'lista_contacto/lista_lista_contacto.html'
+    context_object_name = 'lista_contacto'
+    model = ListaContacto
+
+    def get_queryset(self):
+        queryset = ListaContacto.objects.all()
+        return queryset
 
 
 class ListaContactoCreateUpdateView(UpdateView):
