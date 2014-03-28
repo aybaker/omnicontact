@@ -10,3 +10,4 @@ admin.site.register(models.AgenteGrupoAtencion)
 
 admin.site.register(models.ListaContacto)
 admin.site.register(models.Contacto)
+admin.site.register(models.Campana)
