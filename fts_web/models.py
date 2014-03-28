@@ -88,6 +88,13 @@ class ListaContacto(models.Model):
     nombre = models.CharField(
         max_length=128,
     )
+    fecha_alta = models.DateTimeField(
+        auto_now_add=True,
+    )
+    columnas = models.CharField(
+        max_length=256,
+        blank=True, null=True,
+    )
     active = models.BooleanField(
         default=True,
         editable=False,
