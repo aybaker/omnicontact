@@ -4,6 +4,7 @@
 <path>/${PROJECT_DIR_NAME}</path>
 <path>/${PROJECT_DIR_NAME}/virtualenv/lib/python2.7/site-packages</path>
 <path>/${PROJECT_DIR_NAME}/virtualenv/local/lib/python2.7/site-packages</path>
+<path>/FTSenderWeb/virtualenv/lib/python2.7/site-packages/starpy-1.0.2-py2.7.egg</path>
 </pydev_pathproperty>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.7</pydev_property>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
