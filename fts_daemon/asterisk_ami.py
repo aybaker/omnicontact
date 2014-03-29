@@ -78,6 +78,8 @@ class OriginateService(Process):
         #    data=None, variable={}, async=False, channelid=None,
         #    otherchannelid=None
         # )
+        assert self.ami is None
+        self.ami = ami
         try:
             logger.info("onConnect()")
             logger.info("Conectado!")
@@ -94,9 +96,13 @@ class OriginateService(Process):
         try:
             assert self.ami is None
             logger.info("_login_and_originate()")
-            self.ami = _ami_login(self.username, self.password, self.server,
-                self.port)
-            self.ami.addCallback(self.onConnect)
+            #
+            # Aca *NO* seteamos 'self.ami', ya que es un Deferred.
+            # Lo seteamos en onConnect()
+            #
+            ami = _ami_login(self.username, self.password,
+                self.server, self.port)
+            ami.addCallback(self.onConnect)
         except:
             logger.exception("_login_and_originate")
 
