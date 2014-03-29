@@ -8,7 +8,7 @@ Created on Mar 27, 2014
 from __future__ import unicode_literals
 
 import logging
-from threading import Thread
+from multiprocessing import Process
 from twisted.internet import reactor
 
 from starpy import manager
@@ -26,14 +26,14 @@ def _ami_login(username, password, server, port):
     return ami_protocol
 
 
-class OriginateInThread(Thread):
-    """Thread que realiza ORIGINATE usando AMI"""
+class OriginateService(Process):
+    """Genera ORIGINATEs usando AMI"""
 
     def __init__(self, username, password, server, port, channel, context,
         exten, priority, timeout):
         """Constructor. Recibe todos los parametros necesarios"""
 
-        super(OriginateInThread, self).__init__()
+        super(OriginateService, self).__init__()
 
         # Instancia de AMIProtocol
         self.ami = None
@@ -101,35 +101,35 @@ class OriginateInThread(Thread):
             logger.exception("_login_and_originate")
 
     def run(self):
-        """Metodo ejecutado en thread"""
+        """Metodo ejecutado en subproceso"""
         reactor.callWhenRunning(# @UndefinedVariable
             self._login_and_originate)
-        logger.info("[%s] Iniciando reactor...")
+        logger.info("Iniciando reactor en subproceso %s", self.pid)
         reactor.run(installSignalHandlers=0)  # @UndefinedVariable
-        logger.info("[%s] Reactor ha finalizado")
+        logger.info("Reactor ha finalizado en subproceso %s", self.pid)
 
 
 def originate_async(username, password, server, port,
     outgoing_channel, context, exten, priority, timeout):
-    """Origina una llamada, en un thread separado.
+    """Origina una llamada, en un subproceso separado.
 
-    Returns: thread ya arrancado
+    Returns: subproceso ya arrancado
     """
-    thread = OriginateInThread(username, password, server, port,
+    child_process = OriginateService(username, password, server, port,
         outgoing_channel, context, exten, priority, timeout)
-    thread.start()
-    return thread
+    child_process.start()
+    return child_process
 
 
 def originate(username, password, server, port,
     outgoing_channel, context, exten, priority, timeout):
-    """Origina una llamada, en un thread separado.
+    """Origina una llamada, en un subproceso separado.
     Espera a que se finalice la ejecucion
     """
-    thread = OriginateInThread(username, password, server, port,
+    child_process = OriginateService(username, password, server, port,
         outgoing_channel, context, exten, priority, timeout)
-    logging.info("Ejecutando ORIGINATE en thread %s", thread.ident)
-    thread.start()
-    logging.info("Ejecutando join() en thread %s", thread.ident)
-    thread.join()
-    logging.info("El thread %s ha devuelto el control")
+    logging.info("Ejecutando ORIGINATE en subproceso %s", child_process.pid)
+    child_process.start()
+    logging.info("Ejecutando join() en subproceso %s", child_process.pid)
+    child_process.join()
+    logging.info("El subproceso %s ha devuelto el control")
