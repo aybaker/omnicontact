@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 '''
 Created on Mar 27, 2014
 
 @author: Horacio G. de Oro
 '''
+
+from __future__ import unicode_literals
+
 import logging
 import time
+
 from fts_daemon.asterisk_ami import originate
 
 
