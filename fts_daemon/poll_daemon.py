@@ -21,32 +21,51 @@ def setup():
     logging.getLogger().setLevel(logging.INFO)
 
 
-def procesar_campana(campana):
+def generador_de_llamadas_asterisk_dummy_factory():
+    def generador_de_llamadas_asterisk(telefono):
+        logger.info("GENERADOR DE LLAMADAS DUMMY -> %s", telefono)
+    return generador_de_llamadas_asterisk
+
+
+def generador_de_llamadas_asterisk_factory():
+    """Factory de funcion que se encarga de realizar llamadas
+
+    La funcion generada debe recibir por parametro el numero telefonico
+    """
+    from django.conf import settings
+
+    def generador_de_llamadas_asterisk(telefono):
+        originate(
+            settings.ASTERISK['USERNAME'],
+            settings.ASTERISK['PASSWORD'],
+            settings.ASTERISK['HOST'],
+            settings.ASTERISK['PORT'],
+            settings.ASTERISK['CHANNEL_PREFIX'].format(telefono),
+            settings.ASTERISK['CONTEXT'],
+            settings.ASTERISK['EXTEN'],
+            settings.ASTERISK['PRIORITY'],
+            settings.ASTERISK['TIMEOUT']
+        )
+    return generador_de_llamadas_asterisk
+
+
+def procesar_campana(campana, generador_de_llamadas):
     """Procesa una campana.
 
     Returns:
         cant_contactos_procesados
     """
     from fts_web.models import Campana, Contacto
-    from django.conf import settings
+    from django.conf import settings  # @UnusedImport
 
     assert isinstance(campana, Campana)
     logger.info("Iniciando procesado de campana %s", campana.id)
     contador_contactos = 0
-    for contacto in campana.bd_contacto.contactos.all():
+    # for contacto in campana.bd_contacto.contactos.all():
+    for contacto in campana.bd_contacto.contacto.all():
         assert isinstance(contacto, Contacto)
         logger.info(" - Realizando originate para contacto: %s", contacto.id)
-        originate(
-            settings.ASTERISK['USERNAME'],
-            settings.ASTERISK['PASSWORD'],
-            settings.ASTERISK['HOST'],
-            settings.ASTERISK['PORT'],
-            settings.ASTERISK['CHANNEL_PREFIX'].format(contacto.telefono),
-            settings.ASTERISK['CONTEXT'],
-            settings.ASTERISK['EXTEN'],
-            settings.ASTERISK['PRIORITY'],
-            settings.ASTERISK['TIMEOUT']
-        )
+        generador_de_llamadas(contacto.telefono)
         contador_contactos += 1
 
     logger.info("Marcando campana %s como FINALIZADA", campana.id)
@@ -58,6 +77,8 @@ if __name__ == '__main__':
     logging.info("Inicianodo FTSenderDaemon...")
     setup()
     logging.info("Setup de Django OK")
+    generador_de_llamadas = generador_de_llamadas_asterisk_factory()
+
     from fts_web.models import Campana
     while True:
         logging.info("Obteniendo campanas activas...")
