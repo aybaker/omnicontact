@@ -13,6 +13,7 @@ from twisted.internet import reactor
 
 from starpy import manager
 
+
 logger = logging.getLogger('FTSAsteriskAmi')
 
 
@@ -26,18 +27,16 @@ def _ami_login(username, password, server, port):
 
 
 class OriginateInThread(Thread):
+    """Thread que realiza ORIGINATE usando AMI"""
 
     def __init__(self, username, password, server, port, channel, context,
         exten, priority, timeout):
-        """Constructor"""
+        """Constructor. Recibe todos los parametros necesarios"""
 
         super(OriginateInThread, self).__init__()
 
         # Instancia de AMIProtocol
         self.ami = None
-
-        # Seteado en True cuando el reactor ha devuelto el control
-        self.reactor_finished = False
 
         self.username = username
         self.password = password
@@ -108,7 +107,6 @@ class OriginateInThread(Thread):
         logger.info("[%s] Iniciando reactor...")
         reactor.run(installSignalHandlers=0)  # @UndefinedVariable
         logger.info("[%s] Reactor ha finalizado")
-        self.reactor_finished
 
 
 def originate_async(username, password, server, port,
