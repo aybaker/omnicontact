@@ -86,5 +86,5 @@ if __name__ == '__main__':
         logging.info("Obteniendo campanas activas...")
         campanas = Campana.objects.obtener_activas()
         for campana in campanas:
-            resultado = procesar_campana(campana)
+            resultado = procesar_campana(campana, generador_de_llamadas)
         time.sleep(2)
