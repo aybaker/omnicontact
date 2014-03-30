@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.db import models
+from django.conf import settings
+
 from fts_web import managers
 
 
@@ -196,6 +198,13 @@ class Campana(models.Model):
     estado = models.PositiveIntegerField(
         choices=ESTADOS,
         default=ESTADO_EN_DEFINICION,
+    )
+    fecha_inicio = models.DateTimeField()
+    fecha_fin = models.DateTimeField()
+    reproduccion = models.FileField(
+        #FIXME: Definir path para los archivos.
+        upload_to='campana/%Y/%m/%d',
+        blank=True, null=True,
     )
 
     bd_contacto = models.ForeignKey(
