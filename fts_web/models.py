@@ -3,13 +3,11 @@ from __future__ import unicode_literals
 from django.db import models
 from django.conf import settings
 
-from fts_web import managers
 
 
 #===============================================================================
 # Grupos de Atención
 #===============================================================================
-
 
 class GrupoAtencion(models.Model):
     """
@@ -19,7 +17,6 @@ class GrupoAtencion(models.Model):
     Se sobreescribe el método `delete()` para implementar
     un borrado lógico.
     """
-    objects = managers.GrupoAtencionManager()
 
     nombre = models.CharField(
         max_length=128,
@@ -38,20 +35,21 @@ class GrupoAtencion(models.Model):
         default=RINGALL,
         null=True, blank=True,
     )
-    active = models.BooleanField(
-        default=True,
-        editable=False,
-    )
+    #    active = models.BooleanField(
+    #        default=True,
+    #        editable=False,
+    #    )
 
     def __unicode__(self):
-        if self.active:
-            return self.nombre
-        return '(ELiminado) {0}'.format(self.nombre)
+        return self.nombre
+        #    if self.active:
+        #        return self.nombre
+        #    return '(ELiminado) {0}'.format(self.nombre)
 
-    def delete(self, *args, **kwargs):
-        if self.active:
-            self.active = False
-            self.save()
+    #    def delete(self, *args, **kwargs):
+    #        if self.active:
+    #            self.active = False
+    #            self.save()
 
     def get_ring_stratedy(self):
         ring_strategy_dic = dict(self.RING_STRATEGY_CHOICES)
@@ -69,28 +67,29 @@ class AgenteGrupoAtencion(models.Model):
         'GrupoAtencion',
         related_name='agente_grupo_atencion'
     )
-    active = models.BooleanField(
-        default=True,
-        editable=False,
-    )
+    #    active = models.BooleanField(
+    #        default=True,
+    #        editable=False,
+    #    )
 
     def __unicode__(self):
-        if self.active:
-            return '{0} >> {1}'.format(
-                self.grupo_atencion, self.numero_interno)
-        return '(ELiminado) {0} >> {1}'.format(
-                self.grupo_atencion, self.numero_interno)
+        return '{0} >> {1}'.format(
+            self.grupo_atencion, self.numero_interno)
+        #    if self.active:
+        #        return '{0} >> {1}'.format(
+        #            self.grupo_atencion, self.numero_interno)
+        #    return '(ELiminado) {0} >> {1}'.format(
+        #            self.grupo_atencion, self.numero_interno)
 
-    def delete(self, *args, **kwargs):
-        if self.active:
-            self.active = False
-            self.save()
+    #    def delete(self, *args, **kwargs):
+    #        if self.active:
+    #            self.active = False
+    #            self.save()
 
 
 #===============================================================================
 # Lista Contactos
 #===============================================================================
-
 
 class ListaContacto(models.Model):
     nombre = models.CharField(
@@ -103,18 +102,19 @@ class ListaContacto(models.Model):
         max_length=256,
         blank=True, null=True,
     )
-    active = models.BooleanField(
-        default=True,
-        editable=False,
-    )
+    #    active = models.BooleanField(
+    #        default=True,
+    #        editable=False,
+    #    )
 
     def __unicode__(self):
-        if self.active:
-            return self.nombre
-        return '(ELiminado) {0}'.format(self.nombre)
+        return self.nombre
+        #    if self.active:
+        #        return self.nombre
+        #    return '(ELiminado) {0}'.format(self.nombre)
 
     def get_cantidad_contactos(self):
-        return self.contacto.all().count()
+        return self.contactos.all().count()
 
 
 class Contacto(models.Model):
@@ -124,18 +124,12 @@ class Contacto(models.Model):
     )
     lista_contacto = models.ForeignKey(
         'ListaContacto',
-        related_name='contacto'
-    )
-    active = models.BooleanField(
-        default=True,
-        editable=False,
+        related_name='contactos'
     )
 
     def __unicode__(self):
-        if self.active:
-            return '{0} >> {1}'.format(
-                self.lista_contacto, self.telefono)
-        return '(ELiminado) {0}'.format(self.telefono)
+        return '{0} >> {1}'.format(
+            self.lista_contacto, self.telefono)
 
 
 #===============================================================================
