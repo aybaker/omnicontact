@@ -50,7 +50,7 @@ class GrupoAtencion(models.Model):
     #            self.active = False
     #            self.save()
 
-    def get_ring_stratedy(self):
+    def get_ring_strategy(self):
         ring_strategy_dic = dict(self.RING_STRATEGY_CHOICES)
         return ring_strategy_dic[self.ring_strategy]
 
