@@ -7,16 +7,12 @@ from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
+from fts_web.models import GrupoAtencion, AgenteGrupoAtencion, ListaContacto
 
 
 #===============================================================================
 # Grupos de Atención
 #===============================================================================
-
-
-GrupoAtencion = get_model('fts_web', 'GrupoAtencion')
-AgenteGrupoAtencion = get_model('fts_web', 'AgenteGrupoAtencion')
-
 
 class AgenteGrupoAtencionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -65,11 +61,6 @@ class GrupoAtencionForm(forms.ModelForm):
 #===============================================================================
 # Lista Contactos
 #===============================================================================
-
-
-ListaContacto = get_model('fts_web', 'ListaContacto')
-Contacto = get_model('fts_web', 'Contacto')
-
 
 class ListaContactoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
