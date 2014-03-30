@@ -55,7 +55,7 @@ class GrupoAtencion(models.Model):
         return ring_strategy_dic[self.ring_strategy]
 
     def get_cantidad_agentes(self):
-        return self.agente_grupo_atencion.all().count()
+        return self.agentes.all().count()
 
 
 class AgenteGrupoAtencion(models.Model):
@@ -64,7 +64,7 @@ class AgenteGrupoAtencion(models.Model):
     )
     grupo_atencion = models.ForeignKey(
         'GrupoAtencion',
-        related_name='agente_grupo_atencion'
+        related_name='agentes'
     )
     #    active = models.BooleanField(
     #        default=True,
