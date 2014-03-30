@@ -64,7 +64,7 @@ def procesar_campana(campana, generador_de_llamadas):
     logger.info("Iniciando procesado de campana %s", campana.id)
     contador_contactos = 0
     # for contacto in campana.bd_contacto.contactos.all():
-    for contacto in campana.bd_contacto.contacto.all():
+    for contacto in campana.bd_contacto.contactos.all():
         assert isinstance(contacto, Contacto)
         logger.info(" - Realizando originate para contacto: %s", contacto.id)
         generador_de_llamadas(contacto.telefono)
