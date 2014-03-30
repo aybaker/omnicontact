@@ -150,9 +150,9 @@ class ListaContactoListView(ListView):
     context_object_name = 'listas_contacto'
     model = ListaContacto
 
-    def get_queryset(self):
-        queryset = ListaContacto.objects.all()
-        return queryset
+    #    def get_queryset(self):
+    #        queryset = ListaContacto.objects.all()
+    #        return queryset
 
 
 class ListaContactoCreateUpdateView(UpdateView):
