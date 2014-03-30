@@ -8,6 +8,7 @@ Created on Mar 27, 2014
 from __future__ import unicode_literals
 
 import logging
+import random
 import time
 
 from fts_daemon.asterisk_ami import originate
@@ -21,6 +22,19 @@ def setup():
     from fts_web.models import Campana  # @UnusedImport
 
     logging.getLogger().setLevel(logging.INFO)
+
+
+class FtsDaemonCallIdGenerator(object):
+    """Genera ID para identificar llamadas"""
+
+    def __init__(self):
+        self.last = int(time.time())
+
+    def gen(self):
+        self.last += 1
+        return self.last
+
+FTS_DAEMON_CALL_ID_GENERATOR = FtsDaemonCallIdGenerator()
 
 
 def generador_de_llamadas_asterisk_dummy_factory():
@@ -44,7 +58,8 @@ def generador_de_llamadas_asterisk_factory():
             settings.ASTERISK['PORT'],
             settings.ASTERISK['CHANNEL_PREFIX'].format(telefono),
             settings.ASTERISK['CONTEXT'],
-            settings.ASTERISK['EXTEN'],
+            settings.ASTERISK['EXTEN'].format(
+                FTS_DAEMON_CALL_ID_GENERATOR.gen()),
             settings.ASTERISK['PRIORITY'],
             settings.ASTERISK['TIMEOUT']
         )
