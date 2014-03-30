@@ -3,11 +3,16 @@ from __future__ import unicode_literals
 from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
+from django.views.generic.base import RedirectView
 admin.autodiscover()
 
 from fts_web import views
 
 urlpatterns = patterns('',
+    url(r'^$',
+        RedirectView.as_view(pattern_name='lista_grupo_atencion',
+            permanent=False),
+    ),
     url(r'^grupo_atencion/$',
         views.GrupoAtencionListView.as_view(),
         name='lista_grupo_atencion',
