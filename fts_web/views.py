@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db.models import get_model
-
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
@@ -14,10 +12,7 @@ from fts_web.parserxls import ParserXls
 from fts_web.forms import (
     GrupoAtencionForm, AgentesGrupoAtencionFormSet,
     ListaContactoForm, FileForm)
-
-GrupoAtencion = get_model('fts_web', 'GrupoAtencion')
-ListaContacto = get_model('fts_web', 'ListaContacto')
-Contacto = get_model('fts_web', 'Contacto')
+from fts_web.models import (GrupoAtencion, ListaContacto, Contacto)
 
 
 #===============================================================================
