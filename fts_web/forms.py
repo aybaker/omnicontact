@@ -1,13 +1,15 @@
 #-*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db.models import get_model
 from django import forms
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
-from fts_web.models import GrupoAtencion, AgenteGrupoAtencion, ListaContacto
+from fts_web.models import (
+    AgenteGrupoAtencion, Campana, GrupoAtencion,
+    ListaContacto,
+)
 
 
 #===============================================================================
@@ -79,6 +81,27 @@ class ListaContactoForm(forms.ModelForm):
         if not data:
             raise forms.ValidationError("Este campo es requerido.")
         return data
+
+
+#===============================================================================
+# Campaña
+#===============================================================================
+
+
+class CampanaForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('nombre'),
+            Field('reproduccion'),
+            Field('bd_contacto')
+        )
+        super(CampanaForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Campana
+        exclude = ('estado', 'fecha_inicio', 'fecha_fin')
 
 
 #===============================================================================
