@@ -16,6 +16,14 @@
                 <form role="form" method="post" enctype="multipart/form-data" >
                     {% crispy form %} 
                                       
+
+                    {% if campana.reproduccion %}
+                        <div>
+                            <h4>Audio de la Campaña</h4>
+                            <audio src="{{ campana.reproduccion.url }}" controls></audio>
+                        </div>
+                    {% endif %}
+                    
                     <br>
 
                     <button type="submit" class="btn btn-primary btn-block">

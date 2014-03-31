@@ -75,6 +75,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+#Media files
+MEDIA_URL = '/media/'
+
+
 # Bootstrap friendly
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-info',
