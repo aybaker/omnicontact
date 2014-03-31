@@ -1,0 +1,6 @@
+# Dependencias
+
+Para instalar sterpy:
+
+    $ pip install git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba
+
