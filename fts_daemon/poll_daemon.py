@@ -8,7 +8,6 @@ Created on Mar 27, 2014
 from __future__ import unicode_literals
 
 import logging
-import random
 import time
 
 from fts_daemon.asterisk_ami import originate
