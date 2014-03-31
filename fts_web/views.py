@@ -5,18 +5,17 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.views.generic import (
-    ListView, CreateView,
-    UpdateView, DeleteView)
+    CreateView, DeleteView, ListView, UpdateView)
 
 from fts_web.parserxls import ParserXls
 
 from fts_web.forms import (
-    GrupoAtencionForm, AgentesGrupoAtencionFormSet,
-    ListaContactoForm, FileForm)
+    AgentesGrupoAtencionFormSet, CampanaForm, FileForm,
+    GrupoAtencionForm, ListaContactoForm,
+)
 from fts_web.models import (
-    GrupoAtencion, ListaContacto,
-    Contacto)
-
+    Campana, Contacto, GrupoAtencion, ListaContacto,
+)
 
 #===============================================================================
 # Grupos de Atención
@@ -307,4 +306,55 @@ class ListaContactoUpdateView(UpdateView, ListaContactoMixin):
 
         return reverse(
             'edita_lista_contacto',
+            kwargs={"pk": self.object.pk})
+
+
+#===============================================================================
+# Campaña
+#===============================================================================
+
+
+class CampanaCreateView(CreateView):
+
+    template_name = 'campana/nueva_edita_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = CampanaForm
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la creación de\
+        la Campaña.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+
+        return reverse(
+            'edita_campana',
+            kwargs={"pk": self.object.pk})
+
+
+class CampanaUpdateView(UpdateView):
+
+    template_name = 'campana/nueva_edita_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = CampanaForm
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la actualización de\
+        la Campaña.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+
+        return reverse(
+            'edita_campana',
             kwargs={"pk": self.object.pk})
