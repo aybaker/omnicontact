@@ -192,8 +192,12 @@ class Campana(models.Model):
         choices=ESTADOS,
         default=ESTADO_EN_DEFINICION,
     )
-    fecha_inicio = models.DateTimeField()
-    fecha_fin = models.DateTimeField()
+    fecha_inicio = models.DateTimeField(
+        auto_now_add=True,
+    )
+    fecha_fin = models.DateTimeField(
+        auto_now_add=True,
+    )
     reproduccion = models.FileField(
         #FIXME: Definir path para los archivos.
         upload_to='campana/%Y/%m/%d',
