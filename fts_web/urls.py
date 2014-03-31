@@ -63,6 +63,11 @@ urlpatterns = patterns('',
         views.CampanaUpdateView.as_view(),
         name='edita_campana',
     ),
+    url(r'^campana/confirma/(?P<pk>\d+)/$',
+        views.ConfirmaCampanaView.as_view(),
+        name='confirma_campana',
+    ),
+
 
     url(r'^admin/', include(admin.site.urls)),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

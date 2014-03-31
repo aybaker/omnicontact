@@ -10,12 +10,13 @@ from django.views.generic import (
 from fts_web.parserxls import ParserXls
 
 from fts_web.forms import (
-    AgentesGrupoAtencionFormSet, CampanaForm, FileForm,
-    GrupoAtencionForm, ListaContactoForm,
+    AgentesGrupoAtencionFormSet, CampanaForm, ConfirmaForm,
+    FileForm, GrupoAtencionForm, ListaContactoForm,
 )
 from fts_web.models import (
     Campana, Contacto, GrupoAtencion, ListaContacto,
 )
+
 
 #===============================================================================
 # Grupos de Atención
@@ -322,6 +323,35 @@ class CampanaCreateView(CreateView):
     form_class = CampanaForm
 
     def get_success_url(self):
+        return reverse(
+            'confirma_campana',
+            kwargs={"pk": self.object.pk})
+
+
+class ConfirmaCampanaView(UpdateView):
+    template_name = 'campana/confirma_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = ConfirmaForm
+
+    def get(self, request, *args, **kwargs):
+        campana = self.get_object()
+        if not campana.estado == Campana.ESTADO_EN_DEFINICION:
+            return redirect('edita_campana', pk=campana.pk)
+        return super(ConfirmaCampanaView, self).get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        if 'confirma' in self.request.POST:
+            campana = self.object
+            campana.estado = Campana.ESTADO_ACTIVA
+            campana.save()
+
+            return redirect(self.get_success_url())
+        elif 'cancela' in self.request.POST:
+            pass
+            #TODO: Implementar la cancelación.
+
+    def get_success_url(self):
         message = '<strong>Operación Exitosa!</strong>\
         Se llevó a cabo con éxito la creación de\
         la Campaña.'
@@ -332,6 +362,8 @@ class CampanaCreateView(CreateView):
             message,
         )
 
+        #FIXME: Redirecciona a lista campaña cuándo
+        #este implementado.
         return reverse(
             'edita_campana',
             kwargs={"pk": self.object.pk})
