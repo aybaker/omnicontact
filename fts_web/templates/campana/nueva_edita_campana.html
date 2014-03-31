@@ -26,8 +26,13 @@
                     
                     <br>
 
+
                     <button type="submit" class="btn btn-primary btn-block">
-                        Guardar Campaña
+                        {% if campana %}
+                            Guardar Campaña
+                        {% else %}
+                            Crear Campaña
+                        {% endif %}
                     </button>
                 </form>           
             </div>
