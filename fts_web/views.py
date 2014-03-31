@@ -5,14 +5,17 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.views.generic import (
-    ListView, UpdateView, DeleteView)
+    ListView, CreateView,
+    UpdateView, DeleteView)
 
 from fts_web.parserxls import ParserXls
 
 from fts_web.forms import (
     GrupoAtencionForm, AgentesGrupoAtencionFormSet,
     ListaContactoForm, FileForm)
-from fts_web.models import (GrupoAtencion, ListaContacto, Contacto)
+from fts_web.models import (
+    GrupoAtencion, ListaContacto,
+    Contacto)
 
 
 #===============================================================================
@@ -31,32 +34,7 @@ class GrupoAtencionListView(ListView):
     #    return queryset
 
 
-class GrupoAtencionCreateUpdateView(UpdateView):
-
-    template_name = 'grupo_atencion/grupo_atencion.html'
-    model = GrupoAtencion
-    context_object_name = 'grupo_atencion'
-    form_class = GrupoAtencionForm
-    formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
-
-    def get_object(self, queryset=None):
-        self.creating = not 'pk' in self.kwargs
-
-        if not self.creating:
-            grupo_atencion = super(
-                GrupoAtencionCreateUpdateView, self).get_object(queryset)
-            return grupo_atencion
-
-    def get_context_data(self, **kwargs):
-        context = super(
-            GrupoAtencionCreateUpdateView, self).get_context_data(**kwargs)
-
-        if 'formset_agente_grupo_atencion' not in context:
-            context['formset_agente_grupo_atencion'] = \
-            self.formset_agente_grupo_atencion(
-                instance=self.object
-            )
-        return context
+class GrupoAtencionMixin(object):
 
     def form_valid(self, form):
         return self.process_all_forms(form)
@@ -99,15 +77,65 @@ class GrupoAtencionCreateUpdateView(UpdateView):
 
             return self.render_to_response(context)
 
+
+class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
+
+    template_name = 'grupo_atencion/grupo_atencion.html'
+    model = GrupoAtencion
+    context_object_name = 'grupo_atencion'
+    form_class = GrupoAtencionForm
+    formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            GrupoAtencionCreateView, self).get_context_data(**kwargs)
+
+        if 'formset_agente_grupo_atencion' not in context:
+            context['formset_agente_grupo_atencion'] = \
+            self.formset_agente_grupo_atencion(
+                instance=self.object
+            )
+        return context
+
     def get_success_url(self):
-        if self.creating:
-            message = '<strong>Operación Exitosa!</strong>\
-            Se llevó a cabo con éxito la creación del\
-            Grupo de Atención.'
-        else:
-            message = '<strong>Operación Exitosa!</strong>\
-            Se llevó a cabo con éxito la actualización del\
-            Grupo de Atención.'
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la creación del\
+        Grupo de Atención.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+
+        return reverse(
+            'edita_grupo_atencion',
+            kwargs={"pk": self.object.pk})
+
+
+class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
+
+    template_name = 'grupo_atencion/grupo_atencion.html'
+    model = GrupoAtencion
+    context_object_name = 'grupo_atencion'
+    form_class = GrupoAtencionForm
+    formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            GrupoAtencionUpdateView, self).get_context_data(**kwargs)
+
+        if 'formset_agente_grupo_atencion' not in context:
+            context['formset_agente_grupo_atencion'] = \
+            self.formset_agente_grupo_atencion(
+                instance=self.object
+            )
+        return context
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la actualización del\
+        Grupo de Atención.'
 
         messages.add_message(
             self.request,
