@@ -36,12 +36,6 @@ class GrupoAtencionListView(ListView):
 
 class GrupoAtencionMixin(object):
 
-    def form_valid(self, form):
-        return self.process_all_forms(form)
-
-    def form_invalid(self, form):
-        return self.process_all_forms(form)
-
     def process_all_forms(self, form):
         if form.is_valid():
             self.object = form.save()
@@ -97,6 +91,12 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
             )
         return context
 
+    def form_valid(self, form):
+        return self.process_all_forms(form)
+
+    def form_invalid(self, form):
+        return self.process_all_forms(form)
+
     def get_success_url(self):
         message = '<strong>Operación Exitosa!</strong>\
         Se llevó a cabo con éxito la creación del\
@@ -131,6 +131,12 @@ class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
                 instance=self.object
             )
         return context
+
+    def form_valid(self, form):
+        return self.process_all_forms(form)
+
+    def form_invalid(self, form):
+        return self.process_all_forms(form)
 
     def get_success_url(self):
         message = '<strong>Operación Exitosa!</strong>\
