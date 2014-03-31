@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">                
+            <h4 class="inline">Confirma Campañas</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-4">
+                <form role="form" method="post" enctype="multipart/form-data" >
+
+                    <h4>Nombre:</h4> {{ campana.nombre }}
+                    <h4>Base Datos:</h4> {{ campana.bd_contacto }}
+                                      
+
+                    {% if campana.reproduccion %}
+                        <div>
+                            <h4>Audio de la Campaña</h4>
+                            <audio src="{{ campana.reproduccion.url }}" controls></audio>
+                        </div>
+                    {% endif %}
+                   
+                    <br>
+                    {% crispy form %} 
+                </form>           
+            </div>
+        </div>
+    </div>
+{% endblock %}
