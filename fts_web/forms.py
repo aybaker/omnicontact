@@ -5,7 +5,7 @@ from django import forms
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field
+from crispy_forms.layout import Field, Layout, Submit
 from fts_web.models import (
     AgenteGrupoAtencion, Campana, GrupoAtencion,
     ListaContacto,
@@ -102,6 +102,23 @@ class CampanaForm(forms.ModelForm):
     class Meta:
         model = Campana
         exclude = ('estado', 'fecha_inicio', 'fecha_fin')
+
+
+class ConfirmaForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.add_input(
+            Submit('confirma', 'Confirmar Nueva Campaña')
+        )
+        # self.helper.add_input(
+        #     Submit('cancela', 'Cancelar', css_class='btn-danger')
+        # )
+        super(ConfirmaForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Campana
+        fields = ()
 
 
 #===============================================================================
