@@ -3,7 +3,8 @@ import xlrd
 
 
 class ParserXls(object):
-    value_list = []
+    def __init__(self):
+        self.value_list = []
 
     def read_file(self, file):
         workbook = xlrd.open_workbook(file_contents=file.read())
