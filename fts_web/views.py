@@ -189,35 +189,7 @@ class ListaContactoListView(ListView):
     #        return queryset
 
 
-class ListaContactoCreateUpdateView(UpdateView):
-
-    template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
-    model = ListaContacto
-    context_object_name = 'lista_contacto'
-    form_class = ListaContactoForm
-    form_file = FileForm
-
-    def get_object(self, queryset=None):
-        self.creating = not 'pk' in self.kwargs
-
-        if not self.creating:
-            lista_contacto = super(
-                ListaContactoCreateUpdateView, self).get_object(queryset)
-            return lista_contacto
-
-    def get_context_data(self, **kwargs):
-        context = super(
-            ListaContactoCreateUpdateView, self).get_context_data(**kwargs)
-
-        if 'form_file' not in context:
-            context['form_file'] = self.form_file()
-        return context
-
-    def form_valid(self, form):
-        return self.process_all_forms(form)
-
-    def form_invalid(self, form):
-        return self.process_all_forms(form)
+class ListaContactoMixin(object):
 
     def process_all_forms(self, form):
         if form.is_valid():
@@ -261,15 +233,71 @@ class ListaContactoCreateUpdateView(UpdateView):
 
             return self.render_to_response(context)
 
+
+class ListaContactoCreateView(CreateView, ListaContactoMixin):
+
+    template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
+    model = ListaContacto
+    context_object_name = 'lista_contacto'
+    form_class = ListaContactoForm
+    form_file = FileForm
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            ListaContactoCreateView, self).get_context_data(**kwargs)
+
+        if 'form_file' not in context:
+            context['form_file'] = self.form_file()
+        return context
+
+    def form_valid(self, form):
+        return self.process_all_forms(form)
+
+    def form_invalid(self, form):
+        return self.process_all_forms(form)
+
     def get_success_url(self):
-        if self.creating:
-            message = '<strong>Operación Exitosa!</strong>\
-            Se llevó a cabo con éxito la creación de\
-            la Base de Datos de Contactos.'
-        else:
-            message = '<strong>Operación Exitosa!</strong>\
-            Se llevó a cabo con éxito la actualización de\
-            la Base de Datos de Contactos.'
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la creación de\
+        la Base de Datos de Contactos.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+
+        return reverse(
+            'edita_lista_contacto',
+            kwargs={"pk": self.object.pk})
+
+
+class ListaContactoUpdateView(UpdateView, ListaContactoMixin):
+
+    template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
+    model = ListaContacto
+    context_object_name = 'lista_contacto'
+    form_class = ListaContactoForm
+    form_file = FileForm
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            ListaContactoUpdateView, self).get_context_data(**kwargs)
+
+        if 'form_file' not in context:
+            context['form_file'] = self.form_file()
+        return context
+
+    def form_valid(self, form):
+        return self.process_all_forms(form)
+
+    def form_invalid(self, form):
+        return self.process_all_forms(form)
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la actualización de\
+        la Base de Datos de Contactos.'
 
         messages.add_message(
             self.request,
