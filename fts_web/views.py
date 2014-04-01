@@ -314,8 +314,25 @@ class ListaContactoUpdateView(UpdateView, ListaContactoMixin):
 # Campaña
 #===============================================================================
 
+class CampanaListView(ListView):
+    """
+    Lista las capañas que están activas.
+    """
+
+    template_name = 'campana/lista_campana.html'
+    context_object_name = 'campanas'
+    model = Campana
+
+    def get_queryset(self):
+        queryset = Campana.objects.obtener_activas()
+        return queryset
+
 
 class CampanaCreateView(CreateView):
+    """
+    Crea una nueva campaña. Por defecto
+    u estado es EN_DEFICNICION
+    """
 
     template_name = 'campana/nueva_edita_campana.html'
     model = Campana
@@ -329,6 +346,13 @@ class CampanaCreateView(CreateView):
 
 
 class ConfirmaCampanaView(UpdateView):
+    """
+    Confirma la creación de una campaña
+    cambiando su estado a ACTIVA.
+    Si la campaña ya esta activa, redirecciona
+    a editar la campaña.
+    """
+
     template_name = 'campana/confirma_campana.html'
     model = Campana
     context_object_name = 'campana'
@@ -361,14 +385,13 @@ class ConfirmaCampanaView(UpdateView):
             message,
         )
 
-        #FIXME: Redirecciona a lista campaña cuándo
-        #este implementado.
-        return reverse(
-            'edita_campana',
-            kwargs={"pk": self.object.pk})
+        return reverse('lista_campana')
 
 
 class CampanaUpdateView(UpdateView):
+    """
+    Actualiza una campaña.
+    """
 
     template_name = 'campana/nueva_edita_campana.html'
     model = Campana
