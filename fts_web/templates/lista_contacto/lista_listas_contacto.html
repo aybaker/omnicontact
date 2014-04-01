@@ -9,7 +9,7 @@
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
-            <div class="col-lg-8">                                   
+            <div class="col-lg-12">                                   
                 <table class="table table-bordered table-hover">
                     <thead>
                       <tr>                                
@@ -59,6 +59,13 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+            <div>
+                <a href="{% url 'nueva_lista_contacto' %}">
+                    <button type="button" class="btn btn-primary btn-sm">
+                        <span class="glyphicon glyphicon-plus"></span> Nueva Base Datos Contactos
+                    </button>
+                </a>
+            </div>
+        </div>        
     </div>
 {% endblock %}
