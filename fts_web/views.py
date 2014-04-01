@@ -343,8 +343,7 @@ class ConfirmaCampanaView(UpdateView):
     def form_valid(self, form):
         if 'confirma' in self.request.POST:
             campana = self.object
-            campana.estado = Campana.ESTADO_ACTIVA
-            campana.save()
+            campana.activar()
 
             return redirect(self.get_success_url())
         elif 'cancela' in self.request.POST:

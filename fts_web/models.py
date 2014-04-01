@@ -209,6 +209,13 @@ class Campana(models.Model):
         related_name='campanas'
     )
 
+    def activar(self):
+        """
+        Setea la campaña como anctiva.
+        """
+        self.estado = Campana.ESTADO_ACTIVA
+        self.save()
+
     def finalizar(self):
         """Setea la campaña como finalizada"""
         # TODO: esta bien generar error si el modo actual es 'ESTADO_FINALIZADA'?
