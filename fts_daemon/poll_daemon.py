@@ -7,20 +7,19 @@ Created on Mar 27, 2014
 
 from __future__ import unicode_literals
 
-import logging
+import logging as _logging
 import time
 
 from fts_daemon.asterisk_ami import originate
 
 
-logger = logging.getLogger("FTSenderDaemon")
+logger = _logging.getLogger("FTSenderDaemon")
 
 
 def setup():
     from django.conf import settings  # @UnusedImport
     from fts_web.models import Campana  # @UnusedImport
-
-    logging.getLogger().setLevel(logging.INFO)
+    # _logging.getLogger().setLevel(_logging.INFO)
 
 
 class FtsDaemonCallIdGenerator(object):
@@ -90,14 +89,15 @@ def procesar_campana(campana, generador_de_llamadas):
 
 
 if __name__ == '__main__':
-    logging.info("Inicianodo FTSenderDaemon...")
+    _logging.basicConfig(level=_logging.INFO)
+    logger.info("Inicianodo FTSenderDaemon...")
     setup()
-    logging.info("Setup de Django OK")
+    logger.info("Setup de Django OK")
     generador_de_llamadas = generador_de_llamadas_asterisk_factory()
 
     from fts_web.models import Campana
     while True:
-        logging.info("Obteniendo campanas activas...")
+        logger.info("Obteniendo campanas activas...")
         campanas = Campana.objects.obtener_activas()
         for campana in campanas:
             resultado = procesar_campana(campana, generador_de_llamadas)
