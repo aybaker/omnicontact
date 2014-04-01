@@ -55,7 +55,7 @@ urlpatterns = patterns('',
     #===============================================================================
     # Campaña
     #===============================================================================
-    url(r'^lista_campana/$',
+    url(r'^campanas/$',
         views.CampanaListView.as_view(),
         name='lista_campana',
     ),
