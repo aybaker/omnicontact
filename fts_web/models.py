@@ -161,7 +161,7 @@ class CampanaManager(models.Manager):
 
     def obtener_finalizadas(self):
         """
-        Devuelve campañas en estado activas.
+        Devuelve campañas en estado finalizadas.
         """
         return self.filter(estado=Campana.ESTADO_FINALIZADA)
 
