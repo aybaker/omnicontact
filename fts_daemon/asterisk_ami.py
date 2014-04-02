@@ -7,14 +7,14 @@ Created on Mar 27, 2014
 
 from __future__ import unicode_literals
 
-import logging
+import logging as _logging
 from multiprocessing import Process
 from twisted.internet import reactor
 
 from starpy import manager
 
 
-logger = logging.getLogger('FTSAsteriskAmi')
+logger = _logging.getLogger('FTSAsteriskAmi')
 
 
 def _ami_login(username, password, server, port):
@@ -136,8 +136,8 @@ def originate(username, password, server, port,
     """
     child_process = OriginateService(username, password, server, port,
         outgoing_channel, context, exten, priority, timeout)
-    logging.info("Ejecutando ORIGINATE en subproceso %s", child_process.pid)
+    logger.info("Ejecutando ORIGINATE en subproceso")
     child_process.start()
-    logging.info("Ejecutando join() en subproceso %s", child_process.pid)
+    logger.info("Ejecutando join() en subproceso %s", child_process.pid)
     child_process.join()
-    logging.info("El subproceso %s ha devuelto el control")
+    logger.info("El subproceso %s ha devuelto el control", child_process.pid)
