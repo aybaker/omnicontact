@@ -10,7 +10,6 @@ from __future__ import unicode_literals
 
 import logging as _logging
 from twisted.internet import reactor
-from twisted.internet.defer import Deferred
 from twisted.web.client import Agent
 from twisted.web.http_headers import Headers
 
@@ -30,6 +29,9 @@ def setup():
 SECRET_HEADER_NAME = 'FTSenderSecret'
 SECRET_HEADER_VALUE = 'NosisFej2gighKag4Ong9Mypphip0GhovAn3Ez0'
 
+# BIND = '172.19.1.104'
+BIND = '0.0.0.0'
+
 
 def fastagi_handler(agi):
     logger.info('Iniciando ejecucion de handler...')
@@ -40,19 +42,19 @@ def fastagi_handler(agi):
         if splitted[1] == 'ha-contestado':
             id_intento = splitted[0]
             logger.info("Ha contestado: %s", id_intento)
+            agent = Agent(reactor)
+            header = Headers({
+                SECRET_HEADER_NAME: [SECRET_HEADER_VALUE]
+            })
+            url = 'http://localhost:8080/_/agi/contesto/{0}/'.format(
+                id_intento)
+            d = agent.request('GET', url, header, None)
+            # d.addBoth(informar_ha_atendido)
 
-            def informar_ha_atendido():
-                agent = Agent(reactor)
-                header = Headers({
-                    SECRET_HEADER_NAME: [SECRET_HEADER_VALUE]
-                })
-                url = 'http://localhost:8080/_/agi/contesto/{0}'.format(
-                    id_intento)
-                agent.request('GET', url, header, None)
+            def cbResponse(ignored):
+                print '>>>>>>>>>> Response received'
 
-            d = Deferred()
-            d.addBoth(informar_ha_atendido)
-            reactor.callWhenRunning(d)  # @UndefinedVariable
+            d.addCallback(cbResponse)
 
     agi.finish()
 
@@ -67,6 +69,6 @@ if __name__ == '__main__':
     fast_agi_server = fastagi.FastAGIFactory(fastagi_handler)
     assert isinstance(fast_agi_server, FastAGIFactory)
     reactor.listenTCP(4573, fast_agi_server, 50,  # @UndefinedVariable
-        '172.19.1.104')
+        BIND)
     logger.info("Lanzando 'reactor.run()'")
     reactor.run()  # @UndefinedVariable
