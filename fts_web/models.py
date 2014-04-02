@@ -122,7 +122,9 @@ class ListaContacto(models.Model):
 
 
 class Contacto(models.Model):
-    telefono = models.PositiveIntegerField()
+    telefono = models.CharField(
+        max_length=64,
+    )
     datos = models.TextField(
         blank=True, null=True,
     )
