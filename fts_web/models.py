@@ -273,11 +273,17 @@ class IntentoDeContactoManager(models.Manager):
         """Crea todas las instancias de 'IntentoDeContacto'
         para la campaña especificada por parametro.
         """
+        # TODO: refactorizar este metodo (ver comentario que sigue)
+        # Esto de la creacion de los intentos NO sigue la idea documentada
+        # en 'obtener_intentos_pendientes()'
+        # Para continuar con dicha idea, este metodo deberia ser privado
+        # y se deberia crear un metodo en Campana que llame a este de aca.
+        # El estado y demas cuestiones de Campana se chequearian en dicha clase
         logger.info("Creando IntentoDeContacto para campana %s", campana_id)
         campana = Campana.objects.get(pk=campana_id)
         assert campana.estado == Campana.ESTADO_ACTIVA
         assert campana.bd_contacto is not None
-        assert self._obtener_pendientes_de_campana(campana_id) == 0
+        # assert self._obtener_pendientes_de_campana(campana_id) == 0
 
         for contacto in campana.bd_contacto.contactos.all():
             # TODO: esto traera problemas de performance
