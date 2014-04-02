@@ -12,6 +12,7 @@ from multiprocessing import Process
 from twisted.internet import reactor
 
 from starpy import manager
+from starpy.error import AMICommandFailure
 
 
 logger = _logging.getLogger('FTSAsteriskAmi')
@@ -37,6 +38,7 @@ class OriginateService(Process):
 
         # Instancia de AMIProtocol
         self.ami = None
+        self.originate_failed = False
 
         self.username = username
         self.password = password
@@ -49,8 +51,8 @@ class OriginateService(Process):
         self.timeout = timeout
 
     def onResult(self, result):
-        logger.info("onResult(): %s", result)
-        logger.info("onResult(): %s", type(result))
+        logger.info("onResult(): result: %s", result)
+        logger.info("onResult(): type(result): %s", type(result))
         try:
             for line in result:
                 logger.info("originate> %s", line)
@@ -60,12 +62,23 @@ class OriginateService(Process):
         return self.ami.logoff()
 
     def onError(self, reason):
-        logger.info("onError(): %s", reason)
-        logger.info("onError(): %s", type(reason))
-        try:
-            logger.error("onError(): %s", reason.getTraceback())
-        except:
-            pass
+        logger.info("onError()")
+
+        # reason -> twisted.python.failure.Failure
+        # reason.value: {
+        #    'message': 'Originate failed',
+        #    'response': 'Error',
+        #    'actionid': 'fx8120-52095600-2'}
+
+        if isinstance(reason.value, AMICommandFailure):
+            logger.info("onError(): AMICommandFailure(): %s", reason.value)
+            self.originate_failed = True
+            return reason
+
+        logger.info("---------- <onError()> -------------------------")
+        logger.info("onError(): reason: %s", reason)
+        logger.info("onError(): %s", reason.getTraceback())
+        logger.info("---------- </onError()> -------------------------")
         return reason
 
     def onFinished(self, result):
