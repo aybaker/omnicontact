@@ -14,6 +14,11 @@ from twisted.internet import reactor
 from starpy import manager
 from starpy.error import AMICommandFailure
 
+from fts_web.settings import JOIN_TIMEOUT_MARGIN
+
+
+# `JOIN_TIMEOUT_MARGIN` lo importamos directamente, justamente para evitar
+# importar nada de Django, ya que NO usamos nada de Django aqui
 
 logger = _logging.getLogger('FTSAsteriskAmi')
 
@@ -38,7 +43,7 @@ class OriginateService(Process):
 
         # Instancia de AMIProtocol
         self.ami = None
-        self.originate_failed = False
+        self.originate_success = None
 
         self.username = username
         self.password = password
@@ -51,18 +56,26 @@ class OriginateService(Process):
         self.timeout = timeout
 
     def onResult(self, result):
-        logger.info("onResult(): result: %s", result)
-        logger.info("onResult(): type(result): %s", type(result))
-        try:
-            for line in result:
-                logger.info("originate> %s", line)
-        except:
-            logger.exception("onResult(): error al intentar loguear 'result'")
+        logger.debug("onResult(): result: %s", result)
+        logger.debug("onResult(): type(result): %s", type(result))
 
+        assert self.originate_success is None
+        try:
+            if result['response'] == 'Success':
+                self.originate_success = True
+        except:
+            pass
+
+        if self.originate_success is not True:
+            logger.info("onResult() - Unknown result: %s", result)
+            logger.info("onResult(): type(result): %s", type(result))
+
+        logger.debug("onResult(): logging off")
         return self.ami.logoff()
 
     def onError(self, reason):
         logger.info("onError()")
+        self.originate_success = False
 
         # reason -> twisted.python.failure.Failure
         # reason.value: {
@@ -72,7 +85,6 @@ class OriginateService(Process):
 
         if isinstance(reason.value, AMICommandFailure):
             logger.info("onError(): AMICommandFailure(): %s", reason.value)
-            self.originate_failed = True
             return reason
 
         logger.info("---------- <onError()> -------------------------")
@@ -87,6 +99,12 @@ class OriginateService(Process):
 
     def onConnect(self, ami):
         logger.info("onConnect()")
+
+        #    logger.info("SE ESPERARAN 5 SEGUNDOS")
+        #    import time
+        #    time.sleep(5)
+        #    logger.info("COOOONTINUAMOS....")
+
         # AMIProtocol.originate(
         #    self, channel, context=None, exten=None, priority=None,
         #    timeout=None, callerid=None, account=None, application=None,
@@ -152,10 +170,11 @@ def originate(username, password, server, port,
     logger.info("Ejecutando ORIGINATE en subproceso")
     child_process.start()
     logger.info("Ejecutando join() en subproceso %s", child_process.pid)
-    child_process.join(timeout + 5)
+    join_timeout = timeout + JOIN_TIMEOUT_MARGIN
+    child_process.join(join_timeout)
     if child_process.is_alive():
-        logger.warn("El subproceso %s ha devuelto el control"
+        logger.warn("El subproceso %s NO ha devuelto el control"
             " despues de %s segundos. El proceso sera terminado.",
-            child_process.pid, timeout)
+            child_process.pid, join_timeout)
         child_process.terminate()
     logger.info("El subproceso %s ha devuelto el control", child_process.pid)
