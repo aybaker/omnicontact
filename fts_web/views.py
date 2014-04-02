@@ -24,6 +24,10 @@ from fts_web.models import (
 
 
 class GrupoAtencionListView(ListView):
+    """
+    Esta vista es para generar el listado de
+    GrupoAtencion.
+    """
 
     template_name = 'grupo_atencion/lista_grupo_atencion.html'
     context_object_name = 'grupos_atencion'
@@ -35,8 +39,22 @@ class GrupoAtencionListView(ListView):
 
 
 class GrupoAtencionMixin(object):
+    """
+    Este mixin procesa y valida
+    los formularios en la creación y edición
+    de objetos GrupoAtencion.
+    """
 
     def process_all_forms(self, form):
+        """
+        Este método se encarga de validar el
+        formularios GrupoAtencionForm y hacer
+        el save. Luego instancia el formset
+        AgentesGrupoAtencionFormSet con el
+        objeto creado y si es válido realiza
+        el save.
+        """
+
         if form.is_valid():
             self.object = form.save()
 
@@ -73,6 +91,9 @@ class GrupoAtencionMixin(object):
 
 
 class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
+    """
+    Esta vista crea un objeto GrupoAtencion.
+    """
 
     template_name = 'grupo_atencion/grupo_atencion.html'
     model = GrupoAtencion
@@ -114,6 +135,10 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
 
 
 class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
+    """
+    Esta vista actualiza el objeto GrupoAtencion
+    seleccionado.
+    """
 
     template_name = 'grupo_atencion/grupo_atencion.html'
     model = GrupoAtencion
@@ -155,6 +180,10 @@ class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
 
 
 class GrupoAtencionDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto GrupAtencion seleccionado.
+    """
 
     model = GrupoAtencion
     template_name = 'grupo_atencion/elimina_grupo_atencion.html'
@@ -179,6 +208,10 @@ class GrupoAtencionDeleteView(DeleteView):
 
 
 class ListaContactoListView(ListView):
+    """
+    Esta vista es para generar el listado de
+    Lista de Contactos.
+    """
 
     template_name = 'lista_contacto/lista_listas_contacto.html'
     context_object_name = 'listas_contacto'
@@ -190,8 +223,20 @@ class ListaContactoListView(ListView):
 
 
 class ListaContactoMixin(object):
+    """
+    Este mixin procesa y valida
+    los formularios en la creación y edición
+    de objetos ListaContacto.
+    """
 
     def process_all_forms(self, form):
+        """
+        Este método se encarga de validar el
+        formularios ListaContactosForm y hacer
+        el save. Luego valida FileForm, y
+        lleva a cabo el parceo del archivo subido
+        gurdando los número obtenidos.
+        """
         if form.is_valid():
             self.object = form.save()
 
@@ -235,6 +280,9 @@ class ListaContactoMixin(object):
 
 
 class ListaContactoCreateView(CreateView, ListaContactoMixin):
+    """
+    Esta vista crea un objeto ListaContacto.
+    """
 
     template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
     model = ListaContacto
@@ -273,6 +321,10 @@ class ListaContactoCreateView(CreateView, ListaContactoMixin):
 
 
 class ListaContactoUpdateView(UpdateView, ListaContactoMixin):
+    """
+    Esta vista actualiza el objeto
+    ListaContacto seleccionado.
+    """
 
     template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
     model = ListaContacto
@@ -316,7 +368,8 @@ class ListaContactoUpdateView(UpdateView, ListaContactoMixin):
 
 class CampanaListView(ListView):
     """
-    Lista las capañas que están activas.
+    Esta vista realiza el listado de
+    los objetos Campanas que esten activas.
     """
 
     template_name = 'campana/lista_campana.html'
@@ -330,8 +383,10 @@ class CampanaListView(ListView):
 
 class CampanaCreateView(CreateView):
     """
-    Crea una nueva campaña. Por defecto
-    u estado es EN_DEFICNICION
+    Esta vista crea un objeto Campana.
+    Por defecto su estado es EN_DEFICNICION,
+    Redirecciona al template de confirmación
+    donde muestra el resumen del objeto.
     """
 
     template_name = 'campana/nueva_edita_campana.html'
@@ -347,10 +402,11 @@ class CampanaCreateView(CreateView):
 
 class ConfirmaCampanaView(UpdateView):
     """
-    Confirma la creación de una campaña
-    cambiando su estado a ACTIVA.
-    Si la campaña ya esta activa, redirecciona
-    a editar la campaña.
+    Esta vista confirma la creación de un objeto
+    Campana. Imprime el resumen del objeto y si
+    es aceptado, cambia el estado del objeto a ACTIVA.
+    Si el objeto ya esta ACTIVA, redirecciona
+    a editar el objeto.
     """
 
     template_name = 'campana/confirma_campana.html'
@@ -390,7 +446,7 @@ class ConfirmaCampanaView(UpdateView):
 
 class CampanaUpdateView(UpdateView):
     """
-    Actualiza una campaña.
+    Esta vista actualiza un objeto Campana.
     """
 
     template_name = 'campana/nueva_edita_campana.html'
@@ -421,8 +477,8 @@ class CampanaUpdateView(UpdateView):
 
 class EstadoView(ListView):
     """
-    Lista las capañas diferenciadas
-    en sus estados.
+    Esta vista lista los objetos Capanas
+    diferenciadas por sus estados actuales.
     Pasa un diccionario al template
     con las claves como estados.
     """
