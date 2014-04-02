@@ -25,11 +25,8 @@ class GrupoAtencion(models.Model):
 
     nombre = models.CharField(
         max_length=128,
-        null=True, blank=True,
     )
-    timeout = models.PositiveIntegerField(
-        null=True, blank=True,
-    )
+    timeout = models.PositiveIntegerField()
     RINGALL, RRMEMORY = range(0, 2)
     RING_STRATEGY_CHOICES = (
         (RINGALL, 'RINGALL'),
@@ -38,7 +35,6 @@ class GrupoAtencion(models.Model):
     ring_strategy = models.PositiveIntegerField(
         choices=RING_STRATEGY_CHOICES,
         default=RINGALL,
-        null=True, blank=True,
     )
     #    active = models.BooleanField(
     #        default=True,
@@ -64,9 +60,7 @@ class GrupoAtencion(models.Model):
 
 
 class AgenteGrupoAtencion(models.Model):
-    numero_interno = models.PositiveIntegerField(
-        null=True, blank=True,
-    )
+    numero_interno = models.PositiveIntegerField()
     grupo_atencion = models.ForeignKey(
         'GrupoAtencion',
         related_name='agentes'
@@ -212,7 +206,6 @@ class Campana(models.Model):
     reproduccion = models.FileField(
         #FIXME: Definir path para los archivos.
         upload_to='campana/%Y/%m/%d',
-        blank=True, null=True,
     )
 
     bd_contacto = models.ForeignKey(
