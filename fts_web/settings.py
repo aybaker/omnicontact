@@ -111,7 +111,7 @@ TEST_RUNNER = "fts_web.tests.FTSenderDiscoverRunner"
 TESTING_MODE = False
 
 try:
-    from settings_local import *
+    from fts_web.settings_local import *
 except ImportError, e:
     import warnings
     warnings.warn("Couldn't import from 'fts_web.local_settings': {}".format(
