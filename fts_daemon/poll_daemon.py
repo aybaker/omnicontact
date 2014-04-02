@@ -13,7 +13,9 @@ import time
 from fts_daemon.asterisk_ami import originate
 
 
-logger = _logging.getLogger("FTSenderDaemon")
+FORMAT = "%(asctime)-15s [%(levelname)7s] %(name)20s - %(message)s"
+
+logger = _logging.getLogger("FTSD")
 
 
 def setup():
@@ -100,7 +102,7 @@ def procesar_campana(campana, generador_de_llamadas):
 
 
 if __name__ == '__main__':
-    _logging.basicConfig(level=_logging.INFO)
+    _logging.basicConfig(level=_logging.INFO, format=FORMAT)
     logger.info("Inicianodo FTSenderDaemon...")
     setup()
     logger.info("Setup de Django OK")
