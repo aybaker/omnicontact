@@ -25,7 +25,23 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
+"""Usado en tests de Selenium, en conjunto al metodo `assertTrueSelenium()`.
+Si es verdadero y el assert falla, la ejecucion del test es pausada, para
+poder ver el mensaje en el navegador.
+
+Ver `assertTrueSelenium()` para mas informacion
+"""
 STOP_ON_SELENIUM_ASSERT_ERROR = False
+# TODO: no convendria llamarla FTS_STOP_ON_SELENIUM_ASSERT_ERROR?
+
+"""Cuantos segundos esperar (mas alla del timeout para ORIGINATE)
+para que el proceso hijo termine
+"""
+JOIN_TIMEOUT_MARGIN = 5
+# TODO: no convendria llamarla FTS_JOIN_TIMEOUT_MARGIN?
+
+"""Esta variable vale `True` cuando se estan ejecutando los test."""
+TESTING_MODE = False
 
 ALLOWED_HOSTS = []
 
@@ -106,9 +122,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 TEST_RUNNER = "fts_web.tests.FTSenderDiscoverRunner"
-
-# Testing mode
-TESTING_MODE = False
 
 try:
     from fts_web.settings_local import *
