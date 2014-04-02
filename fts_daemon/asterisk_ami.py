@@ -139,5 +139,10 @@ def originate(username, password, server, port,
     logger.info("Ejecutando ORIGINATE en subproceso")
     child_process.start()
     logger.info("Ejecutando join() en subproceso %s", child_process.pid)
-    child_process.join()
+    child_process.join(timeout + 5)
+    if child_process.is_alive():
+        logger.warn("El subproceso %s ha devuelto el control"
+            " despues de %s segundos. El proceso sera terminado.",
+            child_process.pid, timeout)
+        child_process.terminate()
     logger.info("El subproceso %s ha devuelto el control", child_process.pid)
