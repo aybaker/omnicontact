@@ -31,17 +31,15 @@ poder ver el mensaje en el navegador.
 
 Ver `assertTrueSelenium()` para mas informacion
 """
-STOP_ON_SELENIUM_ASSERT_ERROR = False
-# TODO: no convendria llamarla FTS_STOP_ON_SELENIUM_ASSERT_ERROR?
+FTS_STOP_ON_SELENIUM_ASSERT_ERROR = False
 
 """Cuantos segundos esperar (mas alla del timeout para ORIGINATE)
 para que el proceso hijo termine
 """
-JOIN_TIMEOUT_MARGIN = 5
-# TODO: no convendria llamarla FTS_JOIN_TIMEOUT_MARGIN?
+FTS_JOIN_TIMEOUT_MARGIN = 5
 
 """Esta variable vale `True` cuando se estan ejecutando los test."""
-TESTING_MODE = False
+FTS_TESTING_MODE = False
 
 ALLOWED_HOSTS = []
 

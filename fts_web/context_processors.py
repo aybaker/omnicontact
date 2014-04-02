@@ -5,4 +5,4 @@ from django.conf import settings
 
 
 def testing_mode(request):
-    return {'testing_mode': settings.TESTING_MODE}
+    return {'testing_mode': settings.FTS_TESTING_MODE}

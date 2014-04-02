@@ -14,7 +14,7 @@ from twisted.internet import reactor
 from starpy import manager
 from starpy.error import AMICommandFailure
 
-from fts_web.settings import JOIN_TIMEOUT_MARGIN
+from fts_web.settings import FTS_JOIN_TIMEOUT_MARGIN
 
 
 # `JOIN_TIMEOUT_MARGIN` lo importamos directamente, justamente para evitar
@@ -170,7 +170,7 @@ def originate(username, password, server, port,
     logger.info("Ejecutando ORIGINATE en subproceso")
     child_process.start()
     logger.info("Ejecutando join() en subproceso %s", child_process.pid)
-    join_timeout = timeout + JOIN_TIMEOUT_MARGIN
+    join_timeout = timeout + FTS_JOIN_TIMEOUT_MARGIN
     child_process.join(join_timeout)
     if child_process.is_alive():
         logger.warn("El subproceso %s NO ha devuelto el control"
