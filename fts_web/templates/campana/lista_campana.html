@@ -27,7 +27,11 @@
                                     {{ campana.nombre }}
                                 </td>
                                 <td>
-                                    <audio src="{{ campana.reproduccion.url }}" controls></audio>
+                                    {% if campana.reproduccion %}
+                                        <audio src="{{ campana.reproduccion.url }}" controls></audio>
+                                    {% else %}
+                                        <em>No hay archivo de audio asociado</em>
+                                    {% endif %}
                                 </td>
     
                                 <td>
