@@ -57,8 +57,7 @@ class GrupoAtencion(models.Model):
     #            self.save()
 
     def get_ring_strategy(self):
-        ring_strategy_dic = dict(self.RING_STRATEGY_CHOICES)
-        return ring_strategy_dic[self.ring_strategy]
+        return self.get_ring_strategy_display()
 
     def get_cantidad_agentes(self):
         return self.agentes.all().count()
