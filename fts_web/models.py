@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.db import models
+
+import logging
+
 from django.conf import settings
+from django.db import models
+
+
+logger = logging.getLogger(__name__)
 
 
 #===============================================================================
@@ -51,8 +57,7 @@ class GrupoAtencion(models.Model):
     #            self.save()
 
     def get_ring_strategy(self):
-        ring_strategy_dic = dict(self.RING_STRATEGY_CHOICES)
-        return ring_strategy_dic[self.ring_strategy]
+        return self.get_ring_strategy_display()
 
     def get_cantidad_agentes(self):
         return self.agentes.all().count()
@@ -136,9 +141,7 @@ class Contacto(models.Model):
 #===============================================================================
 
 class CampanaManager(models.Manager):
-    """
-    Manager para Campanas
-    """
+    """Manager para Campanas"""
     #    def get_queryset(self):
     #        # F-I-X-M-E: esto no romperá los modelforms? Ej: form.campana. Si la campana
     #        # que referencia el modelform esta ESTADO_EN_DEFINICION, ¿aparece en el html?
@@ -210,18 +213,85 @@ class Campana(models.Model):
     )
 
     def activar(self):
+        """Setea la campaña como ACTIVA, y genera los IntentoDeContacto
+        asociados a esta campaña
         """
-        Setea la campaña como anctiva.
-        """
+        logger.info("Seteando campana %s como ACTIVA", self.id)
+        assert self.estado in (Campana.ESTADO_EN_DEFINICION,
+            Campana.ESTADO_PAUSADA)
         self.estado = Campana.ESTADO_ACTIVA
         self.save()
 
+        IntentoDeContacto.objects.crear_intentos_para_campana(self.id)
+
     def finalizar(self):
         """Setea la campaña como finalizada"""
-        # TODO: esta bien generar error si el modo actual es 'ESTADO_FINALIZADA'?
+        logger.info("Seteando campana %s como ESTADO_FINALIZADA", self.id)
+        # TODO: esta bien generar error si el modo actual es ESTADO_FINALIZADA?
         assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
 
     def __unicode__(self):
         return self.nombre
+
+
+#===============================================================================
+# IntentoDeContacto
+#===============================================================================
+
+class IntentoDeContactoManager(models.Manager):
+    """Manager para el modelo IntentoDeContacto"""
+
+    def crear_intentos_para_campana(self, campana_id):
+        """Crea todas las instancias de 'IntentoDeContacto'
+        para la campaña especificada por parametro.
+        """
+        logger.info("Creando IntentoDeContacto para campana %s", campana_id)
+        campana = Campana.objects.get(pk=campana_id)
+        assert campana.estado == Campana.ESTADO_ACTIVA
+        assert campana.bd_contacto is not None
+
+        for contacto in campana.bd_contacto.contactos.all():
+            # TODO: esto traera problemas de performance
+            self.create(contacto=contacto, campana=campana)
+
+
+class IntentoDeContacto(models.Model):
+
+    objects = IntentoDeContactoManager()
+
+    """EL intento esta pendiente de ser realizado"""
+    ESTADO_PROGRAMADO = 1
+
+    """El destinatario no ha atendido el llamado"""
+    ESTADO_NO_CONTESTO = 2
+
+    """El destinatario atendio el llamado"""
+    ESTADO_CONTESTO = 3
+
+    ESTADO = (
+        (ESTADO_PROGRAMADO, 'Pendiente'),
+        (ESTADO_NO_CONTESTO, 'No atendio'),
+        (ESTADO_CONTESTO, 'Atendio'),
+    )
+
+    contacto = models.ForeignKey(
+        'Contacto',
+        related_name='+'
+    )
+    campana = models.ForeignKey(
+        'Campana',
+        related_name='+'
+    )
+    fecha_intento = models.DateTimeField(
+        null=True, blank=True
+    )
+    estado = models.PositiveIntegerField(
+        choices=ESTADO,
+        default=ESTADO_PROGRAMADO,
+    )
+
+    def __unicode__(self):
+        return "Intento de campaña {} a contacto {}".format(
+            self.campana.id, self.contacto.id)
