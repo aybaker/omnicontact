@@ -412,3 +412,28 @@ class CampanaUpdateView(UpdateView):
         return reverse(
             'edita_campana',
             kwargs={"pk": self.object.pk})
+
+
+#===============================================================================
+# Estados
+#===============================================================================
+
+
+class EstadoView(ListView):
+    """
+    Lista las capañas diferenciadas
+    en sus estados.
+    Pasa un diccionario al template
+    con las claves como estados.
+    """
+
+    template_name = 'estado/estado.html'
+    context_object_name = 'campanas'
+    model = Campana
+
+    def get_queryset(self):
+        query_dict = {
+            'activas': Campana.objects.obtener_activas(),
+            'finalizadas': Campana.objects.obtener_finalizadas(),
+        }
+        return query_dict
