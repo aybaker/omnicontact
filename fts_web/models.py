@@ -283,7 +283,7 @@ class IntentoDeContactoManager(models.Manager):
         campana = Campana.objects.get(pk=campana_id)
         assert campana.estado == Campana.ESTADO_ACTIVA
         assert campana.bd_contacto is not None
-        # assert self._obtener_pendientes_de_campana(campana_id) == 0
+        assert not self._obtener_pendientes_de_campana(campana_id).exists()
 
         for contacto in campana.bd_contacto.contactos.all():
             # TODO: esto traera problemas de performance
