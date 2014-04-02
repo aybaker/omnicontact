@@ -72,6 +72,13 @@ urlpatterns = patterns('',
         name='confirma_campana',
     ),
 
+    #===============================================================================
+    # Estados
+    #===============================================================================
+    url(r'^estados/$',
+        views.EstadoView.as_view(),
+        name='estados',
+    ),
 
     url(r'^admin/', include(admin.site.urls)),
 )
