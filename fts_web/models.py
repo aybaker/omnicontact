@@ -238,6 +238,26 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
 
+    def obtener_intentos_pendientes(self):
+        """Devuelve instancias de IntentoDeContacto para los que
+        haya que intentar realizar llamadas.
+        Solo tiene sentido ejecutar este metodo en campanas activas.
+        """
+        # (a) Este metodo tambien se podria poner en IntentoDeContactoManager
+        # pero me parece mas asertado implementarlo en campaña, asi se
+        # pueden controlar cosas como el estado de la campaña, por ejemplo.
+        # (b) Otra forma sería dejar este metodo (para poder hacer controles
+        # a nivel de campaña), pero la busqueda de las instancias de
+        # IntentoDeContacto hacerlo usando IntentoDeContactoManager.
+        # Esta alternativa me gusta (cada modelo maneja su logica), pero
+        # tengo la duda de que valga la pena hacer 2 metodos en vez de 1.
+        # La ventaja es que, con esta última idea, cada modelo es
+        # manejado por si mismo, algo que puede ayudar a la mantenibilidad.
+        # DECISION: que cada modelo maneje su parte
+        assert self.estado in [Campana.ESTADO_ACTIVA]
+        return IntentoDeContacto.objects._obtener_pendientes_de_campana(
+            self.id)
+
     def __unicode__(self):
         return self.nombre
 
@@ -253,17 +273,42 @@ class IntentoDeContactoManager(models.Manager):
         """Crea todas las instancias de 'IntentoDeContacto'
         para la campaña especificada por parametro.
         """
+        # TODO: refactorizar este metodo (ver comentario que sigue)
+        # Esto de la creacion de los intentos NO sigue la idea documentada
+        # en 'obtener_intentos_pendientes()'
+        # Para continuar con dicha idea, este metodo deberia ser privado
+        # y se deberia crear un metodo en Campana que llame a este de aca.
+        # El estado y demas cuestiones de Campana se chequearian en dicha clase
         logger.info("Creando IntentoDeContacto para campana %s", campana_id)
         campana = Campana.objects.get(pk=campana_id)
         assert campana.estado == Campana.ESTADO_ACTIVA
         assert campana.bd_contacto is not None
+        assert not self._obtener_pendientes_de_campana(campana_id).exists()
 
         for contacto in campana.bd_contacto.contactos.all():
             # TODO: esto traera problemas de performance
             self.create(contacto=contacto, campana=campana)
 
+    def _obtener_pendientes_de_campana(self, campana_id):
+        """Devuelve QuerySet con intentos pendientes de una campana, ignora
+        completamente las cuestiones de la campaña, como su estado.
+
+        Esto es parte de la API interna, y no deberia usarse directamente
+        nada más que desde otros Managers.
+
+        Para buscar intentos pendientes de una campaña, usar:
+            Campana.obtener_intentos_pendientes()
+        """
+        return self.filter(campana=campana_id,
+            estado=IntentoDeContacto.ESTADO_PROGRAMADO)
+
 
 class IntentoDeContacto(models.Model):
+    """Representa un contacto por contactar, asociado a
+    una campaña. Estas instancias son actualizadas con
+    cada intento, y aqui se guarda el estado final
+    (ej: si se ha contactado o no)
+    """
 
     objects = IntentoDeContactoManager()
 
@@ -288,7 +333,7 @@ class IntentoDeContacto(models.Model):
     )
     campana = models.ForeignKey(
         'Campana',
-        related_name='+'
+        related_name='intentos_de_contactos'
     )
     fecha_intento = models.DateTimeField(
         null=True, blank=True
@@ -297,6 +342,17 @@ class IntentoDeContacto(models.Model):
         choices=ESTADO,
         default=ESTADO_PROGRAMADO,
     )
+
+    def registra_contesto(self):
+        """Registra el resultado del intento como que el destinatario
+        ha contestado
+        """
+        # FIXME: testear
+        logger.info("Registrando IntentoDeContacto %s como ESTADO_CONTESTO",
+            self.id)
+        assert self.estado == IntentoDeContacto.ESTADO_PROGRAMADO
+        self.estado = IntentoDeContacto.ESTADO_CONTESTO
+        self.save()
 
     def __unicode__(self):
         return "Intento de campaña {} a contacto {}".format(

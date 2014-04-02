@@ -80,5 +80,13 @@ urlpatterns = patterns('',
         name='estados',
     ),
 
+    #===============================================================================
+    # Estados
+    #===============================================================================
+    url(r'^_/agi/contesto/(?P<call_id>\d+)/$',
+        views.registar_llamada_contestada,
+        name='registar_llamada_contestada',
+    ),
+
     url(r'^admin/', include(admin.site.urls)),
 )

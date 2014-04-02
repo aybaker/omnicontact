@@ -32,6 +32,11 @@ SECRET_HEADER_VALUE = 'NosisFej2gighKag4Ong9Mypphip0GhovAn3Ez0'
 # BIND = '172.19.1.104'
 BIND = '0.0.0.0'
 
+HTTP_SERVER = "http://localhost:8080"
+
+"""Url para registrar que se ha atendido la llamada"""
+URL_REGISTRO_HA_ATENDIDO = "/_/agi/contesto/{0}/"
+
 
 def fastagi_handler(agi):
     logger.info('Iniciando ejecucion de handler...')
@@ -46,7 +51,7 @@ def fastagi_handler(agi):
             header = Headers({
                 SECRET_HEADER_NAME: [SECRET_HEADER_VALUE]
             })
-            url = 'http://localhost:8080/_/agi/contesto/{0}/'.format(
+            url = HTTP_SERVER + URL_REGISTRO_HA_ATENDIDO.format(
                 id_intento)
             d = agent.request('GET', url, header, None)
             # d.addBoth(informar_ha_atendido)
