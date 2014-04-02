@@ -8,16 +8,17 @@ Created on Mar 31, 2014
 
 from __future__ import unicode_literals
 
-import logging as _logging
 from twisted.internet import reactor
 from twisted.web.client import Agent
 from twisted.web.http_headers import Headers
 
+from fts_daemon.poll_daemon import FORMAT
+import logging as _logging
 from starpy import fastagi
 from starpy.fastagi import FastAGIProtocol, FastAGIFactory
 
 
-logger = _logging.getLogger("FTSenderFastAgiDaemon")
+logger = _logging.getLogger("FTSFastAgiD")
 
 
 def setup():
@@ -57,7 +58,7 @@ def fastagi_handler(agi):
             # d.addBoth(informar_ha_atendido)
 
             def cbResponse(ignored):
-                print '>>>>>>>>>> Response received'
+                logger.info("Respusta HTTP recibida")
 
             d.addCallback(cbResponse)
 
@@ -65,7 +66,7 @@ def fastagi_handler(agi):
 
 
 if __name__ == '__main__':
-    _logging.basicConfig(level=_logging.INFO)
+    _logging.basicConfig(level=_logging.INFO, format=FORMAT)
     logger.info("Iniciando...")
     setup()
 
