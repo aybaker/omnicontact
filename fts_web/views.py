@@ -14,8 +14,8 @@ from fts_web.forms import (
     FileForm, GrupoAtencionForm, ListaContactoForm,
 )
 from fts_web.models import (
-    Campana, Contacto, GrupoAtencion, ListaContacto,
-)
+    Campana, Contacto, GrupoAtencion, ListaContacto, IntentoDeContacto)
+from django.http.response import HttpResponse
 
 
 #===============================================================================
@@ -437,3 +437,14 @@ class EstadoView(ListView):
             'finalizadas': Campana.objects.obtener_finalizadas(),
         }
         return query_dict
+
+
+#===============================================================================
+# AGI
+#===============================================================================
+
+def registar_llamada_contestada(request, call_id):
+    # TODO: chequear host origen
+    intento = IntentoDeContacto.objects.get(pk=call_id)
+    intento.registra_contesto()
+    return HttpResponse('ok')

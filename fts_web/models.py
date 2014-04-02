@@ -343,6 +343,17 @@ class IntentoDeContacto(models.Model):
         default=ESTADO_PROGRAMADO,
     )
 
+    def registra_contesto(self):
+        """Registra el resultado del intento como que el destinatario
+        ha contestado
+        """
+        # FIXME: testear
+        logger.info("Registrando IntentoDeContacto %s como ESTADO_CONTESTO",
+            self.id)
+        assert self.estado == IntentoDeContacto.ESTADO_PROGRAMADO
+        self.estado = IntentoDeContacto.ESTADO_CONTESTO
+        self.save()
+
     def __unicode__(self):
         return "Intento de campaña {} a contacto {}".format(
             self.campana.id, self.contacto.id)
