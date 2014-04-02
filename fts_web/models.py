@@ -218,7 +218,8 @@ class Campana(models.Model):
         asociados a esta campaña
         """
         logger.info("Seteando campana %s como ACTIVA", self.id)
-        assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
+        assert self.estado in (Campana.ESTADO_EN_DEFINICION,
+            Campana.ESTADO_PAUSADA)
         self.estado = Campana.ESTADO_ACTIVA
         self.save()
 
@@ -227,7 +228,7 @@ class Campana(models.Model):
     def finalizar(self):
         """Setea la campaña como finalizada"""
         logger.info("Seteando campana %s como ESTADO_FINALIZADA", self.id)
-        # TODO: esta bien generar error si el modo actual es 'ESTADO_FINALIZADA'?
+        # TODO: esta bien generar error si el modo actual es ESTADO_FINALIZADA?
         assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
@@ -240,7 +241,7 @@ class Campana(models.Model):
 # IntentoDeContacto
 #===============================================================================
 
-class IntentoDeContactoManager(models.manager):
+class IntentoDeContactoManager(models.Manager):
     """Manager para el modelo IntentoDeContacto"""
 
     def crear_intentos_para_campana(self, campana_id):
@@ -258,6 +259,8 @@ class IntentoDeContactoManager(models.manager):
 
 
 class IntentoDeContacto(models.Model):
+
+    objects = IntentoDeContactoManager()
 
     """EL intento esta pendiente de ser realizado"""
     ESTADO_PROGRAMADO = 1
