@@ -53,12 +53,6 @@ class GrupoAtencionForm(forms.ModelForm):
     class Meta:
         model = GrupoAtencion
 
-    def clean_nombre(self):
-        data = self.cleaned_data['nombre']
-        if not data:
-            raise forms.ValidationError("Este campo es requerido.")
-        return data
-
 
 #===============================================================================
 # Lista Contactos
@@ -76,17 +70,10 @@ class ListaContactoForm(forms.ModelForm):
     class Meta:
         model = ListaContacto
 
-    def clean_nombre(self):
-        data = self.cleaned_data['nombre']
-        if not data:
-            raise forms.ValidationError("Este campo es requerido.")
-        return data
-
 
 #===============================================================================
 # Campaña
 #===============================================================================
-
 
 class CampanaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -124,7 +111,6 @@ class ConfirmaForm(forms.ModelForm):
 #===============================================================================
 # Formulario File
 #===============================================================================
-
 
 class FileForm(forms.Form):
     file = forms.FileField(
