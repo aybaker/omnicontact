@@ -159,6 +159,12 @@ class CampanaManager(models.Manager):
         """
         return self.filter(estado=Campana.ESTADO_ACTIVA)
 
+    def obtener_finalizadas(self):
+        """
+        Devuelve campañas en estado activas.
+        """
+        return self.filter(estado=Campana.ESTADO_FINALIZADA)
+
 
 class Campana(models.Model):
     """Una campaña del call center"""
