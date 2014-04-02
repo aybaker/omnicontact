@@ -49,29 +49,31 @@ class OriginateService(Process):
         self.timeout = timeout
 
     def onResult(self, result):
+        logger.info("onResult(): %s", result)
+        logger.info("onResult(): %s", type(result))
         try:
-            logger.info("onResult() -> Login OK - 'ORIGINATE' OK")
             for line in result:
                 logger.info("originate> %s", line)
-            return self.ami.logoff()
         except:
-            logger.exception("onResult")
+            logger.exception("onResult(): error al intentar loguear 'result'")
+
+        return self.ami.logoff()
 
     def onError(self, reason):
+        logger.info("onError(): %s", reason)
+        logger.info("onError(): %s", type(reason))
         try:
-            logger.error("onError() -> %s", reason.getTraceback())
-            return reason
+            logger.error("onError(): %s", reason.getTraceback())
         except:
-            logger.exception("onError")
+            pass
+        return reason
 
     def onFinished(self, result):
-        try:
-            logger.info("onFinished() -> Stopeando reactor...")
-            reactor.stop()  # @UndefinedVariable
-        except:
-            logger.exception("onFinished")
+        logger.info("onFinished(): Stopeando reactor...")
+        reactor.stop()  # @UndefinedVariable
 
     def onConnect(self, ami):
+        logger.info("onConnect()")
         # AMIProtocol.originate(
         #    self, channel, context=None, exten=None, priority=None,
         #    timeout=None, callerid=None, account=None, application=None,
@@ -81,8 +83,6 @@ class OriginateService(Process):
         assert self.ami is None
         self.ami = ami
         try:
-            logger.info("onConnect()")
-            logger.info("Conectado!")
             df = ami.originate(self.channel,
                 context=self.context, exten=self.exten, priority=self.priority,
                 timeout=self.timeout)
@@ -90,12 +90,12 @@ class OriginateService(Process):
             df.addCallbacks(self.onFinished, self.onFinished)
             return df
         except:
-            logger.exception("onConnect")
+            logger.exception("onConnect()")
 
     def _login_and_originate(self):
+        logger.info("_login_and_originate()")
         try:
             assert self.ami is None
-            logger.info("_login_and_originate()")
             #
             # Aca *NO* seteamos 'self.ami', ya que es un Deferred.
             # Lo seteamos en onConnect()
