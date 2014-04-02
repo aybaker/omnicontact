@@ -130,7 +130,9 @@ def originate_async(username, password, server, port,
 def originate(username, password, server, port,
     outgoing_channel, context, exten, priority, timeout):
     """Origina una llamada, en un subproceso separado.
-    Espera a que se finalice la ejecucion
+    Espera a que se finalice la ejecucion. Por lo tanto, bloqueara,
+    hasta que Asterisk devuelva OCUPADO, o que el destinatario
+    ha respondido.
     """
     child_process = OriginateService(username, password, server, port,
         outgoing_channel, context, exten, priority, timeout)

@@ -65,22 +65,30 @@ def generador_de_llamadas_asterisk_factory():
 
 
 def procesar_campana(campana, generador_de_llamadas):
-    """Procesa una campana.
+    """Procesa una campana (no chequea su estado, se suponque que
+    la campaña esta en el estado correcto).
+
+    El procesado incluye: buscar intentos de envios pendientes e
+    intentar la llamadas.
+
+    Una vez que se procesaro tondos los intentos pendientes, se
+    marca la campaña como finalizada.
 
     Returns:
         cant_contactos_procesados
     """
-    from fts_web.models import Campana, Contacto
+    from fts_web.models import Campana, IntentoDeContacto
     from django.conf import settings  # @UnusedImport
 
     assert isinstance(campana, Campana)
     logger.info("Iniciando procesado de campana %s", campana.id)
     contador_contactos = 0
-    # for contacto in campana.bd_contacto.contactos.all():
-    for contacto in campana.bd_contacto.contactos.all():
-        assert isinstance(contacto, Contacto)
-        logger.info(" - Realizando originate para contacto: %s", contacto.id)
-        generador_de_llamadas(contacto.telefono)
+    
+    for pendiente in campana.obtener_intentos_pendientes():
+        assert isinstance(pendiente, IntentoDeContacto)
+        logger.info(" - Realizando originate para IntentoDeContacto %s",
+            pendiente.id)
+        generador_de_llamadas(pendiente.contacto.telefono)
         contador_contactos += 1
 
     logger.info("Marcando campana %s como FINALIZADA", campana.id)
