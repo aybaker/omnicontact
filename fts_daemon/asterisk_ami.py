@@ -15,12 +15,27 @@ from starpy import manager
 from starpy.error import AMICommandFailure
 
 from fts_web.settings import FTS_JOIN_TIMEOUT_MARGIN
+import sys
 
 
 # `JOIN_TIMEOUT_MARGIN` lo importamos directamente, justamente para evitar
 # importar nada de Django, ya que NO usamos nada de Django aqui
 
 logger = _logging.getLogger('FTSAsteriskAmi')
+
+ORIGINATE_RESULT_UNKNOWN = 59
+ORIGINATE_RESULT_SUCCESS = 58
+ORIGINATE_RESULT_FAILED = 57
+
+
+def _get_result(exitstatus):
+    if exitstatus == ORIGINATE_RESULT_UNKNOWN:
+        return "ORIGINATE_RESULT_UNKNOWN"
+    if exitstatus == ORIGINATE_RESULT_SUCCESS:
+        return "ORIGINATE_RESULT_SUCCESS"
+    if exitstatus == ORIGINATE_RESULT_FAILED:
+        return "ORIGINATE_RESULT_FAILED"
+    return "desconocido"
 
 
 def _ami_login(username, password, server, port):
@@ -43,7 +58,7 @@ class OriginateService(Process):
 
         # Instancia de AMIProtocol
         self.ami = None
-        self.originate_success = None
+        self.originate_success = ORIGINATE_RESULT_UNKNOWN
 
         self.username = username
         self.password = password
@@ -59,14 +74,14 @@ class OriginateService(Process):
         logger.debug("onResult(): result: %s", result)
         logger.debug("onResult(): type(result): %s", type(result))
 
-        assert self.originate_success is None
+        assert self.originate_success == ORIGINATE_RESULT_UNKNOWN
         try:
             if result['response'] == 'Success':
-                self.originate_success = True
+                self.originate_success = ORIGINATE_RESULT_SUCCESS
         except:
             pass
 
-        if self.originate_success is not True:
+        if self.originate_success != ORIGINATE_RESULT_SUCCESS:
             logger.info("onResult() - Unknown result: %s", result)
             logger.info("onResult(): type(result): %s", type(result))
 
@@ -75,7 +90,7 @@ class OriginateService(Process):
 
     def onError(self, reason):
         logger.info("onError()")
-        self.originate_success = False
+        self.originate_success = ORIGINATE_RESULT_FAILED
 
         # reason -> twisted.python.failure.Failure
         # reason.value: {
@@ -144,18 +159,19 @@ class OriginateService(Process):
         logger.info("Iniciando reactor en subproceso %s", self.pid)
         reactor.run(installSignalHandlers=0)  # @UndefinedVariable
         logger.info("Reactor ha finalizado en subproceso %s", self.pid)
+        sys.exit(self.originate_success)
 
 
-def originate_async(username, password, server, port,
-    outgoing_channel, context, exten, priority, timeout):
-    """Origina una llamada, en un subproceso separado.
-
-    Returns: subproceso ya arrancado
-    """
-    child_process = OriginateService(username, password, server, port,
-        outgoing_channel, context, exten, priority, timeout)
-    child_process.start()
-    return child_process
+#def originate_async(username, password, server, port,
+#    outgoing_channel, context, exten, priority, timeout):
+#    """Origina una llamada, en un subproceso separado.
+#
+#    Returns: subproceso ya arrancado
+#    """
+#    child_process = OriginateService(username, password, server, port,
+#        outgoing_channel, context, exten, priority, timeout)
+#    child_process.start()
+#    return child_process
 
 
 def originate(username, password, server, port,
@@ -177,4 +193,6 @@ def originate(username, password, server, port,
             " despues de %s segundos. El proceso sera terminado.",
             child_process.pid, join_timeout)
         child_process.terminate()
-    logger.info("El subproceso %s ha devuelto el control", child_process.pid)
+    logger.info("El subproceso %s ha devuelto el control "
+        "con exit code %s (%s)", child_process.pid, child_process.exitcode,
+        _get_result(child_process.exitcode))
