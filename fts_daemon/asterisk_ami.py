@@ -179,8 +179,10 @@ def originate(username, password, server, port,
     outgoing_channel, context, exten, priority, timeout):
     """Origina una llamada, en un subproceso separado.
     Espera a que se finalice la ejecucion. Por lo tanto, bloqueara,
-    hasta que Asterisk devuelva OCUPADO, o que el destinatario
-    ha respondido.
+    hasta que Asterisk devuelva OCUPADO, o hasta que el destinatario
+    atienda.
+
+    Devuelve: alguno de los valores de ORIGINATE_RESULT_*
     """
     child_process = OriginateService(username, password, server, port,
         outgoing_channel, context, exten, priority, timeout)
@@ -203,3 +205,9 @@ def originate(username, password, server, port,
     logger.info("El subproceso %s ha devuelto el control "
         "con exit code %s (%s)", child_process.pid, child_process.exitcode,
         _get_result(child_process.exitcode))
+
+    if child_process.exitcode in (ORIGINATE_RESULT_UNKNOWN,
+        ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED):
+        return child_process.exitcode
+    else:
+        return ORIGINATE_RESULT_UNKNOWN
