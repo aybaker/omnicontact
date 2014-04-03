@@ -7,26 +7,59 @@ Created on Mar 27, 2014
 
 from __future__ import unicode_literals
 
-import logging as _logging
 from multiprocessing import Process
-from twisted.internet import reactor
-
-from starpy import manager
-from starpy.error import AMICommandFailure
-
-from fts_web.settings import FTS_JOIN_TIMEOUT_MARGIN
 import sys
 import time
+from twisted.internet import reactor
+
+from fts_web.settings import FTS_JOIN_TIMEOUT_MARGIN
+import logging as _logging
+from starpy import manager
+from starpy.error import AMICommandFailure
 
 
 # `JOIN_TIMEOUT_MARGIN` lo importamos directamente, justamente para evitar
 # importar nada de Django, ya que NO usamos nada de Django aqui
-
 logger = _logging.getLogger('FTSAsteriskAmi')
 
 ORIGINATE_RESULT_UNKNOWN = 59
 ORIGINATE_RESULT_SUCCESS = 58
 ORIGINATE_RESULT_FAILED = 57
+
+
+def generador_de_llamadas_asterisk_dummy_factory():
+    """Llamador DUMMY, para tests"""
+    def generador_de_llamadas_asterisk(telefono, call_id):
+        """Loguea intento y devuelve SUCCESS"""
+        logger.info("GENERADOR DE LLAMADAS DUMMY: %s [%s]", telefono, call_id)
+        return ORIGINATE_RESULT_SUCCESS
+    return generador_de_llamadas_asterisk
+
+
+def generador_de_llamadas_asterisk_factory():
+    """Factory de funcion que se encarga de realizar llamadas
+    La funcion generada debe recibir por parametro:
+        a) el numero telefonico
+        b) un identificador UNICO para la llamada
+    y devolver el resultado, uno de los valores de ORIGINATE_RESULT_*
+    """
+    from django.conf import settings
+
+    def generador_de_llamadas_asterisk(telefono, callid):
+        result = originate(
+            settings.ASTERISK['USERNAME'],
+            settings.ASTERISK['PASSWORD'],
+            settings.ASTERISK['HOST'],
+            settings.ASTERISK['PORT'],
+            settings.ASTERISK['CHANNEL_PREFIX'].format(telefono),
+            settings.ASTERISK['CONTEXT'],
+            settings.ASTERISK['EXTEN'].format(callid),
+            settings.ASTERISK['PRIORITY'],
+            settings.ASTERISK['TIMEOUT']
+        )
+        return result
+
+    return generador_de_llamadas_asterisk
 
 
 def _get_result(exitstatus):

@@ -5,6 +5,8 @@ import logging
 
 from django.conf import settings
 from django.db import models
+from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
+    ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED
 
 
 logger = logging.getLogger(__name__)
@@ -296,6 +298,50 @@ class IntentoDeContactoManager(models.Manager):
         """
         return self.filter(campana=campana_id,
             estado=IntentoDeContacto.ESTADO_PROGRAMADO)
+
+    def update_resultado_si_corresponde(self, intento_id, resultado):
+        """Actualiza el estado del intento, dependiendo del resultado
+        del comando originate.
+        """
+        # FIXME: falta implementar tests
+        # TODO: quiza haria falta un estado 'DESCONOCIDO'
+        # TODO: evaluar usar eventos en vez de cambios de estados en la BD
+        #  (al estilo NoSQL)
+        if resultado == ORIGINATE_RESULT_SUCCESS:
+            logger.info("update_resultado_si_corresponde(): "
+                "actualizando si corresponde: SUCCESS")
+            # el otro lado ha atendido, actualizamos SOLO si el registro
+            # no esta actualizado
+            self.filter(id=intento_id,
+                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
+                    estado=IntentoDeContacto.ESTADO_CONTESTO)
+
+        elif resultado == ORIGINATE_RESULT_FAILED:
+            # el comando AMI ORIGINATE fallo. No sabemos si se ha originado
+            # la llamada o no.
+            # ¿Que hacemos? Filtamos intentos en estado 'ESTADO_PROGRAMADO',
+            # y los actualizamos. Si la llamada se ha realizado, AGI debio
+            # actualizarlo a 'ATENDIO' o 'NO ATENDIO', y listo, esto no
+            # habra hecho nada
+            logger.info("update_resultado_si_corresponde(): "
+                "actualizando si corresponde: FAILED")
+            self.filter(id=intento_id,
+                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
+                    estado=IntentoDeContacto.ESTADO_NO_CONTESTO)
+
+        elif resultado == ORIGINATE_RESULT_UNKNOWN:
+            # No sabemos que paso con el comando AGI...
+            # Actualizamos SOLO si no está actualizado...
+            logger.info("update_resultado_si_corresponde(): "
+                "actualizando si corresponde: UNKNOWN")
+            self.filter(id=intento_id,
+                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
+                    estado=IntentoDeContacto.ESTADO_NO_CONTESTO)
+
+        else:
+            logger.error("update_resultado_si_corresponde(): "
+                "resultado NO VALIDO '%s' para IntentoDeContacto %s",
+                resultado, intento_id)
 
 
 class IntentoDeContacto(models.Model):

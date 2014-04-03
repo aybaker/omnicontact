@@ -27,7 +27,10 @@ def setup():
     # _logging.getLogger().setLevel(_logging.INFO)
 
 
+# FIXME: usar `SECRET_HEADER_NAME`!
 SECRET_HEADER_NAME = 'FTSenderSecret'
+
+# FIXME: usar `SECRET_HEADER_VALUE`!
 SECRET_HEADER_VALUE = 'NosisFej2gighKag4Ong9Mypphip0GhovAn3Ez0'
 
 # BIND = '172.19.1.104'
