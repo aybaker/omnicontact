@@ -16,6 +16,7 @@ from starpy.error import AMICommandFailure
 
 from fts_web.settings import FTS_JOIN_TIMEOUT_MARGIN
 import sys
+import time
 
 
 # `JOIN_TIMEOUT_MARGIN` lo importamos directamente, justamente para evitar
@@ -193,6 +194,12 @@ def originate(username, password, server, port,
             " despues de %s segundos. El proceso sera terminado.",
             child_process.pid, join_timeout)
         child_process.terminate()
+        for _ in range(0, 20):
+            if child_process.exitcode is not None:
+                break
+            time.sleep(0.1)
+        if child_process.exitcode is None:
+            logger.warn("No se consiguio 'exitcode' luego de 1 segundo")
     logger.info("El subproceso %s ha devuelto el control "
         "con exit code %s (%s)", child_process.pid, child_process.exitcode,
         _get_result(child_process.exitcode))

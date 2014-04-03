@@ -15,7 +15,7 @@ from fts_daemon.asterisk_ami import originate
 
 FORMAT = "%(asctime)-15s [%(levelname)7s] %(name)20s - %(message)s"
 
-logger = _logging.getLogger("FTSD")
+logger = _logging.getLogger("FTSDaemon")
 
 
 def setup():
