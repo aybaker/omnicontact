@@ -12,7 +12,7 @@ from fts_web import views
 
 urlpatterns = patterns('',
     url(r'^$',
-        RedirectView.as_view(pattern_name='lista_grupo_atencion',
+        RedirectView.as_view(pattern_name='lista_campana_por_estados',
             permanent=False),
     ),
 
@@ -90,3 +90,8 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
 )
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )
