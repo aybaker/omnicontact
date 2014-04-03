@@ -475,7 +475,7 @@ class CampanaUpdateView(UpdateView):
 #===============================================================================
 
 
-class EstadoView(ListView):
+class CampanaPorEstadoListView(ListView):
     """
     Esta vista lista los objetos Capanas
     diferenciadas por sus estados actuales.

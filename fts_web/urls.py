@@ -75,9 +75,9 @@ urlpatterns = patterns('',
     #===============================================================================
     # Estados
     #===============================================================================
-    url(r'^estados/$',
-        views.EstadoView.as_view(),
-        name='estados',
+    url(r'^campanas/estados/$',
+        views.CampanaPorEstadoListView.as_view(),
+        name='lista_campana_por_estados',
     ),
 
     #===============================================================================
