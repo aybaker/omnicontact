@@ -76,6 +76,11 @@ urlpatterns = patterns('',
         name='lista_campana_por_estados',
     ),
 
+    url(r'^campana/(?P<pk>\d+)/detalle_estado/$',
+        views.CampanaPorEstadoDetailView.as_view(),
+        name='campana_detalle_de_estado',
+    ),
+
     #===============================================================================
     # Estados
     #===============================================================================

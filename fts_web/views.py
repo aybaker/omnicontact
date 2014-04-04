@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.views.generic import (
-    CreateView, DeleteView, ListView, UpdateView)
+    CreateView, DeleteView, ListView, UpdateView, DetailView)
 
 from fts_web.parserxls import ParserXls
 
@@ -484,11 +484,27 @@ class CampanaPorEstadoListView(ListView):
     model = Campana
 
     def get_queryset(self):
+        # TODO: quiza sea mejor sobreescribir get_context_data()
         query_dict = {
             'activas': Campana.objects.obtener_activas(),
             'finalizadas': Campana.objects.obtener_finalizadas(),
         }
         return query_dict
+
+
+class CampanaPorEstadoDetailView(DetailView):
+    # https://docs.djangoproject.com
+    #    /en/1.6/ref/class-based-views/generic-display/
+    #    #django.views.generic.detail.DetailView
+
+    template_name = 'estado/detalle_estado_campana.html'
+    model = Campana
+
+    #    def get_context_data(self, **kwargs):
+    #        context = super(CampanaPorEstadoDetailView, self).get_context_data(
+    #            **kwargs)
+    #        # context['xxxxxx'] = self.object.xxxxxxxxx
+    #        return context
 
 
 #===============================================================================

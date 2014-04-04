@@ -24,7 +24,7 @@
                         {% for campana in campanas.activas %}
                             <tr>
                                 <td>                          
-                                    {{ campana.nombre }}
+                                    <a href="{% url 'campana_detalle_de_estado' campana.id %}">{{ campana.nombre }}</a>
                                 </td>
                                 <td>
                                     {{ campana.get_estado_display }}
@@ -56,7 +56,7 @@
                         {% for campana in campanas.finalizadas %}
                             <tr>
                                 <td>                          
-                                    {{ campana.nombre }}
+                                    <a href="{% url 'campana_detalle_de_estado' campana.id %}">{{ campana.nombre }}</a>
                                 </td>
                                 <td>
                                     {{ campana.get_estado_display }}
