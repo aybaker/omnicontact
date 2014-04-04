@@ -8,14 +8,13 @@ Created on Mar 31, 2014
 
 from __future__ import unicode_literals
 
+from starpy import fastagi
+from starpy.fastagi import FastAGIProtocol, FastAGIFactory
 from twisted.internet import reactor
 from twisted.web.client import Agent
 from twisted.web.http_headers import Headers
 
-from fts_daemon.poll_daemon import FORMAT
 import logging as _logging
-from starpy import fastagi
-from starpy.fastagi import FastAGIProtocol, FastAGIFactory
 
 
 logger = _logging.getLogger("FTSFastAgiD")
@@ -69,7 +68,6 @@ def fastagi_handler(agi):
 
 
 if __name__ == '__main__':
-    _logging.basicConfig(level=_logging.INFO, format=FORMAT)
     logger.info("Iniciando...")
     setup()
 

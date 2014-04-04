@@ -11,11 +11,6 @@ import time
 
 import logging as _logging
 
-#
-#
-#
-
-FORMAT = "%(asctime)-15s [%(levelname)7s] %(name)20s - %(message)s"
 
 logger = _logging.getLogger("FTSDaemon")
 
@@ -23,7 +18,6 @@ logger = _logging.getLogger("FTSDaemon")
 def setup():
     from django.conf import settings  # @UnusedImport
     from fts_web.models import Campana  # @UnusedImport
-    # _logging.getLogger().setLevel(_logging.INFO)
 
 
 def procesar_campana(campana, generador_de_llamadas):
@@ -62,7 +56,6 @@ def procesar_campana(campana, generador_de_llamadas):
 
 
 if __name__ == '__main__':
-    _logging.basicConfig(level=_logging.INFO, format=FORMAT)
     logger.info("Inicianodo FTSenderDaemon...")
     setup()
     logger.info("Setup de Django OK")
