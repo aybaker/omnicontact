@@ -212,8 +212,8 @@ class BaseDatosContactoListView(ListView):
     Lista de Contactos.
     """
 
-    template_name = 'lista_contacto/lista_listas_contacto.html'
-    context_object_name = 'listas_contacto'
+    template_name = 'base_datos_contacto/lista_base_datos_contacto.html'
+    context_object_name = 'bases_datos_contacto'
     model = BaseDatosContacto
 
     #    def get_queryset(self):
@@ -255,7 +255,7 @@ class BaseDatosContactoMixin(object):
             for contacto in list_contactos:
                 Contacto.objects.create(
                     telefono=contacto,
-                    lista_contacto=self.object
+                    bd_contacto=self.object
                 )
             return redirect(self.get_success_url())
         else:
@@ -283,9 +283,9 @@ class BaseDatosContactoCreateView(CreateView, BaseDatosContactoMixin):
     Esta vista crea un objeto BaseDatosContacto.
     """
 
-    template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
+    template_name = 'base_datos_contacto/nueva_edita_base_datos_contacto.html'
     model = BaseDatosContacto
-    context_object_name = 'lista_contacto'
+    context_object_name = 'base_datos_contacto'
     form_class = BaseDatosContactoForm
     form_file = FileForm
 
@@ -314,7 +314,7 @@ class BaseDatosContactoCreateView(CreateView, BaseDatosContactoMixin):
             message,
         )
 
-        return reverse('lista_lista_contacto')
+        return reverse('lista_base_datos_contacto')
 
 
 # class BaseDatosContactoUpdateView(UpdateView, BaseDatosContactoMixin):
@@ -323,9 +323,9 @@ class BaseDatosContactoCreateView(CreateView, BaseDatosContactoMixin):
 #     BaseDatosContacto seleccionado.
 #     """
 
-#     template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
+#     template_name = 'base_datos_contacto/nueva_edita_listas_contacto.html'
 #     model = BaseDatosContacto
-#     context_object_name = 'lista_contacto'
+#     context_object_name = 'base_datos_contacto'
 #     form_class = BaseDatosContactoForm
 #     form_file = FileForm
 
@@ -355,7 +355,7 @@ class BaseDatosContactoCreateView(CreateView, BaseDatosContactoMixin):
 #         )
 
 #         return reverse(
-#             'edita_lista_contacto',
+#             'edita_base_datos_contacto',
 #             kwargs={"pk": self.object.pk})
 
 

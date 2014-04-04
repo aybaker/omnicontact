@@ -39,17 +39,17 @@ urlpatterns = patterns('',
     #===============================================================================
     # Lista Contacto
     #===============================================================================
-    url(r'^lista_contacto/$',
+    url(r'^base_datos_contacto/$',
         views.BaseDatosContactoListView.as_view(),
-        name='lista_lista_contacto',
+        name='lista_base_datos_contacto',
     ),
-    url(r'^lista_contacto/nueva/$',
+    url(r'^base_datos_contacto/nueva/$',
         views.BaseDatosContactoCreateView.as_view(),
-        name='nueva_lista_contacto',
+        name='nueva_base_datos_contacto',
     ),
-    # url(r'^lista_contacto/(?P<pk>\d+)/$',
+    # url(r'^base_datos_contacto/(?P<pk>\d+)/$',
     #     views.BaseDatosContactoUpdateView.as_view(),
-    #     name='edita_lista_contacto',
+    #     name='edita_base_datos_contacto',
     # ),
 
     #===============================================================================
