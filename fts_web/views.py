@@ -202,7 +202,7 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
 
 
 #===============================================================================
-# Lista Contactos
+# Base Datos Contacto
 #===============================================================================
 
 
