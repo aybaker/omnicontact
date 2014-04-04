@@ -6,7 +6,8 @@ import logging
 from django.conf import settings
 from django.db import models
 from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
-    ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED
+    ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,\
+    ORIGINATE_RESULT_CONNECT_FAILED
 
 
 logger = logging.getLogger(__name__)
@@ -329,6 +330,14 @@ class IntentoDeContactoManager(models.Manager):
                 estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
                     estado=IntentoDeContacto.ESTADO_NO_CONTESTO)
 
+        elif resultado == ORIGINATE_RESULT_CONNECT_FAILED:
+            # No se pudo conectar a Asterisk
+            logger.info("update_resultado_si_corresponde(): "
+                "actualizando si corresponde: ESTADO_ERROR_INTERNO")
+            self.filter(id=intento_id,
+                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
+                    estado=IntentoDeContacto.ESTADO_ERROR_INTERNO)
+
         elif resultado == ORIGINATE_RESULT_UNKNOWN:
             # No sabemos que paso con el comando AGI...
             # Actualizamos SOLO si no está actualizado...
@@ -362,10 +371,14 @@ class IntentoDeContacto(models.Model):
     """El destinatario atendio el llamado"""
     ESTADO_CONTESTO = 3
 
+    """Se produjo un error interno del sistema"""
+    ESTADO_ERROR_INTERNO = 4
+
     ESTADO = (
         (ESTADO_PROGRAMADO, 'Pendiente'),
         (ESTADO_NO_CONTESTO, 'No atendio'),
         (ESTADO_CONTESTO, 'Atendio'),
+        (ESTADO_ERROR_INTERNO, 'Error interno'),
     )
 
     contacto = models.ForeignKey(
