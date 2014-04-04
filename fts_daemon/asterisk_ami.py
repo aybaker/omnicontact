@@ -22,9 +22,17 @@ from starpy.error import AMICommandFailure
 # importar nada de Django, ya que NO usamos nada de Django aqui
 logger = _logging.getLogger('FTSAsteriskAmi')
 
+"""No se sabe si el comando pudo ser ejecutado"""
 ORIGINATE_RESULT_UNKNOWN = 59
+
+"""El comando ORIGINATE fue ejecutado con exito"""
 ORIGINATE_RESULT_SUCCESS = 58
+
+"""Se intento ORIGINATE, pero ha fallado"""
 ORIGINATE_RESULT_FAILED = 57
+
+"""No se pudo conectar al Asterisk"""
+ORIGINATE_RESULT_CONNECT_FAILED = 56
 
 
 def generador_de_llamadas_asterisk_dummy_factory():
@@ -69,12 +77,14 @@ def _get_result(exitstatus):
         return "ORIGINATE_RESULT_SUCCESS"
     if exitstatus == ORIGINATE_RESULT_FAILED:
         return "ORIGINATE_RESULT_FAILED"
+    if exitstatus == ORIGINATE_RESULT_CONNECT_FAILED:
+        return "ORIGINATE_RESULT_CONNECT_FAILED"
     return "desconocido"
 
 
 def _ami_login(username, password, server, port):
     """Logins to Asterisk AMI.
-    Returns: AMI protocol instance
+    Returns: AMI protocol instance (Defer)
     """
     factory = manager.AMIFactory(username, password)
     ami_protocol = factory.login(server, port)
@@ -147,19 +157,22 @@ class OriginateService(Process):
         reactor.stop()  # @UndefinedVariable
 
     def onConnect(self, ami):
-        logger.info("onConnect()")
+
+        if reactor._stopped:  # @UndefinedVariable
+            # FIXME: esto es un parche. onConnect() *NO* deberia llamarse
+            # (en vez de esta implementacion, que es llamada y luego
+            # hace return)
+            logger.info("onConnect() - But reactor is stopped... Will return")
+            return
+        else:
+            logger.info("onConnect()")
 
         #    logger.info("SE ESPERARAN 5 SEGUNDOS")
         #    import time
         #    time.sleep(5)
         #    logger.info("COOOONTINUAMOS....")
 
-        # AMIProtocol.originate(
-        #    self, channel, context=None, exten=None, priority=None,
-        #    timeout=None, callerid=None, account=None, application=None,
-        #    data=None, variable={}, async=False, channelid=None,
-        #    otherchannelid=None
-        # )
+        assert ami is not None
         assert self.ami is None
         self.ami = ami
         try:
@@ -172,6 +185,12 @@ class OriginateService(Process):
         except:
             logger.exception("onConnect()")
 
+    def onConnectError(self, failure):
+        logger.info("Error al intentar conectar")
+        self.originate_success = ORIGINATE_RESULT_CONNECT_FAILED
+        reactor.stop()  # @UndefinedVariable
+        return None
+
     def _login_and_originate(self):
         logger.info("_login_and_originate()")
         try:
@@ -182,6 +201,8 @@ class OriginateService(Process):
             #
             ami = _ami_login(self.username, self.password,
                 self.server, self.port)
+
+            ami.addErrback(self.onConnectError)
             ami.addCallback(self.onConnect)
         except:
             logger.exception("_login_and_originate")
