@@ -261,7 +261,10 @@ def originate(username, password, server, port,
         _get_result(child_process.exitcode))
 
     if child_process.exitcode in (ORIGINATE_RESULT_UNKNOWN,
-        ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED):
+        ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,
+        ORIGINATE_RESULT_CONNECT_FAILED):
         return child_process.exitcode
     else:
+        logger.warn("Returning ORIGINATE_RESULT_UNKNOWN because %s is unknown",
+            child_process.exitcode)
         return ORIGINATE_RESULT_UNKNOWN
