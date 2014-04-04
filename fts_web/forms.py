@@ -8,7 +8,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout, Submit
 from fts_web.models import (
     AgenteGrupoAtencion, Campana, GrupoAtencion,
-    ListaContacto,
+    BaseDatosContacto,
 )
 
 
@@ -55,20 +55,20 @@ class GrupoAtencionForm(forms.ModelForm):
 
 
 #===============================================================================
-# Lista Contactos
+# Base Datos Contactos
 #===============================================================================
 
-class ListaContactoForm(forms.ModelForm):
+class BaseDatosContactoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Field('nombre'),
         )
-        super(ListaContactoForm, self).__init__(*args, **kwargs)
+        super(BaseDatosContactoForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = ListaContacto
+        model = BaseDatosContacto
 
 
 #===============================================================================

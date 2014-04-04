@@ -10,11 +10,12 @@ from django.views.generic import (
 from fts_web.parserxls import ParserXls
 
 from fts_web.forms import (
-    AgentesGrupoAtencionFormSet, CampanaForm, ConfirmaForm,
-    FileForm, GrupoAtencionForm, ListaContactoForm,
-)
+    AgentesGrupoAtencionFormSet, CampanaForm,
+    ConfirmaForm, FileForm, GrupoAtencionForm,
+    BaseDatosContactoForm)
 from fts_web.models import (
-    Campana, Contacto, GrupoAtencion, ListaContacto, IntentoDeContacto)
+    Campana, Contacto, GrupoAtencion, BaseDatosContacto,
+    IntentoDeContacto)
 from django.http.response import HttpResponse
 
 
@@ -205,7 +206,7 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
 #===============================================================================
 
 
-class ListaContactoListView(ListView):
+class BaseDatosContactoListView(ListView):
     """
     Esta vista es para generar el listado de
     Lista de Contactos.
@@ -213,24 +214,24 @@ class ListaContactoListView(ListView):
 
     template_name = 'lista_contacto/lista_listas_contacto.html'
     context_object_name = 'listas_contacto'
-    model = ListaContacto
+    model = BaseDatosContacto
 
     #    def get_queryset(self):
-    #        queryset = ListaContacto.objects.all()
+    #        queryset = BaseDatosContacto.objects.all()
     #        return queryset
 
 
-class ListaContactoMixin(object):
+class BaseDatosContactoMixin(object):
     """
     Este mixin procesa y valida
     los formularios en la creación y edición
-    de objetos ListaContacto.
+    de objetos BaseDatosContacto.
     """
 
     def process_all_forms(self, form):
         """
         Este método se encarga de validar el
-        formularios ListaContactosForm y hacer
+        formularios BaseDatosContactoForm y hacer
         el save. Luego valida FileForm, y
         lleva a cabo el parceo del archivo subido
         gurdando los número obtenidos.
@@ -277,20 +278,20 @@ class ListaContactoMixin(object):
             return self.render_to_response(context)
 
 
-class ListaContactoCreateView(CreateView, ListaContactoMixin):
+class BaseDatosContactoCreateView(CreateView, BaseDatosContactoMixin):
     """
-    Esta vista crea un objeto ListaContacto.
+    Esta vista crea un objeto BaseDatosContacto.
     """
 
     template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
-    model = ListaContacto
+    model = BaseDatosContacto
     context_object_name = 'lista_contacto'
-    form_class = ListaContactoForm
+    form_class = BaseDatosContactoForm
     form_file = FileForm
 
     def get_context_data(self, **kwargs):
         context = super(
-            ListaContactoCreateView, self).get_context_data(**kwargs)
+            BaseDatosContactoCreateView, self).get_context_data(**kwargs)
 
         if 'form_file' not in context:
             context['form_file'] = self.form_file()
@@ -316,21 +317,21 @@ class ListaContactoCreateView(CreateView, ListaContactoMixin):
         return reverse('lista_lista_contacto')
 
 
-# class ListaContactoUpdateView(UpdateView, ListaContactoMixin):
+# class BaseDatosContactoUpdateView(UpdateView, BaseDatosContactoMixin):
 #     """
 #     Esta vista actualiza el objeto
-#     ListaContacto seleccionado.
+#     BaseDatosContacto seleccionado.
 #     """
 
 #     template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
-#     model = ListaContacto
+#     model = BaseDatosContacto
 #     context_object_name = 'lista_contacto'
-#     form_class = ListaContactoForm
+#     form_class = BaseDatosContactoForm
 #     form_file = FileForm
 
 #     def get_context_data(self, **kwargs):
 #         context = super(
-#             ListaContactoUpdateView, self).get_context_data(**kwargs)
+#             BaseDatosContactoUpdateView, self).get_context_data(**kwargs)
 
 #         if 'form_file' not in context:
 #             context['form_file'] = self.form_file()
