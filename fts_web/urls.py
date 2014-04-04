@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     # ),
 
     #===============================================================================
-    # Lista Contacto
+    # Base Datos Contacto
     #===============================================================================
     url(r'^base_datos_contacto/$',
         views.BaseDatosContactoListView.as_view(),
