@@ -12,11 +12,6 @@
     clear: both;
 }
 
-table tr td {
-    vertical-align: top;
-    text-align: center;
-}
-
 /* Mensajito de Ayuda*/
 .bs-callout {
     margin: 20px 0;
