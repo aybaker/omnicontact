@@ -91,7 +91,7 @@ class AgenteGrupoAtencion(models.Model):
 # Lista Contactos
 #===============================================================================
 
-class ListaContacto(models.Model):
+class BaseDatosContacto(models.Model):
     nombre = models.CharField(
         max_length=128,
     )
@@ -125,7 +125,7 @@ class Contacto(models.Model):
         blank=True, null=True,
     )
     lista_contacto = models.ForeignKey(
-        'ListaContacto',
+        'BaseDatosContacto',
         related_name='contactos'
     )
 
@@ -211,7 +211,7 @@ class Campana(models.Model):
     )
 
     bd_contacto = models.ForeignKey(
-        'ListaContacto',
+        'BaseDatosContacto',
         related_name='campanas'
     )
 
