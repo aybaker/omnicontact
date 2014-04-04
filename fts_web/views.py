@@ -484,27 +484,29 @@ class CampanaPorEstadoListView(ListView):
     model = Campana
 
     def get_queryset(self):
-        # TODO: quiza sea mejor sobreescribir get_context_data()
+        # FIXME: para setear variables, sobreescribir get_context_data()
+        # ya que según la API, get_queryset() es para otras cosas.
+        # (ya está implementado más abajo)
         query_dict = {
             'activas': Campana.objects.obtener_activas(),
             'finalizadas': Campana.objects.obtener_finalizadas(),
         }
         return query_dict
 
-
-class CampanaPorEstadoDetailView(DetailView):
-    # https://docs.djangoproject.com
-    #    /en/1.6/ref/class-based-views/generic-display/
-    #    #django.views.generic.detail.DetailView
-
-    template_name = 'estado/detalle_estado_campana.html'
-    model = Campana
-
     #    def get_context_data(self, **kwargs):
     #        context = super(CampanaPorEstadoDetailView, self).get_context_data(
     #            **kwargs)
-    #        # context['xxxxxx'] = self.object.xxxxxxxxx
+    #        context['activas'] = Campana.objects.obtener_activas()
+    #        context['finalizadas'] = Campana.objects.obtener_finalizadas()
     #        return context
+
+
+class CampanaPorEstadoDetailView(DetailView):
+    """Muestra el estado de la campaña con la lista de
+    contactos asociados, y el estado de c/u de dichos contactos
+    """
+    template_name = 'estado/detalle_estado_campana.html'
+    model = Campana
 
 
 #===============================================================================
