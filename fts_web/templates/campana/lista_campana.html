@@ -16,7 +16,7 @@
                         <th>Campaña</th>
                         
                         <th>Reproducción</th>
-                        <th>Editar</th>
+                        <!-- <th>Editar</th> -->
                         <!-- <th>Eliminar</th> -->
                       </tr>
                     </thead>
@@ -34,13 +34,13 @@
                                     {% endif %}
                                 </td>
     
-                                <td>
-                                    <a href="{% url 'edita_campana' campana.pk %}">
+                                <!-- <td>
+                                    <a href="{# url 'edita_campana' campana.pk #}">
                                         <button type="button" class="btn btn-primary btn-sm">
                                             <span class="glyphicon glyphicon-pencil"></span> Editar
                                         </button>
                                     </a>
-                                </td>                            
+                                </td>    -->                         
                             </tr>
                         {% empty %}
                             <tr>

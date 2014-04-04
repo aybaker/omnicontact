@@ -16,7 +16,7 @@
                         <th>Base Datos Contactos</th>
                         <th>Creada</th>
                         <th>Cantidad Contactos</th>
-                        <th>Editar</th>
+                        <!-- <th>Editar</th> -->
                         <!-- <th>Eliminar</th> -->
                       </tr>
                     </thead>
@@ -32,13 +32,13 @@
                                 <td>                          
                                     {{ lista_contacto.get_cantidad_contactos }}
                                 </td>                                         
-                                <td>
-                                    <a href="{% url 'edita_lista_contacto' lista_contacto.pk %}">
+                                <!-- <td>
+                                    <a href="{# url 'edita_lista_contacto' lista_contacto.pk #}">
                                         <button type="button" class="btn btn-primary btn-sm">
                                             <span class="glyphicon glyphicon-pencil"></span> Editar
                                         </button>
                                     </a>
-                                </td>
+                                </td> -->
                                 <!-- <td>
                                     <a href="#">
                                         <button type="button" class="btn btn-danger btn-sm">

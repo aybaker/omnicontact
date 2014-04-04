@@ -129,77 +129,75 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
             message,
         )
 
-        return reverse(
-            'edita_grupo_atencion',
-            kwargs={"pk": self.object.pk})
-
-
-class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
-    """
-    Esta vista actualiza el objeto GrupoAtencion
-    seleccionado.
-    """
-
-    template_name = 'grupo_atencion/grupo_atencion.html'
-    model = GrupoAtencion
-    context_object_name = 'grupo_atencion'
-    form_class = GrupoAtencionForm
-    formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
-
-    def get_context_data(self, **kwargs):
-        context = super(
-            GrupoAtencionUpdateView, self).get_context_data(**kwargs)
-
-        if 'formset_agente_grupo_atencion' not in context:
-            context['formset_agente_grupo_atencion'] = \
-            self.formset_agente_grupo_atencion(
-                instance=self.object
-            )
-        return context
-
-    def form_valid(self, form):
-        return self.process_all_forms(form)
-
-    def form_invalid(self, form):
-        return self.process_all_forms(form)
-
-    def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la actualización del\
-        Grupo de Atención.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
-        return reverse(
-            'edita_grupo_atencion',
-            kwargs={"pk": self.object.pk})
-
-
-class GrupoAtencionDeleteView(DeleteView):
-    """
-    Esta vista se encarga de la eliminación del
-    objeto GrupAtencion seleccionado.
-    """
-
-    model = GrupoAtencion
-    template_name = 'grupo_atencion/elimina_grupo_atencion.html'
-
-    def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la eliminación del\
-        Grupo de Atención.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
         return reverse('lista_grupo_atencion')
+
+
+# class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
+#     """
+#     Esta vista actualiza el objeto GrupoAtencion
+#     seleccionado.
+#     """
+
+#     template_name = 'grupo_atencion/grupo_atencion.html'
+#     model = GrupoAtencion
+#     context_object_name = 'grupo_atencion'
+#     form_class = GrupoAtencionForm
+#     formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
+
+#     def get_context_data(self, **kwargs):
+#         context = super(
+#             GrupoAtencionUpdateView, self).get_context_data(**kwargs)
+
+#         if 'formset_agente_grupo_atencion' not in context:
+#             context['formset_agente_grupo_atencion'] = \
+#             self.formset_agente_grupo_atencion(
+#                 instance=self.object
+#             )
+#         return context
+
+#     def form_valid(self, form):
+#         return self.process_all_forms(form)
+
+#     def form_invalid(self, form):
+#         return self.process_all_forms(form)
+
+#     def get_success_url(self):
+#         message = '<strong>Operación Exitosa!</strong>\
+#         Se llevó a cabo con éxito la actualización del\
+#         Grupo de Atención.'
+
+#         messages.add_message(
+#             self.request,
+#             messages.SUCCESS,
+#             message,
+#         )
+
+#         return reverse(
+#             'edita_grupo_atencion',
+#             kwargs={"pk": self.object.pk})
+
+
+# class GrupoAtencionDeleteView(DeleteView):
+#     """
+#     Esta vista se encarga de la eliminación del
+#     objeto GrupAtencion seleccionado.
+#     """
+
+#     model = GrupoAtencion
+#     template_name = 'grupo_atencion/elimina_grupo_atencion.html'
+
+#     def get_success_url(self):
+#         message = '<strong>Operación Exitosa!</strong>\
+#         Se llevó a cabo con éxito la eliminación del\
+#         Grupo de Atención.'
+
+#         messages.add_message(
+#             self.request,
+#             messages.SUCCESS,
+#             message,
+#         )
+
+#         return reverse('lista_grupo_atencion')
 
 
 #===============================================================================
@@ -315,51 +313,49 @@ class ListaContactoCreateView(CreateView, ListaContactoMixin):
             message,
         )
 
-        return reverse(
-            'edita_lista_contacto',
-            kwargs={"pk": self.object.pk})
+        return reverse('lista_lista_contacto')
 
 
-class ListaContactoUpdateView(UpdateView, ListaContactoMixin):
-    """
-    Esta vista actualiza el objeto
-    ListaContacto seleccionado.
-    """
+# class ListaContactoUpdateView(UpdateView, ListaContactoMixin):
+#     """
+#     Esta vista actualiza el objeto
+#     ListaContacto seleccionado.
+#     """
 
-    template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
-    model = ListaContacto
-    context_object_name = 'lista_contacto'
-    form_class = ListaContactoForm
-    form_file = FileForm
+#     template_name = 'lista_contacto/nueva_edita_listas_contacto.html'
+#     model = ListaContacto
+#     context_object_name = 'lista_contacto'
+#     form_class = ListaContactoForm
+#     form_file = FileForm
 
-    def get_context_data(self, **kwargs):
-        context = super(
-            ListaContactoUpdateView, self).get_context_data(**kwargs)
+#     def get_context_data(self, **kwargs):
+#         context = super(
+#             ListaContactoUpdateView, self).get_context_data(**kwargs)
 
-        if 'form_file' not in context:
-            context['form_file'] = self.form_file()
-        return context
+#         if 'form_file' not in context:
+#             context['form_file'] = self.form_file()
+#         return context
 
-    def form_valid(self, form):
-        return self.process_all_forms(form)
+#     def form_valid(self, form):
+#         return self.process_all_forms(form)
 
-    def form_invalid(self, form):
-        return self.process_all_forms(form)
+#     def form_invalid(self, form):
+#         return self.process_all_forms(form)
 
-    def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la actualización de\
-        la Base de Datos de Contactos.'
+#     def get_success_url(self):
+#         message = '<strong>Operación Exitosa!</strong>\
+#         Se llevó a cabo con éxito la actualización de\
+#         la Base de Datos de Contactos.'
 
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
+#         messages.add_message(
+#             self.request,
+#             messages.SUCCESS,
+#             message,
+#         )
 
-        return reverse(
-            'edita_lista_contacto',
-            kwargs={"pk": self.object.pk})
+#         return reverse(
+#             'edita_lista_contacto',
+#             kwargs={"pk": self.object.pk})
 
 
 #===============================================================================
@@ -406,7 +402,7 @@ class ConfirmaCampanaView(UpdateView):
     Campana. Imprime el resumen del objeto y si
     es aceptado, cambia el estado del objeto a ACTIVA.
     Si el objeto ya esta ACTIVA, redirecciona
-    a editar el objeto.
+    al listado.
     """
 
     template_name = 'campana/confirma_campana.html'
@@ -417,7 +413,7 @@ class ConfirmaCampanaView(UpdateView):
     def get(self, request, *args, **kwargs):
         campana = self.get_object()
         if not campana.estado == Campana.ESTADO_EN_DEFINICION:
-            return redirect('edita_campana', pk=campana.pk)
+            return redirect('lista_campana')
         return super(ConfirmaCampanaView, self).get(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -444,30 +440,30 @@ class ConfirmaCampanaView(UpdateView):
         return reverse('lista_campana')
 
 
-class CampanaUpdateView(UpdateView):
-    """
-    Esta vista actualiza un objeto Campana.
-    """
+# class CampanaUpdateView(UpdateView):
+#     """
+#     Esta vista actualiza un objeto Campana.
+#     """
 
-    template_name = 'campana/nueva_edita_campana.html'
-    model = Campana
-    context_object_name = 'campana'
-    form_class = CampanaForm
+#     template_name = 'campana/nueva_edita_campana.html'
+#     model = Campana
+#     context_object_name = 'campana'
+#     form_class = CampanaForm
 
-    def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la actualización de\
-        la Campaña.'
+#     def get_success_url(self):
+#         message = '<strong>Operación Exitosa!</strong>\
+#         Se llevó a cabo con éxito la actualización de\
+#         la Campaña.'
 
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
+#         messages.add_message(
+#             self.request,
+#             messages.SUCCESS,
+#             message,
+#         )
 
-        return reverse(
-            'edita_campana',
-            kwargs={"pk": self.object.pk})
+#         return reverse(
+#             'edita_campana',
+#             kwargs={"pk": self.object.pk})
 
 
 #===============================================================================
