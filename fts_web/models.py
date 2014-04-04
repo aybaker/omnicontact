@@ -88,7 +88,7 @@ class AgenteGrupoAtencion(models.Model):
 
 
 #===============================================================================
-# Lista Contactos
+# Base Datos Contactos
 #===============================================================================
 
 class BaseDatosContacto(models.Model):
@@ -124,14 +124,14 @@ class Contacto(models.Model):
     datos = models.TextField(
         blank=True, null=True,
     )
-    lista_contacto = models.ForeignKey(
+    bd_contacto = models.ForeignKey(
         'BaseDatosContacto',
         related_name='contactos'
     )
 
     def __unicode__(self):
         return '{0} >> {1}'.format(
-            self.lista_contacto, self.telefono)
+            self.bd_contacto, self.telefono)
 
 
 #===============================================================================
