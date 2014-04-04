@@ -3,3 +3,4 @@
 settings_local.py
 /db.sqlite3
 /.settings/org.eclipse.core.resources.prefs
+/media_root
