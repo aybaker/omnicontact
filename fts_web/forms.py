@@ -125,6 +125,12 @@ class OpcionForm(forms.ModelForm):
 
     class Meta:
         model = Opcion
+        exclude = ('campana',)
+        labels = {
+            'digito': '',
+            'accion': '',
+            'grupo_atencion': '',
+        }
 
 
 OpcionFormSet = inlineformset_factory(

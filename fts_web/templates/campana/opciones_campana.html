@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block head_js %}  
+    <script src="{% static 'fts_web/js/jquery.formset.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">                
+            <h4 class="inline">Campañas Opciones</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-6">
+                <form role="form" method="post">
+                    {% csrf_token %}                         
+
+                    {% if campana.reproduccion %}
+                        <div>
+                            <h4>Audio de la Campaña</h4>
+                            <audio src="{{ campana.reproduccion.url }}" controls></audio>
+                        </div>
+                    {% endif %}
+                    
+                    <br>
+
+                    {{ form.management_form|crispy }}
+                    {{ form.errors }}
+                    <table id="formset_opcion">       
+                        <thead>
+                            <tr>
+                                <th>Dígito</th>
+                                <th>Acción</th>
+                                <th>Grupo Atención</th>                               
+                                <th></th>                                
+                            </tr>
+                        </thead>
+                        <tbody>                                       
+                            {% for opcion in form %}
+                                <tr class="hero-unit">
+                                    <td>
+                                        <div class="control-group">
+                                            <div class="controls">
+                                                {{ opcion.digito|as_crispy_field:'bootstrap3' }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="control-group">
+                                            <div class="controls">
+                                                {{ opcion.accion|as_crispy_field:'bootstrap3' }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="control-group">
+                                            <div class="controls">
+                                                {{ opcion.grupo_atencion|as_crispy_field:'bootstrap3' }}
+                                            </div>
+                                        </div>
+                                    </td>                            
+                                    <td>
+                                       {{ opcion.DELETE }}
+                                    </td>                                 
+                                </tr>    
+                                {{ opcion.id }}
+                                {{ opcion.campana }}    
+                            {% endfor %}
+                        </tbody>
+                     </table>
+
+                     <br>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Continuar
+                    </button>
+                </form>           
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block bottom_js %} 
+     <script type="text/javascript">
+            $(function() {
+                $('#formset_opcion tr').formset({
+                    prefix: '{{ formset_opcion.prefix }}'
+                }); 
+            });
+    </script>
+{% endblock %}
