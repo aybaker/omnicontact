@@ -3,20 +3,20 @@ from __future__ import unicode_literals
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect
+from django.http.response import HttpResponse
+from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import (
-    CreateView, DeleteView, ListView, UpdateView, DetailView)
-
-from fts_web.parserxls import ParserXls
+    CreateView, ListView,
+    UpdateView, DetailView)
 
 from fts_web.forms import (
     AgentesGrupoAtencionFormSet, CampanaForm,
     ConfirmaForm, FileForm, GrupoAtencionForm,
-    BaseDatosContactoForm)
+    BaseDatosContactoForm, OpcionFormSet)
 from fts_web.models import (
-    Campana, Contacto, GrupoAtencion, BaseDatosContacto,
-    IntentoDeContacto)
-from django.http.response import HttpResponse
+    Campana, Contacto, GrupoAtencion,
+    BaseDatosContacto, IntentoDeContacto, Opcion)
+from fts_web.parserxls import ParserXls
 
 
 #===============================================================================
@@ -382,8 +382,8 @@ class CampanaCreateView(CreateView):
     """
     Esta vista crea un objeto Campana.
     Por defecto su estado es EN_DEFICNICION,
-    Redirecciona al template de confirmación
-    donde muestra el resumen del objeto.
+    Redirecciona a crear las opciones para esta
+    Campana.
     """
 
     template_name = 'campana/nueva_edita_campana.html'
@@ -393,8 +393,64 @@ class CampanaCreateView(CreateView):
 
     def get_success_url(self):
         return reverse(
-            'confirma_campana',
+            'opciones_campana',
             kwargs={"pk": self.object.pk})
+
+
+class OpcionCampanaCreateView(CreateView):
+    """
+    Esta vista crea uno o varios objetos Opcion
+    para la Campana que se este creando.
+    Redirecciona al template de confirmación
+    donde muestra el resumen del objeto.
+    """
+
+    template_name = 'campana/opciones_campana.html'
+    model = Opcion
+    context_object_name = 'opcion'
+    form_class = OpcionFormSet
+
+    def get(self, request, *args, **kwargs):
+
+        self.campana = get_object_or_404(
+            Campana, pk=self.kwargs['pk']
+        )
+
+        self.object = None
+
+        form = OpcionFormSet(
+            instance=self.campana
+        )
+        return self.render_to_response(
+            self.get_context_data(
+                form=form, campana=self.campana
+            )
+        )
+
+    def post(self, request, *args, **kwargs):
+
+        self.campana = get_object_or_404(
+            Campana, pk=self.kwargs['pk']
+        )
+
+        form = OpcionFormSet(
+            self.request.POST,
+            instance=self.campana
+        )
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        url = 'confirma_campana'
+        if self.campana.estado == Campana.ESTADO_ACTIVA:
+            url = 'opciones_campana'
+
+        return reverse(
+            url,
+            kwargs={"pk": self.campana.pk}
+        )
 
 
 class ConfirmaCampanaView(UpdateView):
@@ -519,3 +575,5 @@ def registar_llamada_contestada(request, call_id):
     intento = IntentoDeContacto.objects.get(pk=call_id)
     intento.registra_contesto()
     return HttpResponse('ok')
+
+
