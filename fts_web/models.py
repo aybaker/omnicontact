@@ -411,3 +411,60 @@ class IntentoDeContacto(models.Model):
     def __unicode__(self):
         return "Intento de campaña {} a contacto {}".format(
             self.campana.id, self.contacto.id)
+
+
+#===============================================================================
+# Opciones
+#===============================================================================
+
+class Opcion(models.Model):
+    """
+    Representa una Opción a marcar en la llamada.
+    Cada opción realiza una acción concreta. Por
+    ejemplo, derivar la llamada a un agente.
+    """
+
+    """Considero opciones solo del 0 a 9"""
+    (CERO, UNO, DOS, TRES, CUATRO,
+    CINCO, SEIS, SIETE, OCHO, NUEVE) = range(0, 10)
+    DIGITO_CHOICES = (
+        (CERO, '0'),
+        (UNO, '1'),
+        (DOS, '2'),
+        (TRES, '3'),
+        (CUATRO, '4'),
+        (CINCO, '5'),
+        (SEIS, '6'),
+        (SIETE, '7'),
+        (OCHO, '8'),
+        (NUEVE, '9'),
+    )
+    digito = models.PositiveIntegerField(
+        choices=DIGITO_CHOICES,
+    )
+
+    """Deriva la llamada. Ejemplo Grupo Atencion."""
+    DERIVAR = 0
+
+    """Estable una calificación a la llamada."""
+    CALIFICAR = 1
+
+    """Habilita para dejar un mensaje de voz."""
+    VOICEMAIL = 2
+
+    ACCION_CHOICES = (
+        (DERIVAR, 'DERIVAR'),
+        (CALIFICAR, 'CALIFICAR'),
+        (VOICEMAIL, 'VOICEMAIL'),
+    )
+    accion = models.PositiveIntegerField(
+        choices=ACCION_CHOICES,
+    )
+
+    grupo_atencion = models.ForeignKey(
+        'GrupoAtencion',
+        null=True, blank=True,
+    )
+    campana = models.ForeignKey(
+        'Campana',
+    )
