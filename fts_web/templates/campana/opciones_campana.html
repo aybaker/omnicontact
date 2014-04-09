@@ -3,10 +3,6 @@
 
 {% load crispy_forms_tags %}
 
-{% block head_js %}  
-    <script src="{% static 'fts_web/js/jquery.formset.js' %}"></script>
-{% endblock %}
-
 {% block content %}
     <div class="panel panel-default">
         <!-- Default panel contents -->
@@ -21,81 +17,56 @@
                 <li class="disabled"><a>3- Confirmar Campaña</a></li>
             </ul>
             <br>
-            <div class="col-lg-6">
+            <div class="col-lg-4">
                 <form role="form" method="post">
                     {% csrf_token %}                         
-
+                    
                     {% if campana.reproduccion %}
                         <div>
                             <h4>Audio de la Campaña</h4>
                             <audio src="{{ campana.reproduccion.url }}" controls></audio>
                         </div>
                     {% endif %}
-                    
-                    <br>
+
                     <hr>
-
-                    <h4>Opciones</h4>
-                    {{ form.management_form|crispy }}
-                    <table id="formset_opcion">       
-                        <thead>
-                            <tr>
-                                <th>Dígito</th>
-                                <th>Acción</th>
-                                <th>Grupo Atención</th>                               
-                                <th></th>                                
-                            </tr>
-                        </thead>
-                        <tbody>                                       
-                            {% for opcion in form %}
-                                <tr class="hero-unit">
-                                    <td>
-                                        <div class="control-group">
-                                            <div class="controls">
-                                                {{ opcion.digito|as_crispy_field:'bootstrap3' }}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="control-group">
-                                            <div class="controls">
-                                                {{ opcion.accion|as_crispy_field:'bootstrap3' }}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="control-group">
-                                            <div class="controls">
-                                                {{ opcion.grupo_atencion|as_crispy_field:'bootstrap3' }}
-                                            </div>
-                                        </div>
-                                    </td>                            
-                                    <td>
-                                       {{ opcion.DELETE }}
-                                    </td>                                 
-                                </tr>    
-                                {{ opcion.id }}
-                                {{ opcion.campana }}    
-                            {% endfor %}
-                        </tbody>
-                     </table>
-
-                     <br>
+                    <br>
+                   
+                    <h4>Nueva Opción</h4>
+                    {% crispy form %} 
+                    <br>
 
                     <button type="submit" class="btn btn-primary btn-block">
-                        Continuar
+                        Guardar Opción
                     </button>
-                </form>           
+                </form> 
+
+                <br>
+  
+                <a href="{% url 'confirma_campana' campana.pk %}" class="btn btn-primary" role="button">
+                    Continuar
+                </a>       
+            </div>
+            <div class="col-lg-6">
+                {% if campana %}
+                    <h4>Opciones</h4>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <th>Dígito</th>
+                            <th>Acción</th>
+                            <th>Grupo Atención</th>
+                        </thead>
+                        <tbody>
+                            {% for opcion in campana.opciones.all %}
+                                <tr>
+                                    <td>{{ opcion.digito }}</td>
+                                    <td>{{ opcion.get_accion_display }}</td>
+                                    <td>{{ opcion.grupo_atencion }}</td>       
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
             </div>
         </div>
     </div>
-{% endblock %}
-{% block bottom_js %} 
-     <script type="text/javascript">
-            $(function() {
-                $('#formset_opcion tr').formset({
-                    prefix: '{{ formset_opcion.prefix }}'
-                }); 
-            });
-    </script>
 {% endblock %}
