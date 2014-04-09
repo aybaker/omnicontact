@@ -467,4 +467,11 @@ class Opcion(models.Model):
     )
     campana = models.ForeignKey(
         'Campana',
+        related_name='opciones'
     )
+
+    def __unicode__(self):
+        return "Campaña {0} - Opción: {1}".format(
+            self.campana,
+            self.digito,
+        )
