@@ -133,13 +133,6 @@ class OpcionForm(forms.ModelForm):
         }
 
 
-OpcionFormSet = inlineformset_factory(
-    Campana, Opcion,
-    form=OpcionForm,
-    extra=1,
-)
-
-
 #===============================================================================
 # Formulario File
 #===============================================================================
