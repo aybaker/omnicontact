@@ -5,37 +5,45 @@
 
 
 {% block content %}
-    <div class="panel panel-default">
-        <!-- Default panel contents -->
-        <div class="panel-heading">                
-            <h4 class="inline">Campañas</h4>
-            <div class="clear-fix"></div>
-        </div>
-        <div class="panel-body">
-            <div class="col-lg-4">
-                <form role="form" method="post" enctype="multipart/form-data" >
-                    {% crispy form %} 
-                                      
 
-                    {% if campana.reproduccion %}
-                        <div>
-                            <h4>Audio de la Campaña</h4>
-                            <audio src="{{ campana.reproduccion.url }}" controls></audio>
-                        </div>
-                    {% endif %}
-                    
-                    <br>
+      
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">                
+                <h4 class="inline">Campañas</h4>
+                <div class="clear-fix"></div>
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a>1- Datos Básicos</a></li>
+                    <li class="disabled"><a>2- Opciones</a></li>
+                    <li class="disabled"><a>3- Confirmar Campaña</a></li>
+                </ul>
+                <br>          
+                <div class="col-lg-4">                
+                    <form role="form" method="post" enctype="multipart/form-data" >
+                        {% crispy form %} 
+                                          
 
-
-                    <button type="submit" class="btn btn-primary btn-block">
-                        {% if campana %}
-                            Guardar Campaña
-                        {% else %}
-                            Crear Campaña
+                        {% if campana.reproduccion %}
+                            <div>
+                                <h4>Audio de la Campaña</h4>
+                                <audio src="{{ campana.reproduccion.url }}" controls></audio>
+                            </div>
                         {% endif %}
-                    </button>
-                </form>           
+                        
+                        <br>
+
+
+                        <button type="submit" class="btn btn-primary btn-block">
+                            {% if campana %}
+                                Actualizar Datos Básico
+                            {% else %}
+                                Continuar
+                            {% endif %}
+                        </button>
+                    </form>           
+                </div>
             </div>
         </div>
-    </div>
 {% endblock %}
