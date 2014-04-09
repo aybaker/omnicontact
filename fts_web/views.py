@@ -12,7 +12,7 @@ from django.views.generic import (
 from fts_web.forms import (
     AgentesGrupoAtencionFormSet, CampanaForm,
     ConfirmaForm, FileForm, GrupoAtencionForm,
-    BaseDatosContactoForm, OpcionFormSet)
+    BaseDatosContactoForm, OpcionForm)
 from fts_web.models import (
     Campana, Contacto, GrupoAtencion,
     BaseDatosContacto, IntentoDeContacto, Opcion)
@@ -402,53 +402,39 @@ class OpcionCampanaCreateView(CreateView):
     Esta vista crea uno o varios objetos Opcion
     para la Campana que se este creando.
     Redirecciona al template de confirmación
-    donde muestra el resumen del objeto.
+    donde muestra el resumen de la campaña
+    en creación.
     """
 
     template_name = 'campana/opciones_campana.html'
     model = Opcion
     context_object_name = 'opcion'
-    form_class = OpcionFormSet
+    form_class = OpcionForm
 
-    def get(self, request, *args, **kwargs):
-
-        self.campana = get_object_or_404(
-            Campana, pk=self.kwargs['pk']
-        )
-
-        self.object = None
-
-        form = OpcionFormSet(
-            instance=self.campana
-        )
-        return self.render_to_response(
-            self.get_context_data(
-                form=form, campana=self.campana
-            )
-        )
-
-    def post(self, request, *args, **kwargs):
+    def get_context_data(self, **kwargs):
+        context = super(
+            OpcionCampanaCreateView, self).get_context_data(**kwargs)
 
         self.campana = get_object_or_404(
             Campana, pk=self.kwargs['pk']
         )
+        context['campana'] = self.campana
+        return context
 
-        form = OpcionFormSet(
-            self.request.POST,
-            instance=self.campana
+    def form_valid(self, form):
+        self.campana = get_object_or_404(
+            Campana, pk=self.kwargs['pk']
         )
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+
+        self.object = form.save(commit=False)
+        self.object.campana = self.campana
+        self.object.save()
+
+        return redirect(self.get_success_url())
 
     def get_success_url(self):
-        url = 'confirma_campana'
-        if self.campana.estado == Campana.ESTADO_ACTIVA:
-            url = 'opciones_campana'
-
         return reverse(
-            url,
+            'opciones_campana',
             kwargs={"pk": self.campana.pk}
         )
 
