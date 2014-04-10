@@ -475,21 +475,8 @@ class Opcion(models.Model):
             self.digito,
         )
 
-    def clean(self):
-        """
-        Valida que al crear una opción a una campaña
-        no exista ya un opción con el dígito seleccionado.
-        """
-        try:
-            self.campana.opciones.get(
-                digito=self.digito
-            )
-        except Opcion.DoesNotExist:
-            pass
-        else:
-            raise ValidationError(
-                {'digito': ["Ya existe esta Opción."]}
-            )
+    class Meta:
+        unique_together = ("digito", "campana")
 
 
 #===============================================================================
