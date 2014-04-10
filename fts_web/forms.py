@@ -7,8 +7,8 @@ from django.forms.models import inlineformset_factory
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout, Submit
 from fts_web.models import (
-    AgenteGrupoAtencion, Campana, GrupoAtencion,
-    BaseDatosContacto, Opcion,
+    Actuacion, AgenteGrupoAtencion, BaseDatosContacto,
+    Campana, GrupoAtencion, Opcion
 )
 
 
@@ -126,6 +126,35 @@ class OpcionForm(forms.ModelForm):
 
     class Meta:
         model = Opcion
+
+
+#===============================================================================
+# Actuación
+#===============================================================================
+
+class ActuacionForm(forms.ModelForm):
+    hora_desde = forms.TimeField(
+        widget=forms.TimeInput(format='%H:%M'),
+        help_text='Ejemplo: 09:10'
+    )
+    hora_hasta = forms.TimeField(
+        widget=forms.TimeInput(format='%H:%M'),
+        help_text='Ejemplo: 20:30'
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('dia_semanal'),
+            Field('hora_desde'),
+            Field('hora_hasta'),
+            Field('campana', type="hidden"),
+        )
+        super(ActuacionForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Actuacion
 
 
 #===============================================================================
