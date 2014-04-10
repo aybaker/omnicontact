@@ -126,11 +126,6 @@ class OpcionForm(forms.ModelForm):
 
     class Meta:
         model = Opcion
-        labels = {
-            'digito': '',
-            'accion': '',
-            'grupo_atencion': '',
-        }
 
 
 #===============================================================================

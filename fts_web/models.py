@@ -455,8 +455,6 @@ class Opcion(models.Model):
 
     ACCION_CHOICES = (
         (DERIVAR, 'DERIVAR'),
-        (CALIFICAR, 'CALIFICAR'),
-        (VOICEMAIL, 'VOICEMAIL'),
     )
     accion = models.PositiveIntegerField(
         choices=ACCION_CHOICES,
