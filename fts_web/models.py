@@ -490,3 +490,60 @@ class Opcion(models.Model):
             raise ValidationError(
                 {'digito': ["Ya existe esta Opción."]}
             )
+
+
+#===============================================================================
+# Actuaciones
+#===============================================================================
+
+class Actuacion(models.Model):
+    """
+    Representa los días de la semana y los
+    horarios en que una campaña se ejecuta.
+    """
+
+    (LUNES, MARTES, MIERCOLES, JUEVES, VIERNES) = range(0, 5)
+    DIA_SEMANAL_CHOICES = (
+        (LUNES, 'LUNES'),
+        (MARTES, 'MARTES'),
+        (MIERCOLES, 'MIERCOLES'),
+        (JUEVES, 'JUEVES'),
+        (VIERNES, 'VIERNES'),
+    )
+    dia_semanal = models.PositiveIntegerField(
+        choices=DIA_SEMANAL_CHOICES,
+    )
+
+    hora_desde = models.TimeField()
+    hora_hasta = models.TimeField()
+
+    campana = models.ForeignKey(
+        'Campana',
+        related_name='actuaciones'
+    )
+
+    def __unicode__(self):
+        return "Campaña {0} - Actuación: {1}".format(
+            self.campana,
+            self.get_dia_semanal_display(),
+        )
+
+    def clean(self):
+        #TODO: Confirmar: ¿Existe la posibilidad que un
+        #día tenga varios rangos horarios?
+        #En tal caso, ajustar la validación.
+
+        """
+        Valida que al crear una actuación a una campaña
+        no exista ya una actuación en el día seleccionado.
+        """
+        try:
+            self.campana.actuaciones.get(
+                dia_semanal=self.dia_semanal
+            )
+        except Actuacion.DoesNotExist:
+            pass
+        else:
+            raise ValidationError(
+                {'dia_semanal': ["Ya existe este Día."]}
+            )

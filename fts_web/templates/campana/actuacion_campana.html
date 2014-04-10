@@ -7,61 +7,51 @@
     <div class="panel panel-default">
         <!-- Default panel contents -->
         <div class="panel-heading">                
-            <h4 class="inline">Campañas Opciones</h4>
+            <h4 class="inline">Campañas Actuación</h4>
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
             <ul class="nav nav-tabs">
                 <li><a>1- Datos Básicos</a></li>
-                <li class="active"><a>2- Opciones</a></li>
-                <li class="disabled"><a>3- Actuación</a></li>
+                <li><a>2- Opciones</a></li>
+                <li class="active"><a>3- Actuación</a></li>
                 <li class="disabled"><a>4- Confirmar Campaña</a></li>
             </ul>
             <br>
             <div class="col-lg-4">
                 <form role="form" method="post">
-                    {% csrf_token %}                         
-                    
-                    {% if campana.reproduccion %}
-                        <div>
-                            <h4>Audio de la Campaña</h4>
-                            <audio src="{{ campana.reproduccion.url }}" controls></audio>
-                        </div>
-                    {% endif %}
-
-                    <hr>
-                    <br>
+                    {% csrf_token %}                
                    
-                    <h4>Nueva Opción</h4>
+                    <h4>Nueva Actuación</h4>
                     {% crispy form %} 
                     <br>
 
                     <button type="submit" class="btn btn-primary btn-block">
-                        Guardar Opción
+                        Guardar Actuación
                     </button>
                 </form> 
 
                 <br>
   
-                <a href="{% url 'actuacion_campana' campana.pk %}" class="btn btn-primary" role="button">
+                <a href="{% url 'confirma_campana' campana.pk %}" class="btn btn-primary" role="button">
                     Continuar
                 </a>       
             </div>
             <div class="col-lg-6">
                 {% if campana %}
-                    <h4>Opciones</h4>
+                    <h4>Actuaciones</h4>
                     <table class="table table-bordered table-hover">
                         <thead>
-                            <th>Dígito</th>
-                            <th>Acción</th>
-                            <th>Grupo Atención</th>
+                            <th>Día</th>
+                            <th>Hora Desde</th>
+                            <th>Hora Hasta</th>
                         </thead>
                         <tbody>
-                            {% for opcion in campana.opciones.all %}
+                            {% for actuacion in campana.actuaciones.all %}
                                 <tr>
-                                    <td>{{ opcion.digito }}</td>
-                                    <td>{{ opcion.get_accion_display }}</td>
-                                    <td>{{ opcion.grupo_atencion }}</td>       
+                                    <td>{{ actuacion.get_dia_semanal_display }}</td>
+                                    <td>{{ actuacion.hora_desde }} Hs.</td>
+                                    <td>{{ actuacion.hora_hasta }} Hs.</td>       
                                 </tr>
                             {% endfor %}
                         </tbody>
