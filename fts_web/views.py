@@ -411,6 +411,14 @@ class OpcionCampanaCreateView(CreateView):
     context_object_name = 'opcion'
     form_class = OpcionForm
 
+    def get_initial(self):
+        initial = super(OpcionCampanaCreateView, self).get_initial()
+        if 'pk' in self.kwargs:
+            initial.update({
+                'campana': self.kwargs['pk'],
+            })
+        return initial
+
     def get_context_data(self, **kwargs):
         context = super(
             OpcionCampanaCreateView, self).get_context_data(**kwargs)
@@ -421,21 +429,10 @@ class OpcionCampanaCreateView(CreateView):
         context['campana'] = self.campana
         return context
 
-    def form_valid(self, form):
-        self.campana = get_object_or_404(
-            Campana, pk=self.kwargs['pk']
-        )
-
-        self.object = form.save(commit=False)
-        self.object.campana = self.campana
-        self.object.save()
-
-        return redirect(self.get_success_url())
-
     def get_success_url(self):
         return reverse(
             'opciones_campana',
-            kwargs={"pk": self.campana.pk}
+            kwargs={"pk": self.kwargs['pk']}
         )
 
 
