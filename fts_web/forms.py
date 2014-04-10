@@ -119,13 +119,13 @@ class OpcionForm(forms.ModelForm):
         self.helper.layout = Layout(
             Field('digito'),
             Field('accion'),
-            Field('grupo_atencion')
+            Field('grupo_atencion'),
+            Field('campana', type="hidden"),
         )
         super(OpcionForm, self).__init__(*args, **kwargs)
 
     class Meta:
         model = Opcion
-        exclude = ('campana',)
         labels = {
             'digito': '',
             'accion': '',
