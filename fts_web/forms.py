@@ -76,11 +76,25 @@ class BaseDatosContactoForm(forms.ModelForm):
 #===============================================================================
 
 class CampanaForm(forms.ModelForm):
+    fecha_inicio = forms.DateField(
+        widget=forms.DateInput(format='%d/%m/%Y'),
+        help_text='Ejemplo: 10/04/2014'
+    )
+    fecha_fin = forms.DateField(
+        widget=forms.DateInput(format='%d/%m/%Y'),
+        help_text='Ejemplo: 20/04/2014'
+    )
+
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Field('nombre'),
+            Field('cantidad_canales'),
+            Field('cantidad_intentos'),
+            Field('segundos_ring'),
+            Field('fecha_inicio'),
+            Field('fecha_fin'),
             Field('reproduccion'),
             Field('bd_contacto')
         )
@@ -88,7 +102,7 @@ class CampanaForm(forms.ModelForm):
 
     class Meta:
         model = Campana
-        exclude = ('estado', 'fecha_inicio', 'fecha_fin')
+        exclude = ('estado',)
 
 
 class ConfirmaForm(forms.ModelForm):
