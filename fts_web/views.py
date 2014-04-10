@@ -401,6 +401,8 @@ class OpcionCampanaCreateView(CreateView):
     """
     Esta vista crea uno o varios objetos Opcion
     para la Campana que se este creando.
+    Inicializa el form con campo campana (hidden)
+    con el id de campana que viene en la url.
     Redirecciona al template de confirmación
     donde muestra el resumen de la campaña
     en creación.
