@@ -529,21 +529,21 @@ class Actuacion(models.Model):
         )
 
     def clean(self):
-        #TODO: Confirmar: ¿Existe la posibilidad que un
-        #día tenga varios rangos horarios?
-        #En tal caso, ajustar la validación.
-
         """
         Valida que al crear una actuación a una campaña
-        no exista ya una actuación en el día seleccionado.
+        no exista ya una actuación en el rango horario
+        especificado y en el día semanal seleccionado.
         """
-        try:
-            self.campana.actuaciones.get(
-                dia_semanal=self.dia_semanal
-            )
-        except Actuacion.DoesNotExist:
-            pass
-        else:
-            raise ValidationError(
-                {'dia_semanal': ["Ya existe este Día."]}
-            )
+
+        conflicto = self.campana.actuaciones.filter(
+            dia_semanal=self.dia_semanal,
+            hora_desde__lte=self.hora_hasta,
+            hora_hasta__gte=self.hora_desde,
+        )
+        if any(conflicto):
+            raise ValidationError({
+                'hora_desde': ["Ya esta cubierto el rango horario\
+                    en ese día semanal."],
+                'hora_hasta': ["Ya esta cubierto el rango horario\
+                    en ese día semanal."],
+            })
