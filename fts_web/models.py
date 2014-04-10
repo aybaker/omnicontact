@@ -259,6 +259,21 @@ class Campana(models.Model):
     def __unicode__(self):
         return self.nombre
 
+    def clean(self):
+        """
+        Valida que al crear una campaña la fechas de
+        inicialización sea menor o igual a la fecha de
+        finalización.
+        """
+
+        if self.fecha_inicio > self.fecha_fin:
+            raise ValidationError({
+                'fecha_inicio': ["La fecha de inicio debe ser\
+                    mayor o igual a la fecha de finalización."],
+                'fecha_fin': ["La fecha de inicio debe ser\
+                    mayor o igual a la fecha de finalización."],
+            })
+
 
 #===============================================================================
 # IntentoDeContacto
