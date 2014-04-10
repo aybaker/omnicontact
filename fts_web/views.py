@@ -10,11 +10,11 @@ from django.views.generic import (
     UpdateView, DetailView)
 
 from fts_web.forms import (
-    AgentesGrupoAtencionFormSet, CampanaForm,
+    ActuacionForm, AgentesGrupoAtencionFormSet, CampanaForm,
     ConfirmaForm, FileForm, GrupoAtencionForm,
     BaseDatosContactoForm, OpcionForm)
 from fts_web.models import (
-    Campana, Contacto, GrupoAtencion,
+    Actuacion, Campana, Contacto, GrupoAtencion,
     BaseDatosContacto, IntentoDeContacto, Opcion)
 from fts_web.parserxls import ParserXls
 
@@ -403,9 +403,6 @@ class OpcionCampanaCreateView(CreateView):
     para la Campana que se este creando.
     Inicializa el form con campo campana (hidden)
     con el id de campana que viene en la url.
-    Redirecciona al template de confirmación
-    donde muestra el resumen de la campaña
-    en creación.
     """
 
     template_name = 'campana/opciones_campana.html'
@@ -434,6 +431,44 @@ class OpcionCampanaCreateView(CreateView):
     def get_success_url(self):
         return reverse(
             'opciones_campana',
+            kwargs={"pk": self.kwargs['pk']}
+        )
+
+
+class ActuacionCampanaCreateView(CreateView):
+    """
+    Esta vista crea uno o varios objetos Actuacion
+    para la Campana que se este creando.
+    Inicializa el form con campo campana (hidden)
+    con el id de campana que viene en la url.
+    """
+
+    template_name = 'campana/actuacion_campana.html'
+    model = Actuacion
+    context_object_name = 'actuacion'
+    form_class = ActuacionForm
+
+    def get_initial(self):
+        initial = super(ActuacionCampanaCreateView, self).get_initial()
+        if 'pk' in self.kwargs:
+            initial.update({
+                'campana': self.kwargs['pk'],
+            })
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            ActuacionCampanaCreateView, self).get_context_data(**kwargs)
+
+        self.campana = get_object_or_404(
+            Campana, pk=self.kwargs['pk']
+        )
+        context['campana'] = self.campana
+        return context
+
+    def get_success_url(self):
+        return reverse(
+            'actuacion_campana',
             kwargs={"pk": self.kwargs['pk']}
         )
 
