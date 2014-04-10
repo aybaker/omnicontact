@@ -3,8 +3,9 @@ from __future__ import unicode_literals
 
 import logging
 
-from django.conf import settings
 from django.db import models
+from django.core.exceptions import ValidationError
+
 from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
     ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,\
     ORIGINATE_RESULT_CONNECT_FAILED
@@ -475,3 +476,15 @@ class Opcion(models.Model):
             self.campana,
             self.digito,
         )
+
+    def clean(self):
+        try:
+            self.campana.opciones.get(
+                digito=self.digito
+            )
+        except Opcion.DoesNotExist:
+            pass
+        else:
+            raise ValidationError(
+                {'digito': ["Ya existe esta Opción."]}
+            )
