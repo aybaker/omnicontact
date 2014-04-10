@@ -14,7 +14,8 @@
             <ul class="nav nav-tabs">
                 <li><a>1- Datos Básicos</a></li>
                 <li class="active"><a>2- Opciones</a></li>
-                <li class="disabled"><a>3- Confirmar Campaña</a></li>
+                <li class="disabled"><a>3- Actuación</a></li>
+                <li class="disabled"><a>4- Confirmar Campaña</a></li>
             </ul>
             <br>
             <div class="col-lg-4">
@@ -42,7 +43,7 @@
 
                 <br>
   
-                <a href="{% url 'confirma_campana' campana.pk %}" class="btn btn-primary" role="button">
+                <a href="{% url 'actuacion_campana' campana.pk %}" class="btn btn-primary" role="button">
                     Continuar
                 </a>       
             </div>
