@@ -223,7 +223,9 @@ class BaseDatosContactoListView(ListView):
 
 class BaseDatosContactoCreateView(CreateView):
     """
-
+    Esta vista crea una instancia de BaseDatosContacto
+    sin definir, lo que implica que no esta disponible
+    hasta que se procese su definición.
     """
 
     template_name = 'base_datos_contacto/nueva_edita_base_datos_contacto.html'
@@ -239,6 +241,13 @@ class BaseDatosContactoCreateView(CreateView):
 
 class DefineBaseDatosContactoView(UpdateView):
     """
+    Esta vista se obtiene un resumen de la estructura
+    del archivo a importar y la presenta al usuario para
+    que seleccione en que columna se encuentra el teléfono.
+    Guarda la posición de la columna como entero y llama a
+    importar los teléfono del archivo que se guardo.
+    Si la importación resulta bien, llama a definir el objeto
+    BaseDatosContacto para que esté disponible.
     """
 
     template_name = 'base_datos_contacto/define_base_datos_contacto.html'

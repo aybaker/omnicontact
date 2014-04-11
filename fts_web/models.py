@@ -99,6 +99,8 @@ class BaseDatosContactoManager(models.Manager):
 
     def obtener_definidas(self):
         """
+        Este método filtra lo objetos BaseDatosContacto que
+        esté definidos.
         """
         return self.filter(sin_definir=False)
 
@@ -140,6 +142,10 @@ class BaseDatosContacto(models.Model):
 
     def importa_contactos(self):
         """
+        Este metodo se encarga de realizar la importación de los
+        teléfonos del archivo guardado. Por cada teléfono del
+        archivo crea un objeto Contacto con el teléfono y lo
+        relaciona la instancia actual de BaseDatosContacto.
         """
 
         parserxls = ParserXls()
@@ -158,6 +164,9 @@ class BaseDatosContacto(models.Model):
 
     def define(self):
         """
+        Este método se encara de llevar a cabo la definición del
+        objeto BaseDatosContacto. Establece el atributo sin_definir
+        en False haciedo que quede disponible el objeto.
         """
 
         logger.info("Seteando base datos contacto %s como definida", self.id)
