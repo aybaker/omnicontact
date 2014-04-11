@@ -17,11 +17,13 @@ class ParserXls(object):
         self.vacias = 0
         self.erroneas = 0
 
-    def read_file(self, xls_file):
+    def read_file(self, columna_datos, xls_file):
         """Lee un archivo XLS y devuelve contenidos de la 1er columna
         de la primer hoja.
-        
+
         Parametros:
+         - columna_datos: Entero que indica cuál es la
+           columna con los teléfonos.
          - xls_file: archivo (ya abierto) de Excel
         """
         # Reseteamos estadisticas
@@ -36,8 +38,8 @@ class ParserXls(object):
 
         while curr_row < num_rows:
             curr_row += 1
-            cell = worksheet.cell(curr_row, 0)
-            
+            cell = worksheet.cell(curr_row, columna_datos)
+
             # Guardamos valor de nro telefonico en 'cell_value'
             if type(cell.value) == float:
                 cell_value = str(int(cell.value))
@@ -66,3 +68,35 @@ class ParserXls(object):
             self.erroneas)
 
         return value_list
+
+    def get_file_structure(self, xls_file):
+        """
+        Lee un archivo XLS y devuelve contenidos de
+        las tres primeras filas de la primer hoja.
+
+        Parametros:
+         - xls_file: archivo (ya abierto) de Excel
+        """
+
+        structure_dic = {}
+
+        workbook = xlrd.open_workbook(file_contents=xls_file.read())
+        worksheet = workbook.sheet_by_index(0)
+
+        num_cols = worksheet.ncols - 1
+
+        for curr_row in range(3):
+            curr_col = -1
+            row_content_list = []
+
+            while curr_col < num_cols:
+                curr_col += 1
+
+                value = worksheet.cell_value(curr_row, curr_col)
+                if type(value) == float:
+                    value = str(int(value))
+                row_content_list.append(value)
+
+            structure_dic.update({curr_row: row_content_list})
+
+        return structure_dic
