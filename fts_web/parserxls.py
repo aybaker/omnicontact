@@ -18,10 +18,9 @@ class ParserXls(object):
         self.vacias = 0
         self.erroneas = 0
 
-    def read_file(self, file):
-        # FIXME: Assignment to reserved built-in symbol: file
+    def read_file(self, xls_file):
         # FIXME: documentar
-        workbook = xlrd.open_workbook(file_contents=file.read())
+        workbook = xlrd.open_workbook(file_contents=xls_file.read())
         worksheet = workbook.sheet_by_index(0)
 
         num_rows = worksheet.nrows - 1
@@ -59,7 +58,3 @@ class ParserXls(object):
             self.erroneas)
 
         return self.result()
-
-    def result(self):
-        # FIXME: documentar
-        return self.value_list
