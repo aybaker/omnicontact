@@ -64,11 +64,13 @@ class BaseDatosContactoForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Field('nombre'),
+            Field('archivo_importacion'),
         )
         super(BaseDatosContactoForm, self).__init__(*args, **kwargs)
 
     class Meta:
         model = BaseDatosContacto
+        exclude = ('columna_datos', 'sin_definir', 'columnas')
 
 
 #===============================================================================
@@ -83,6 +85,9 @@ class CampanaForm(forms.ModelForm):
     fecha_fin = forms.DateField(
         widget=forms.DateInput(format='%d/%m/%Y'),
         help_text='Ejemplo: 20/04/2014'
+    )
+    bd_contacto = forms.ModelChoiceField(
+        queryset=BaseDatosContacto.objects.obtener_definidas(),
     )
 
     def __init__(self, *args, **kwargs):
@@ -169,22 +174,3 @@ class ActuacionForm(forms.ModelForm):
 
     class Meta:
         model = Actuacion
-
-
-#===============================================================================
-# Formulario File
-#===============================================================================
-
-class FileForm(forms.Form):
-    file = forms.FileField(
-        label="Seleccione el archivo",
-        required=True,
-    )
-
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.layout = Layout(
-            Field('file'),
-        )
-        super(FileForm, self).__init__(*args, **kwargs)
