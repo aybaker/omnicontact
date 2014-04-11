@@ -104,6 +104,18 @@ class BaseDatosContacto(models.Model):
         max_length=256,
         blank=True, null=True,
     )
+    archivo_importacion = models.FileField(
+        #TODO: Definir path para los archivos.
+        upload_to='base_datos/%Y/%m/%d',
+    )
+    sin_definir = models.BooleanField(
+        default=True,
+        editable=False,
+    )
+    columna_datos = models.PositiveIntegerField(
+        blank=True, null=True,
+    )
+
     #    active = models.BooleanField(
     #        default=True,
     #        editable=False,
