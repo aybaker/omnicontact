@@ -216,10 +216,6 @@ class BaseDatosContactoListView(ListView):
     context_object_name = 'bases_datos_contacto'
     model = BaseDatosContacto
 
-    def get_queryset(self):
-        queryset = BaseDatosContacto.objects.obtener_definidas()
-        return queryset
-
 
 class BaseDatosContactoCreateView(CreateView):
     """
