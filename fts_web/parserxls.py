@@ -83,9 +83,14 @@ class ParserXls(object):
         workbook = xlrd.open_workbook(file_contents=xls_file.read())
         worksheet = workbook.sheet_by_index(0)
 
+        num_rows = worksheet.nrows - 1
         num_cols = worksheet.ncols - 1
 
-        for curr_row in range(3):
+        rango = 3
+        if num_rows <= 3:
+            rango = num_rows
+
+        for curr_row in range(rango):
             curr_col = -1
             row_content_list = []
 
