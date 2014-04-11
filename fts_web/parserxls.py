@@ -11,15 +11,23 @@ logger = logging.getLogger('ParserXls')
 
 
 class ParserXls(object):
-    # FIXME: documentar
+    """Clase utilitaria para obtener datos de archivo XLS"""
 
     def __init__(self):
-        self.value_list = []
         self.vacias = 0
         self.erroneas = 0
 
     def read_file(self, xls_file):
-        # FIXME: documentar
+        """Lee un archivo XLS y devuelve contenidos de la 1er columna
+        de la primer hoja.
+        
+        Parametros:
+         - xls_file: archivo (ya abierto) de Excel
+        """
+        # Reseteamos estadisticas
+        self.vacias = 0
+        self.erroneas = 0
+        value_list = []
         workbook = xlrd.open_workbook(file_contents=xls_file.read())
         worksheet = workbook.sheet_by_index(0)
 
@@ -51,10 +59,10 @@ class ParserXls(object):
                     self.erroneas += 1
                     continue
 
-            self.value_list.append(cell_value)
+            value_list.append(cell_value)
 
         logger.info("%s contactos importados - %s celdas ignoradas"
-            " - %s celdas erroneas", len(self.value_list), self.vacias,
+            " - %s celdas erroneas", len(value_list), self.vacias,
             self.erroneas)
 
-        return self.result()
+        return value_list
