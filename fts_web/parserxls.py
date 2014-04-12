@@ -11,6 +11,26 @@ import csv
 logger = logging.getLogger('ParserXls')
 
 
+csv_extensions = ['.csv']
+xls_extensions = ['.xls']
+
+
+def autodetectar_parser(filefield):
+    """Devuelve instancia de ParserXxx dependiendo de la
+    extensión del archivo
+    """
+
+    extension = os.path.splitext(filefield.name)[1]
+    if extension in xls_extensions:
+        return ParserXls()
+    elif extension in csv_extensions:
+        return ParserCsv()
+    else:
+        logger.warn("El archivo %s no es CSV ni XLS. "
+            "Devolveremos CSV por las dudas...", filefield.name)
+        return ParserCsv()
+
+
 class Parser(object):
     def __init__(self, file):
         self.file = file
