@@ -6,7 +6,7 @@ import logging
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from fts_web.parserxls import ParserXls
+from fts_web.parserxls import Parser
 from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
     ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,\
     ORIGINATE_RESULT_CONNECT_FAILED
@@ -148,11 +148,8 @@ class BaseDatosContacto(models.Model):
         relaciona la instancia actual de BaseDatosContacto.
         """
 
-        parserxls = ParserXls()
-        lista_telefonos = parserxls.read_file(
-            self.columna_datos,
-            self.archivo_importacion,
-        )
+        parser = Parser(self.archivo_importacion)
+        lista_telefonos = parser.read_file(self.columna_datos)
         if lista_telefonos:
             for telefono in lista_telefonos:
                 Contacto.objects.create(
