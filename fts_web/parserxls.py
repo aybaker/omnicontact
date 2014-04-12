@@ -15,54 +15,22 @@ csv_extensions = ['.csv']
 xls_extensions = ['.xls']
 
 
-def autodetectar_parser(filefield):
+def autodetectar_parser(filename):
     """Devuelve instancia de ParserXxx dependiendo de la
     extensión del archivo
-    """
 
-    extension = os.path.splitext(filefield.name)[1]
+    Parametros:
+     - filename (str) El nombre del archivo (con o sin path)
+    """
+    extension = os.path.splitext(filename)[1].lower()
     if extension in xls_extensions:
         return ParserXls()
     elif extension in csv_extensions:
         return ParserCsv()
     else:
         logger.warn("El archivo %s no es CSV ni XLS. "
-            "Devolveremos CSV por las dudas...", filefield.name)
+            "Devolveremos CSV por las dudas...", filename)
         return ParserCsv()
-
-
-class Parser(object):
-    def __init__(self, file):
-        self.file = file
-        self.file_extension = None
-
-        self._XLS = 0
-        self._CSV = 1
-        self._csv_extensions = ['.csv']
-        self._xls_extensions = ['.xls']
-
-        extension = os.path.splitext(self.file.name)[1]
-
-        if extension in self._xls_extensions:
-            self.file_extension = self._XLS
-        elif extension in self._csv_extensions:
-            self.file_extension = self._CSV
-
-    def read_file(self, columna_datos):
-        if self.file_extension == self._XLS:
-            return ParserXls(self.file).read_file(columna_datos)
-        elif self.file_extension == self._CSV:
-            return ParserCsv(self.file).read_file(columna_datos)
-        else:
-            return []
-
-    def get_file_structure(self):
-        if self.file_extension == self._XLS:
-            return ParserXls(self.file).get_file_structure()
-        elif self.file_extension == self._CSV:
-            return ParserCsv(self.file).get_file_structure()
-        else:
-            return {}
 
 
 class ParserXls(object):
@@ -70,12 +38,12 @@ class ParserXls(object):
     Clase utilitaria para obtener datos de archivo XLS.
     """
 
-    def __init__(self, file):
-        self.file = file
+    def __init__(self):
+        # No es thread-safe!
         self.vacias = 0
         self.erroneas = 0
 
-    def read_file(self, columna_datos):
+    def read_file(self, columna_datos, file_obj):
         """
         Lee un archivo XLS y devuelve contenidos de la columna
         tomada por parámetro.
@@ -87,7 +55,7 @@ class ParserXls(object):
         self.vacias = 0
         self.erroneas = 0
         value_list = []
-        workbook = xlrd.open_workbook(file_contents=self.file.read())
+        workbook = xlrd.open_workbook(file_contents=file_obj.read())
         worksheet = workbook.sheet_by_index(0)
 
         num_rows = worksheet.nrows - 1
@@ -126,7 +94,7 @@ class ParserXls(object):
 
         return value_list
 
-    def get_file_structure(self):
+    def get_file_structure(self, file_obj):
         """
         Lee un archivo XLS y devuelve contenidos de
         las tres primeras filas de la primer hoja.
@@ -134,7 +102,7 @@ class ParserXls(object):
 
         structure_dic = {}
 
-        workbook = xlrd.open_workbook(file_contents=self.file.read())
+        workbook = xlrd.open_workbook(file_contents=file_obj.read())
         worksheet = workbook.sheet_by_index(0)
 
         num_rows = worksheet.nrows - 1
@@ -164,12 +132,12 @@ class ParserCsv(object):
     Clase utilitaria para obtener datos de archivo CSV.
     """
 
-    def __init__(self, file):
-        self.file = file
+    def __init__(self):
+        # No es thread-safe!
         self.vacias = 0
         self.erroneas = 0
 
-    def read_file(self, columna_datos):
+    def read_file(self, columna_datos, file_obj):
         """
         Lee un archivo CSV y devuelve contenidos de la columna
         tomada por parámetro.
@@ -182,7 +150,7 @@ class ParserCsv(object):
         self.erroneas = 0
         value_list = []
 
-        workbook = csv.reader(self.file)
+        workbook = csv.reader(file_obj)
         for i, curr_row in enumerate(workbook):
             if not len(curr_row) == 0:
                 value = curr_row[columna_datos].strip()
@@ -202,12 +170,12 @@ class ParserCsv(object):
 
         return value_list
 
-    def get_file_structure(self):
+    def get_file_structure(self, file_obj):
         """
         Lee un archivo CSV y devuelve contenidos de
         las primeras tres filas.
         """
-        workbook = csv.reader(self.file)
+        workbook = csv.reader(file_obj)
         structure_dic = {}
 
         for i in range(3):
