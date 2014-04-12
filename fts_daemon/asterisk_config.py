@@ -23,9 +23,9 @@ TEMPLATE_DIALPLAN_START = """
 [campania_{fts_campana_id}]
 
 exten => _XXXXXX!.,1,NoOp(FTS,INICIO,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
- same => _XXXXXX!.,n,Answer(1)
- same => _XXXXXX!.,n,Wait(1)
  same => _XXXXXX!.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
+ same => _XXXXXX!.,n,Wait(1)
+ same => _XXXXXX!.,n,Answer()
  same => _XXXXXX!.,n(audio),Background({fts_audio_file})
  same => _XXXXXX!.,n,WaitExten(5)
  same => _XXXXXX!.,n,Hangup()
@@ -53,22 +53,24 @@ exten => {fts_opcion_digito},n,Hangup()
 
 """
 
-#TEMPLATE_OPCION_CALIFICAR = """
-#
-#; TEMPLATE_OPCION_REPETIR-{fts_opcion_id}
-#exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-#exten => {fts_opcion_digito},1,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/)
-#exten => {fts_opcion_digito},n,Goto(${{id_num}},audio)
-#exten => {fts_opcion_digito},n,Hangup()
-#
-#"""
+TEMPLATE_OPCION_CALIFICAR = """
+
+; TEMPLATE_OPCION_CALIFICAR-{fts_opcion_id}
+exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/calificar/)
+exten => {fts_opcion_digito},n,Goto(audio)
+; TODO: IMPLEMENTAR!
+exten => {fts_opcion_digito},n,Hangup()
+
+"""
 
 TEMPLATE_OPCION_VOICEMAIL = """
 
 ; TEMPLATE_OPCION_VOICEMAIL-{fts_opcion_id}
 exten => {fts_opcion_digito},1,NoOp(FTS,VOICEMAIL,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
 exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/voicemail/)
-exten => {fts_opcion_digito},n,Voicemail()
+exten => {fts_opcion_digito},n,Goto(audio)
+; TODO: IMPLEMENTAR!
 exten => {fts_opcion_digito},n,Hangup()
 
 """
@@ -89,30 +91,49 @@ exten => i,n,Hangup()
 
 def generar_dialplan(campana):
     """Genera el dialplan para una campaña"""
+
     partes = []
-    params = {
+    param_generales = {
         'fts_campana_id': campana.id,
         'fts_audio_file': '/tmp/sample.wav',
         'fts_agi_server': 'localhost', # TODO: mover a settings
         'date': str(datetime.datetime.now())
     }
-    partes.append(TEMPLATE_DIALPLAN_START.format(**params))
-    
+
+    partes.append(TEMPLATE_DIALPLAN_START.format(**param_generales))
+
+    # TODO: derivacion: setear GrupoAtencion / QUEUE (cuando corresponda)
+    # TODO: voicemail: IMPLEMENTAR!
+    # TODO: calificacion: IMPLEMENTAR!
+
     # Genera opciones de campana
     for opcion in campana.opciones.all():
-        params_opcion = dict(params)
+        params_opcion = dict(param_generales)
         params_opcion.update({
             'fts_opcion_id': opcion.id,
             'fts_opcion_digito': opcion.digito,
         })
+
         if opcion.accion == Opcion.DERIVAR:
+            ga = opcion.grupo_atencion
+            params_opcion.update({
+                'fts_queue_name': ga.get_nombre_para_asterisk(),
+            })
             partes.append(TEMPLATE_OPCION_DERIVAR.format(**params_opcion))
+
         elif opcion.accion == Opcion.REPETIR:
             partes.append(TEMPLATE_OPCION_REPETIR.format(**params_opcion))
+
+        elif opcion.accion == Opcion.VOICEMAIL:
+            partes.append(TEMPLATE_OPCION_VOICEMAIL.format(**params_opcion))
+
+        elif opcion.accion == Opcion.CALIFICAR:
+            partes.append(TEMPLATE_OPCION_CALIFICAR.format(**params_opcion))
+
         else:
             raise Exception("Tipo de accion para opcion desconocida: {0}"
                 "".format(opcion.accion))
 
-    partes.append(TEMPLATE_DIALPLAN_END.format(**params))
+    partes.append(TEMPLATE_DIALPLAN_END.format(**param_generales))
     
     return ''.join(partes)

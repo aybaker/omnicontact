@@ -63,6 +63,13 @@ class GrupoAtencion(models.Model):
     def get_cantidad_agentes(self):
         return self.agentes.all().count()
 
+    def get_nombre_para_asterisk(self):
+        """Devuelve un texto para ser usado en Asterisk,
+        para identificar este grupo de atencion.
+        """
+        assert self.id
+        return 'grupo_atencion_{0}'.format(self.id)
+
 
 class AgenteGrupoAtencion(models.Model):
     numero_interno = models.PositiveIntegerField()
