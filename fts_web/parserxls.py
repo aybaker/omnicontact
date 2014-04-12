@@ -86,9 +86,7 @@ class ParserXls(object):
         num_rows = worksheet.nrows - 1
         num_cols = worksheet.ncols - 1
 
-        rango = 3
-        if num_rows <= 3:
-            rango = num_rows
+        rango = min(num_rows, 3)
 
         for curr_row in range(rango):
             curr_col = -1
