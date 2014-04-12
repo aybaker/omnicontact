@@ -258,9 +258,13 @@ class DefineBaseDatosContactoView(UpdateView):
             BaseDatosContacto, pk=self.kwargs['pk']
         )
 
+        # FIXME: archivo_importacion.name *NO* posee el nombre del archivo
+        # original del usuario, sino el nombre del archivo autogenerado
+        # por Django al guardarlo en el filesystem del servidor
         parser_archivo = autodetectar_parser(
-            base_datos_contacto.archivo_importacion)
-        estructura_archivo = parser_archivo.get_file_structure()
+            base_datos_contacto.archivo_importacion.name)
+        estructura_archivo = parser_archivo.get_file_structure(
+            base_datos_contacto.archivo_importacion.file)
 
         context['estructura_archivo'] = estructura_archivo
         return context
