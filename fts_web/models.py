@@ -525,6 +525,9 @@ class Opcion(models.Model):
     """Habilita para dejar un mensaje de voz."""
     VOICEMAIL = 2
 
+    """Repetir el mensaje."""
+    REPETIR = 3
+
     ACCION_CHOICES = (
         (DERIVAR, 'DERIVAR'),
     )
