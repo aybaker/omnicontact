@@ -189,6 +189,6 @@ def generar_queue(grupo_atencion):
             'fts_member_number': agente.numero_interno,
             'fts_agente_id': agente.id
         })
-        partes.append(TEMPLATE_QUEUE_MEMBER.format(params_opcion))
+        partes.append(TEMPLATE_QUEUE_MEMBER.format(**params_opcion))
 
     return ''.join(partes)
