@@ -16,7 +16,7 @@ from fts_web.forms import (
 from fts_web.models import (
     Actuacion, Campana, Contacto, GrupoAtencion,
     BaseDatosContacto, IntentoDeContacto, Opcion)
-from fts_web.parserxls import ParserXls
+from fts_web.parserxls import Parser
 
 
 #===============================================================================
@@ -257,10 +257,10 @@ class DefineBaseDatosContactoView(UpdateView):
         base_datos_contacto = get_object_or_404(
             BaseDatosContacto, pk=self.kwargs['pk']
         )
-        parserxls = ParserXls()
-        estructura_archivo = parserxls.get_file_structure(
-            base_datos_contacto.archivo_importacion
-        )
+
+        parser_archivo = Parser(base_datos_contacto.archivo_importacion)
+        estructura_archivo = parser_archivo.get_file_structure()
+
         context['estructura_archivo'] = estructura_archivo
         return context
 
