@@ -137,3 +137,58 @@ def generar_dialplan(campana):
     partes.append(TEMPLATE_DIALPLAN_END.format(**param_generales))
     
     return ''.join(partes)
+
+
+TEMPLATE_QUEUE = """
+
+;----------------------------------------------------------------------
+; TEMPLATE_QUEUE-{fts_queue_name}
+;   Autogenerado {date}
+;----------------------------------------------------------------------
+; Grupo de Atencion
+;     - Id: {fts_grupo_atencion_id}
+; - Nombre: {fts_grupo_atencion_nombre}
+;----------------------------------------------------------------------
+
+[{fts_queue_name}]
+
+strategy={fts_strategy}
+timeout={fts_timeout}
+maxlen=0
+monitor-type=mixmonitor
+monitor-format=wav
+
+"""
+
+TEMPLATE_QUEUE_MEMBER = """
+
+; agente.id={fts_agente_id}
+member => SIP/{fts_member_number}
+
+"""
+
+
+def generar_queue(grupo_atencion):
+    """Genera configuracion para queue / grupos de atencion"""
+
+    partes = []
+    param_generales = {
+        'fts_grupo_atencion_id': grupo_atencion.id,
+        'fts_grupo_atencion_nombre': grupo_atencion.nombre,
+        'fts_queue_name': grupo_atencion.get_nombre_para_asterisk(),
+        'fts_strategy': grupo_atencion.get_ring_strategy_para_asterisk(),
+        'fts_timeout': grupo_atencion.timeout,
+        'date': str(datetime.datetime.now())
+    }
+
+    partes.append(TEMPLATE_QUEUE.format(**param_generales))
+
+    for agente in grupo_atencion.agentes.all():
+        params_opcion = dict(param_generales)
+        params_opcion.update({
+            'fts_member_number': agente.numero_interno,
+            'fts_agente_id': agente.id
+        })
+        partes.append(TEMPLATE_QUEUE_MEMBER.format(params_opcion))
+
+    return ''.join(partes)

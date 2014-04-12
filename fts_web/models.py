@@ -28,15 +28,22 @@ class GrupoAtencion(models.Model):
     un borrado lógico.
     """
 
-    nombre = models.CharField(
-        max_length=128,
-    )
-    timeout = models.PositiveIntegerField()
     RINGALL, RRMEMORY = range(0, 2)
     RING_STRATEGY_CHOICES = (
         (RINGALL, 'RINGALL'),
         (RRMEMORY, 'RRMEMORY'),
     )
+
+    """Texto a usar en configuracion de Asterisk"""
+    RING_STRATEGY_PARA_ASTERISK = dict([
+        (RINGALL, 'ringall'),
+        (RRMEMORY, 'rrmemory'),
+    ])
+
+    nombre = models.CharField(
+        max_length=128,
+    )
+    timeout = models.PositiveIntegerField()
     ring_strategy = models.PositiveIntegerField(
         choices=RING_STRATEGY_CHOICES,
         default=RINGALL,
@@ -68,7 +75,13 @@ class GrupoAtencion(models.Model):
         para identificar este grupo de atencion.
         """
         assert self.id
-        return 'grupo_atencion_{0}'.format(self.id)
+        return 'fts_grupo_atencion_{0}'.format(self.id)
+
+    def get_ring_strategy_para_asterisk(self):
+        """Devuelve un texto para ser usado en Asterisk,
+        para identificar la ring_strategy seleccionada.
+        """
+        return GrupoAtencion.RING_STRATEGY_PARA_ASTERISK[self.ring_strategy]
 
 
 class AgenteGrupoAtencion(models.Model):
