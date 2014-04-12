@@ -22,7 +22,8 @@ TEMPLATE_DIALPLAN_START = """
 
 [campania_{fts_campana_id}]
 
-exten => _XXXXXX!.,1,Answer()
+exten => _XXXXXX!.,1,NoOp(FTS,INICIO,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
+ same => _XXXXXX!.,n,Answer(1)
  same => _XXXXXX!.,n,Wait(1)
  same => _XXXXXX!.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
  same => _XXXXXX!.,n(audio),Background({fts_audio_file})
@@ -35,8 +36,9 @@ exten => _XXXXXX!.,1,Answer()
 TEMPLATE_OPCION_REPETIR = """
 
 ; TEMPLATE_OPCION_REPETIR-{fts_opcion_id}
-exten => {fts_opcion_digito},1,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/)
-exten => {fts_opcion_digito},n,Goto(${{id_num}},audio)
+exten => {fts_opcion_digito},1,NoOp(FTS,REPETIR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/repetir/)
+exten => {fts_opcion_digito},n,Goto(audio)
 exten => {fts_opcion_digito},n,Hangup()
 
 """
@@ -44,19 +46,42 @@ exten => {fts_opcion_digito},n,Hangup()
 TEMPLATE_OPCION_DERIVAR = """
 
 ; TEMPLATE_OPCION_DERIVAR-{fts_opcion_id}
-exten => {fts_opcion_digito},1,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/)
+exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id},queue={fts_queue_name})
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/derivar/)
 exten => {fts_opcion_digito},n,Queue({fts_queue_name})
 exten => {fts_opcion_digito},n,Hangup()
 
 """
 
+#TEMPLATE_OPCION_CALIFICAR = """
+#
+#; TEMPLATE_OPCION_REPETIR-{fts_opcion_id}
+#exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
+#exten => {fts_opcion_digito},1,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/)
+#exten => {fts_opcion_digito},n,Goto(${{id_num}},audio)
+#exten => {fts_opcion_digito},n,Hangup()
+#
+#"""
+
+TEMPLATE_OPCION_VOICEMAIL = """
+
+; TEMPLATE_OPCION_VOICEMAIL-{fts_opcion_id}
+exten => {fts_opcion_digito},1,NoOp(FTS,VOICEMAIL,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/voicemail/)
+exten => {fts_opcion_digito},n,Voicemail()
+exten => {fts_opcion_digito},n,Hangup()
+
+"""
 
 TEMPLATE_DIALPLAN_END = """
 
 ; TEMPLATE_DIALPLAN_END-{fts_campana_id}
-exten => t,1,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin_err/t/)
+exten => t,1,NoOp(FTS,ERR_T,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
+exten => t,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin_err/t/)
 exten => t,n,Hangup()
-exten => i,1,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin_err/i/)
+
+exten => i,1,NoOp(FTS,ERR_I,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
+exten => i,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin_err/i/)
 exten => i,n,Hangup()
 
 """
