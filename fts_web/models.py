@@ -6,6 +6,7 @@ import logging
 from django.db import models
 from django.core.exceptions import ValidationError
 
+from fts_web.parserxls import ParserXls
 from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
     ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,\
     ORIGINATE_RESULT_CONNECT_FAILED
@@ -93,7 +94,20 @@ class AgenteGrupoAtencion(models.Model):
 # Base Datos Contactos
 #===============================================================================
 
+class BaseDatosContactoManager(models.Manager):
+    """Manager para BaseDatosContacto"""
+
+    def obtener_definidas(self):
+        """
+        Este método filtra lo objetos BaseDatosContacto que
+        esté definidos.
+        """
+        return self.filter(sin_definir=False)
+
+
 class BaseDatosContacto(models.Model):
+    objects = BaseDatosContactoManager()
+
     nombre = models.CharField(
         max_length=128,
     )
@@ -110,7 +124,6 @@ class BaseDatosContacto(models.Model):
     )
     sin_definir = models.BooleanField(
         default=True,
-        editable=False,
     )
     columna_datos = models.PositiveIntegerField(
         blank=True, null=True,
@@ -127,7 +140,43 @@ class BaseDatosContacto(models.Model):
         #        return self.nombre
         #    return '(ELiminado) {0}'.format(self.nombre)
 
+    def importa_contactos(self):
+        """
+        Este metodo se encarga de realizar la importación de los
+        teléfonos del archivo guardado. Por cada teléfono del
+        archivo crea un objeto Contacto con el teléfono y lo
+        relaciona la instancia actual de BaseDatosContacto.
+        """
+
+        parserxls = ParserXls()
+        lista_telefonos = parserxls.read_file(
+            self.columna_datos,
+            self.archivo_importacion,
+        )
+        if lista_telefonos:
+            for telefono in lista_telefonos:
+                Contacto.objects.create(
+                    telefono=telefono,
+                    bd_contacto=self,
+                )
+            return True
+        return False
+
+    def define(self):
+        """
+        Este método se encara de llevar a cabo la definición del
+        objeto BaseDatosContacto. Establece el atributo sin_definir
+        en False haciedo que quede disponible el objeto.
+        """
+
+        logger.info("Seteando base datos contacto %s como definida", self.id)
+        self.sin_definir = False
+        self.save()
+
     def get_cantidad_contactos(self):
+        """
+        """
+
         return self.contactos.all().count()
 
 

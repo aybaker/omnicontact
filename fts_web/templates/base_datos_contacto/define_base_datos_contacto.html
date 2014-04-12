@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">                
+            <h4 class="inline">Base Datos Contactos</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">                
+                {% if estructura_archivo %}
+                    <form role="form" method="post" enctype="multipart/form-data" >
+                        {% csrf_token %}
+                        {% if error %}
+                            <p class="text-danger">Debe que seleccionar la columna que sea el Teléfono.</p>
+                        {% endif %}
+                        <table class="table table-bordered">
+                            {% for row, cols in estructura_archivo.items %}
+                                {% if forloop.first %}
+                                    <thead>
+                                        
+                                    <th></th>
+                                    {% for col in cols %}
+                                        <th>
+                                            <div class="radio {% if error %}has-error{% endif %}">
+                                                <label class="control-label">
+                                                    <input type="radio" name="telefono" value="{{ forloop.counter0 }}">
+                                                    Teléfono
+                                                </label>
+                                            </div>
+                                        </th>       
+                                    {% endfor %}
+                                    </thead>
+                                    <tbody>
+                                {% endif %}
+                                <tr>
+                                    <td>{{ row }}</td> 
+                                    {% for col in cols %}
+                                        <td>{{ col }}</td>       
+                                    {% endfor %}            
+                                </tr>
+                            {% endfor %}
+                            </tbody> 
+                        </table>
+                        <br>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            Guardar Base Datos
+                        </button>
+                    </form>
+                {% else %}
+                    <table class="table table-bordered">
+                        <thead>
+                            <th>
+                                <p class="text-center text-danger">
+                                    <em>No se pudo procesar el archivo.</em>
+                                </p>
+                            </th>
+                        </thead>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

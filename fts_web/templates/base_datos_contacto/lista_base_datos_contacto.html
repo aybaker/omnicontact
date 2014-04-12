@@ -16,6 +16,7 @@
                         <th>Base Datos Contactos</th>
                         <th>Creada</th>
                         <th>Cantidad Contactos</th>
+                        <th>Definida</th>
                         <!-- <th>Editar</th> -->
                         <!-- <th>Eliminar</th> -->
                       </tr>
@@ -31,7 +32,14 @@
                                 </td> 
                                 <td>                          
                                     {{ base_datos_contacto.get_cantidad_contactos }}
-                                </td>                                         
+                                </td> 
+                                 <td> 
+                                    {% if base_datos_contacto.sin_definir %}                        
+                                        <span class="label label-danger">Sin Definir</span>
+                                    {% else %}
+                                        <span class="label label-success">Definida</span>
+                                    {% endif %}
+                                </td>                                        
                                 <!-- <td>
                                     <a href="{# url 'edita_base_datos_contacto' base_datos_contacto.pk #}">
                                         <button type="button" class="btn btn-primary btn-sm">

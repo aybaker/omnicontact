@@ -47,10 +47,10 @@ urlpatterns = patterns('',
         views.BaseDatosContactoCreateView.as_view(),
         name='nueva_base_datos_contacto',
     ),
-    # url(r'^base_datos_contacto/(?P<pk>\d+)/$',
-    #     views.BaseDatosContactoUpdateView.as_view(),
-    #     name='edita_base_datos_contacto',
-    # ),
+    url(r'^base_datos_contacto/(?P<pk>\d+)/validacion/$',
+        views.DefineBaseDatosContactoView.as_view(),
+        name='define_base_datos_contacto',
+    ),
 
     #===============================================================================
     # Campaña

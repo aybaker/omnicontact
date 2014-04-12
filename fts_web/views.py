@@ -11,7 +11,7 @@ from django.views.generic import (
 
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, CampanaForm,
-    ConfirmaForm, FileForm, GrupoAtencionForm,
+    ConfirmaForm, GrupoAtencionForm,
     BaseDatosContactoForm, OpcionForm)
 from fts_web.models import (
     Actuacion, Campana, Contacto, GrupoAtencion,
@@ -216,92 +216,71 @@ class BaseDatosContactoListView(ListView):
     context_object_name = 'bases_datos_contacto'
     model = BaseDatosContacto
 
-    #    def get_queryset(self):
-    #        queryset = BaseDatosContacto.objects.all()
-    #        return queryset
 
-
-class BaseDatosContactoMixin(object):
+class BaseDatosContactoCreateView(CreateView):
     """
-    Este mixin procesa y valida
-    los formularios en la creación y edición
-    de objetos BaseDatosContacto.
-    """
-
-    def process_all_forms(self, form):
-        """
-        Este método se encarga de validar el
-        formularios BaseDatosContactoForm y hacer
-        el save. Luego valida FileForm, y
-        lleva a cabo el parceo del archivo subido
-        gurdando los número obtenidos.
-        """
-        if form.is_valid():
-            self.object = form.save()
-
-        form_file = self.form_file(
-            self.request.POST, self.request.FILES)
-
-        is_valid = all([
-            form.is_valid(),
-            form_file.is_valid(),
-        ])
-
-        if is_valid:
-            parserxls = ParserXls()
-
-            file = form_file.cleaned_data['file']
-            list_contactos = parserxls.read_file(file)
-            for contacto in list_contactos:
-                Contacto.objects.create(
-                    telefono=contacto,
-                    bd_contacto=self.object
-                )
-            return redirect(self.get_success_url())
-        else:
-            if form.is_valid():
-                self.object.delete()
-                self.object = None
-
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                '<strong>Operación Errónea!</strong>\
-                Revise y complete todos los campos obligatorios\
-                para la creación de una nuevo Grupo de Atención.',
-            )
-            context = self.get_context_data(
-                form=form,
-                form_file=form_file,
-            )
-
-            return self.render_to_response(context)
-
-
-class BaseDatosContactoCreateView(CreateView, BaseDatosContactoMixin):
-    """
-    Esta vista crea un objeto BaseDatosContacto.
+    Esta vista crea una instancia de BaseDatosContacto
+    sin definir, lo que implica que no esta disponible
+    hasta que se procese su definición.
     """
 
     template_name = 'base_datos_contacto/nueva_edita_base_datos_contacto.html'
     model = BaseDatosContacto
     context_object_name = 'base_datos_contacto'
     form_class = BaseDatosContactoForm
-    form_file = FileForm
+
+    def get_success_url(self):
+        return reverse(
+            'define_base_datos_contacto',
+            kwargs={"pk": self.object.pk})
+
+
+class DefineBaseDatosContactoView(UpdateView):
+    """
+    Esta vista se obtiene un resumen de la estructura
+    del archivo a importar y la presenta al usuario para
+    que seleccione en que columna se encuentra el teléfono.
+    Guarda la posición de la columna como entero y llama a
+    importar los teléfono del archivo que se guardo.
+    Si la importación resulta bien, llama a definir el objeto
+    BaseDatosContacto para que esté disponible.
+    """
+
+    template_name = 'base_datos_contacto/define_base_datos_contacto.html'
+    model = BaseDatosContacto
+    context_object_name = 'base_datos_contacto'
 
     def get_context_data(self, **kwargs):
         context = super(
-            BaseDatosContactoCreateView, self).get_context_data(**kwargs)
+            DefineBaseDatosContactoView, self).get_context_data(**kwargs)
 
-        if 'form_file' not in context:
-            context['form_file'] = self.form_file()
+        base_datos_contacto = get_object_or_404(
+            BaseDatosContacto, pk=self.kwargs['pk']
+        )
+        parserxls = ParserXls()
+        estructura_archivo = parserxls.get_file_structure(
+            base_datos_contacto.archivo_importacion
+        )
+        context['estructura_archivo'] = estructura_archivo
         return context
 
-    def form_valid(self, form):
-        return self.process_all_forms(form)
-
     def form_invalid(self, form):
-        return self.process_all_forms(form)
+        return self.render_to_response(self.get_context_data(error=True))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if 'telefono' in self.request.POST:
+            self.object.columna_datos = int(self.request.POST['telefono'])
+            self.object.save()
+
+            importacion = self.object.importa_contactos()
+            if importacion:
+                self.object.define()
+
+                return redirect(self.get_success_url())
+        return super(DefineBaseDatosContactoView, self).post(
+            request, *args, **kwargs)
 
     def get_success_url(self):
         message = '<strong>Operación Exitosa!</strong>\
@@ -315,6 +294,9 @@ class BaseDatosContactoCreateView(CreateView, BaseDatosContactoMixin):
         )
 
         return reverse('lista_base_datos_contacto')
+
+
+
 
 
 # class BaseDatosContactoUpdateView(UpdateView, BaseDatosContactoMixin):
@@ -595,5 +577,3 @@ def registar_llamada_contestada(request, call_id):
     intento = IntentoDeContacto.objects.get(pk=call_id)
     intento.registra_contesto()
     return HttpResponse('ok')
-
-
