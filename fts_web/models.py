@@ -559,6 +559,10 @@ class Opcion(models.Model):
         'GrupoAtencion',
         null=True, blank=True,
     )
+    calificacion = models.ForeignKey(
+        'Calificacion',
+        null=True, blank=True,
+    )
     campana = models.ForeignKey(
         'Campana',
         related_name='opciones'

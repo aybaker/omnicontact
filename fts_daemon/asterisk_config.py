@@ -10,7 +10,15 @@ Created on Apr 11, 2014
 from __future__ import unicode_literals
 
 import datetime
+
 from fts_web.models import Opcion
+
+
+#def _safe(value):
+#    """Limpia texto usado para generar archivo de configuracion"""
+#    # FIXME: IMPLEMENTAR y usarlo!
+#    # TODO: ver si django no tiene algo armado
+#    return value
 
 
 TEMPLATE_DIALPLAN_START = """
@@ -55,11 +63,10 @@ exten => {fts_opcion_digito},n,Hangup()
 
 TEMPLATE_OPCION_CALIFICAR = """
 
-; TEMPLATE_OPCION_CALIFICAR-{fts_opcion_id}
-exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/calificar/)
+; TEMPLATE_OPCION_CALIFICAR-{fts_opcion_id}-{fts_calificacion_id}-{fts_calificacion_nombre}
+exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id},calificacion={fts_calificacion_id}-fts_calificacion_nombre)
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/calificar/{fts_calificacion_id}/)
 exten => {fts_opcion_digito},n,Goto(audio)
-; TODO: IMPLEMENTAR!
 exten => {fts_opcion_digito},n,Hangup()
 
 """
@@ -104,7 +111,6 @@ def generar_dialplan(campana):
 
     # TODO: derivacion: setear GrupoAtencion / QUEUE (cuando corresponda)
     # TODO: voicemail: IMPLEMENTAR!
-    # TODO: calificacion: IMPLEMENTAR!
 
     # Genera opciones de campana
     for opcion in campana.opciones.all():
@@ -125,9 +131,14 @@ def generar_dialplan(campana):
             partes.append(TEMPLATE_OPCION_REPETIR.format(**params_opcion))
 
         elif opcion.accion == Opcion.VOICEMAIL:
+            # TODO: implementar
             partes.append(TEMPLATE_OPCION_VOICEMAIL.format(**params_opcion))
 
         elif opcion.accion == Opcion.CALIFICAR:
+            params_opcion.update({
+                'fts_calificacion_id': opcion.calificacion.id,
+                'fts_calificacion_nombre': opcion.calificacion.nombre,
+            })
             partes.append(TEMPLATE_OPCION_CALIFICAR.format(**params_opcion))
 
         else:
