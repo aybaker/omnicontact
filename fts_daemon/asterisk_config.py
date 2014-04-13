@@ -53,7 +53,7 @@ exten => {fts_opcion_digito},n,Hangup()
 
 TEMPLATE_OPCION_DERIVAR = """
 
-; TEMPLATE_OPCION_DERIVAR-{fts_opcion_id}
+; TEMPLATE_OPCION_DERIVAR-{fts_opcion_id}-{fts_grup_atencion_id}-{fts_queue_name}
 exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id},queue={fts_queue_name})
 exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/derivar/)
 exten => {fts_opcion_digito},n,Queue({fts_queue_name})
@@ -124,6 +124,7 @@ def generar_dialplan(campana):
             ga = opcion.grupo_atencion
             params_opcion.update({
                 'fts_queue_name': ga.get_nombre_para_asterisk(),
+                'fts_grup_atencion_id': ga.id,
             })
             partes.append(TEMPLATE_OPCION_DERIVAR.format(**params_opcion))
 
