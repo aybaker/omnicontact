@@ -629,3 +629,23 @@ class Actuacion(models.Model):
                 'hora_hasta': ["Ya esta cubierto el rango horario\
                     en ese día semanal."],
             })
+
+
+#==============================================================================
+# Calificacion
+#==============================================================================
+
+class Calificacion(models.Model):
+    """
+    Representa una Calificacion
+    """
+    nombre = models.CharField(
+        max_length=64,
+    )
+    campana = models.ForeignKey(
+        'Campana',
+        related_name='calificaciones'
+    )
+
+    def __unicode__(self):
+        return self.nombre
