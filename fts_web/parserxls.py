@@ -20,7 +20,7 @@ def autodetectar_parser(filename):
     extensión del archivo
 
     Parametros:
-     - extension (str) La extensión del archivo que subió.
+     - filename (str) EL nombre del archivo que subió.
     """
     extension = os.path.splitext(filename)[1].lower()
     if extension in xls_extensions:
@@ -50,7 +50,9 @@ class ParserXls(object):
 
         Parametros:
          - columna_datos: Entero que indica la columna con los teléfonos.
+         - file_obj: Objeto archivo de la instancia de BaseDatosContactos.
         """
+
         # Reseteamos estadisticas
         self.vacias = 0
         self.erroneas = 0
@@ -143,7 +145,8 @@ class ParserCsv(object):
         tomada por parámetro.
 
         Parametros:
-         - columna_datos: Entero que indica la columna con los teléfonos.
+        - columna_datos: Entero que indica la columna con los teléfonos.
+        - file_obj: Objeto archivo de la instancia de BaseDatosContactos.
         """
         # Reseteamos estadisticas
         self.vacias = 0
