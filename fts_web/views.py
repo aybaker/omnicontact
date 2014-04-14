@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import os
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
@@ -229,10 +230,18 @@ class BaseDatosContactoCreateView(CreateView):
     context_object_name = 'base_datos_contacto'
     form_class = BaseDatosContactoForm
 
+    def form_valid(self, form):
+        filename = self.request.FILES['archivo_importacion'].name
+        self.extension = os.path.splitext(filename)[1].lower()
+
+        self.object = form.save()
+        return redirect(self.get_success_url())
+
     def get_success_url(self):
         return reverse(
             'define_base_datos_contacto',
-            kwargs={"pk": self.object.pk})
+            kwargs={"pk": self.object.pk,
+                    "extension": self.extension})
 
 
 class DefineBaseDatosContactoView(UpdateView):
@@ -258,11 +267,8 @@ class DefineBaseDatosContactoView(UpdateView):
             BaseDatosContacto, pk=self.kwargs['pk']
         )
 
-        # FIXME: archivo_importacion.name *NO* posee el nombre del archivo
-        # original del usuario, sino el nombre del archivo autogenerado
-        # por Django al guardarlo en el filesystem del servidor
-        parser_archivo = autodetectar_parser(
-            base_datos_contacto.archivo_importacion.name)
+        parser_archivo = parser_archivo = self.get_parser()
+
         estructura_archivo = parser_archivo.get_file_structure(
             base_datos_contacto.archivo_importacion.file)
 
@@ -279,13 +285,22 @@ class DefineBaseDatosContactoView(UpdateView):
             self.object.columna_datos = int(self.request.POST['telefono'])
             self.object.save()
 
-            importacion = self.object.importa_contactos()
+            parser_archivo = self.get_parser()
+
+            importacion = self.object.importa_contactos(parser_archivo)
             if importacion:
                 self.object.define()
 
                 return redirect(self.get_success_url())
         return super(DefineBaseDatosContactoView, self).post(
             request, *args, **kwargs)
+
+    def get_parser(self):
+        """
+        Devuelve la instancia del parser adecuado
+        para procesar el archivo.
+        """
+        return autodetectar_parser(self.kwargs['extension'])
 
     def get_success_url(self):
         message = '<strong>Operación Exitosa!</strong>\

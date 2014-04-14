@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 import logging
-import os
 import xlrd
 import csv
 
@@ -15,21 +14,20 @@ csv_extensions = ['.csv']
 xls_extensions = ['.xls']
 
 
-def autodetectar_parser(filename):
+def autodetectar_parser(extension):
     """Devuelve instancia de ParserXxx dependiendo de la
     extensión del archivo
 
     Parametros:
-     - filename (str) El nombre del archivo (con o sin path)
+     - extension (str) La extensión del archivo que subió.
     """
-    extension = os.path.splitext(filename)[1].lower()
     if extension in xls_extensions:
         return ParserXls()
     elif extension in csv_extensions:
         return ParserCsv()
     else:
-        logger.warn("El archivo %s no es CSV ni XLS. "
-            "Devolveremos CSV por las dudas...", filename)
+        logger.warn("La extensión %s no es CSV ni XLS. "
+            "Devolveremos CSV por las dudas...", extension)
         return ParserCsv()
 
 

@@ -160,16 +160,19 @@ class BaseDatosContacto(models.Model):
         #        return self.nombre
         #    return '(ELiminado) {0}'.format(self.nombre)
 
-    def importa_contactos(self):
+    def importa_contactos(self, parser_archivo):
         """
         Este metodo se encarga de realizar la importación de los
         teléfonos del archivo guardado. Por cada teléfono del
         archivo crea un objeto Contacto con el teléfono y lo
         relaciona la instancia actual de BaseDatosContacto.
+        Parametros:
+        - parser_archivo: Instacia del parser adecuado según el
+        tipo de archivo subido.
+
         """
 
-        parser = autodetectar_parser(self.archivo_importacion.name)
-        lista_telefonos = parser.read_file(self.columna_datos,
+        lista_telefonos = parser_archivo.read_file(self.columna_datos,
             self.archivo_importacion.file)
         if lista_telefonos:
             for telefono in lista_telefonos:
