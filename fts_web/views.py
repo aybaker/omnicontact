@@ -514,6 +514,64 @@ class ConfirmaCampanaView(UpdateView):
         return reverse('lista_campana')
 
 
+class PausaCampanaView(UpdateView):
+    """
+    Esta vista actualiza la campañana pausándola.
+    """
+
+    model = Campana
+    context_object_name = 'campana'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        self.object.pausar()
+
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito el pausado de\
+        la Campaña.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+
+        return reverse('lista_campana_por_estados')
+
+
+class ActivaCampanaView(UpdateView):
+    """
+    Esta vista actualiza la campañana activándola.
+    """
+
+    model = Campana
+    context_object_name = 'campana'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        self.object.despausar()
+
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la activación de\
+        la Campaña.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+
+        return reverse('lista_campana_por_estados')
+
+
 # class CampanaUpdateView(UpdateView):
 #     """
 #     Esta vista actualiza un objeto Campana.
@@ -557,22 +615,23 @@ class CampanaPorEstadoListView(ListView):
     context_object_name = 'campanas'
     model = Campana
 
-    def get_queryset(self):
+    #def get_queryset(self):
         # FIXME: para setear variables, sobreescribir get_context_data()
         # ya que según la API, get_queryset() es para otras cosas.
         # (ya está implementado más abajo)
-        query_dict = {
-            'activas': Campana.objects.obtener_activas(),
-            'finalizadas': Campana.objects.obtener_finalizadas(),
-        }
-        return query_dict
+        # query_dict = {
+        #     'activas': Campana.objects.obtener_activas(),
+        #     'finalizadas': Campana.objects.obtener_finalizadas(),
+        # }
+        # return query_dict
 
-    #    def get_context_data(self, **kwargs):
-    #        context = super(CampanaPorEstadoDetailView, self).get_context_data(
-    #            **kwargs)
-    #        context['activas'] = Campana.objects.obtener_activas()
-    #        context['finalizadas'] = Campana.objects.obtener_finalizadas()
-    #        return context
+    def get_context_data(self, **kwargs):
+        context = super(CampanaPorEstadoListView, self).get_context_data(
+           **kwargs)
+        context['activas'] = Campana.objects.obtener_activas()
+        context['pausadas'] = Campana.objects.obtener_pausadas()
+        context['finalizadas'] = Campana.objects.obtener_finalizadas()
+        return context
 
 
 class CampanaPorEstadoDetailView(DetailView):
