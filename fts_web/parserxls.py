@@ -150,7 +150,8 @@ class ParserCsv(object):
         self.erroneas = 0
         value_list = []
 
-        workbook = csv.reader(file_obj)
+        dialect = csv.Sniffer().sniff(file_obj.readline(), [',', ';', '|', ' '])
+        workbook = csv.reader(file_obj, dialect)
         for i, curr_row in enumerate(workbook):
             if not len(curr_row) == 0:
                 value = curr_row[columna_datos].strip()
@@ -176,7 +177,7 @@ class ParserCsv(object):
         las primeras tres filas.
         """
 
-        dialect = csv.Sniffer().sniff(file_obj.readline(), [',', ';', ' '])
+        dialect = csv.Sniffer().sniff(file_obj.readline(), [',', ';', '|', ' '])
         workbook = csv.reader(file_obj, dialect)
         structure_dic = {}
 
