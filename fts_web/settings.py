@@ -150,7 +150,7 @@ TEST_RUNNER = "fts_web.tests.FTSenderDiscoverRunner"
 
 try:
     from fts_web.settings_local import *
-except ImportError, e:
+except ImportError as e:
     import warnings
     warnings.warn("Couldn't import from 'fts_web.local_settings': {}".format(
         e.args[0]), stacklevel=0)
@@ -188,3 +188,9 @@ assert FTS_RELOAD_CMD is not None, \
 
 assert TMPL_FTS_AUDIO_CONVERSOR is not None, \
     "Falta definir setting para TMPL_FTS_AUDIO_CONVERSOR"
+
+assert "<INPUT_FILE>" in TMPL_FTS_AUDIO_CONVERSOR, \
+    "Falta definir <INPUT_FILE> en TMPL_FTS_AUDIO_CONVERSOR"
+
+assert "<OUTPUT_FILE>" in TMPL_FTS_AUDIO_CONVERSOR, \
+    "Falta definir <OUTPUT_FILE> en TMPL_FTS_AUDIO_CONVERSOR"
