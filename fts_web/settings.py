@@ -61,6 +61,13 @@ Ej:
 """
 FTS_RELOAD_CMD = None
 
+"""Comando para convertir audios (wav a gsm)
+Ej:
+    TMPL_FTS_AUDIO_CONVERSOR = ["sox", "<INPUT_FILE>", "<OUTPUT_FILE>"]
+"""
+TMPL_FTS_AUDIO_CONVERSOR = None
+
+
 ALLOWED_HOSTS = []
 
 
@@ -176,3 +183,8 @@ if os.path.exists(FTS_QUEUE_FILENAME):
 
 assert FTS_RELOAD_CMD is not None, \
     "Falta definir setting para FTS_RELOAD_CMD"
+
+# Check TMPL_FTS_AUDIO_CONVERSOR
+
+assert TMPL_FTS_AUDIO_CONVERSOR is not None, \
+    "Falta definir setting para TMPL_FTS_AUDIO_CONVERSOR"
