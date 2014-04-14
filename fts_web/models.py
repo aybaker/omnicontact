@@ -338,6 +338,24 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
 
+    def pausar(self):
+        """Setea la campaña como pausada"""
+        logger.info("Seteando campana %s como ESTADO_PAUSADA", self.id)
+        assert self.estado in (Campana.ESTADO_ACTIVA)
+        self.estado = Campana.ESTADO_PAUSADA
+        self.save()
+
+    def pausada(self):
+        """
+        Devuelve si True/False si una campana esta en
+        ESTADO_PAUSADA.
+        """
+        if self.estado == self.ESTADO_PAUSADA:
+            return True
+        return False
+
+
+
     def obtener_intentos_pendientes(self):
         """Devuelve instancias de IntentoDeContacto para los que
         haya que intentar realizar llamadas.
