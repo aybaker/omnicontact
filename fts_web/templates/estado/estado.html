@@ -14,21 +14,67 @@
                 <table class="table table-bordered table-hover">
                     <thead>
                       <tr>                                
-                        <th>Campaña</th>
-                        
+                        <th>Campaña</th>                    
                         <th>Estado</th>
-                        
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
-                        {% for campana in campanas.activas %}
+                        {% for campana in activas %}
                             <tr>
                                 <td>                          
                                     <a href="{% url 'campana_detalle_de_estado' campana.id %}">{{ campana.nombre }}</a>
                                 </td>
                                 <td>
                                     {{ campana.get_estado_display }}
-                                </td>                          
+                                </td>
+                                <td>
+                                    <a href="{% url 'estado_pausa_campana' campana.pk %}">
+                                        <button type="button" class="btn btn-danger btn-sm">
+                                            <span class="glyphicon glyphicon-pause"></span>
+                                            Pausar
+                                        </button>
+                                    </a>
+                                </td>                        
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron Campañas.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h4>Campañas Pausadas</h4>
+               <table class="table table-bordered table-hover">
+                    <thead>
+                      <tr>                                
+                        <th>Campaña</th>                    
+                        <th>Estado</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for campana in pausadas %}
+                            <tr>
+                                <td>                          
+                                    <a href="{% url 'campana_detalle_de_estado' campana.id %}">{{ campana.nombre }}</a>
+                                </td>
+                                <td>
+                                    {{ campana.get_estado_display }}
+                                </td>
+                                <td>
+                                    <a href="{% url 'estado_activa_campana' campana.pk %}">
+                                        <button type="button" class="btn btn-success btn-sm">
+                                            <span class="glyphicon glyphicon-play"></span>
+                                            Pausar
+                                        </button>
+                                    </a>
+                                </td>                        
                             </tr>
                         {% empty %}
                             <tr>
@@ -53,7 +99,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                        {% for campana in campanas.finalizadas %}
+                        {% for campana in finalizadas %}
                             <tr>
                                 <td>                          
                                     <a href="{% url 'campana_detalle_de_estado' campana.id %}">{{ campana.nombre }}</a>

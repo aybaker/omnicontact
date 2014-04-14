@@ -255,6 +255,12 @@ class CampanaManager(models.Manager):
         """
         return self.filter(estado=Campana.ESTADO_ACTIVA)
 
+    def obtener_pausadas(self):
+        """
+        Devuelve campañas en estado pausadas.
+        """
+        return self.filter(estado=Campana.ESTADO_PAUSADA)
+
     def obtener_finalizadas(self):
         """Devuelve campañas en estado finalizadas."""
         return self.filter(estado=Campana.ESTADO_FINALIZADA)
@@ -323,8 +329,7 @@ class Campana(models.Model):
         asociados a esta campaña
         """
         logger.info("Seteando campana %s como ACTIVA", self.id)
-        assert self.estado in (Campana.ESTADO_EN_DEFINICION,
-            Campana.ESTADO_PAUSADA)
+        assert self.estado == Campana.ESTADO_EN_DEFINICION
         self.estado = Campana.ESTADO_ACTIVA
         self.save()
 
@@ -336,6 +341,21 @@ class Campana(models.Model):
         # TODO: esta bien generar error si el modo actual es ESTADO_FINALIZADA?
         assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
         self.estado = Campana.ESTADO_FINALIZADA
+        self.save()
+
+    def pausar(self):
+        """Setea la campaña como ESTADO_PAUSADA"""
+        logger.info("Seteando campana %s como ESTADO_PAUSADA", self.id)
+        assert self.estado == Campana.ESTADO_ACTIVA
+        self.estado = Campana.ESTADO_PAUSADA
+        self.save()
+
+    def despausar(self):
+        """Setea la campaña como ESTADO_ACTIVA.
+        """
+        logger.info("Seteando campana %s como ESTADO_ACTIVA", self.id)
+        assert self.estado == Campana.ESTADO_PAUSADA
+        self.estado = Campana.ESTADO_ACTIVA
         self.save()
 
     def obtener_intentos_pendientes(self):
