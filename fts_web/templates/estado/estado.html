@@ -14,10 +14,9 @@
                 <table class="table table-bordered table-hover">
                     <thead>
                       <tr>                                
-                        <th>Campaña</th>
-                        
+                        <th>Campaña</th>                    
                         <th>Estado</th>
-                        
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -28,7 +27,24 @@
                                 </td>
                                 <td>
                                     {{ campana.get_estado_display }}
-                                </td>                          
+                                </td>
+                                <td>
+                                    {% if not campana.pausada %}
+                                        <a href="{# url 'pausar_campana' campana.pk #}">
+                                            <button type="button" class="btn btn-danger btn-sm">
+                                                <span class="glyphicon glyphicon-pause"></span>
+                                                Pausar
+                                            </button>
+                                        </a>
+                                    {% else %}
+                                        <a href="{# url 'activar_campana' campana.pk #}">
+                                        <button type="button" class="btn btn-success btn-sm">
+                                            <span class="glyphicon glyphicon-play"></span>
+                                            Activar
+                                        </button>
+                                    </a>
+                                    {% endif %}
+                                </td>                        
                             </tr>
                         {% empty %}
                             <tr>
