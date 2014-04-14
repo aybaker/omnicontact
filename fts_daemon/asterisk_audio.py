@@ -14,6 +14,7 @@ from fts_web.models import Campana
 from django.core.files.storage import DefaultStorage
 import os
 from django.conf import settings
+from fts_web.errors import FtsAudioConversionError
 
 
 logger = _logging.getLogger(__name__)
@@ -30,20 +31,29 @@ def convertir_audio_de_campana(campana):
 
 
 def convertir_audio(input_file, output_file):
-    """Convierte archivo de audio de campaña"""
+    """Convierte archivo de audio de campaña
+
+    Parametros:
+        input_file: path a archivo de entrada (.wav)
+        output_file: path a archivo de salida (.gsm)
+
+    Raises:
+        FtsAudioConversionError: si se produjo algun tipo de error
+    """
 
     if not os.path.exists(input_file):
         logger.error("El archivo de entrada no existe: %s", input_file)
-        return False
+        raise FtsAudioConversionError("El archivo de entrada no existe")
 
     if not os.path.abspath(input_file):
         logger.error("El archivo de entrada no es un path absoluto: %s",
             input_file)
-        return False
+        raise FtsAudioConversionError("El archivo de entrada no es "
+            "un path absoluto")
 
     if os.path.exists(output_file):
         logger.error("El archivo de salida existe: %s", output_file)
-        return False
+        raise FtsAudioConversionError("El archivo de salida ya existe")
 
     stdout_file = tempfile.TemporaryFile()
     stderr_file = tempfile.TemporaryFile()
@@ -61,9 +71,8 @@ def convertir_audio(input_file, output_file):
         subprocess.check_call(FTS_AUDIO_CONVERSOR,
             stdout=stdout_file, stderr=stderr_file)
         logger.info("Conversion de audio finalizada exitosamente")
-        return 0
 
-    except subprocess.CalledProcessError, e:
+    except subprocess.CalledProcessError as e:
         logger.warn("Exit status erroneo: %s", e.returncode)
         logger.warn(" - Comando ejecutado: %s", e.cmd)
         try:
@@ -78,9 +87,11 @@ def convertir_audio(input_file, output_file):
                 if line:
                     logger.warn(" STDERR> %s", line)
         except:
-            logger.exception("Error al intentar reporter STDERR y STDOUT")
+            logger.exception("Error al intentar reporter STDERR y STDOUT "
+                "(lo ignoramos)")
 
-        return e.returncode
+        raise FtsAudioConversionError("Error detectado al ejecutar conversor",
+            cause=e)
 
     finally:
         stdout_file.close()
