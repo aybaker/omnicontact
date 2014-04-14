@@ -9,7 +9,6 @@ from django.core.exceptions import ValidationError
 from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
     ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,\
     ORIGINATE_RESULT_CONNECT_FAILED
-from fts_web.parserxls import autodetectar_parser
 
 
 logger = logging.getLogger(__name__)
