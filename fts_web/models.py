@@ -169,7 +169,8 @@ class BaseDatosContacto(models.Model):
         """
 
         parser = autodetectar_parser(self.archivo_importacion.name)
-        lista_telefonos = parser.read_file(self.columna_datos)
+        lista_telefonos = parser.read_file(self.columna_datos,
+            self.archivo_importacion.file)
         if lista_telefonos:
             for telefono in lista_telefonos:
                 Contacto.objects.create(
