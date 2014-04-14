@@ -12,7 +12,7 @@ from __future__ import unicode_literals
 import datetime
 
 from django.conf import settings
-from fts_web.models import Opcion, Campana
+from fts_web.models import Opcion, Campana, GrupoAtencion
 import os
 import logging as _logging
 import tempfile
@@ -236,3 +236,29 @@ def generar_queue(grupo_atencion):
         partes.append(TEMPLATE_QUEUE_MEMBER.format(**params_opcion))
 
     return ''.join(partes)
+
+
+def create_queue_config_file():
+    """Crea el archivo de queue para G.A. existentes"""
+
+    grupos_atencion = GrupoAtencion.objects.obtener_todos_para_generar_config()
+
+    tmp_fd, tmp_filename = tempfile.mkstemp()
+    try:
+        tmp_file_obj = os.fdopen(tmp_fd, 'w')
+        for ga in grupos_atencion:
+            logger.info("Creando config para grupo de atencion %s", ga.id)
+            config_chunk = generar_queue(ga)
+            tmp_file_obj.write(config_chunk)
+
+        tmp_file_obj.close()
+        dest_filename = settings.FTS_QUEUE_FILENAME.strip()
+        logger.info("Copiando config de queues a %s", dest_filename)
+        shutil.copy(tmp_filename, dest_filename)
+
+    finally:
+        try:
+            os.remove(tmp_filename)
+        except:
+            logger.exception("Error al intentar borrar temporal %s",
+                tmp_filename)

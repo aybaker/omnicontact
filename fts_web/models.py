@@ -14,9 +14,19 @@ from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
 logger = logging.getLogger(__name__)
 
 
-#===============================================================================
+#==============================================================================
 # Grupos de Atención
-#===============================================================================
+#==============================================================================
+
+class GrupoAtencionManager(models.Manager):
+    """Manager para GrupoAtencion"""
+
+    def obtener_todos_para_generar_config(self):
+        """Devuelve g.a. que deben ser tenidas en cuenta
+        al generar el configuracoin de queues.
+        """
+        return self.all()
+
 
 class GrupoAtencion(models.Model):
     """
@@ -26,6 +36,8 @@ class GrupoAtencion(models.Model):
     Se sobreescribe el método `delete()` para implementar
     un borrado lógico.
     """
+
+    objects = GrupoAtencionManager()
 
     RINGALL, RRMEMORY = range(0, 2)
     RING_STRATEGY_CHOICES = (
@@ -251,6 +263,7 @@ class CampanaManager(models.Manager):
         """Devuelve campañas que deben ser tenidas en cuenta
         al generar el dialplan.
         """
+        # TODO: renombrar a `obtener_todas_para_generar_config()`
         return self.filter(estado__in=[Campana.ESTADO_ACTIVA,
             Campana.ESTADO_PAUSADA, Campana.ESTADO_FINALIZADA])
 
