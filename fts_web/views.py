@@ -297,13 +297,6 @@ class DefineBaseDatosContactoView(UpdateView):
         return super(DefineBaseDatosContactoView, self).post(
             request, *args, **kwargs)
 
-    def get_parser(self):
-        """
-        Devuelve la instancia del parser adecuado
-        para procesar el archivo.
-        """
-        return autodetectar_parser(self.kwargs['extension'])
-
     def get_success_url(self):
         message = '<strong>Operación Exitosa!</strong>\
         Se llevó a cabo con éxito la creación de\
