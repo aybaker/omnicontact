@@ -142,6 +142,9 @@ class BaseDatosContacto(models.Model):
         #TODO: Definir path para los archivos.
         upload_to='base_datos/%Y/%m/%d',
     )
+    nombre_archivo_importacion = models.CharField(
+        max_length=256,
+    )
     sin_definir = models.BooleanField(
         default=True,
     )

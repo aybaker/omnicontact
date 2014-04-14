@@ -231,17 +231,18 @@ class BaseDatosContactoCreateView(CreateView):
     form_class = BaseDatosContactoForm
 
     def form_valid(self, form):
-        filename = self.request.FILES['archivo_importacion'].name
-        self.extension = os.path.splitext(filename)[1].lower()
+        nombre_archivo_importacion =\
+            self.request.FILES['archivo_importacion'].name
 
-        self.object = form.save()
+        self.object = form.save(commit=False)
+        self.object.nombre_archivo_importacion = nombre_archivo_importacion
+        self.object.save()
         return redirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse(
             'define_base_datos_contacto',
-            kwargs={"pk": self.object.pk,
-                    "extension": self.extension})
+            kwargs={"pk": self.object.pk})
 
 
 class DefineBaseDatosContactoView(UpdateView):
@@ -267,8 +268,8 @@ class DefineBaseDatosContactoView(UpdateView):
             BaseDatosContacto, pk=self.kwargs['pk']
         )
 
-        parser_archivo = parser_archivo = self.get_parser()
-
+        parser_archivo = autodetectar_parser(
+            base_datos_contacto.nombre_archivo_importacion)
         estructura_archivo = parser_archivo.get_file_structure(
             base_datos_contacto.archivo_importacion.file)
 
@@ -285,7 +286,8 @@ class DefineBaseDatosContactoView(UpdateView):
             self.object.columna_datos = int(self.request.POST['telefono'])
             self.object.save()
 
-            parser_archivo = self.get_parser()
+            parser_archivo = autodetectar_parser(
+            self.object.nombre_archivo_importacion)
 
             importacion = self.object.importa_contactos(parser_archivo)
             if importacion:

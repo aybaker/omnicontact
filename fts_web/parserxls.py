@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import logging
+import os
 import xlrd
 import csv
 
@@ -14,13 +15,14 @@ csv_extensions = ['.csv']
 xls_extensions = ['.xls']
 
 
-def autodetectar_parser(extension):
+def autodetectar_parser(filename):
     """Devuelve instancia de ParserXxx dependiendo de la
     extensión del archivo
 
     Parametros:
      - extension (str) La extensión del archivo que subió.
     """
+    extension = os.path.splitext(filename)[1].lower()
     if extension in xls_extensions:
         return ParserXls()
     elif extension in csv_extensions:
@@ -173,7 +175,9 @@ class ParserCsv(object):
         Lee un archivo CSV y devuelve contenidos de
         las primeras tres filas.
         """
-        workbook = csv.reader(file_obj)
+
+        dialect = csv.Sniffer().sniff(file_obj.readline(), [',', ';', ' '])
+        workbook = csv.reader(file_obj, dialect)
         structure_dic = {}
 
         for i in range(3):
