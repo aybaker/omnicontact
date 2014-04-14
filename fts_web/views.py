@@ -17,7 +17,7 @@ from fts_web.forms import (
 from fts_web.models import (
     Actuacion, Campana, Contacto, GrupoAtencion,
     BaseDatosContacto, IntentoDeContacto, Opcion)
-from fts_web.parserxls import autodetectar_parser
+from fts_web.parser import autodetectar_parser
 
 
 #===============================================================================
