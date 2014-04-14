@@ -153,6 +153,7 @@ class ParserCsv(object):
         read_line = file_obj.readline()
         if read_line:
             dialect = csv.Sniffer().sniff(read_line, [',', ';', '|', ' '])
+            file_obj.seek(0, 0)
             workbook = csv.reader(file_obj, dialect)
             for i, curr_row in enumerate(workbook):
                 if not len(curr_row) == 0:
@@ -182,6 +183,7 @@ class ParserCsv(object):
         read_line = file_obj.readline()
         if read_line:
             dialect = csv.Sniffer().sniff(read_line, [',', ';', '|', ' '])
+            file_obj.seek(0, 0)
             workbook = csv.reader(file_obj, dialect)
             structure_dic = {}
 
