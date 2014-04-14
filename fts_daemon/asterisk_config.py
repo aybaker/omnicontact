@@ -11,7 +11,15 @@ from __future__ import unicode_literals
 
 import datetime
 
-from fts_web.models import Opcion
+from django.conf import settings
+from fts_web.models import Opcion, Campana
+import os
+import logging as _logging
+import tempfile
+import shutil
+
+
+logger = _logging.getLogger(__name__)
 
 
 #def _safe(value):
@@ -19,8 +27,6 @@ from fts_web.models import Opcion
 #    # FIXME: IMPLEMENTAR y usarlo!
 #    # TODO: ver si django no tiene algo armado
 #    return value
-
-
 TEMPLATE_DIALPLAN_START = """
 
 ;----------------------------------------------------------------------
@@ -149,6 +155,32 @@ def generar_dialplan(campana):
     partes.append(TEMPLATE_DIALPLAN_END.format(**param_generales))
     
     return ''.join(partes)
+
+
+def create_dialplan_config_file():
+    """Crea el archivo de dialplan para campanas existentes"""
+
+    campanas = Campana.objects.obtener_todas_para_generar_dialplan()
+
+    tmp_fd, tmp_filename = tempfile.mkstemp()
+    try:
+        tmp_file_obj = os.fdopen(tmp_fd, 'w')
+        for campana in campanas:
+            logger.info("Creando dialplan para campana %s", campana.id)
+            config_chunk = generar_dialplan(campana)
+            tmp_file_obj.write(config_chunk)
+
+        tmp_file_obj.close()
+        dest_filename = settings.FTS_DIALPLAN_FILENAME.strip()
+        logger.info("Copiando dialplan a %s", dest_filename)
+        shutil.copy(tmp_filename, dest_filename)
+
+    finally:
+        try:
+            os.remove(tmp_filename)
+        except:
+            logger.exception("Error al intentar borrar temporal %s",
+                tmp_filename)
 
 
 TEMPLATE_QUEUE = """

@@ -41,6 +41,9 @@ FTS_JOIN_TIMEOUT_MARGIN = 5
 """Esta variable vale `True` cuando se estan ejecutando los test."""
 FTS_TESTING_MODE = False
 
+"""Path completo (absoluto) al archivo donde se debe generar el dialplan"""
+FTS_DIALPLAN_FILENAME = None
+
 ALLOWED_HOSTS = []
 
 
@@ -127,3 +130,13 @@ except ImportError, e:
     import warnings
     warnings.warn("Couldn't import from 'fts_web.local_settings': {}".format(
         e.args[0]), stacklevel=0)
+
+assert FTS_DIALPLAN_FILENAME is not None, \
+    "Falta definir setting para FTS_DIALPLAN_FILENAME"
+
+assert os.path.isabs(FTS_DIALPLAN_FILENAME), \
+    "FTS_DIALPLAN_FILENAME debe ser un path absoluto"
+
+if os.path.exists(FTS_DIALPLAN_FILENAME):
+    assert not os.path.isdir(FTS_DIALPLAN_FILENAME, \
+        "FTS_DIALPLAN_FILENAME es un directorio")

@@ -244,10 +244,15 @@ class CampanaManager(models.Manager):
         return self.filter(estado=Campana.ESTADO_ACTIVA)
 
     def obtener_finalizadas(self):
-        """
-        Devuelve campañas en estado finalizadas.
-        """
+        """Devuelve campañas en estado finalizadas."""
         return self.filter(estado=Campana.ESTADO_FINALIZADA)
+
+    def obtener_todas_para_generar_dialplan(self):
+        """Devuelve campañas que deben ser tenidas en cuenta
+        al generar el dialplan.
+        """
+        return self.filter(estado__in=[Campana.ESTADO_ACTIVA,
+            Campana.ESTADO_PAUSADA, Campana.ESTADO_FINALIZADA])
 
 
 class Campana(models.Model):
