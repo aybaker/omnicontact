@@ -42,16 +42,24 @@ FTS_JOIN_TIMEOUT_MARGIN = 5
 FTS_TESTING_MODE = False
 
 """Path completo (absoluto) al archivo donde se debe generar el dialplan
-Ej: /opt/asterisk-11/etc/extensions-ftsender.conf
-Ej: /opt/asterisk-11/etc/ftsender/extensions.conf
+Ej:
+    FTS_DIALPLAN_FILENAME = "/opt/asterisk-11/etc/extensions-ftsender.conf"
+    FTS_DIALPLAN_FILENAME = "/opt/asterisk-11/etc/ftsender/extensions.conf"
 """
 FTS_DIALPLAN_FILENAME = None
 
 """Path completo (absoluto) al archivo donde se debe generar queues
-Ej: /opt/asterisk-11/etc/queues-ftsender.conf
-Ej: /opt/asterisk-11/etc/ftsender/queues.conf
+Ej:
+    FTS_QUEUE_FILENAME = "/opt/asterisk-11/etc/queues-ftsender.conf"
+    FTS_QUEUE_FILENAME = "/opt/asterisk-11/etc/ftsender/queues.conf"
 """
 FTS_QUEUE_FILENAME = None
+
+"""Comando a ejecutar para hacer reload de Asterisk
+Ej:
+    FTS_RELOAD_CMD = ["/usr/bin/asterisk", "-x", "reload"]
+"""
+FTS_RELOAD_CMD = None
 
 ALLOWED_HOSTS = []
 
@@ -163,3 +171,8 @@ assert os.path.isabs(FTS_QUEUE_FILENAME), \
 if os.path.exists(FTS_QUEUE_FILENAME):
     assert not os.path.isdir(FTS_QUEUE_FILENAME, \
         "FTS_QUEUE_FILENAME es un directorio")
+
+# Check FTS_RELOAD_CMD
+
+assert FTS_RELOAD_CMD is not None, \
+    "Falta definir setting para FTS_RELOAD_CMD"

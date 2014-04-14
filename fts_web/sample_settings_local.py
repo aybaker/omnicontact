@@ -40,3 +40,5 @@ SELENIUM_WEBDRIVER_BIN = (
 FTS_DIALPLAN_FILENAME = "/tmp/extensions_fts.conf"
 
 FTS_QUEUE_FILENAME = "/tmp/queues_fts.conf"
+
+FTS_RELOAD_CMD = ["/usr/bin/logger", "reload-asterisk"]
