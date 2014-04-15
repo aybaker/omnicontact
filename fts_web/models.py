@@ -9,6 +9,8 @@ from django.core.exceptions import ValidationError
 from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
     ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,\
     ORIGINATE_RESULT_CONNECT_FAILED
+import os
+import uuid
 
 
 logger = logging.getLogger(__name__)
@@ -273,6 +275,13 @@ class CampanaManager(models.Manager):
             Campana.ESTADO_PAUSADA, Campana.ESTADO_FINALIZADA])
 
 
+def upload_to_audios_asterisk(instance, filename):
+    # max_length == 200 !!!
+    ext = os.path.splitext(filename)[1]
+    return "audios_asterisk/%Y/%m/{0}{1}".format(
+        str(uuid.uuid4()), ext)[:200]
+
+
 class Campana(models.Model):
     """Una campaña del call center"""
     objects = CampanaManager()
@@ -284,7 +293,8 @@ class Campana(models.Model):
     A nivel de modelos, solo queremos registrar si está ACTIVA, y no nos
     importa si esta EN_CURSO (o sea, si en este momento el daemon está
     generando llamadas asociadas a la campaña) o PROGRAMADA (si todavia no
-    estamos en el rango de dias y horas en los que se deben generar las llamadas)
+    estamos en el rango de dias y horas en los que se deben generar
+    las llamadas)
     """
     ESTADO_ACTIVA = 2
 
@@ -313,10 +323,18 @@ class Campana(models.Model):
     segundos_ring = models.PositiveIntegerField()
     fecha_inicio = models.DateTimeField()
     fecha_fin = models.DateTimeField()
+    # TODO: renombrar a audio_original
+    # TODO: ajustar max_length
+    # TODO: evaluar de crear callable para `upload_to`
     reproduccion = models.FileField(
         #TODO: Definir path para los archivos.
         upload_to='campana/%Y/%m/%d',
     )
+    #    audio_asterisk = models.FileField(
+    #        upload_to=upload_to_audios_asterisk,
+    #        max_length=200,
+    #        null=True, blankT=True,
+    #    )
 
     bd_contacto = models.ForeignKey(
         'BaseDatosContacto',
