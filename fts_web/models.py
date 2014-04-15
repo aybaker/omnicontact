@@ -10,9 +10,6 @@ from django.core.exceptions import ValidationError
 from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
     ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,\
     ORIGINATE_RESULT_CONNECT_FAILED
-import os
-import uuid
-import re
 
 
 logger = logging.getLogger(__name__)
@@ -295,16 +292,6 @@ class CampanaManager(models.Manager):
             actuaciones__hora_hasta__gte=hora_actual)
 
         return campanas_ejecucion
-
-
-SUBSITUTE_REGEX = re.compile(r'[^a-z\._-]')
-
-
-def upload_to_audios_asterisk(instance, filename):
-    # max_length == 200 !!!
-    filename = SUBSITUTE_REGEX.sub('', filename)
-    return "audios_asterisk/%Y/%m/{0}-{1}".format(
-        str(uuid.uuid4()), filename)[:200]
 
 
 class Campana(models.Model):
