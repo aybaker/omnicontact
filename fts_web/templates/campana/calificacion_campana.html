@@ -15,8 +15,8 @@
                 <li><a>1- Datos Básicos</a></li>
                 <li class="active"><a>2- Calificaciones</a></li>
                 <li class="disabled"><a>3- Opciones</a></li>
-                <li class="disabled"><a>5- Actuación</a></li>
-                <li class="disabled"><a>6- Confirmar Campaña</a></li>
+                <li class="disabled"><a>4- Actuación</a></li>
+                <li class="disabled"><a>5- Confirmar Campaña</a></li>
             </ul>
             <br>
             <div class="col-lg-4">
@@ -46,11 +46,21 @@
                             <th>Nombre</th>
                         </thead>
                         <tbody>
-                            {% for calificacion in campana.calificaciones.all %}
-                                <tr>
-                                    <td>{{ calificacion.nombre }}</td>
-                                </tr>
-                            {% endfor %}
+                            {% if campana.calificaciones.all %}
+                                {% for calificacion in campana.calificaciones.all %}
+                                    <tr>
+                                        <td>{{ calificacion.nombre }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td>
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron Calificaciones creadas.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 {% endif %}
