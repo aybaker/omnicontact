@@ -71,39 +71,40 @@ class ParserXls(object):
         num_rows = worksheet.nrows - 1
         curr_row = -1
 
-        if not validate_number(worksheet.cell(0, columna_datos)):
-            curr_row = 0
+        if num_rows >= 0:
+            if not validate_number(worksheet.cell(0, columna_datos)):
+                curr_row = 0
 
-        while curr_row < num_rows:
-            curr_row += 1
-            cell = worksheet.cell(curr_row, columna_datos)
+            while curr_row < num_rows:
+                curr_row += 1
+                cell = worksheet.cell(curr_row, columna_datos)
 
-            # Guardamos valor de nro telefonico en 'cell_value'
-            if type(cell.value) == float:
-                cell_value = str(int(cell.value))
+                # Guardamos valor de nro telefonico en 'cell_value'
+                if type(cell.value) == float:
+                    cell_value = str(int(cell.value))
 
-            elif type(cell.value) == str:
-                cell_value = cell.value.strip()
-                if len(cell_value) == 0:
-                    logger.info("Ignorando celda vacia en fila %s", curr_row)
-                    self.vacias += 1
-                    continue
+                elif type(cell.value) == str:
+                    cell_value = cell.value.strip()
+                    if len(cell_value) == 0:
+                        logger.info("Ignorando celda vacia en fila %s", curr_row)
+                        self.vacias += 1
+                        continue
 
-            else:
-                try:
-                    # Intentamos convertir en string y ver que pasa...
-                    cell_value = str(cell.value).strip()
-                except:
-                    logger.info("Ignorando celda en fila %s con valor '%s' "
-                        "de tipo %s", curr_row, cell.value, type(cell.value))
-                    self.erroneas += 1
-                    continue
+                else:
+                    try:
+                        # Intentamos convertir en string y ver que pasa...
+                        cell_value = str(cell.value).strip()
+                    except:
+                        logger.info("Ignorando celda en fila %s con valor '%s' "
+                            "de tipo %s", curr_row, cell.value, type(cell.value))
+                        self.erroneas += 1
+                        continue
 
-            value_list.append(cell_value)
+                value_list.append(cell_value)
 
-        logger.info("%s contactos importados - %s celdas ignoradas"
-            " - %s celdas erroneas", len(value_list), self.vacias,
-            self.erroneas)
+            logger.info("%s contactos importados - %s celdas ignoradas"
+                " - %s celdas erroneas", len(value_list), self.vacias,
+                self.erroneas)
 
         return value_list
 
