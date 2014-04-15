@@ -46,21 +46,19 @@
                             <th>Nombre</th>
                         </thead>
                         <tbody>
-                            {% if campana.calificaciones.all %}
-                                {% for calificacion in campana.calificaciones.all %}
-                                    <tr>
-                                        <td>{{ calificacion.nombre }}</td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                            <tr>
-                                <td>
-                                    <p class="text-center text-danger">
-                                        <em>No se encontraron Calificaciones creadas.</em>
-                                    </p>
-                                </td>
-                            </tr>
-                            {% endif %}
+                            {% for calificacion in campana.calificaciones.all %}
+                                <tr>
+                                    <td>{{ calificacion.nombre }}</td>
+                                </tr>
+                             {% empty %}
+                                <tr>
+                                    <td>
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Calificaciones creadas.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 {% endif %}

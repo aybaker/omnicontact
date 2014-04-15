@@ -64,6 +64,14 @@
                                     <td>{{ opcion.get_accion_display }}</td>
                                     <td>{{ opcion.grupo_atencion }}</td>       
                                 </tr>
+                             {% empty %}
+                                <tr>
+                                    <td colspan="3">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Opciones creadas.</em>
+                                        </p>
+                                    </td>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>

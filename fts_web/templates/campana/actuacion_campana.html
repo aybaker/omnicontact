@@ -54,6 +54,14 @@
                                     <td>{{ actuacion.hora_desde }} Hs.</td>
                                     <td>{{ actuacion.hora_hasta }} Hs.</td>       
                                 </tr>
+                             {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Actuaciones creadas.</em>
+                                        </p>
+                                    </td>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>
