@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
@@ -12,10 +11,10 @@ from django.views.generic import (
 
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, CampanaForm,
-    ConfirmaForm, GrupoAtencionForm,
+    CalificacionForm, ConfirmaForm, GrupoAtencionForm,
     BaseDatosContactoForm, OpcionForm)
 from fts_web.models import (
-    Actuacion, Campana, Contacto, GrupoAtencion,
+    Actuacion, Calificacion, Campana, GrupoAtencion,
     BaseDatosContacto, IntentoDeContacto, Opcion)
 from fts_web.parser import autodetectar_parser
 
@@ -311,9 +310,6 @@ class DefineBaseDatosContactoView(UpdateView):
         return reverse('lista_base_datos_contacto')
 
 
-
-
-
 # class BaseDatosContactoUpdateView(UpdateView, BaseDatosContactoMixin):
 #     """
 #     Esta vista actualiza el objeto
@@ -360,6 +356,7 @@ class DefineBaseDatosContactoView(UpdateView):
 # Campaña
 #===============================================================================
 
+
 class CampanaListView(ListView):
     """
     Esta vista realiza el listado de
@@ -390,8 +387,46 @@ class CampanaCreateView(CreateView):
 
     def get_success_url(self):
         return reverse(
-            'opciones_campana',
+            'calificacion_campana',
             kwargs={"pk": self.object.pk})
+
+
+class CalificacionCampanaCreateView(CreateView):
+    """
+    Esta vista crea uno o varios objetos Calificación
+    para la Campana que se este creando.
+    Inicializa el form con campo campana (hidden)
+    con el id de campana que viene en la url.
+    """
+
+    template_name = 'campana/calificacion_campana.html'
+    model = Calificacion
+    context_object_name = 'calificacion'
+    form_class = CalificacionForm
+
+    def get_initial(self):
+        initial = super(CalificacionCampanaCreateView, self).get_initial()
+        if 'pk' in self.kwargs:
+            initial.update({
+                'campana': self.kwargs['pk'],
+            })
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            CalificacionCampanaCreateView, self).get_context_data(**kwargs)
+
+        self.campana = get_object_or_404(
+            Campana, pk=self.kwargs['pk']
+        )
+        context['campana'] = self.campana
+        return context
+
+    def get_success_url(self):
+        return reverse(
+            'calificacion_campana',
+            kwargs={"pk": self.kwargs['pk']}
+        )
 
 
 class OpcionCampanaCreateView(CreateView):
@@ -427,7 +462,7 @@ class OpcionCampanaCreateView(CreateView):
 
     def get_success_url(self):
         return reverse(
-            'opciones_campana',
+            'opcion_campana',
             kwargs={"pk": self.kwargs['pk']}
         )
 

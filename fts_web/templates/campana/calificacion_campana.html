@@ -7,58 +7,54 @@
     <div class="panel panel-default">
         <!-- Default panel contents -->
         <div class="panel-heading">                
-            <h4 class="inline">Campañas Actuación</h4>
+            <h4 class="inline">Campañas Calificaciones</h4>
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
             <ul class="nav nav-tabs">
                 <li><a>1- Datos Básicos</a></li>
-                <li><a>2- Calificaciones</a></li>
-                <li><a>3- Opciones</a></li>
-                <li class="active"><a>4- Actuación</a></li>
+                <li class="active"><a>2- Calificaciones</a></li>
+                <li class="disabled"><a>3- Opciones</a></li>
+                <li class="disabled"><a>4- Actuación</a></li>
                 <li class="disabled"><a>5- Confirmar Campaña</a></li>
             </ul>
             <br>
             <div class="col-lg-4">
                 <form role="form" method="post">
-                    {% csrf_token %}                
-                   
-                    <h4>Nueva Actuación</h4>
+                    {% csrf_token %}                         
+
+                    <h4>Nueva Calificación</h4>
                     {% crispy form %} 
                     <br>
 
                     <button type="submit" class="btn btn-primary btn-block">
-                        Guardar Actuación
+                        Guardar Calificación
                     </button>
                 </form> 
 
                 <br>
   
-                <a href="{% url 'confirma_campana' campana.pk %}" class="btn btn-primary" role="button">
+                <a href="{% url 'opcion_campana' campana.pk %}" class="btn btn-primary" role="button">
                     Continuar
                 </a>       
             </div>
             <div class="col-lg-6">
                 {% if campana %}
-                    <h4>Actuaciones</h4>
+                    <h4>Calificaciones</h4>
                     <table class="table table-bordered table-hover">
                         <thead>
-                            <th>Día</th>
-                            <th>Hora Desde</th>
-                            <th>Hora Hasta</th>
+                            <th>Nombre</th>
                         </thead>
                         <tbody>
-                            {% for actuacion in campana.actuaciones.all %}
+                            {% for calificacion in campana.calificaciones.all %}
                                 <tr>
-                                    <td>{{ actuacion.get_dia_semanal_display }}</td>
-                                    <td>{{ actuacion.hora_desde }} Hs.</td>
-                                    <td>{{ actuacion.hora_hasta }} Hs.</td>       
+                                    <td>{{ calificacion.nombre }}</td>
                                 </tr>
                              {% empty %}
                                 <tr>
-                                    <td colspan="6">
+                                    <td>
                                         <p class="text-center text-danger">
-                                            <em>No se encontraron Actuaciones creadas.</em>
+                                            <em>No se encontraron Calificaciones creadas.</em>
                                         </p>
                                     </td>
                                 </tr>

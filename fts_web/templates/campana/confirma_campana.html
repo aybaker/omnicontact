@@ -14,9 +14,10 @@
         <div class="panel-body">
             <ul class="nav nav-tabs">
                 <li><a>1- Datos Básicos</a></li>
-                <li><a>2- Opciones</a></li>
-                <li><a>3- Actuación</a></li>
-                <li class="active"><a>4- Confirmar Campaña</a></li>
+                <li><a>2- Calificaciones</a></li>
+                <li><a>3- Opciones</a></li>
+                <li><a>4- Actuación</a></li>
+                <li class="active"><a>5- Confirmar Campaña</a></li>
             </ul>
             <br>
             <div class="col-lg-4">
@@ -58,6 +59,22 @@
                         <dt>Nombre</dt>
                         <dd>{{ campana.bd_contacto }}</dd>
                     <dl>
+
+                    <hr>
+
+                    <h4>Calificaciones</h4>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <th>Nombre</th>
+                        </thead>
+                        <tbody>
+                            {% for calificacion in campana.calificaciones.all %}
+                                <tr>
+                                    <td>{{ calificacion.nombre }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
 
                     <hr>
 
