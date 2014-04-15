@@ -2,10 +2,11 @@
 
 from __future__ import unicode_literals
 
+import csv
 import logging
 import os
+import re
 import xlrd
-import csv
 
 
 logger = logging.getLogger('ParserXls')
@@ -31,6 +32,13 @@ def autodetectar_parser(filename):
         logger.warn("La extensión %s no es CSV ni XLS. "
             "Devolveremos CSV por las dudas...", extension)
         return ParserCsv()
+
+
+def validate_number(number):
+    number = re.sub("[^0-9]", "", str(number))
+    if re.match("^[0-9]{10,13}$", number):
+        return True
+    return False
 
 
 class ParserXls(object):
@@ -62,6 +70,9 @@ class ParserXls(object):
 
         num_rows = worksheet.nrows - 1
         curr_row = -1
+
+        if not validate_number(worksheet.cell(0, columna_datos)):
+            curr_row = 0
 
         while curr_row < num_rows:
             curr_row += 1
@@ -159,6 +170,9 @@ class ParserCsv(object):
             file_obj.seek(0, 0)
             workbook = csv.reader(file_obj, dialect)
             for i, curr_row in enumerate(workbook):
+                if i == 0 and not validate_number(curr_row[columna_datos]):
+                    continue
+
                 if not len(curr_row) == 0:
                     value = curr_row[columna_datos].strip()
                     if not len(value) == 0:
