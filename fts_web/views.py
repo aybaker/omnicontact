@@ -359,17 +359,23 @@ class DefineBaseDatosContactoView(UpdateView):
 
 class CampanaListView(ListView):
     """
-    Esta vista realiza el listado de
-    los objetos Campanas que esten activas.
+    Esta vista lista los objetos Capanas
+    diferenciadas por sus estados actuales.
+    Pasa un diccionario al template
+    con las claves como estados.
     """
 
     template_name = 'campana/lista_campana.html'
     context_object_name = 'campanas'
     model = Campana
 
-    def get_queryset(self):
-        queryset = Campana.objects.obtener_activas()
-        return queryset
+    def get_context_data(self, **kwargs):
+        context = super(CampanaListView, self).get_context_data(
+           **kwargs)
+        context['activas'] = Campana.objects.obtener_activas()
+        context['pausadas'] = Campana.objects.obtener_pausadas()
+        context['finalizadas'] = Campana.objects.obtener_finalizadas()
+        return context
 
 
 class CampanaCreateView(CreateView):
@@ -649,16 +655,6 @@ class CampanaPorEstadoListView(ListView):
     template_name = 'estado/estado.html'
     context_object_name = 'campanas'
     model = Campana
-
-    #def get_queryset(self):
-        # FIXME: para setear variables, sobreescribir get_context_data()
-        # ya que según la API, get_queryset() es para otras cosas.
-        # (ya está implementado más abajo)
-        # query_dict = {
-        #     'activas': Campana.objects.obtener_activas(),
-        #     'finalizadas': Campana.objects.obtener_finalizadas(),
-        # }
-        # return query_dict
 
     def get_context_data(self, **kwargs):
         context = super(CampanaPorEstadoListView, self).get_context_data(
