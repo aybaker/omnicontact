@@ -62,6 +62,22 @@
 
                     <hr>
 
+                    <h4>Calificaciones</h4>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <th>Nombre</th>
+                        </thead>
+                        <tbody>
+                            {% for calificacion in campana.calificaciones.all %}
+                                <tr>
+                                    <td>{{ calificacion.nombre }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <hr>
+
                     <h4>Opciones</h4>
                     <table class="table table-bordered table-hover">
                         <thead>
