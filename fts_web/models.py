@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import logging
+import datetime
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -274,6 +275,26 @@ class CampanaManager(models.Manager):
         # TODO: renombrar a `obtener_todas_para_generar_config()`
         return self.filter(estado__in=[Campana.ESTADO_ACTIVA,
             Campana.ESTADO_PAUSADA, Campana.ESTADO_FINALIZADA])
+
+    def obtener_ejecucion(self):
+        """
+        Devuelve las campanas que tengan actuación en el
+        momento de realizar la consulta.
+        """
+        hoy = datetime.datetime.today()
+        dia_semanal = hoy.weekday()
+        hora_actual = datetime.datetime.now().time()
+
+        campanas_hoy = self.obtener_activas().filter(
+            fecha_inicio__lte=hoy,
+            fecha_fin__gte=hoy)
+
+        campanas_ejecucion = campanas_hoy.filter(
+            actuaciones__dia_semanal=dia_semanal,
+            actuaciones__hora_desde__lte=hora_actual,
+            actuaciones__hora_hasta__gte=hora_actual)
+
+        return campanas_ejecucion
 
 
 SUBSITUTE_REGEX = re.compile(r'[^a-z\._-]')

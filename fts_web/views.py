@@ -656,6 +656,12 @@ class CampanaPorEstadoListView(ListView):
     context_object_name = 'campanas'
     model = Campana
 
+    def get_context_data(self, **kwargs):
+        context = super(CampanaPorEstadoListView, self).get_context_data(
+           **kwargs)
+        context['campanas_ejecucion'] = Campana.objects.obtener_ejecucion()
+        return context
+
 
 class CampanaPorEstadoDetailView(DetailView):
     """Muestra el estado de la campaña con la lista de
