@@ -2,10 +2,11 @@
 
 from __future__ import unicode_literals
 
+import csv
 import logging
 import os
+import re
 import xlrd
-import csv
 
 
 logger = logging.getLogger('ParserXls')
@@ -31,6 +32,13 @@ def autodetectar_parser(filename):
         logger.warn("La extensión %s no es CSV ni XLS. "
             "Devolveremos CSV por las dudas...", extension)
         return ParserCsv()
+
+
+def validate_number(number):
+    number = re.sub("[^0-9]", "", str(number))
+    if re.match("^[0-9]{10,13}$", number):
+        return True
+    return False
 
 
 class ParserXls(object):
@@ -63,36 +71,40 @@ class ParserXls(object):
         num_rows = worksheet.nrows - 1
         curr_row = -1
 
-        while curr_row < num_rows:
-            curr_row += 1
-            cell = worksheet.cell(curr_row, columna_datos)
+        if num_rows >= 0:
+            if not validate_number(worksheet.cell(0, columna_datos)):
+                curr_row = 0
 
-            # Guardamos valor de nro telefonico en 'cell_value'
-            if type(cell.value) == float:
-                cell_value = str(int(cell.value))
+            while curr_row < num_rows:
+                curr_row += 1
+                cell = worksheet.cell(curr_row, columna_datos)
 
-            elif type(cell.value) == str:
-                cell_value = cell.value.strip()
-                if len(cell_value) == 0:
-                    logger.info("Ignorando celda vacia en fila %s", curr_row)
-                    self.vacias += 1
-                    continue
+                # Guardamos valor de nro telefonico en 'cell_value'
+                if type(cell.value) == float:
+                    cell_value = str(int(cell.value))
 
-            else:
-                try:
-                    # Intentamos convertir en string y ver que pasa...
-                    cell_value = str(cell.value).strip()
-                except:
-                    logger.info("Ignorando celda en fila %s con valor '%s' "
-                        "de tipo %s", curr_row, cell.value, type(cell.value))
-                    self.erroneas += 1
-                    continue
+                elif type(cell.value) == str:
+                    cell_value = cell.value.strip()
+                    if len(cell_value) == 0:
+                        logger.info("Ignorando celda vacia en fila %s", curr_row)
+                        self.vacias += 1
+                        continue
 
-            value_list.append(cell_value)
+                else:
+                    try:
+                        # Intentamos convertir en string y ver que pasa...
+                        cell_value = str(cell.value).strip()
+                    except:
+                        logger.info("Ignorando celda en fila %s con valor '%s' "
+                            "de tipo %s", curr_row, cell.value, type(cell.value))
+                        self.erroneas += 1
+                        continue
 
-        logger.info("%s contactos importados - %s celdas ignoradas"
-            " - %s celdas erroneas", len(value_list), self.vacias,
-            self.erroneas)
+                value_list.append(cell_value)
+
+            logger.info("%s contactos importados - %s celdas ignoradas"
+                " - %s celdas erroneas", len(value_list), self.vacias,
+                self.erroneas)
 
         return value_list
 
@@ -159,6 +171,9 @@ class ParserCsv(object):
             file_obj.seek(0, 0)
             workbook = csv.reader(file_obj, dialect)
             for i, curr_row in enumerate(workbook):
+                if i == 0 and not validate_number(curr_row[columna_datos]):
+                    continue
+
                 if not len(curr_row) == 0:
                     value = curr_row[columna_datos].strip()
                     if not len(value) == 0:
