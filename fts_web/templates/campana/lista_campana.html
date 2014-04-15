@@ -5,48 +5,112 @@
     <div class="panel panel-default">
         <!-- Default panel contents -->
         <div class="panel-heading">                
-            <h4 class="inline">Campañas activas</h4>
+            <h4 class="inline">Campañas</h4>
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
-            <div class="col-lg-12">                                   
+            <div class="col-lg-12">  
+                <h4>Campañas Activas</h4>                                 
                 <table class="table table-bordered table-hover">
                     <thead>
-                      <tr>                                
-                        <th>Campaña</th>
-                        
-                        <th>Reproducción</th>
-                        <!-- <th>Editar</th> -->
-                        <!-- <th>Eliminar</th> -->
+                      <tr class="success">                                
+                        <th>Campaña</th>                    
+                        <th>Estado</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
-                        {% for campana in campanas %}
-                            <tr>
+                        {% for campana in activas %}
+                            <tr >
                                 <td>                          
                                     {{ campana.nombre }}
                                 </td>
                                 <td>
-                                    {% if campana.reproduccion %}
-                                        <audio src="{{ campana.reproduccion.url }}" controls></audio>
-                                    {% else %}
-                                        <em>No hay archivo de audio asociado</em>
-                                    {% endif %}
+                                    {{ campana.get_estado_display }}
                                 </td>
-    
-                                <!-- <td>
-                                    <a href="{# url 'edita_campana' campana.pk #}">
-                                        <button type="button" class="btn btn-primary btn-sm">
-                                            <span class="glyphicon glyphicon-pencil"></span> Editar
+                                <td>
+                                    <a href="{% url 'estado_pausa_campana' campana.pk %}">
+                                        <button type="button" class="btn btn-danger btn-sm">
+                                            <span class="glyphicon glyphicon-pause"></span>
+                                            Pausar
                                         </button>
                                     </a>
-                                </td>    -->                         
+                                </td>                        
                             </tr>
                         {% empty %}
                             <tr>
                                 <td colspan="6">
                                     <p class="text-center text-danger">
-                                        <em>No se encontraron Campañas creadas.</em>
+                                        <em>No se encontraron Campañas.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h4>Campañas Pausadas</h4>
+               <table class="table table-bordered table-hover">
+                    <thead>
+                      <tr  class="danger">                                
+                        <th>Campaña</th>                    
+                        <th>Estado</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for campana in pausadas %}
+                            <tr>
+                                <td>                          
+                                    {{ campana.nombre }}
+                                </td>
+                                <td>
+                                    {{ campana.get_estado_display }}
+                                </td>
+                                <td>
+                                    <a href="{% url 'estado_activa_campana' campana.pk %}">
+                                        <button type="button" class="btn btn-success btn-sm">
+                                            <span class="glyphicon glyphicon-play"></span>
+                                            Activar
+                                        </button>
+                                    </a>
+                                </td>                        
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron Campañas.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h4>Campañas Finalizadas</h4>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                      <tr class="active">                                
+                        <th>Campaña</th>                        
+                        <th>Estado</th>                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for campana in finalizadas %}
+                            <tr>
+                                <td>                          
+                                    {{ campana.nombre }}
+                                </td>
+                                <td>
+                                    {{ campana.get_estado_display }}
+                                </td>                          
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron Campañas.</em>
                                     </p>
                                 </td>
                             </tr>
