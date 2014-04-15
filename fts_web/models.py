@@ -96,7 +96,9 @@ class GrupoAtencion(models.Model):
 
 
 class AgenteGrupoAtencion(models.Model):
-    numero_interno = models.PositiveIntegerField()
+    numero_interno = models.CharField(
+        max_length=32,
+    )
     grupo_atencion = models.ForeignKey(
         'GrupoAtencion',
         related_name='agentes'
