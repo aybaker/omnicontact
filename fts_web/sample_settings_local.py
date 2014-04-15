@@ -44,3 +44,34 @@ FTS_QUEUE_FILENAME = "/tmp/queues_fts.conf"
 FTS_RELOAD_CMD = ["/usr/bin/logger", "reload-asterisk"]
 
 TMPL_FTS_AUDIO_CONVERSOR = ["sox", "<INPUT_FILE>", "<OUTPUT_FILE>"]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': ('%(asctime)-15s [%(levelname)7s] '
+                '%(name)20s - %(message)s')
+        },
+    },
+    'filters': {
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        }
+    }
+}
+
