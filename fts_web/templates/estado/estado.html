@@ -10,7 +10,7 @@
         </div>
         <div class="panel-body">
             <div class="col-lg-12">  
-                <h4>Campañas Activas</h4>                                 
+                <h4>Campaña</h4>                                 
                 <table class="table table-bordered table-hover">
                     <thead>
                       <tr>                                
@@ -19,7 +19,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                        {% for campana in activas %}
+                        {% for campana in campanas %}
                             <tr>
                                 <td>                          
                                     <a href="{% url 'campana_detalle_de_estado' campana.id %}">{{ campana.nombre }}</a>
@@ -40,65 +40,7 @@
                     </tbody>
                 </table>
 
-                <h4>Campañas Pausadas</h4>
-               <table class="table table-bordered table-hover">
-                    <thead>
-                      <tr>                                
-                        <th>Campaña</th>                    
-                        <th>Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                        {% for campana in pausadas %}
-                            <tr>
-                                <td>                          
-                                    <a href="{% url 'campana_detalle_de_estado' campana.id %}">{{ campana.nombre }}</a>
-                                </td>
-                                <td>
-                                    {{ campana.get_estado_display }}
-                                </td>                        
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="6">
-                                    <p class="text-center text-danger">
-                                        <em>No se encontraron Campañas.</em>
-                                    </p>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-
-                <h4>Campañas Finalizadas</h4>
-                <table class="table table-bordered table-hover">
-                    <thead>
-                      <tr>                                
-                        <th>Campaña</th>                        
-                        <th>Estado</th>                        
-                      </tr>
-                    </thead>
-                    <tbody>
-                        {% for campana in finalizadas %}
-                            <tr>
-                                <td>                          
-                                    <a href="{% url 'campana_detalle_de_estado' campana.id %}">{{ campana.nombre }}</a>
-                                </td>
-                                <td>
-                                    {{ campana.get_estado_display }}
-                                </td>                          
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="6">
-                                    <p class="text-center text-danger">
-                                        <em>No se encontraron Campañas.</em>
-                                    </p>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                
             </div>
         </div>
     </div>
