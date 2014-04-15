@@ -75,9 +75,6 @@ class GrupoAtencion(models.Model):
     #            self.active = False
     #            self.save()
 
-    def get_ring_strategy(self):
-        return self.get_ring_strategy_display()
-
     def get_cantidad_agentes(self):
         return self.agentes.all().count()
 
