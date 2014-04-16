@@ -8,6 +8,7 @@ Created on Apr 15, 2014
 
 from __future__ import unicode_literals
 import re
+import time
 import uuid
 
 
@@ -24,3 +25,7 @@ def upload_to(prefix, max_length):
     def func(instance, filename):
         return _upload_to(prefix, max_length, instance, filename)
     return func
+
+
+def resolve_strftime(text):
+    return time.strftime(text) # time.gmtime()
