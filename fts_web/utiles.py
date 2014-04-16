@@ -22,10 +22,15 @@ def _upload_to(prefix, max_length, instance, filename):
 
 
 def upload_to(prefix, max_length):
+    """Genera (devuelve) una funcion a ser usada en `upload_to` de `FileField`.
+    La funcion generada genera un path (relativo) de no mas de `max_length`
+    caracteres, y usando el prefijo `prefix`
+    """
     def func(instance, filename):
         return _upload_to(prefix, max_length, instance, filename)
     return func
 
 
 def resolve_strftime(text):
+    """Ejecuta strftime() en texto pasado por parametro"""
     return time.strftime(text) # time.gmtime()
