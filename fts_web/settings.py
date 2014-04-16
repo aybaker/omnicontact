@@ -149,11 +149,15 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 TEST_RUNNER = "fts_web.tests.FTSenderDiscoverRunner"
 
 try:
-    from fts_web.settings_local import *
+    from fts_web_settings_local import *
 except ImportError as e:
-    import warnings
-    warnings.warn("Couldn't import from 'fts_web.local_settings': {0}".format(
-        e.args[0]), stacklevel=0)
+    print "# "
+    print "# ERROR"
+    print "# "
+    print "#   No se pudo importar el modulo"
+    print "#       `fts_web_settings_local`"
+    print "# "
+    raise Exception("No se pudo importar fts_web_settings_local")
 
 # Check FTS_DIALPLAN_FILENAME
 
