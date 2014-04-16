@@ -152,7 +152,7 @@ try:
     from fts_web.settings_local import *
 except ImportError as e:
     import warnings
-    warnings.warn("Couldn't import from 'fts_web.local_settings': {}".format(
+    warnings.warn("Couldn't import from 'fts_web.local_settings': {0}".format(
         e.args[0]), stacklevel=0)
 
 # Check FTS_DIALPLAN_FILENAME
