@@ -579,7 +579,7 @@ class IntentoDeContacto(models.Model):
         self.save()
 
     def __unicode__(self):
-        return "Intento de campaña {} a contacto {}".format(
+        return "Intento de campaña {0} a contacto {1}".format(
             self.campana.id, self.contacto.id)
 
 
