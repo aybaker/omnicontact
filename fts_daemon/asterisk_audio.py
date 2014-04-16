@@ -26,6 +26,9 @@ logger = _logging.getLogger(__name__)
 def convertir_audio_de_campana(campana):
     """Convierte archivo de audio de campaña,
     y actualiza la instancia de campaña
+
+    Raises:
+        FtsAudioConversionError: si se produjo algun tipo de error
     """
     assert isinstance(campana, Campana)
 
