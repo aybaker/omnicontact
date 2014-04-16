@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
     ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,\
     ORIGINATE_RESULT_CONNECT_FAILED
+from fts_web.utiles import upload_to
 
 
 logger = logging.getLogger(__name__)
@@ -294,6 +295,9 @@ class CampanaManager(models.Manager):
         return campanas_ejecucion
 
 
+upload_to_audios_asterisk = upload_to("audios_asterisk", 180)
+
+
 class Campana(models.Model):
     """Una campaña del call center"""
     objects = CampanaManager()
@@ -342,11 +346,11 @@ class Campana(models.Model):
         #TODO: Definir path para los archivos.
         upload_to='campana/%Y/%m/%d',
     )
-    #    audio_asterisk = models.FileField(
-    #        upload_to=upload_to_audios_asterisk,
-    #        max_length=200,
-    #        null=True, blankT=True,
-    #    )
+    audio_asterisk = models.FileField(
+        upload_to=upload_to_audios_asterisk,
+        max_length=200,
+        null=True, blank=True,
+    )
 
     bd_contacto = models.ForeignKey(
         'BaseDatosContacto',
