@@ -205,7 +205,7 @@ class ParserCsv(object):
             if row:
                 structure_dic.update({i: row})
 
-        if not len(structure_dic):
+        if len(structure_dic) < 3:
             raise FtsParserCsvMinRowError
 
         return structure_dic
