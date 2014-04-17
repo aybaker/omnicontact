@@ -12,7 +12,7 @@ uwsgi \
     --master \
     --processes=${UWSGI_PROCESSES:-5} --enable-threads \
     --home=${VIRTUAL_ENV} \
-    --http=${UWSGI_HTTP:-127.0.0.1:8080} \
+    --http=${UWSGI_HTTP:-0.0.0.0:8080} \
     --python-path=${BASEDIR} \
     --static-map /static=${BASEDIR}/fts_web/static \
     --mule=${BASEDIR}/fts_daemon/poll_daemon.py \
