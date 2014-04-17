@@ -206,6 +206,7 @@ class ParserCsv(object):
                 structure_dic.update({i: row})
 
         if len(structure_dic) < 3:
+            logger.warn("El archivo csv seleccionado posee menos de 3 filas.")
             raise FtsParserCsvMinRowError
 
         return structure_dic
@@ -215,4 +216,5 @@ class ParserCsv(object):
             dialect = csv.Sniffer().sniff(file_obj.read(1024), [',', ';', '\t'])
             return dialect
         except csv.Error:
+            logger.warn("No se pudo determinar el delimitador del archivo csv.")
             raise FtsParserCsvDelimiterError
