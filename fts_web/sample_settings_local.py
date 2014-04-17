@@ -12,6 +12,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+FTS_ENHANCED_URLS = True
+
 MEDIA_ROOT = '/home/username/ftsenderweb/media_files/'
 
 DATABASES = {

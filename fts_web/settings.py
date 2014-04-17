@@ -8,22 +8,23 @@ https://docs.djangoproject.com/en/1.6/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
+
+from __future__ import unicode_literals
+
+import os
+
 from django.contrib import messages
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
+DEBUG = False
+TEMPLATE_DEBUG = False
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'uqe^e2bg^ys2ae&5*jw414_r!m*r7+6-mb%(d3hv+xy4hv^38l'
-
-#SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-TEMPLATE_DEBUG = True
+"""Si FTS_ENHANCED_URLS value true, se sirve /media, /static, etc.
+En produccion deberia ser FALSE
+"""
+FTS_ENHANCED_URLS = False
 
 """Usado en tests de Selenium, en conjunto al metodo `assertTrueSelenium()`.
 Si es verdadero y el assert falla, la ejecucion del test es pausada, para
@@ -70,9 +71,6 @@ TMPL_FTS_AUDIO_CONVERSOR = None
 
 ALLOWED_HOSTS = []
 
-
-# Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -98,10 +96,6 @@ ROOT_URLCONF = 'fts_web.urls'
 
 WSGI_APPLICATION = 'fts_web.wsgi.application'
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
-
 LANGUAGE_CODE = 'es-ar'
 
 TIME_ZONE = 'America/Argentina/Cordoba'
@@ -112,15 +106,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-
 STATIC_URL = '/static/'
 
-#Media files
 MEDIA_URL = '/media/'
-
 
 # Bootstrap friendly
 MESSAGE_TAGS = {
@@ -142,11 +131,14 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "fts_web.context_processors.testing_mode"
 )
 
-
 #Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 TEST_RUNNER = "fts_web.tests.FTSenderDiscoverRunner"
+
+#==============================================================================
+# Import de `fts_web_settings_local`
+#==============================================================================
 
 try:
     from fts_web_settings_local import *
@@ -159,7 +151,7 @@ except ImportError as e:
     print "# "
     raise Exception("No se pudo importar fts_web_settings_local")
 
-# Check FTS_DIALPLAN_FILENAME
+# ~~~~~ Check FTS_DIALPLAN_FILENAME
 
 assert FTS_DIALPLAN_FILENAME is not None, \
     "Falta definir setting para FTS_DIALPLAN_FILENAME"
@@ -171,7 +163,7 @@ if os.path.exists(FTS_DIALPLAN_FILENAME):
     assert not os.path.isdir(FTS_DIALPLAN_FILENAME, \
         "FTS_DIALPLAN_FILENAME es un directorio")
 
-# Check FTS_QUEUE_FILENAME
+# ~~~~~ Check FTS_QUEUE_FILENAME
 
 assert FTS_QUEUE_FILENAME is not None, \
     "Falta definir setting para FTS_QUEUE_FILENAME"
@@ -183,12 +175,12 @@ if os.path.exists(FTS_QUEUE_FILENAME):
     assert not os.path.isdir(FTS_QUEUE_FILENAME, \
         "FTS_QUEUE_FILENAME es un directorio")
 
-# Check FTS_RELOAD_CMD
+# ~~~~~ Check FTS_RELOAD_CMD
 
 assert FTS_RELOAD_CMD is not None, \
     "Falta definir setting para FTS_RELOAD_CMD"
 
-# Check TMPL_FTS_AUDIO_CONVERSOR
+# ~~~~~ Check TMPL_FTS_AUDIO_CONVERSOR
 
 assert TMPL_FTS_AUDIO_CONVERSOR is not None, \
     "Falta definir setting para TMPL_FTS_AUDIO_CONVERSOR"

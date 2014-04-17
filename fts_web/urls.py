@@ -107,7 +107,8 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
 )
-if settings.DEBUG:
+
+if settings.DEBUG and settings.FTS_ENHANCED_URLS:
     urlpatterns += static(
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT
