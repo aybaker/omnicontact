@@ -17,6 +17,9 @@ from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion,
     BaseDatosContacto, IntentoDeContacto, Opcion)
 from fts_web.parser import autodetectar_parser
+from fts_web.errors import FtsAudioConversionError
+
+from fts_daemon.asterisk_audio import convertir_audio_de_campana
 
 
 #===============================================================================
@@ -540,22 +543,27 @@ class ConfirmaCampanaView(UpdateView):
             campana = self.object
             campana.activar()
 
+            message = '<strong>Operación Exitosa!</strong>\
+                Se llevó a cabo con éxito la creación de\
+                la Campaña.'
+            try:
+                convertir_audio_de_campana(campana)
+            except FtsAudioConversionError:
+                message += ' Pero hubo un inconveniente en la conversión del\
+                    audio.'
+
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                message,
+            )
+
             return redirect(self.get_success_url())
         elif 'cancela' in self.request.POST:
             pass
             #TODO: Implementar la cancelación.
 
     def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la creación de\
-        la Campaña.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
         return reverse('lista_campana')
 
 
