@@ -48,3 +48,19 @@ class FtsError(Exception):
 class FtsAudioConversionError(FtsError):
     """Error al intentar convertir audio"""
     pass
+
+
+class FtsParserCsvDelimiterError(FtsError):
+    """
+    Error al intentar determinar el delimitador en
+    el ParserCsv.
+    """
+    pass
+
+
+class FtsParserCsvMinRowError(FtsError):
+    """
+    El archivo csv querido usar en ParserCsv
+    tiene menos de 3 filas.
+    """
+    pass

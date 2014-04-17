@@ -8,6 +8,8 @@ import os
 import re
 import xlrd
 
+from fts_web.errors import (FtsParserCsvDelimiterError,
+ FtsParserCsvMinRowError)
 
 logger = logging.getLogger('ParserXls')
 
@@ -163,32 +165,29 @@ class ParserCsv(object):
         # Reseteamos estadisticas
         self.vacias = 0
         self.erroneas = 0
+
+        workbook = csv.reader(file_obj, self._get_dialect(file_obj))
+
         value_list = []
+        for i, curr_row in enumerate(workbook):
+            if i == 0 and not validate_number(curr_row[columna_datos]):
+                continue
 
-        read_line = file_obj.readline()
-        if read_line:
-            dialect = csv.Sniffer().sniff(read_line, [',', ';', '|', ' '])
-            file_obj.seek(0, 0)
-            workbook = csv.reader(file_obj, dialect)
-            for i, curr_row in enumerate(workbook):
-                if i == 0 and not validate_number(curr_row[columna_datos]):
-                    continue
-
-                if not len(curr_row) == 0:
-                    value = curr_row[columna_datos].strip()
-                    if not len(value) == 0:
-                        value_list.append(value)
-                    else:
-                        logger.info("Ignorando valor vacio en fila %s", i)
-                        self.vacias += 1
-                        continue
+            if not len(curr_row) == 0:
+                value = curr_row[columna_datos].strip()
+                if not len(value) == 0:
+                    value_list.append(value)
                 else:
-                    logger.info("Ignorando fila vacia %s", i)
-                    self.erroneas += 1
+                    logger.info("Ignorando valor vacio en fila %s", i)
+                    self.vacias += 1
+                    continue
+            else:
+                logger.info("Ignorando fila vacia %s", i)
+                self.erroneas += 1
 
-            logger.info("%s contactos importados - %s valores ignoradas"
-                " - %s celdas erroneas", len(value_list), self.vacias,
-                self.erroneas)
+        logger.info("%s contactos importados - %s valores ignoradas"
+            " - %s celdas erroneas", len(value_list), self.vacias,
+            self.erroneas)
 
         return value_list
 
@@ -198,18 +197,22 @@ class ParserCsv(object):
         las primeras tres filas.
         """
 
-        read_line = file_obj.readline()
-        if read_line:
-            dialect = csv.Sniffer().sniff(read_line, [',', ';', '|', ' '])
-            file_obj.seek(0, 0)
-            workbook = csv.reader(file_obj, dialect)
-            structure_dic = {}
+        workbook = csv.reader(file_obj, self._get_dialect(file_obj))
 
-            for i in range(3):
-                try:
-                    row = workbook.next()
-                    structure_dic.update({i: row})
-                except:
-                    pass
+        structure_dic = {}
+        for i in range(3):
+            row = workbook.next()
+            if row:
+                structure_dic.update({i: row})
+
+        if not len(structure_dic):
+            raise FtsParserCsvMinRowError
 
         return structure_dic
+
+    def _get_dialect(self, file_obj):
+        try:
+            dialect = csv.Sniffer().sniff(file_obj.read(1024), [',', ';', '\t'])
+            return dialect
+        except csv.Error:
+            raise FtsParserCsvDelimiterError
