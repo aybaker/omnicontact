@@ -144,7 +144,7 @@ class ParserXls(object):
             raise FtsParserOpenFileError("El archivo XLS seleccionado"
                 " no pudo ser abierto.")
 
-        if worksheet.nrows < 4:
+        if worksheet.nrows < 3:
             logger.warn("El archivo XLS seleccionado posee menos de 3 filas.")
 
             raise FtsParserMinRowError("El archivo XLS posee menos"
