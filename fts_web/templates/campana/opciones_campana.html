@@ -55,14 +55,21 @@
                         <thead>
                             <th>Dígito</th>
                             <th>Acción</th>
-                            <th>Grupo Atención</th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for opcion in campana.opciones.all %}
                                 <tr>
                                     <td>{{ opcion.digito }}</td>
                                     <td>{{ opcion.get_accion_display }}</td>
-                                    <td>{{ opcion.grupo_atencion }}</td>       
+                                    {% if opcion.grupo_atencion %}
+                                        <td> Grupo Atención: <strong>{{ opcion.grupo_atencion }}</strong></td>
+                                    {% endif %}
+
+                                    {% if opcion.calificacion %}
+                                        <td>Calificación: <strong>{{ opcion.calificacion }}</strong></td>
+                                    {% endif %}
+                                    
                                 </tr>
                              {% empty %}
                                 <tr>
