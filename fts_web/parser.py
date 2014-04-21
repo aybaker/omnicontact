@@ -15,7 +15,7 @@ logger = logging.getLogger('ParserXls')
 
 
 csv_extensions = ['.csv']
-xls_extensions = ['.xls']
+xls_extensions = ['.xls', '.xlsx']
 
 
 def autodetectar_parser(filename):
