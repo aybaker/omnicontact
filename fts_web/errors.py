@@ -63,3 +63,10 @@ class FtsParserMinRowError(FtsError):
     El archivo querido Parsear tiene menos de 3 filas.
     """
     pass
+
+
+class FtsParserOpenFileError(FtsError):
+    """
+    No se pudo abrir el archivo a Parsear
+    """
+    pass
