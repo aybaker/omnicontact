@@ -9,7 +9,7 @@ import re
 import xlrd
 
 from fts_web.errors import (FtsParserCsvDelimiterError,
- FtsParserMinRowError)
+ FtsParserMinRowError, FtsParserOpenFileError)
 
 logger = logging.getLogger('ParserXls')
 
@@ -66,47 +66,45 @@ class ParserXls(object):
         # Reseteamos estadisticas
         self.vacias = 0
         self.erroneas = 0
-        value_list = []
-        workbook = xlrd.open_workbook(file_contents=file_obj.read())
-        worksheet = workbook.sheet_by_index(0)
 
+        worksheet = self._get_worksheet(file_obj)
         num_rows = worksheet.nrows - 1
         curr_row = -1
 
-        if num_rows >= 0:
-            if not validate_number(worksheet.cell(0, columna_datos)):
-                curr_row = 0
+        #Valida primera fila que el dato sea un número con
+        #formato teléfonico.
+        if not validate_number(worksheet.cell(0, columna_datos)):
+            curr_row = 0
 
-            while curr_row < num_rows:
-                curr_row += 1
-                cell = worksheet.cell(curr_row, columna_datos)
+        value_list = []
+        while curr_row < num_rows:
+            curr_row += 1
+            cell = worksheet.cell(curr_row, columna_datos)
 
-                # Guardamos valor de nro telefonico en 'cell_value'
-                if type(cell.value) == float:
-                    cell_value = str(int(cell.value))
+            # Guardamos valor de nro telefonico en 'cell_value'
+            if type(cell.value) == float:
+                cell_value = str(int(cell.value))
+            elif type(cell.value) == str:
+                cell_value = cell.value.strip()
+                if len(cell_value) == 0:
+                    logger.info("Ignorando celda vacia en fila %s", curr_row)
+                    self.vacias += 1
+                    continue
+            else:
+                try:
+                    # Intentamos convertir en string y ver que pasa...
+                    cell_value = str(cell.value).strip()
+                except:
+                    logger.info("Ignorando celda en fila %s con valor '%s' "
+                        "de tipo %s", curr_row, cell.value, type(cell.value))
+                    self.erroneas += 1
+                    continue
 
-                elif type(cell.value) == str:
-                    cell_value = cell.value.strip()
-                    if len(cell_value) == 0:
-                        logger.info("Ignorando celda vacia en fila %s", curr_row)
-                        self.vacias += 1
-                        continue
+            value_list.append(cell_value)
 
-                else:
-                    try:
-                        # Intentamos convertir en string y ver que pasa...
-                        cell_value = str(cell.value).strip()
-                    except:
-                        logger.info("Ignorando celda en fila %s con valor '%s' "
-                            "de tipo %s", curr_row, cell.value, type(cell.value))
-                        self.erroneas += 1
-                        continue
-
-                value_list.append(cell_value)
-
-            logger.info("%s contactos importados - %s celdas ignoradas"
-                " - %s celdas erroneas", len(value_list), self.vacias,
-                self.erroneas)
+        logger.info("%s contactos importados - %s celdas ignoradas"
+            " - %s celdas erroneas", len(value_list), self.vacias,
+            self.erroneas)
 
         return value_list
 
@@ -116,19 +114,10 @@ class ParserXls(object):
         las tres primeras filas de la primer hoja.
         """
 
-        structure_dic = {}
-
-        workbook = xlrd.open_workbook(file_contents=file_obj.read())
-        worksheet = workbook.sheet_by_index(0)
-
-        num_rows = worksheet.nrows - 1
+        worksheet = self._get_worksheet(file_obj)
         num_cols = worksheet.ncols - 1
 
-        if num_rows < 3:
-            logger.warn("El archivo xls seleccionado posee menos de 3 filas.")
-            raise FtsParserMinRowError("El archivo XLS posee menos"
-                " de 3 filas")
-
+        structure_dic = {}
         for curr_row in range(3):
             curr_col = -1
             row_content_list = []
@@ -144,6 +133,23 @@ class ParserXls(object):
             structure_dic.update({curr_row: row_content_list})
 
         return structure_dic
+
+    def _get_worksheet(self, file_obj):
+        try:
+            workbook = xlrd.open_workbook(file_contents=file_obj.read())
+            worksheet = workbook.sheet_by_index(0)
+        except xlrd.XLRDError as e:
+            logger.warn("No se pudo abrir el archivo XLS. Excepción: %s", e)
+
+            raise FtsParserOpenFileError("El archivo XLS seleccionado"
+                " no pudo ser abierto.")
+
+        if worksheet.nrows < 4:
+            logger.warn("El archivo XLS seleccionado posee menos de 3 filas.")
+
+            raise FtsParserMinRowError("El archivo XLS posee menos"
+                " de 3 filas")
+        return worksheet
 
 
 class ParserCsv(object):
@@ -209,7 +215,7 @@ class ParserCsv(object):
                 structure_dic.update({i: row})
 
         if len(structure_dic) < 3:
-            logger.warn("El archivo csv seleccionado posee menos de 3 filas.")
+            logger.warn("El archivo CSV seleccionado posee menos de 3 filas.")
             raise FtsParserMinRowError("El archivo CSV "
                 "posee menos de 3 filas")
 
@@ -220,6 +226,6 @@ class ParserCsv(object):
             dialect = csv.Sniffer().sniff(file_obj.read(1024), [',', ';', '\t'])
             return dialect
         except csv.Error:
-            logger.warn("No se pudo determinar el delimitador del archivo csv")
+            logger.warn("No se pudo determinar el delimitador del archivo CSV")
             raise FtsParserCsvDelimiterError("No se pudo determinar el "
-                "delimitador del archivo csv")
+                "delimitador del archivo CSV")
