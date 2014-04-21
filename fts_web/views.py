@@ -18,7 +18,7 @@ from fts_web.models import (
     BaseDatosContacto, IntentoDeContacto, Opcion)
 from fts_web.parser import autodetectar_parser
 from fts_web.errors import (FtsAudioConversionError, FtsParserCsvDelimiterError,
- FtsParserCsvMinRowError)
+ FtsParserMinRowError)
 
 from fts_daemon.asterisk_audio import convertir_audio_de_campana
 
@@ -293,9 +293,9 @@ class DefineBaseDatosContactoView(UpdateView):
                 messages.ERROR,
                 message,
             )
-        except FtsParserCsvMinRowError:
+        except FtsParserMinRowError:
             message = '<strong>Operación Errónea!</strong> \
-            El archivo csv que seleccionó posee menos de 3 filas.\
+            El archivo que seleccionó posee menos de 3 filas.\
             No se pudo llevar a cabo el procesamiento de sus datos.'
 
             messages.add_message(
