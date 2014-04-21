@@ -158,9 +158,12 @@ class OpcionForm(forms.ModelForm):
             Field('digito'),
             Field('accion'),
             Field('grupo_atencion'),
+            Field('calificacion'),
             Field('campana', type="hidden"),
         )
         super(OpcionForm, self).__init__(*args, **kwargs)
+        self.fields['calificacion'].queryset = Calificacion.objects.filter(
+            campana=self.initial['campana'])
 
     class Meta:
         model = Opcion
