@@ -16,9 +16,11 @@
                 {% if estructura_archivo %}
                     <form role="form" method="post" enctype="multipart/form-data" >
                         {% csrf_token %}
-                        {% if error %}
-                            <p class="text-danger">Debe que seleccionar la columna que sea el Teléfono.</p>
-                        {% endif %}
+                        
+                        <div class="bs-callout bs-callout-info">
+                            <h4>Columna Teléfono</h4>
+                            <p>Debe seleccionar la columna en la que se encuntran los número de teléfono que se deben importar.</p>
+                        </div>
                         <table class="table table-bordered">
                             {% for row, cols in estructura_archivo.items %}
                                 {% if forloop.first %}
@@ -30,7 +32,7 @@
                                             <div class="radio {% if error %}has-error{% endif %}">
                                                 <label class="control-label">
                                                     <input type="radio" name="telefono" value="{{ forloop.counter0 }}">
-                                                    Teléfono
+                                                    Columna {{ forloop.counter0 }}
                                                 </label>
                                             </div>
                                         </th>       
@@ -47,6 +49,9 @@
                             {% endfor %}
                             </tbody> 
                         </table>
+                        {% if error %}
+                            <p class="text-danger">Es requerido que seleccione la columna que contengan los números de Teléfono.</p>
+                        {% endif %}
                         <br>
                         <button type="submit" class="btn btn-primary btn-block">
                             Guardar Base Datos
