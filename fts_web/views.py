@@ -18,7 +18,7 @@ from fts_web.models import (
     BaseDatosContacto, IntentoDeContacto, Opcion)
 from fts_web.parser import autodetectar_parser
 from fts_web.errors import (FtsAudioConversionError, FtsParserCsvDelimiterError,
- FtsParserMinRowError)
+ FtsParserMinRowError, FtsParserOpenFileError)
 
 from fts_daemon.asterisk_audio import convertir_audio_de_campana
 
@@ -284,8 +284,8 @@ class DefineBaseDatosContactoView(UpdateView):
                 base_datos_contacto.archivo_importacion.file)
         except FtsParserCsvDelimiterError:
             message = '<strong>Operación Errónea!</strong> \
-            No se pudo determinar el delimitador a ser utilizado\
-            en el archivo csv. No se pudo llevar a cabo el procesamiento\
+            No se pudo determinar el delimitador a ser utilizado \
+            en el archivo csv. No se pudo llevar a cabo el procesamiento \
             de sus datos.'
 
             messages.add_message(
@@ -297,6 +297,16 @@ class DefineBaseDatosContactoView(UpdateView):
             message = '<strong>Operación Errónea!</strong> \
             El archivo que seleccionó posee menos de 3 filas.\
             No se pudo llevar a cabo el procesamiento de sus datos.'
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+        except FtsParserOpenFileError:
+            message = '<strong>Operación Errónea!</strong> \
+            El archivo que seleccionó no pudo ser abierto para su \
+            para su procesamiento.'
 
             messages.add_message(
                 self.request,
