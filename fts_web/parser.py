@@ -9,7 +9,7 @@ import re
 import xlrd
 
 from fts_web.errors import (FtsParserCsvDelimiterError,
- FtsParserCsvMinRowError)
+ FtsParserMinRowError)
 
 logger = logging.getLogger('ParserXls')
 
@@ -124,9 +124,12 @@ class ParserXls(object):
         num_rows = worksheet.nrows - 1
         num_cols = worksheet.ncols - 1
 
-        rango = min(num_rows, 3)
+        if num_rows < 3:
+            logger.warn("El archivo xls seleccionado posee menos de 3 filas.")
+            raise FtsParserMinRowError("El archivo XLS posee menos"
+                " de 3 filas")
 
-        for curr_row in range(rango):
+        for curr_row in range(3):
             curr_col = -1
             row_content_list = []
 
@@ -207,7 +210,7 @@ class ParserCsv(object):
 
         if len(structure_dic) < 3:
             logger.warn("El archivo csv seleccionado posee menos de 3 filas.")
-            raise FtsParserCsvMinRowError("El archivo CSV "
+            raise FtsParserMinRowError("El archivo CSV "
                 "posee menos de 3 filas")
 
         return structure_dic

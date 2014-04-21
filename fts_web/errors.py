@@ -58,9 +58,8 @@ class FtsParserCsvDelimiterError(FtsError):
     pass
 
 
-class FtsParserCsvMinRowError(FtsError):
+class FtsParserMinRowError(FtsError):
     """
-    El archivo csv querido usar en ParserCsv
-    tiene menos de 3 filas.
+    El archivo querido Parsear tiene menos de 3 filas.
     """
     pass
