@@ -20,7 +20,7 @@
                 <li class="active"><a>5- Confirmar Campaña</a></li>
             </ul>
             <br>
-            <div class="col-lg-4">
+            <div class="col-lg-6">
                 <form role="form" method="post" >
                     <h4>Datos Básicos</h4>
                     <dl class="dl-horizontal">
@@ -83,14 +83,29 @@
                         <thead>
                             <th>Dígito</th>
                             <th>Acción</th>
-                            <th>Grupo Atención</th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for opcion in campana.opciones.all %}
                                 <tr>
                                     <td>{{ opcion.digito }}</td>
                                     <td>{{ opcion.get_accion_display }}</td>
-                                    <td>{{ opcion.grupo_atencion }}</td>       
+                                    {% if opcion.grupo_atencion %}
+                                        <td> Grupo Atención: <strong>{{ opcion.grupo_atencion }}</strong></td>
+                                    {% endif %}
+
+                                    {% if opcion.calificacion %}
+                                        <td>Calificación: <strong>{{ opcion.calificacion }}</strong></td>
+                                    {% endif %}
+                                    
+                                </tr>
+                             {% empty %}
+                                <tr>
+                                    <td colspan="3">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Opciones creadas.</em>
+                                        </p>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
