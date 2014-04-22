@@ -21,7 +21,7 @@ from starpy.error import AMICommandFailure
 
 # `JOIN_TIMEOUT_MARGIN` lo importamos directamente, justamente para evitar
 # importar nada de Django, ya que NO usamos nada de Django aqui
-logger = _logging.getLogger('FTSAsteriskAmi')
+logger = _logging.getLogger('asterisk_originate')
 
 """No se sabe si el comando pudo ser ejecutado"""
 ORIGINATE_RESULT_UNKNOWN = 59

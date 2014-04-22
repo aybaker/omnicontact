@@ -17,7 +17,7 @@ from twisted.web.http_headers import Headers
 import logging as _logging
 
 
-logger = _logging.getLogger("FTSFastAgiD")
+logger = _logging.getLogger('fastagi_daemon')
 
 
 def setup():

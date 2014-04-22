@@ -12,7 +12,7 @@ import time
 import logging as _logging
 
 
-logger = _logging.getLogger("FTSDaemon")
+logger = _logging.getLogger('poll_daemon')
 
 
 def setup():
@@ -67,8 +67,8 @@ if __name__ == '__main__':
 
     generador_de_llamadas = generador_de_llamadas_asterisk_factory()
 
+    logger.info("Iniciando loop: obteniendo campanas activas...")
     while True:
-        logger.info("Obteniendo campanas activas...")
         campanas = Campana.objects.obtener_activas()
         for campana in campanas:
             procesar_campana(campana, generador_de_llamadas)
