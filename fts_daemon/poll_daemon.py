@@ -60,7 +60,7 @@ if __name__ == '__main__':
     setup()
     logger.info("Setup de Django OK")
 
-    from fts_daemon.asterisk_ami import generador_de_llamadas_asterisk_factory
+    from fts_daemon.asterisk_originate import generador_de_llamadas_asterisk_factory
     from fts_web.models import Campana
 
     generador_de_llamadas = generador_de_llamadas_asterisk_factory()

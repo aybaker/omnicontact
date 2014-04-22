@@ -7,7 +7,7 @@ import datetime
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from fts_daemon.asterisk_ami import ORIGINATE_RESULT_UNKNOWN,\
+from fts_daemon.asterisk_originate import ORIGINATE_RESULT_UNKNOWN,\
     ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,\
     ORIGINATE_RESULT_CONNECT_FAILED
 from fts_web.utiles import upload_to
