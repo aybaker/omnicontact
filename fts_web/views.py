@@ -20,7 +20,7 @@ from fts_web.parser import autodetectar_parser
 from fts_web.errors import (FtsAudioConversionError, FtsParserCsvDelimiterError,
  FtsParserMinRowError, FtsParserOpenFileError)
 
-from fts_daemon.asterisk_audio import convertir_audio_de_campana
+from fts_daemon.audio_conversor import convertir_audio_de_campana
 
 
 #===============================================================================
