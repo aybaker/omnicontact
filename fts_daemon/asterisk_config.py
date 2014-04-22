@@ -109,9 +109,15 @@ def generar_dialplan(campana):
     """Genera el dialplan para una campaña"""
 
     partes = []
+    # TODO: usar archivo convertido!
+    #fts_audio_file = os.path.join(settings.MEDIA_ROOT,
+    #        campana.audio_asterisk.name)
+    fts_audio_file = os.path.join(settings.MEDIA_ROOT,
+            campana.reproduccion.name)
+    fts_audio_file = os.path.splitext(fts_audio_file)[0]
     param_generales = {
         'fts_campana_id': campana.id,
-        'fts_audio_file': '/tmp/sample.wav',
+        'fts_audio_file': fts_audio_file,
         'fts_agi_server': 'localhost', # TODO: mover a settings
         'date': str(datetime.datetime.now())
     }
