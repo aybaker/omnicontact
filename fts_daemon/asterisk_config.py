@@ -17,6 +17,7 @@ import os
 import logging as _logging
 import tempfile
 import shutil
+import subprocess
 
 
 logger = _logging.getLogger(__name__)
@@ -268,3 +269,41 @@ def create_queue_config_file():
         except:
             logger.exception("Error al intentar borrar temporal %s",
                 tmp_filename)
+
+
+def reload_config():
+    """Realiza reload de configuracion de Asterisk
+
+    Returns:
+        - exit status de proceso ejecutado
+    """
+    stdout_file = tempfile.TemporaryFile()
+    stderr_file = tempfile.TemporaryFile()
+
+    try:
+        subprocess.check_call(settings.FTS_RELOAD_CMD,
+            stdout=stdout_file, stderr=stderr_file)
+        logger.info("Reload de configuracion de Asterisk fue OK")
+        return 0
+    except subprocess.CalledProcessError, e:
+        logger.warn("Exit status erroneo: %s", e.returncode)
+        logger.warn(" - Comando ejecutado: %s", e.cmd)
+        try:
+            stdout_file.seek(0)
+            stderr_file.seek(0)
+            stdout = stdout_file.read().splitlines()
+            for line in stdout:
+                if line:
+                    logger.warn(" STDOUT> %s", line)
+            stderr = stderr_file.read().splitlines()
+            for line in stderr:
+                if line:
+                    logger.warn(" STDERR> %s", line)
+        except:
+            logger.exception("Error al intentar reporter STDERR y STDOUT")
+
+        return e.returncode
+
+    finally:
+        stdout_file.close()
+        stderr_file.close()

@@ -17,8 +17,6 @@ from fts_web.settings import FTS_JOIN_TIMEOUT_MARGIN
 import logging as _logging
 from starpy import manager
 from starpy.error import AMICommandFailure
-import tempfile
-import subprocess
 
 
 # `JOIN_TIMEOUT_MARGIN` lo importamos directamente, justamente para evitar
@@ -271,41 +269,3 @@ def originate(username, password, server, port,
         logger.warn("Returning ORIGINATE_RESULT_UNKNOWN because %s is unknown",
             child_process.exitcode)
         return ORIGINATE_RESULT_UNKNOWN
-
-
-def reload_config():
-    """Realiza reload de configuracion de Asterisk
-
-    Returns:
-        - exit status de proceso ejecutado
-    """
-    stdout_file = tempfile.TemporaryFile()
-    stderr_file = tempfile.TemporaryFile()
-
-    try:
-        subprocess.check_call(settings.FTS_RELOAD_CMD,
-            stdout=stdout_file, stderr=stderr_file)
-        logger.info("Reload de configuracion de Asterisk fue OK")
-        return 0
-    except subprocess.CalledProcessError, e:
-        logger.warn("Exit status erroneo: %s", e.returncode)
-        logger.warn(" - Comando ejecutado: %s", e.cmd)
-        try:
-            stdout_file.seek(0)
-            stderr_file.seek(0)
-            stdout = stdout_file.read().splitlines()
-            for line in stdout:
-                if line:
-                    logger.warn(" STDOUT> %s", line)
-            stderr = stderr_file.read().splitlines()
-            for line in stderr:
-                if line:
-                    logger.warn(" STDERR> %s", line)
-        except:
-            logger.exception("Error al intentar reporter STDERR y STDOUT")
-
-        return e.returncode
-
-    finally:
-        stdout_file.close()
-        stderr_file.close()
