@@ -37,12 +37,12 @@ TEMPLATE_DIALPLAN_START = """
 [campania_{fts_campana_id}]
 
 exten => _XXXXXX!.,1,NoOp(FTS,INICIO,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
- same => _XXXXXX!.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
- same => _XXXXXX!.,n,Wait(1)
- same => _XXXXXX!.,n,Answer()
- same => _XXXXXX!.,n(audio),Background({fts_audio_file})
- same => _XXXXXX!.,n,WaitExten(5)
- same => _XXXXXX!.,n,Hangup()
+exten => _XXXXXX!.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
+exten => _XXXXXX!.,n,Wait(1)
+exten => _XXXXXX!.,n,Answer()
+exten => _XXXXXX!.,n(audio),Background({fts_audio_file})
+exten => _XXXXXX!.,n,WaitExten(5)
+exten => _XXXXXX!.,n,Hangup()
 
 """
 
@@ -157,10 +157,16 @@ def generar_dialplan(campana):
     return ''.join(partes)
 
 
-def create_dialplan_config_file():
-    """Crea el archivo de dialplan para campanas existentes"""
+def create_dialplan_config_file(campana=None):
+    """Crea el archivo de dialplan para campanas existentes
+    (si `campana` es None). Si `campana` es pasada por parametro,
+    se genera solo para dicha campana.
+    """
 
-    campanas = Campana.objects.obtener_todas_para_generar_dialplan()
+    if campana is None:
+        campanas = Campana.objects.obtener_todas_para_generar_dialplan()
+    else:
+        campanas = [campana]
 
     tmp_fd, tmp_filename = tempfile.mkstemp()
     try:
