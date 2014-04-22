@@ -224,6 +224,8 @@ class ParserCsv(object):
     def _get_dialect(self, file_obj):
         try:
             dialect = csv.Sniffer().sniff(file_obj.read(1024), [',', ';', '\t'])
+            file_obj.seek(0, 0)
+
             return dialect
         except csv.Error:
             logger.warn("No se pudo determinar el delimitador del archivo CSV")
