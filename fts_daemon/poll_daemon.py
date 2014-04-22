@@ -43,7 +43,9 @@ def procesar_campana(campana, generador_de_llamadas):
         assert isinstance(pendiente, IntentoDeContacto)
         logger.info("Realizando originate para IntentoDeContacto %s",
             pendiente.id)
-        res = generador_de_llamadas(pendiente.contacto.telefono, pendiente.id)
+        context = campana.get_nombre_contexto_para_asterisk()
+        res = generador_de_llamadas(pendiente.contacto.telefono, pendiente.id,
+            context)
 
         IntentoDeContacto.objects.update_resultado_si_corresponde(
             pendiente.id, res)

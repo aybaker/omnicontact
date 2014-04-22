@@ -38,9 +38,9 @@ ORIGINATE_RESULT_CONNECT_FAILED = 56
 
 def generador_de_llamadas_asterisk_dummy_factory():
     """Llamador DUMMY, para tests"""
-    def generador_de_llamadas_asterisk(telefono, call_id):
+    def generador_de_llamadas_asterisk(telefono, call_id, context):
         """Loguea intento y devuelve SUCCESS"""
-        logger.info("GENERADOR DE LLAMADAS DUMMY: %s [%s]", telefono, call_id)
+        logger.info("GENERADOR DE LLAMADAS DUMMY: %s [%s]", telefono, call_id, context)
         return ORIGINATE_RESULT_SUCCESS
     return generador_de_llamadas_asterisk
 
@@ -50,18 +50,19 @@ def generador_de_llamadas_asterisk_factory():
     La funcion generada debe recibir por parametro:
         a) el numero telefonico
         b) un identificador UNICO para la llamada
+        c) el contexto donde ubicar la llamada
     y devolver el resultado, uno de los valores de ORIGINATE_RESULT_*
     """
     from django.conf import settings
 
-    def generador_de_llamadas_asterisk(telefono, callid):
+    def generador_de_llamadas_asterisk(telefono, callid, context):
         result = originate(
             settings.ASTERISK['USERNAME'],
             settings.ASTERISK['PASSWORD'],
             settings.ASTERISK['HOST'],
             settings.ASTERISK['PORT'],
             settings.ASTERISK['CHANNEL_PREFIX'].format(telefono),
-            settings.ASTERISK['CONTEXT'],
+            context,
             settings.ASTERISK['EXTEN'].format(callid),
             settings.ASTERISK['PRIORITY'],
             settings.ASTERISK['TIMEOUT']
@@ -177,6 +178,8 @@ class OriginateService(Process):
         assert self.ami is None
         self.ami = ami
         try:
+            logger.info("Originate - channel: %s - context: %s - exten: %s",
+                self.channel, self.context, self.exten)
             df = ami.originate(self.channel,
                 context=self.context, exten=self.exten, priority=self.priority,
                 timeout=self.timeout)

@@ -37,13 +37,13 @@ TEMPLATE_DIALPLAN_START = """
 
 [campania_{fts_campana_id}]
 
-exten => _XXXXXX!.,1,NoOp(FTS,INICIO,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-exten => _XXXXXX!.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
-exten => _XXXXXX!.,n,Wait(1)
-exten => _XXXXXX!.,n,Answer()
-exten => _XXXXXX!.,n(audio),Background({fts_audio_file})
-exten => _XXXXXX!.,n,WaitExten(5)
-exten => _XXXXXX!.,n,Hangup()
+exten => _ftsX!,1,NoOp(FTS,INICIO,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
+exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
+exten => _ftsX!,n,Wait(1)
+exten => _ftsX!,n,Answer()
+exten => _ftsX!,n(audio),Background({fts_audio_file})
+exten => _ftsX!,n,WaitExten(5)
+exten => _ftsX!,n,Hangup()
 
 """
 
