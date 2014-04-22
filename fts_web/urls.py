@@ -87,14 +87,23 @@ urlpatterns = patterns('',
         views.ActivaCampanaView.as_view(),
         name='estado_activa_campana',
     ),
+
     url(r'^campanas/estados/$',
         views.CampanaPorEstadoListView.as_view(),
         name='lista_campana_por_estados',
     ),
-
     url(r'^campana/(?P<pk>\d+)/detalle_estado/$',
         views.CampanaPorEstadoDetailView.as_view(),
         name='campana_detalle_de_estado',
+    ),
+
+    url(r'^campanas/reportes/$',
+        views.CampanaReporteListView.as_view(),
+        name='lista_campana_reportes',
+    ),
+    url(r'^campana/(?P<pk>\d+)/detalle_reporte/$',
+        views.CampanaReporteDetailView.as_view(),
+        name='detalle_campana_reporte',
     ),
 
     #===============================================================================
