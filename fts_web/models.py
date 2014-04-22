@@ -492,6 +492,13 @@ class Campana(models.Model):
     def __unicode__(self):
         return self.nombre
 
+    def get_nombre_contexto_para_asterisk(self):
+        """Devuelve un texto para ser usado en Asterisk,
+        para nombrar el contexto asociado a la campana.
+        """
+        assert self.id
+        return 'campania_{0}'.format(self.id)
+
     def clean(self):
         """
         Valida que al crear una campaña la fechas de
