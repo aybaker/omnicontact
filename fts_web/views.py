@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+
 from __future__ import unicode_literals
 
+import pygal
+
+from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse
@@ -717,6 +721,62 @@ class CampanaPorEstadoDetailView(DetailView):
     template_name = 'estado/detalle_estado_campana.html'
     model = Campana
 
+
+#===============================================================================
+# Reporte
+#===============================================================================
+
+
+class CampanaReporteListView(ListView):
+    """
+    Esta vista lista las campañas finalizadas con
+    un resumen de sus características.
+    """
+
+    template_name = 'reporte/reporte.html'
+    context_object_name = 'campana'
+    model = Campana
+
+    def get_context_data(self, **kwargs):
+        context = super(CampanaReporteListView, self).get_context_data(
+           **kwargs)
+        context['campanas_finalizadas'] = Campana.objects.obtener_finalizadas()
+        return context
+
+
+class CampanaReporteDetailView(DetailView):
+    """
+    Muestra el estado de la campaña con la lista de
+    contactos asociados, y el estado de c/u de dichos contactos
+    """
+    template_name = 'reporte/detalle_reporte.html'
+    context_object_name = 'campana'
+    model = Campana
+
+    def get_object(self, queryset=None):
+        campana = super(CampanaReporteDetailView, self).get_object(
+            queryset=None)
+
+        total_contactos = campana.bd_contacto.contactos.all().count()
+        cantidad_pendientes = campana.obtener_intentos_pendientes().count()
+        cantidad_contesto = campana.obtener_intentos_contesto().count()
+        cantidad_no_contesto = campana.obtener_intentos_no_contesto().count()
+        cantidad_error = campana.obtener_intentos_error_interno().count()
+
+        porcentaje_pendientes = total_contactos * cantidad_pendientes / 100
+        porcentaje_contesto = total_contactos * cantidad_contesto / 100
+        porcentaje_no_contesto = total_contactos * cantidad_no_contesto / 100
+        porcentaje_error = total_contactos * cantidad_error / 100
+
+        pie_chart = pygal.Pie()
+        pie_chart.title = 'Intentos de Contactos para la campaña {0}'.format(
+            campana.nombre)
+        pie_chart.add('Pendientes', porcentaje_pendientes)
+        pie_chart.add('Contestados', porcentaje_contesto)
+        pie_chart.add('No Contestados', porcentaje_no_contesto)
+        pie_chart.add('Erróneos', porcentaje_error)
+        pie_chart.render_to_file()
+        return campana
 
 #===============================================================================
 # AGI
