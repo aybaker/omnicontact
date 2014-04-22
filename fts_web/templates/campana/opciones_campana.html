@@ -87,3 +87,25 @@
         </div>
     </div>
 {% endblock %}
+
+{% block head_js %}
+    <script type="text/javascript">
+        $(function() {
+            $(".accion").each(function (){
+                if(!$(this).parent().parent().hasClass('has-error')){
+                    $(this).attr('disabled', true);
+                }
+            })
+            
+            $("#id_accion").change(function (){
+                $(".accion").each(function (){
+                    $(this).parent().parent().removeClass('has-error');
+                    $(this).parent().find('.help-block').remove();
+                })
+
+                $(".accion").attr('disabled', true);
+                $(".accion-"+$(this).val()).attr('disabled', false);
+            });
+        });
+    </script>
+{% endblock %}

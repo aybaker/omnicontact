@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
@@ -151,14 +152,18 @@ class CalificacionForm(forms.ModelForm):
 #===============================================================================
 
 class OpcionForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
+        CSS_CLASS_GRUPO_ATENCION = 'accion accion-{0}'.format(Opcion.DERIVAR)
+        CSS_CLASS_CALIFICACION = 'accion accion-{0}'.format(Opcion.CALIFICAR)
+
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Field('digito'),
             Field('accion'),
-            Field('grupo_atencion'),
-            Field('calificacion'),
+            Field('grupo_atencion', css_class=CSS_CLASS_GRUPO_ATENCION),
+            Field('calificacion', css_class=CSS_CLASS_CALIFICACION),
             Field('campana', type="hidden"),
         )
         super(OpcionForm, self).__init__(*args, **kwargs)
@@ -167,6 +172,21 @@ class OpcionForm(forms.ModelForm):
 
     class Meta:
         model = Opcion
+
+    def clean(self):
+        cleaned_data = super(OpcionForm, self).clean()
+        accion = cleaned_data.get("accion")
+        grupo_atencion = cleaned_data.get("grupo_atencion")
+        calificacion = cleaned_data.get("calificacion")
+
+        msg = 'Este campo es requerido'
+        if accion == Opcion.DERIVAR and not grupo_atencion:
+            self._errors["grupo_atencion"] = self.error_class([msg])
+
+        elif accion == Opcion.CALIFICAR and not calificacion:
+            self._errors["calificacion"] = self.error_class([msg])
+
+        return cleaned_data
 
 
 #===============================================================================
