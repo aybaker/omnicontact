@@ -40,7 +40,7 @@ def generador_de_llamadas_asterisk_dummy_factory():
     """Llamador DUMMY, para tests"""
     def generador_de_llamadas_asterisk(telefono, call_id, context):
         """Loguea intento y devuelve SUCCESS"""
-        logger.info("GENERADOR DE LLAMADAS DUMMY: %s [%s]", telefono, call_id, context)
+        logger.info("GENERADOR DE LLAMADAS DUMMY: %s [%s] %s", telefono, call_id, context)
         return ORIGINATE_RESULT_SUCCESS
     return generador_de_llamadas_asterisk
 
