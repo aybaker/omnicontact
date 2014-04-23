@@ -341,7 +341,9 @@ class Campana(models.Model):
     cantidad_canales = models.PositiveIntegerField()
     cantidad_intentos = models.PositiveIntegerField()
     segundos_ring = models.PositiveIntegerField()
+    # FIXME: `fecha_inicio` deberia ser DateField
     fecha_inicio = models.DateTimeField()
+    # FIXME: `fecha_fin` deberia ser DateField
     fecha_fin = models.DateTimeField()
     # TODO: renombrar a audio_original
     # TODO: ajustar max_length
@@ -801,13 +803,23 @@ class Actuacion(models.Model):
     horarios en que una campaña se ejecuta.
     """
 
-    (LUNES, MARTES, MIERCOLES, JUEVES, VIERNES) = range(0, 5)
+    """Dias de la semana, compatibles con datetime.date.weekday()"""
+    LUNES = 0
+    MARTES = 1
+    MIERCOLES = 2
+    JUEVES = 3
+    VIERNES = 4
+    SABADO = 5
+    DOMINGO = 6
+
     DIA_SEMANAL_CHOICES = (
         (LUNES, 'LUNES'),
         (MARTES, 'MARTES'),
         (MIERCOLES, 'MIERCOLES'),
         (JUEVES, 'JUEVES'),
         (VIERNES, 'VIERNES'),
+        (SABADO, 'SABADO'),
+        (DOMINGO, 'DOMINGO'),
     )
     dia_semanal = models.PositiveIntegerField(
         choices=DIA_SEMANAL_CHOICES,
