@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
 import logging
 import datetime
 import pygal
@@ -447,9 +448,13 @@ class Campana(models.Model):
         """
         Devuelve la url al gráfico svg en medias files.
         """
-        url = '{0}graficos/{1}-torta.svg'.format(settings.MEDIA_URL,
+        path = '{0}/graficos/{1}-torta.svg'.format(settings.MEDIA_ROOT,
             self.nombre)
-        return url
+        if os.path.isfile(path):
+            url = '{0}graficos/{1}-torta.svg'.format(settings.MEDIA_URL,
+                self.nombre)
+            return url
+        return None
 
     def _genera_grafico_torta(self):
         """
