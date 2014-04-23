@@ -160,8 +160,8 @@ assert os.path.isabs(FTS_DIALPLAN_FILENAME), \
     "FTS_DIALPLAN_FILENAME debe ser un path absoluto"
 
 if os.path.exists(FTS_DIALPLAN_FILENAME):
-    assert not os.path.isdir(FTS_DIALPLAN_FILENAME, \
-        "FTS_DIALPLAN_FILENAME es un directorio")
+    assert not os.path.isdir(FTS_DIALPLAN_FILENAME), \
+    "FTS_DIALPLAN_FILENAME es un directorio"
 
 # ~~~~~ Check FTS_QUEUE_FILENAME
 
@@ -172,8 +172,8 @@ assert os.path.isabs(FTS_QUEUE_FILENAME), \
     "FTS_QUEUE_FILENAME debe ser un path absoluto"
 
 if os.path.exists(FTS_QUEUE_FILENAME):
-    assert not os.path.isdir(FTS_QUEUE_FILENAME, \
-        "FTS_QUEUE_FILENAME es un directorio")
+    assert not os.path.isdir(FTS_QUEUE_FILENAME), \
+        "FTS_QUEUE_FILENAME es un directorio"
 
 # ~~~~~ Check FTS_RELOAD_CMD
 

@@ -17,6 +17,7 @@ import os
 import logging as _logging
 import tempfile
 import shutil
+import subprocess
 
 
 logger = _logging.getLogger(__name__)
@@ -37,12 +38,12 @@ TEMPLATE_DIALPLAN_START = """
 [campania_{fts_campana_id}]
 
 exten => _XXXXXX!.,1,NoOp(FTS,INICIO,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
- same => _XXXXXX!.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
- same => _XXXXXX!.,n,Wait(1)
- same => _XXXXXX!.,n,Answer()
- same => _XXXXXX!.,n(audio),Background({fts_audio_file})
- same => _XXXXXX!.,n,WaitExten(5)
- same => _XXXXXX!.,n,Hangup()
+exten => _XXXXXX!.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
+exten => _XXXXXX!.,n,Wait(1)
+exten => _XXXXXX!.,n,Answer()
+exten => _XXXXXX!.,n(audio),Background({fts_audio_file})
+exten => _XXXXXX!.,n,WaitExten(5)
+exten => _XXXXXX!.,n,Hangup()
 
 """
 
@@ -157,10 +158,16 @@ def generar_dialplan(campana):
     return ''.join(partes)
 
 
-def create_dialplan_config_file():
-    """Crea el archivo de dialplan para campanas existentes"""
+def create_dialplan_config_file(campana=None):
+    """Crea el archivo de dialplan para campanas existentes
+    (si `campana` es None). Si `campana` es pasada por parametro,
+    se genera solo para dicha campana.
+    """
 
-    campanas = Campana.objects.obtener_todas_para_generar_dialplan()
+    if campana is None:
+        campanas = Campana.objects.obtener_todas_para_generar_dialplan()
+    else:
+        campanas = [campana]
 
     tmp_fd, tmp_filename = tempfile.mkstemp()
     try:
@@ -262,3 +269,41 @@ def create_queue_config_file():
         except:
             logger.exception("Error al intentar borrar temporal %s",
                 tmp_filename)
+
+
+def reload_config():
+    """Realiza reload de configuracion de Asterisk
+
+    Returns:
+        - exit status de proceso ejecutado
+    """
+    stdout_file = tempfile.TemporaryFile()
+    stderr_file = tempfile.TemporaryFile()
+
+    try:
+        subprocess.check_call(settings.FTS_RELOAD_CMD,
+            stdout=stdout_file, stderr=stderr_file)
+        logger.info("Reload de configuracion de Asterisk fue OK")
+        return 0
+    except subprocess.CalledProcessError, e:
+        logger.warn("Exit status erroneo: %s", e.returncode)
+        logger.warn(" - Comando ejecutado: %s", e.cmd)
+        try:
+            stdout_file.seek(0)
+            stderr_file.seek(0)
+            stdout = stdout_file.read().splitlines()
+            for line in stdout:
+                if line:
+                    logger.warn(" STDOUT> %s", line)
+            stderr = stderr_file.read().splitlines()
+            for line in stderr:
+                if line:
+                    logger.warn(" STDERR> %s", line)
+        except:
+            logger.exception("Error al intentar reporter STDERR y STDOUT")
+
+        return e.returncode
+
+    finally:
+        stdout_file.close()
+        stderr_file.close()
