@@ -11,3 +11,4 @@ uWSGI==2.0.3
 wsgiref==0.1.2
 xlrd==0.9.2
 zope.interface==4.1.1
+pytz
