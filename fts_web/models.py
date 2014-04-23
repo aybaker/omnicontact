@@ -3,6 +3,9 @@ from __future__ import unicode_literals
 
 import logging
 import datetime
+import pygal
+
+from django.conf import settings
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -369,12 +372,17 @@ class Campana(models.Model):
         IntentoDeContacto.objects.crear_intentos_para_campana(self.id)
 
     def finalizar(self):
-        """Setea la campaña como finalizada"""
+        """
+        Setea la campaña como finalizada e invoca a generarse el gráfico
+        de tortas de los resultados de los intentos de contacto.
+        """
         logger.info("Seteando campana %s como ESTADO_FINALIZADA", self.id)
         # TODO: esta bien generar error si el modo actual es ESTADO_FINALIZADA?
         assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
+
+        self._genera_grafico_torta()
 
     def pausar(self):
         """Setea la campaña como ESTADO_PAUSADA"""
@@ -394,7 +402,6 @@ class Campana(models.Model):
     def obtener_intentos_pendientes(self):
         """Devuelve instancias de IntentoDeContacto para los que
         haya que intentar realizar llamadas.
-
         Solo tiene sentido ejecutar este metodo en campanas activas.
         """
         # (a) Este metodo tambien se podria poner en IntentoDeContactoManager
@@ -435,6 +442,46 @@ class Campana(models.Model):
         """
         return IntentoDeContacto.objects._obtener_error_interno_de_campana(
             self.id)
+
+    def url_grafico_torta(self):
+        """
+        Devuelve la url al gráfico svg en medias files.
+        """
+        url = '{0}graficos/{1}-torta.svg'.format(settings.MEDIA_URL,
+            self.nombre)
+        return url
+
+    def _genera_grafico_torta(self):
+        """
+        Genera el gráfico torta de los intentos de contacto de la
+        campaña finalizada.
+        """
+        path = '{0}/graficos/{1}-torta.svg'.format(settings.MEDIA_ROOT,
+            self.nombre)
+
+        total_contactos = self.bd_contacto.contactos.all().count()
+        cantidad_contesto = self.obtener_intentos_contesto().count()
+        cantidad_no_contesto = self.obtener_intentos_no_contesto().count()
+        cantidad_pendientes = self.obtener_intentos_pendientes().count()
+        cantidad_error_interno = self.obtener_intentos_error_interno().count()
+
+        porcentaje_contesto = float(100 * cantidad_contesto /
+            total_contactos)
+        porcentaje_no_contesto = float(100 * cantidad_no_contesto /
+            total_contactos)
+        porcentaje_pendientes = float(100 * cantidad_pendientes /
+            total_contactos)
+        porcentaje_error_interno = float(100 * cantidad_error_interno /
+            total_contactos)
+
+        pie_chart = pygal.Pie()
+        pie_chart.title = 'Intentos de Contactos para la campaña {0}'.format(
+            self.nombre)
+        pie_chart.add('Contestados', porcentaje_contesto)
+        pie_chart.add('No Contestados', porcentaje_no_contesto)
+        pie_chart.add('Pendientes', porcentaje_pendientes)
+        pie_chart.add('Erróneos', porcentaje_error_interno)
+        pie_chart.render_to_file(path)
 
     def __unicode__(self):
         return self.nombre
