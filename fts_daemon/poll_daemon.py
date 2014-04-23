@@ -38,7 +38,7 @@ def procesar_campana(campana, generador_de_llamadas):
     assert isinstance(campana, Campana)
     logger.info("Iniciando procesado de campana %s", campana.id)
     contador_contactos = 0
-    
+
     for pendiente in campana.obtener_intentos_pendientes():
         assert isinstance(pendiente, IntentoDeContacto)
         logger.info("Realizando originate para IntentoDeContacto %s",
@@ -51,9 +51,10 @@ def procesar_campana(campana, generador_de_llamadas):
             pendiente.id, res)
 
         contador_contactos += 1
+    else:
+        logger.info("Marcando campana %s como FINALIZADA", campana.id)
+        campana.finalizar()
 
-    logger.info("Marcando campana %s como FINALIZADA", campana.id)
-    campana.finalizar()
     return contador_contactos
 
 
