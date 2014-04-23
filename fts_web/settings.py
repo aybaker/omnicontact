@@ -163,6 +163,10 @@ if os.path.exists(FTS_DIALPLAN_FILENAME):
     assert not os.path.isdir(FTS_DIALPLAN_FILENAME), \
     "FTS_DIALPLAN_FILENAME es un directorio"
 
+assert os.path.exists(os.path.dirname(FTS_DIALPLAN_FILENAME)), \
+    "FTS_DIALPLAN_FILENAME: el directorio '{0}' no existe".format(
+        os.path.dirname(FTS_DIALPLAN_FILENAME))
+
 # ~~~~~ Check FTS_QUEUE_FILENAME
 
 assert FTS_QUEUE_FILENAME is not None, \
@@ -174,6 +178,10 @@ assert os.path.isabs(FTS_QUEUE_FILENAME), \
 if os.path.exists(FTS_QUEUE_FILENAME):
     assert not os.path.isdir(FTS_QUEUE_FILENAME), \
         "FTS_QUEUE_FILENAME es un directorio"
+
+assert os.path.exists(os.path.dirname(FTS_QUEUE_FILENAME)), \
+    "FTS_QUEUE_FILENAME: el directorio '{0}' no existe".format(
+        os.path.dirname(FTS_QUEUE_FILENAME))
 
 # ~~~~~ Check FTS_RELOAD_CMD
 
