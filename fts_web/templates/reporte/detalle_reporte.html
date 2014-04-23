@@ -14,15 +14,18 @@
                 <table class="table table-condensed">
                     <thead>
                         <th>Campaña</th>
-                        <th>Desde - Hasta</th>
+                        <th>Fecha Desde</th>
+                        <th>Fecha Hasta</th>                     
                         <th>Base Datos</th>
                         <th>Estado</th>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr class="info">
                             <td><strong>{{ campana.nombre }}</strong></td>
                             <td>
-                                {{ campana.fecha_inicio|date:"d/m/Y" }} -
+                                {{ campana.fecha_inicio|date:"d/m/Y" }}
+                            </td>
+                            <td>
                                 {{ campana.fecha_fin|date:"d/m/Y" }}
                             </td>
                             <td>{{ campana.bd_contacto }}</td>
@@ -36,9 +39,9 @@
                       <tr>                                
                         <th>Cantidad Contacto</th>                        
                         <th>Cantidad Intentos</th>
-                        <th>Intentos Pendientes</th>
                         <th>Intentos Contestados</th>
                         <th>Intentos No Contestados</th>
+                        <th>Intentos Pendientes</th>
                         <th>Intentos Erróneos</th>
                       </tr>
                     </thead>
@@ -51,13 +54,13 @@
                                 {{ campana.intentos_de_contactos.all.count }}
                             </td>
                             <td>
-                                {{ campana.obtener_intentos_pendientes.count }}
-                            </td>
-                            <td>
                                 {{ campana.obtener_intentos_contesto.count }}
                             </td>
                             <td>
                                 {{ campana.obtener_intentos_no_contesto.count }}
+                            </td>
+                            <td>
+                                {{ campana.obtener_intentos_pendientes.count }}
                             </td>
                             <td>
                                 {{ campana.obtener_intentos_error_interno.count }}
@@ -65,9 +68,11 @@
                         </tr>
                     </tbody>
                 </table>
+                <div class="col-lg-6 col-lg-offset-3">
                 <figure>
-                    <embed type="image/svg+xml" src="/media/graficos/pie.svg" />
+                    <embed type="image/svg+xml" src="{{ campana.url_grafico_torta }}" height="450"/>
                 </figure>
+                </div>
             </div>
         </div>
     </div>
