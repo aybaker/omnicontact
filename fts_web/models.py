@@ -462,10 +462,18 @@ class Campana(models.Model):
         campaña finalizada.
         """
         path = '{0}/graficos/{1}-torta.svg'.format(settings.MEDIA_ROOT,
-            self.nombre)
+            self.id)
 
         total_contactos = self.bd_contacto.contactos.all().count()
         if total_contactos > 0:
+            graficos_dir = '{0}/graficos/'.format(settings.MEDIA_ROOT)
+            if not os.path.exists(graficos_dir):
+                try:
+                    os.mkdir(graficos_dir, 0755)
+                except OSError:
+                    logger.warn("Error al intentar crear directorio para "
+                        "graficos: %s (se ignorara el error)", graficos_dir)
+
             cantidad_contesto = self.obtener_intentos_contesto().count()
             cantidad_no_contesto = self.obtener_intentos_no_contesto().count()
             cantidad_pendientes = self.obtener_intentos_pendientes().count()
