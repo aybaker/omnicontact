@@ -460,28 +460,29 @@ class Campana(models.Model):
             self.nombre)
 
         total_contactos = self.bd_contacto.contactos.all().count()
-        cantidad_contesto = self.obtener_intentos_contesto().count()
-        cantidad_no_contesto = self.obtener_intentos_no_contesto().count()
-        cantidad_pendientes = self.obtener_intentos_pendientes().count()
-        cantidad_error_interno = self.obtener_intentos_error_interno().count()
+        if total_contactos > 0:
+            cantidad_contesto = self.obtener_intentos_contesto().count()
+            cantidad_no_contesto = self.obtener_intentos_no_contesto().count()
+            cantidad_pendientes = self.obtener_intentos_pendientes().count()
+            cantidad_error_interno = self.obtener_intentos_error_interno().count()
 
-        porcentaje_contesto = float(100 * cantidad_contesto /
-            total_contactos)
-        porcentaje_no_contesto = float(100 * cantidad_no_contesto /
-            total_contactos)
-        porcentaje_pendientes = float(100 * cantidad_pendientes /
-            total_contactos)
-        porcentaje_error_interno = float(100 * cantidad_error_interno /
-            total_contactos)
+            porcentaje_contesto = float(100 * cantidad_contesto /
+                total_contactos)
+            porcentaje_no_contesto = float(100 * cantidad_no_contesto /
+                total_contactos)
+            porcentaje_pendientes = float(100 * cantidad_pendientes /
+                total_contactos)
+            porcentaje_error_interno = float(100 * cantidad_error_interno /
+                total_contactos)
 
-        pie_chart = pygal.Pie()
-        pie_chart.title = 'Intentos de Contactos para la campaña {0}'.format(
-            self.nombre)
-        pie_chart.add('Contestados', porcentaje_contesto)
-        pie_chart.add('No Contestados', porcentaje_no_contesto)
-        pie_chart.add('Pendientes', porcentaje_pendientes)
-        pie_chart.add('Erróneos', porcentaje_error_interno)
-        pie_chart.render_to_file(path)
+            pie_chart = pygal.Pie()
+            pie_chart.title = 'Intentos de Contactos para la campaña {0}'.format(
+                self.nombre)
+            pie_chart.add('Contestados', porcentaje_contesto)
+            pie_chart.add('No Contestados', porcentaje_no_contesto)
+            pie_chart.add('Pendientes', porcentaje_pendientes)
+            pie_chart.add('Erróneos', porcentaje_error_interno)
+            pie_chart.render_to_file(path)
 
     def __unicode__(self):
         return self.nombre
