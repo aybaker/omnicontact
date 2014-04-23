@@ -449,10 +449,10 @@ class Campana(models.Model):
         Devuelve la url al gráfico svg en medias files.
         """
         path = '{0}/graficos/{1}-torta.svg'.format(settings.MEDIA_ROOT,
-            self.nombre)
-        if os.path.isfile(path):
+            self.id)
+        if os.path.exists(path):
             url = '{0}graficos/{1}-torta.svg'.format(settings.MEDIA_URL,
-                self.nombre)
+                self.id)
             return url
         return None
 
@@ -466,6 +466,7 @@ class Campana(models.Model):
 
         total_contactos = self.bd_contacto.contactos.all().count()
         if total_contactos > 0:
+            logger.info("Generando grafico para campana %s", self.id)
             graficos_dir = '{0}/graficos/'.format(settings.MEDIA_ROOT)
             if not os.path.exists(graficos_dir):
                 try:
@@ -496,6 +497,8 @@ class Campana(models.Model):
             pie_chart.add('Pendientes', porcentaje_pendientes)
             pie_chart.add('Erróneos', porcentaje_error_interno)
             pie_chart.render_to_file(path)
+        else:
+            logger.info("Ignorando campana %s (total_contactos == 0)", self.id)
 
     def __unicode__(self):
         return self.nombre
