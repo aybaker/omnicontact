@@ -69,9 +69,15 @@
                     </tbody>
                 </table>
                 <div class="col-lg-6 col-lg-offset-3">
-                <figure>
-                    <embed type="image/svg+xml" src="{{ campana.url_grafico_torta }}" height="450"/>
-                </figure>
+                {% if campana.url_grafico_torta %}
+                    <figure>
+                        <embed type="image/svg+xml" src="{{ campana.url_grafico_torta }}" height="450"/>
+                    </figure>
+                {% else%} 
+                    <p class="text-center text-danger">
+                        <em>El reporte gráfico no fue generado.</em>
+                    </p>
+                {% endif %}
                 </div>
             </div>
         </div>
