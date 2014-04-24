@@ -794,7 +794,12 @@ class Opcion(models.Model):
         )
 
     class Meta:
-        unique_together = ("digito", "campana")
+        #unique_together = ("digito", "campana")
+        unique_together = (
+            ("digito", "campana"),
+            ("accion", "campana", "grupo_atencion"),
+            ("accion", "campana", "calificacion"),
+        )
 
 
 #===============================================================================
