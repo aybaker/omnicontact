@@ -41,18 +41,21 @@
             <div class="col-lg-6">
                 {% if campana %}
                     <h4>Calificaciones</h4>
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered">
                         <thead>
                             <th>Nombre</th>
                         </thead>
                         <tbody>
                             {% for calificacion in campana.calificaciones.all %}
                                 <tr>
-                                    <td>{{ calificacion.nombre }}</td>
+                                    <td>
+                                        <p class='col-lg-6'>{{ calificacion.nombre }}</p>
+                                        <p class='col-lg-6 text-right'><a href="{% url 'calificacion_campana_elimina' calificacion.pk %}"> Eliminar</a></p>
+                                    </td>
                                 </tr>
                              {% empty %}
                                 <tr>
-                                    <td>
+                                    <td> 
                                         <p class="text-center text-danger">
                                             <em>No se encontraron Calificaciones creadas.</em>
                                         </p>
