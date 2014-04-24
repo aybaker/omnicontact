@@ -158,6 +158,7 @@ def generar_dialplan(campana):
             partes.append(TEMPLATE_OPCION_CALIFICAR.format(**params_opcion))
 
         else:
+            # FIXME: usar excepcion customizada
             raise Exception("Tipo de accion para opcion desconocida: {0}"
                 "".format(opcion.accion))
 
