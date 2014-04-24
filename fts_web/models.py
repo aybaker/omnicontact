@@ -341,10 +341,8 @@ class Campana(models.Model):
     cantidad_canales = models.PositiveIntegerField()
     cantidad_intentos = models.PositiveIntegerField()
     segundos_ring = models.PositiveIntegerField()
-    # FIXME: `fecha_inicio` deberia ser DateField
-    fecha_inicio = models.DateTimeField()
-    # FIXME: `fecha_fin` deberia ser DateField
-    fecha_fin = models.DateTimeField()
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField()
     # TODO: renombrar a audio_original
     # TODO: ajustar max_length
     # TODO: evaluar de crear callable para `upload_to`
@@ -518,11 +516,10 @@ class Campana(models.Model):
         inicialización sea menor o igual a la fecha de
         finalización.
         """
-
         if self.fecha_inicio > self.fecha_fin:
             raise ValidationError({
                 'fecha_inicio': ["La fecha de inicio debe ser\
-                    mayor o igual a la fecha de finalización."],
+                    menor o igual a la fecha de finalización."],
                 'fecha_fin': ["La fecha de inicio debe ser\
                     mayor o igual a la fecha de finalización."],
             })
