@@ -45,7 +45,13 @@ def fastagi_handler(agi):
     logger.info('Iniciando ejecucion de handler...')
     assert isinstance(agi, FastAGIProtocol)
     agi_network_script = agi.variables.get('agi_network_script', '')
+    # {fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/repetir/
     splitted = agi_network_script.split('/')
+    if len(splitted) >= 4 and splitted[2] == 'opcion':
+        logger.info('Request: %s - campana: %s - call id: %s - opcion: %s',
+            agi_network_script, splitted[0], splitted[1], splitted[3])
+    else:
+        logger.info('Request: %s', agi_network_script)
     if len(splitted) == 2:
         if splitted[1] == 'ha-contestado':
             id_intento = splitted[0]
