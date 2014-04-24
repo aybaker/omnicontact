@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from django.conf import settings
-
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 admin.autodiscover()
@@ -66,6 +65,10 @@ urlpatterns = patterns('',
     url(r'^campana/(?P<pk>\d+)/calificaciones/$',
         views.CalificacionCampanaCreateView.as_view(),
         name='calificacion_campana',
+    ),
+    url(r'^campana/calificacion/(?P<pk>\d+)/elimina/$',
+        views.CalificacionCampanaDeleteView.as_view(),
+        name='calificacion_campana_elimina',
     ),
     url(r'^campana/(?P<pk>\d+)/opciones/$',
         views.OpcionCampanaCreateView.as_view(),

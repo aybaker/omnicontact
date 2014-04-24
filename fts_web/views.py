@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import (
-    CreateView, ListView,
+    CreateView, ListView, DeleteView,
     UpdateView, DetailView)
 
 from fts_web.forms import (
@@ -477,6 +477,37 @@ class CalificacionCampanaCreateView(CreateView):
         return reverse(
             'calificacion_campana',
             kwargs={"pk": self.kwargs['pk']}
+        )
+
+
+class CalificacionCampanaDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto Calificación seleccionado.
+    """
+
+    model = Calificacion
+    template_name = 'campana/elimina_calificacion_campana.html'
+
+    def get_object(self, queryset=None):
+        calificacion = super(CalificacionCampanaDeleteView, self).get_object(
+            queryset=None)
+
+        self.campana = calificacion.campana
+        return calificacion
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Calificación.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return reverse(
+            'calificacion_campana',
+            kwargs={"pk": self.campana.pk}
         )
 
 
