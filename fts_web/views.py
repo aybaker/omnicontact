@@ -22,6 +22,8 @@ from fts_web.errors import (FtsAudioConversionError, FtsParserCsvDelimiterError,
  FtsParserMinRowError, FtsParserOpenFileError)
 
 from fts_daemon.audio_conversor import convertir_audio_de_campana
+from fts_daemon.asterisk_config import create_dialplan_config_file,\
+    reload_config
 
 
 #===============================================================================
@@ -577,16 +579,48 @@ class ConfirmaCampanaView(UpdateView):
     def form_valid(self, form):
         if 'confirma' in self.request.POST:
             campana = self.object
-            campana.activar()
 
             message = '<strong>Operación Exitosa!</strong>\
                 Se llevó a cabo con éxito la creación de\
                 la Campaña.'
-            try:
-                convertir_audio_de_campana(campana)
-            except FtsAudioConversionError:
-                message += ' Pero hubo un inconveniente en la conversión del\
-                    audio.'
+
+            from django.db import transaction
+            with transaction.atomic():
+
+                campana.activar()
+
+                post_proceso_ok = True
+                try:
+                    convertir_audio_de_campana(campana)
+                except FtsAudioConversionError:
+                    post_proceso_ok = False
+                    message += ' Atencion: hubo un inconveniente en la conversión\
+                        del audio.'
+
+                try:
+                    create_dialplan_config_file()
+                except:
+                    post_proceso_ok = False
+                    message += ' Atencion: hubo un inconveniente al generar\
+                        la configuracion de Asterisk.'
+
+                try:
+                    create_dialplan_config_file()
+                except:
+                    post_proceso_ok = False
+                    message += ' Atencion: hubo un inconveniente al generar\
+                        la configuracion de Asterisk.'
+
+                try:
+                    reload_config()
+                except:
+                    post_proceso_ok = False
+                    message += ' Atencion: hubo un inconveniente al intentar\
+                        recargar la configuracion de Asterisk.'
+
+                if not post_proceso_ok:
+                    message += ' La campaña será pausada.'
+                    campana.pausar()
 
             messages.add_message(
                 self.request,
