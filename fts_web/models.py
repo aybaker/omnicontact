@@ -516,12 +516,19 @@ class Campana(models.Model):
         inicialización sea menor o igual a la fecha de
         finalización.
         """
+        fecha_hoy = datetime.date.today()
+
         if self.fecha_inicio > self.fecha_fin:
             raise ValidationError({
                 'fecha_inicio': ["La fecha de inicio debe ser\
                     menor o igual a la fecha de finalización."],
                 'fecha_fin': ["La fecha de inicio debe ser\
                     mayor o igual a la fecha de finalización."],
+            })
+        elif self.fecha_inicio < fecha_hoy:
+            raise ValidationError({
+                'fecha_inicio': ["La fecha de inicio debe ser\
+                    mayor o igual a la fecha actual."],
             })
 
 
