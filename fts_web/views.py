@@ -549,6 +549,37 @@ class OpcionCampanaCreateView(CreateView):
         )
 
 
+class OpcionCampanaDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto Opciión seleccionado.
+    """
+
+    model = Opcion
+    template_name = 'campana/elimina_opcion_campana.html'
+
+    def get_object(self, queryset=None):
+        opcion = super(OpcionCampanaDeleteView, self).get_object(
+            queryset=None)
+
+        self.campana = opcion.campana
+        return opcion
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Opción.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return reverse(
+            'opcion_campana',
+            kwargs={"pk": self.campana.pk}
+        )
+
+
 class ActuacionCampanaCreateView(CreateView):
     """
     Esta vista crea uno o varios objetos Actuacion
