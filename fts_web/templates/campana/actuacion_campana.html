@@ -46,13 +46,17 @@
                             <th>Día</th>
                             <th>Hora Desde</th>
                             <th>Hora Hasta</th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for actuacion in campana.actuaciones.all %}
                                 <tr>
                                     <td>{{ actuacion.get_dia_semanal_display }}</td>
                                     <td>{{ actuacion.hora_desde }} Hs.</td>
-                                    <td>{{ actuacion.hora_hasta }} Hs.</td>       
+                                    <td>{{ actuacion.hora_hasta }} Hs.</td>
+                                    <td>
+                                        <a href="{% url 'actuacion_campana_elimina' actuacion.pk %}"> Eliminar</a>                        
+                                    </td>       
                                 </tr>
                              {% empty %}
                                 <tr>

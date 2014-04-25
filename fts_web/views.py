@@ -618,6 +618,37 @@ class ActuacionCampanaCreateView(CreateView):
         )
 
 
+class ActuacionCampanaDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto Actuación seleccionado.
+    """
+
+    model = Actuacion
+    template_name = 'campana/elimina_actuacion_campana.html'
+
+    def get_object(self, queryset=None):
+        actuacion = super(ActuacionCampanaDeleteView, self).get_object(
+            queryset=None)
+
+        self.campana = actuacion.campana
+        return actuacion
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Actuación.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return reverse(
+            'actuacion_campana',
+            kwargs={"pk": self.campana.pk}
+        )
+
+
 class ConfirmaCampanaView(UpdateView):
     """
     Esta vista confirma la creación de un objeto
