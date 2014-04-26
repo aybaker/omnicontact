@@ -15,6 +15,33 @@ import xml.etree.ElementTree as ET
 logger = _logging.getLogger(__name__)
 
 
+def get_response_on_first_element(root):
+    """Returns attributes of tag 'generic' if an 'response' attribute
+    exists in the first child of root.
+
+    For example, for the folowing response
+    # <ajax-response>
+    # <response type='object' id='unknown'>
+    #    <generic response='Error' message='Permission denied' />
+    # </response>
+    # </ajax-response>
+
+    this method should return a dict with:
+
+    { response:'Error', message='Permission denied'}
+
+    Returns: a dict (if 'response' found) or `None`
+    """
+    elements = root.findall("./response/generic")
+    if not elements:
+        return None
+
+    if 'response' in elements[0].attrib:
+        return dict(elements[0].attrib)
+    else:
+        return None
+
+
 #==============================================================================
 # Parser of XML responses
 #==============================================================================
@@ -23,6 +50,7 @@ class AsteriskXmlParser(object):
     """Base class for parsing various responses from Asterisk"""
 
     def __init__(self):
+        self.root = None
         self.response_dict = None
 
     def parse(self, xml):
@@ -30,23 +58,22 @@ class AsteriskXmlParser(object):
 
     def _parse_and_check(self, xml, check_errors=True,
         exception_for_error=None):
-        """Parses the XML string, sets self.response_dict and do basic checks.
+        """Parses the XML string, and do basic checks.
+        The root is saved on `self.root`.
+        The response dict is saved on `self.response_dict`
 
         Parameters:
             - xml: the XML string
             - check_errors: if True (default) check if the response
                 has been set as 'Error'.
-
-        Returns:
-            - the 'root' element of the DOM tree
         """
 
         # https://docs.python.org/2.6/library/xml.etree.elementtree.html
         logger.debug("Iniciando parseo... XML:\n%s", xml)
-        root = ET.fromstring(xml)
+        self.root = ET.fromstring(xml)
         logger.debug("Parseo finalizado")
 
-        self.response_dict = self.get_response_on_first_element(root)
+        self.response_dict = get_response_on_first_element(self.root)
 
         if self.response_dict:
             response_lower = self.response_dict.get('response', '').lower()
@@ -67,62 +94,6 @@ class AsteriskXmlParser(object):
                     "response_dict: '%s' - XML:\n%s", str(self.response_dict),
                     xml)
 
-        return root
-
-    def get_response_on_first_element(self, root):
-        """Returns attributes of tag 'generic' if an 'response' attribute
-        exists in the first child of root.
-
-        For example, for the folowing response
-        # <ajax-response>
-        # <response type='object' id='unknown'>
-        #    <generic response='Error' message='Permission denied' />
-        # </response>
-        # </ajax-response>
-
-        this method should return a dict with:
-
-        { response:'Error', message='Permission denied'}
-
-        Returns: a dict (if 'response' found) or `None`
-        """
-        elements = root.findall("./response/generic")
-        if not elements:
-            return None
-
-        if 'response' in elements[0].attrib:
-            return dict(elements[0].attrib)
-        else:
-            return None
-
-#    def _check(self, root):
-#        """This method checks the response for known problems or errors
-#        Parameters:
-#            - root: the root of the doc docuement
-#        Raises:
-#            - AsteriskHttpPermissionDeniedError
-#        """
-#
-#        # <ajax-response>
-#        # <response type='object' id='unknown'>
-#        #    <generic response='Error' message='Permission denied' />
-#        # </response>
-#        # </ajax-response>
-#
-#        elements = root.findall("./response/generic")
-#        if len(elements) != 1:
-#            return
-#
-#        # TODO: evaluar de usar self.get_response_on_first_element()
-#
-#        response = elements[0].attrib.get('response', '').lower()
-#        message = elements[0].attrib.get('message', '').lower()
-#
-#        # TODO: quiza, si existe 'response' == 'error', ya deberiamos
-#        #  lanzar excepcion!
-#        if response == 'error' and message == 'permission denied':
-#            raise AsteriskHttpPermissionDeniedError()
-
 
 class AsteriskXmlParserForPing(AsteriskXmlParser):
     """Parses the XML returned by Asterisk when
@@ -137,14 +108,12 @@ class AsteriskXmlParserForPing(AsteriskXmlParser):
         # <generic response='Success' ping='Pong'
         #    timestamp='1398544611.316607'/>
 
-        root = self._parse_and_check(xml)
-        response_dict = self.get_response_on_first_element(root)
+        self._parse_and_check(xml)
+        response_dict = self.get_response_on_first_element()
         response = response_dict.get('response', '').lower()
 
         if response != 'success':
             raise AsteriskHttpPingError()
-
-        return response_dict
 
 
 class AsteriskXmlParserForLogin(AsteriskXmlParser):
@@ -175,6 +144,7 @@ class AsteriskXmlParserForStatus(AsteriskXmlParser):
     """
 
     def __init__(self):
+        super(AsteriskXmlParserForStatus, self).__init__()
         self.calls_dicts = []
 
     def _element_is_respones_status(self, elem):
@@ -275,18 +245,19 @@ class AsteriskXmlParserForStatus(AsteriskXmlParser):
             self.calls_dicts.append(a_dict)
 
     def parse(self, xml):
-        """Parsea XML y guarda resultado en `self.calls_dicts`
+        """Parsea XML. Guarda resultado en `self.calls_dicts`
         """
-        root = self._parse_and_check(xml)
+        self._parse_and_check(xml)
 
         # ~~ Lo siguiente NO esta soportado en Python 2.6, asi q' no lo usamos
         # calls = root.findall("./response/generic[@privilege='Call']")
 
-        generic_elements = root.findall("./response/generic")
         try:
-            return self._filter_generic_tags(generic_elements)
+            self._filter_generic_tags(
+                self.root.findall("./response/generic"))
         except AssertionError:
-            logger.warn("XML: %s", xml)
+            logger.warn("AsteriskXmlParserForStatus.parser(): AssertionError. "
+                "XML: %s", xml)
             raise
 
 
