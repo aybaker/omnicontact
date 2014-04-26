@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}      
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">                
+            <h4 class="inline">Campañas</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                <li ><a>1- Datos Básicos</a></li>
+                <li class="active"><a>2- Audio</a></li>
+                <li class="disabled"><a>3- Calificaciones</a></li>
+                <li class="disabled"><a>4- Opciones</a></li>
+                <li class="disabled"><a>5- Actuación</a></li>
+                <li class="disabled"><a>6- Confirmar Campaña</a></li>
+            </ul>
+            <br>          
+            <div class="col-lg-4">                
+                <form role="form" method="post" enctype="multipart/form-data" >
+
+                    {% crispy form %}                                       
+
+                    {% if campana.reproduccion %}
+                        <div>
+                            <h4>Audio de la Campaña</h4>
+                            <audio src="{{ campana.reproduccion.url }}" controls></audio>
+                        </div>
+                    {% endif %}
+                    
+                    <br>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Guardar Audio
+                    </button>
+                    <br>
+  
+                    <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-primary" role="button">
+                        Continuar
+                    </a> 
+                </form>           
+            </div>
+        </div>
+    </div>
+{% endblock %}
