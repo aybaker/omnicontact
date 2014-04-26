@@ -4,25 +4,120 @@
 
 from __future__ import unicode_literals
 
+import httplib
+
+from django.conf import settings
+from fts_web.errors import FtsError
 import logging as _logging
 import xml.etree.ElementTree as ET
 
 
 logger = _logging.getLogger(__name__)
 
-#from xml.dom.minidom import getDOMImplementation, parseString
-#class AsteriskStatusXmlParserMiniDom(object):
-#
-#    def __init__(self):
-#        pass
-#
-#    def parse(self, xml):
-#        doc = parseString(xml)
-#        doc.getElementsByTagName("")
+
+class AsteriskXmlParser(object):
+    """Base class for parsing various responses from Asterisk"""
+
+    def parse(self, xml):
+        raise NotImplementedError()
+
+    def _parse_and_check(self, xml):
+        """Parses the XML string and do basic checks.
+        Returns the 'root' element
+        """
+
+        # https://docs.python.org/2.6/library/xml.etree.elementtree.html
+        logger.debug("Iniciando parseo... XML:\n%s", xml)
+        root = ET.fromstring(xml)
+        logger.debug("Parseo finalizado")
+
+        self._check(root)
+
+        return root
+
+    def get_response_on_first_element(self, root):
+        """Returns attributes of tag 'generic' if an 'response' attribute
+        exists in the first child of root.
+
+        For example, for the folowing response
+        # <ajax-response>
+        # <response type='object' id='unknown'>
+        #    <generic response='Error' message='Permission denied' />
+        # </response>
+        # </ajax-response>
+
+        this method should return a dict with:
+
+        { response:'Error', message='Permission denied'}
+
+        Returns: a dict (if 'response' found) or `None`
+        """
+        elements = root.findall("./response/generic")
+        if not elements:
+            return None
+
+        if 'response' in elements[0].attrib:
+            return dict(elements[0].attrib)
+        else:
+            return None
+
+    def _check(self, root):
+        """This method checks the response for known problems or errors
+        Parameters:
+            - root: the root of the doc docuement
+        Raises:
+            - AsteriskHttpPermissionDeniedError
+        """
+
+        # <ajax-response>
+        # <response type='object' id='unknown'>
+        #    <generic response='Error' message='Permission denied' />
+        # </response>
+        # </ajax-response>
+
+        elements = root.findall("./response/generic")
+        if len(elements) != 1:
+            return
+
+        response = elements[0].attrib.get('response', '').lower()
+        message = elements[0].attrib.get('message', '').lower()
+
+        if response == 'error' and message == 'permission denied':
+            raise AsteriskHttpPermissionDeniedError()
 
 
-class AsteriskStatusXmlParserElementTree(object):
-    """Parses the XML returned by Asterisk"""
+class AsteriskLoginXmlParserElementTree(AsteriskXmlParser):
+    """Parses the XML returned by Asterisk when
+    requesting `/mxml?action=login`
+    """
+
+    def parse(self, xml):
+        """Parsea XML y guarda resultado en `self.calls_dicts`
+        """
+        # <ajax-response>
+        #     <response type='object' id='unknown'>
+        #        <generic response='Success'
+        #            message='Authentication accepted' />
+        #    </response>
+        # </ajax-response>
+
+        # <generic response="Error" message="Authentication failed"/>
+
+        root = self._parse_and_check(xml)
+        response_dict = self.get_response_on_first_element(root)
+        response = response_dict.get('response', '').lower()
+
+        if response != 'success':
+            raise AsteriskHttpAuthenticationFailedError()
+
+
+AsteriskLoginXmlParser = AsteriskLoginXmlParserElementTree
+
+
+class AsteriskStatusXmlParserElementTree(AsteriskXmlParser):
+    """Parses the XML returned by Asterisk when
+    requesting `/mxml?action=status`
+    """
 
     def __init__(self):
         self.calls_dicts = []
@@ -33,7 +128,7 @@ class AsteriskStatusXmlParserElementTree(object):
         #    'response': 'Success'
         # }
         if elem.attrib.get('response', '') == 'Success' and \
-            elem.attrib.get('message', 'Channel status will follow'):
+            'message' in elem.attrib:
             return True
         return False
 
@@ -110,7 +205,7 @@ class AsteriskStatusXmlParserElementTree(object):
 
         # TODO: chequear q' haya la cantidad correcta de elementos
         #  en las distintas listas
-        
+
         assert len(elem_unknown) == 0
         assert len(elem_respones_status) == 1
         assert len(elem_status_complete) == 1
@@ -127,29 +222,81 @@ class AsteriskStatusXmlParserElementTree(object):
     def parse(self, xml):
         """Parsea XML y guarda resultado en `self.calls_dicts`
         """
-
-        # https://docs.python.org/2.6/library/xml.etree.elementtree.html
-        logger.debug("Iniciando parseo... XML:\n%s", xml)
-        root = ET.fromstring(xml)
-        logger.debug("Parseo finalizado")
+        root = self._parse_and_check(xml)
 
         # ~~ Lo siguiente NO esta soportado en Python 2.6, asi q' no lo usamos
         # calls = root.findall("./response/generic[@privilege='Call']")
 
         generic_elements = root.findall("./response/generic")
-        self._filter_generic_tags(generic_elements)
+        try:
+            return self._filter_generic_tags(generic_elements)
+        except AssertionError:
+            logger.warn("XML: %s", xml)
+            raise
 
 
 AsteriskStatusXmlParser = AsteriskStatusXmlParserElementTree
 
 
-class AsteriskStatus(object):
+#==============================================================================
+# Asterisk Http Ami Client
+#==============================================================================
+
+class AsteriskHttpClient(object):
+    """Class to interact with Asterisk using it's http interface"""
 
     def __init__(self):
         pass
 
     def login(self):
-        pass
+        conn = httplib.HTTPConnection("{0}:7088".format(
+            settings.ASTERISK['HOST']))
+        conn.request("GET", "/mxml?action=login&username={0}&secret={1}"
+            "".format(
+                settings.ASTERISK['USERNAME'],
+                settings.ASTERISK['PASSWORD']))
+        response = conn.getresponse()
+        response.status
+        response.reason
+        response_body = response.read()
+        logger.debug("Got http response:\n%s", response_body)
+        conn.close()
+
+        parser = AsteriskLoginXmlParser()
+        parser.parse(response_body)
+        return parser
 
     def get_status(self):
-        pass
+        # https://docs.python.org/2.6/library/httplib.html
+        conn = httplib.HTTPConnection("172.19.1.101:7088")
+        conn.request("GET", "/mxml?action=status")
+        response = conn.getresponse()
+        response.status
+        response.reason
+        response_body = response.read()
+        logger.debug("Got http response:\n%s", response_body)
+        conn.close()
+
+        parser = AsteriskStatusXmlParser()
+        parser.parse(response_body)
+        return parser
+
+
+#==============================================================================
+# Errors
+#==============================================================================
+
+class AsteriskHttpStatus(FtsError):
+    """Base class for exceptions related to the retrieval of information
+    from Asterisk using http + xml
+    """
+
+
+class AsteriskHttpPermissionDeniedError(AsteriskHttpStatus):
+    """The Asterisk Http interface returned 'permission denied'"""
+    pass
+
+
+class AsteriskHttpAuthenticationFailedError(AsteriskHttpStatus):
+    """The authentication failed"""
+    pass
