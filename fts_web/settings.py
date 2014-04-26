@@ -134,7 +134,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-TEST_RUNNER = "fts_web.tests.tests_utiles.FTSenderDiscoverRunner"
+TEST_RUNNER = "fts_web.tests.utiles.FTSenderDiscoverRunner"
 
 #==============================================================================
 # Import de `fts_web_settings_local`
