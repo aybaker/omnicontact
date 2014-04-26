@@ -15,15 +15,30 @@ import xml.etree.ElementTree as ET
 logger = _logging.getLogger(__name__)
 
 
+#==============================================================================
+# Parser of XML responses
+#==============================================================================
+
 class AsteriskXmlParser(object):
     """Base class for parsing various responses from Asterisk"""
+
+    def __init__(self):
+        self.response_dict = None
 
     def parse(self, xml):
         raise NotImplementedError()
 
-    def _parse_and_check(self, xml):
-        """Parses the XML string and do basic checks.
-        Returns the 'root' element
+    def _parse_and_check(self, xml, check_errors=True,
+        exception_for_error=None):
+        """Parses the XML string, sets self.response_dict and do basic checks.
+
+        Parameters:
+            - xml: the XML string
+            - check_errors: if True (default) check if the response
+                has been set as 'Error'.
+
+        Returns:
+            - the 'root' element of the DOM tree
         """
 
         # https://docs.python.org/2.6/library/xml.etree.elementtree.html
@@ -31,7 +46,24 @@ class AsteriskXmlParser(object):
         root = ET.fromstring(xml)
         logger.debug("Parseo finalizado")
 
-        self._check(root)
+        self.response_dict = self.get_response_on_first_element(root)
+
+        if self.response_dict:
+            response = self.response_dict.get('response', '')
+
+            if response.lower() == 'error':
+                logger.info("_parse_and_check(): found 'response' == 'Error'. "
+                    " response_dict: %s", str(self.response_dict))
+                if check_errors:
+                    if exception_for_error:
+                        raise exception_for_error()
+                    else:
+                        raise AsteriskHttpResponseWithError()
+            elif response == 'success':
+                pass
+            else:
+                logger.warn("_parse_and_check(): unknown 'response': '%s'. "
+                    "XML:\n%s", response, xml)
 
         return root
 
@@ -61,42 +93,66 @@ class AsteriskXmlParser(object):
         else:
             return None
 
-    def _check(self, root):
-        """This method checks the response for known problems or errors
-        Parameters:
-            - root: the root of the doc docuement
+#    def _check(self, root):
+#        """This method checks the response for known problems or errors
+#        Parameters:
+#            - root: the root of the doc docuement
+#        Raises:
+#            - AsteriskHttpPermissionDeniedError
+#        """
+#
+#        # <ajax-response>
+#        # <response type='object' id='unknown'>
+#        #    <generic response='Error' message='Permission denied' />
+#        # </response>
+#        # </ajax-response>
+#
+#        elements = root.findall("./response/generic")
+#        if len(elements) != 1:
+#            return
+#
+#        # TODO: evaluar de usar self.get_response_on_first_element()
+#
+#        response = elements[0].attrib.get('response', '').lower()
+#        message = elements[0].attrib.get('message', '').lower()
+#
+#        # TODO: quiza, si existe 'response' == 'error', ya deberiamos
+#        #  lanzar excepcion!
+#        if response == 'error' and message == 'permission denied':
+#            raise AsteriskHttpPermissionDeniedError()
+
+
+class AsteriskXmlParserForPing(AsteriskXmlParser):
+    """Parses the XML returned by Asterisk when
+    requesting `/mxml?action=ping`
+    """
+
+    def parse(self, xml):
+        """Parses XML and returns `response_dict`
         Raises:
-            - AsteriskHttpPermissionDeniedError
+            - AsteriskHttpPingError: if ping failed
         """
+        # <generic response='Success' ping='Pong'
+        #    timestamp='1398544611.316607'/>
 
-        # <ajax-response>
-        # <response type='object' id='unknown'>
-        #    <generic response='Error' message='Permission denied' />
-        # </response>
-        # </ajax-response>
+        root = self._parse_and_check(xml)
+        response_dict = self.get_response_on_first_element(root)
+        response = response_dict.get('response', '').lower()
 
-        elements = root.findall("./response/generic")
-        if len(elements) != 1:
-            return
+        if response != 'success':
+            raise AsteriskHttpPingError()
 
-        # TODO: evaluar de usar self.get_response_on_first_element()
-
-        response = elements[0].attrib.get('response', '').lower()
-        message = elements[0].attrib.get('message', '').lower()
-
-        # TODO: quiza, si existe 'response' == 'error', ya deberiamos
-        #  lanzar excepcion!
-        if response == 'error' and message == 'permission denied':
-            raise AsteriskHttpPermissionDeniedError()
+        return response_dict
 
 
-class AsteriskLoginXmlParserElementTree(AsteriskXmlParser):
+class AsteriskXmlParserForLogin(AsteriskXmlParser):
     """Parses the XML returned by Asterisk when
     requesting `/mxml?action=login`
     """
 
     def parse(self, xml):
-        """Parsea XML y guarda resultado en `self.calls_dicts`
+        """Parsea XML.
+        Lanza `AsteriskHttpAuthenticationFailedError` si el login fallo.
         """
         # <ajax-response>
         #     <response type='object' id='unknown'>
@@ -107,18 +163,11 @@ class AsteriskLoginXmlParserElementTree(AsteriskXmlParser):
 
         # <generic response="Error" message="Authentication failed"/>
 
-        root = self._parse_and_check(xml)
-        response_dict = self.get_response_on_first_element(root)
-        response = response_dict.get('response', '').lower()
-
-        if response != 'success':
-            raise AsteriskHttpAuthenticationFailedError()
+        self._parse_and_check(xml,
+            exception_for_error=AsteriskHttpAuthenticationFailedError)
 
 
-AsteriskLoginXmlParser = AsteriskLoginXmlParserElementTree
-
-
-class AsteriskStatusXmlParserElementTree(AsteriskXmlParser):
+class AsteriskXmlParserForStatus(AsteriskXmlParser):
     """Parses the XML returned by Asterisk when
     requesting `/mxml?action=status`
     """
@@ -239,9 +288,6 @@ class AsteriskStatusXmlParserElementTree(AsteriskXmlParser):
             raise
 
 
-AsteriskStatusXmlParser = AsteriskStatusXmlParserElementTree
-
-
 #==============================================================================
 # Asterisk Http Ami Client
 #==============================================================================
@@ -259,6 +305,7 @@ class AsteriskHttpClient(object):
             - response object
         """
         # https://docs.python.org/2.6/library/httplib.html
+        # FIXME: configure port using settings
         logger.debug("AsteriskHttpClient - _request(): %s", url)
         conn = httplib.HTTPConnection("{0}:7088".format(
             settings.ASTERISK['HOST']))
@@ -278,7 +325,7 @@ class AsteriskHttpClient(object):
             settings.ASTERISK['USERNAME'],
             settings.ASTERISK['PASSWORD'])
         response_body, _ = self._request(url)
-        parser = AsteriskLoginXmlParser()
+        parser = AsteriskXmlParserForLogin()
         parser.parse(response_body)
         return parser
 
@@ -286,7 +333,15 @@ class AsteriskHttpClient(object):
         url = "/mxml?action=status"
         response_body, _ = self._request(url)
 
-        parser = AsteriskStatusXmlParser()
+        parser = AsteriskXmlParserForStatus()
+        parser.parse(response_body)
+        return parser
+
+    def ping(self):
+        url = "/mxml?action=ping"
+        response_body, _ = self._request(url)
+
+        parser = AsteriskXmlParserForPing()
         parser.parse(response_body)
         return parser
 
@@ -301,11 +356,19 @@ class AsteriskHttpStatus(FtsError):
     """
 
 
-class AsteriskHttpPermissionDeniedError(AsteriskHttpStatus):
-    """The Asterisk Http interface returned 'permission denied'"""
-    pass
+class AsteriskHttpResponseWithError(AsteriskHttpStatus):
+    """The 'response' element (the first child, if has a 'response' attribute)
+    was 'Error'.
+    """
+
+
+#class AsteriskHttpPermissionDeniedError(AsteriskHttpStatus):
+#    """The Asterisk Http interface returned 'permission denied'"""
 
 
 class AsteriskHttpAuthenticationFailedError(AsteriskHttpStatus):
     """The authentication failed"""
-    pass
+
+
+class AsteriskHttpPingError(AsteriskHttpStatus):
+    """The ping failed"""
