@@ -10,6 +10,9 @@ from django.conf import settings
 from fts_web.errors import FtsError
 import logging as _logging
 import xml.etree.ElementTree as ET
+import cookielib
+import urllib2
+import requests
 
 
 logger = _logging.getLogger(__name__)
@@ -280,18 +283,14 @@ class AsteriskHttpClient(object):
         # https://docs.python.org/2.6/library/httplib.html
         # FIXME: configure port using settings
         logger.debug("AsteriskHttpClient - _request(): %s", url)
-        conn = httplib.HTTPConnection("{0}:7088".format(
-            settings.ASTERISK['HOST']))
-        conn.request("GET", url)
-        response = conn.getresponse()
-        logger.debug("AsteriskHttpClient - Response %s %s",
-            response.status, response.reason)
-        response_body = response.read()
+        assert url.startswith('/')
+        full_url = "http://{0}:7088{1}".format(settings.ASTERISK['HOST'], url)
+        response = requests.get(full_url)
+        logger.debug("AsteriskHttpClient - Status: %s", response.status_code)
         logger.debug("AsteriskHttpClient - Got http response:\n%s",
-            response_body)
-        conn.close()
+            response.content)
 
-        return response_body, response
+        return response.content, response
 
     def login(self):
         url = "/mxml?action=login&username={0}&secret={1}".format(
