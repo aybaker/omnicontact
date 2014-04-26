@@ -281,10 +281,9 @@ class AsteriskHttpClient(object):
             - response object
         """
         # https://docs.python.org/2.6/library/httplib.html
-        # FIXME: configure port using settings
         logger.debug("AsteriskHttpClient - _request(): %s", url)
         assert url.startswith('/')
-        full_url = "http://{0}:7088{1}".format(settings.ASTERISK['HOST'], url)
+        full_url = "{0}{1}".format(settings.ASTERISK['HTTP_AMI_URL'], url)
         response = self.session.get(full_url, timeout=5)
         logger.debug("AsteriskHttpClient - Status: %s", response.status_code)
         logger.debug("AsteriskHttpClient - Got http response:\n%s",
