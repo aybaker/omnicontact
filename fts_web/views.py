@@ -11,7 +11,7 @@ from django.views.generic import (
     UpdateView, DetailView)
 
 from fts_web.forms import (
-    ActuacionForm, AgentesGrupoAtencionFormSet, CampanaForm,
+    ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm,
     BaseDatosContactoForm, OpcionForm)
 from fts_web.models import (
@@ -438,7 +438,40 @@ class CampanaCreateView(CreateView):
 
     def get_success_url(self):
         return reverse(
-            'calificacion_campana',
+            'audio_campana',
+            kwargs={"pk": self.object.pk})
+
+
+class AudioCampanaCreateView(UpdateView):
+    """
+    Esta vista actuaiza un objeto Campana
+    con el upload del audio.
+    """
+
+    template_name = 'campana/audio_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = AudioForm
+
+    def form_valid(self, form):
+        self.object = form.save()
+
+        try:
+            convertir_audio_de_campana(self.object)
+            return redirect(self.get_success_url())
+        except FtsAudioConversionError:
+            message = '<strong>Operación Errónea!</strong> \
+                Hubo un inconveniente en la conversión del audio.'
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse(
+            'audio_campana',
             kwargs={"pk": self.object.pk})
 
 
@@ -683,12 +716,12 @@ class ConfirmaCampanaView(UpdateView):
                 campana.activar()
 
                 post_proceso_ok = True
-                try:
-                    convertir_audio_de_campana(campana)
-                except FtsAudioConversionError:
-                    post_proceso_ok = False
-                    message += ' Atencion: hubo un inconveniente en la conversión\
-                        del audio.'
+                # try:
+                #     convertir_audio_de_campana(campana)
+                # except FtsAudioConversionError:
+                #     post_proceso_ok = False
+                #     message += ' Atencion: hubo un inconveniente en la conversión\
+                #         del audio.'
 
                 try:
                     create_dialplan_config_file()
