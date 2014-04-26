@@ -79,9 +79,13 @@ class AsteriskXmlParser(object):
         if len(elements) != 1:
             return
 
+        # TODO: evaluar de usar self.get_response_on_first_element()
+
         response = elements[0].attrib.get('response', '').lower()
         message = elements[0].attrib.get('message', '').lower()
 
+        # TODO: quiza, si existe 'response' == 'error', ya deberiamos
+        #  lanzar excepcion!
         if response == 'error' and message == 'permission denied':
             raise AsteriskHttpPermissionDeniedError()
 
