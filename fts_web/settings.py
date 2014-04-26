@@ -68,6 +68,10 @@ Ej:
 """
 TMPL_FTS_AUDIO_CONVERSOR = None
 
+"""Booleano que indica si hay que ejecutar tests que implican
+una interaccion con Asterisk"""
+ASTERISK_TEST = False
+
 
 ALLOWED_HOSTS = []
 
