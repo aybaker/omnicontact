@@ -272,7 +272,7 @@ class AsteriskHttpClient(object):
     """Class to interact with Asterisk using it's http interface"""
 
     def __init__(self):
-        self.cookies = {}
+        self.session = requests.Session()
 
     def _request(self, url):
         """Make requests to the Asterisk.
@@ -285,8 +285,7 @@ class AsteriskHttpClient(object):
         logger.debug("AsteriskHttpClient - _request(): %s", url)
         assert url.startswith('/')
         full_url = "http://{0}:7088{1}".format(settings.ASTERISK['HOST'], url)
-        response = requests.get(full_url, timeout=5, cookies=self.cookies)
-        self.cookies.update(response.cookies)
+        response = self.session.get(full_url, timeout=5)
         logger.debug("AsteriskHttpClient - Status: %s", response.status_code)
         logger.debug("AsteriskHttpClient - Got http response:\n%s",
             response.content)
