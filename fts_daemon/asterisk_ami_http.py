@@ -274,7 +274,7 @@ class AsteriskHttpClient(object):
     def __init__(self):
         self.session = requests.Session()
 
-    def _request(self, url):
+    def _request(self, url, params):
         """Make requests to the Asterisk.
         Returns tuple with:
             - response_body (contents returned by the server)
@@ -284,7 +284,7 @@ class AsteriskHttpClient(object):
         logger.debug("AsteriskHttpClient - _request(): %s", url)
         assert url.startswith('/')
         full_url = "{0}{1}".format(settings.ASTERISK['HTTP_AMI_URL'], url)
-        response = self.session.get(full_url, timeout=5)
+        response = self.session.get(full_url, params=params, timeout=5)
         logger.debug("AsteriskHttpClient - Status: %s", response.status_code)
         logger.debug("AsteriskHttpClient - Got http response:\n%s",
             response.content)
@@ -292,25 +292,28 @@ class AsteriskHttpClient(object):
         return response.content, response
 
     def login(self):
-        url = "/mxml?action=login&username={0}&secret={1}".format(
-            settings.ASTERISK['USERNAME'],
-            settings.ASTERISK['PASSWORD'])
-        response_body, _ = self._request(url)
+        response_body, _ = self._request("/mxml", {
+            'action': 'login',
+            'username': settings.ASTERISK['USERNAME'],
+            'secret': settings.ASTERISK['PASSWORD'],
+        })
         parser = AsteriskXmlParserForLogin()
         parser.parse(response_body)
         return parser
 
     def get_status(self):
-        url = "/mxml?action=status"
-        response_body, _ = self._request(url)
+        response_body, _ = self._request("/mxml", {
+            'action': 'status',
+        })
 
         parser = AsteriskXmlParserForStatus()
         parser.parse(response_body)
         return parser
 
     def ping(self):
-        url = "/mxml?action=ping"
-        response_body, _ = self._request(url)
+        response_body, _ = self._request("/mxml", {
+            'action': 'ping',
+        })
 
         parser = AsteriskXmlParserForPing()
         parser.parse(response_body)
