@@ -49,21 +49,23 @@ class AsteriskXmlParser(object):
         self.response_dict = self.get_response_on_first_element(root)
 
         if self.response_dict:
-            response = self.response_dict.get('response', '')
+            response_lower = self.response_dict.get('response', '').lower()
 
-            if response.lower() == 'error':
+            if response_lower == 'error':
                 logger.info("_parse_and_check(): found 'response' == 'Error'. "
-                    " response_dict: %s", str(self.response_dict))
+                    " response_dict: '%s' - XML:\n%s", str(self.response_dict),
+                    xml)
                 if check_errors:
                     if exception_for_error:
                         raise exception_for_error()
                     else:
                         raise AsteriskHttpResponseWithError()
-            elif response == 'success':
+            elif response_lower == 'success':
                 pass
             else:
-                logger.warn("_parse_and_check(): unknown 'response': '%s'. "
-                    "XML:\n%s", response, xml)
+                logger.warn("_parse_and_check(): unknown 'response'. "
+                    "response_dict: '%s' - XML:\n%s", str(self.response_dict),
+                    xml)
 
         return root
 
