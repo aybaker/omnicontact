@@ -489,7 +489,7 @@ class Campana(models.Model):
             porcentaje_error_interno = float(100 * cantidad_error_interno /
                 total_contactos)
 
-            pie_chart = pygal.Pie()
+            pie_chart = pygal.Pie()  # @UndefinedVariable
             pie_chart.title = 'Intentos de Contactos para la campaña {0}'.format(
                 self.nombre)
             pie_chart.add('Contestados', porcentaje_contesto)
