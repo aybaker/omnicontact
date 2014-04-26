@@ -248,34 +248,39 @@ class AsteriskHttpClient(object):
     def __init__(self):
         pass
 
-    def login(self):
+    def _request(self, url):
+        """Make requests to the Asterisk.
+        Returns tuple with:
+            - response_body (contents returned by the server)
+            - response object
+        """
+        # https://docs.python.org/2.6/library/httplib.html
+        logger.debug("AsteriskHttpClient - _request(): %s", url)
         conn = httplib.HTTPConnection("{0}:7088".format(
             settings.ASTERISK['HOST']))
-        conn.request("GET", "/mxml?action=login&username={0}&secret={1}"
-            "".format(
-                settings.ASTERISK['USERNAME'],
-                settings.ASTERISK['PASSWORD']))
+        conn.request("GET", url)
         response = conn.getresponse()
-        response.status
-        response.reason
+        logger.debug("AsteriskHttpClient - Response %s %s",
+            response.status, response.reason)
         response_body = response.read()
-        logger.debug("Got http response:\n%s", response_body)
+        logger.debug("AsteriskHttpClient - Got http response:\n%s",
+            response_body)
         conn.close()
 
+        return response_body, response
+
+    def login(self):
+        url = "/mxml?action=login&username={0}&secret={1}".format(
+            settings.ASTERISK['USERNAME'],
+            settings.ASTERISK['PASSWORD'])
+        response_body, _ = self._request(url)
         parser = AsteriskLoginXmlParser()
         parser.parse(response_body)
         return parser
 
     def get_status(self):
-        # https://docs.python.org/2.6/library/httplib.html
-        conn = httplib.HTTPConnection("172.19.1.101:7088")
-        conn.request("GET", "/mxml?action=status")
-        response = conn.getresponse()
-        response.status
-        response.reason
-        response_body = response.read()
-        logger.debug("Got http response:\n%s", response_body)
-        conn.close()
+        url = "/mxml?action=status"
+        response_body, _ = self._request(url)
 
         parser = AsteriskStatusXmlParser()
         parser.parse(response_body)
