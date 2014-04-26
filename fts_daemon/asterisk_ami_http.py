@@ -285,7 +285,7 @@ class AsteriskHttpClient(object):
         logger.debug("AsteriskHttpClient - _request(): %s", url)
         assert url.startswith('/')
         full_url = "http://{0}:7088{1}".format(settings.ASTERISK['HOST'], url)
-        response = requests.get(full_url, cookies=self.cookies)
+        response = requests.get(full_url, timeout=5, cookies=self.cookies)
         self.cookies.update(response.cookies)
         logger.debug("AsteriskHttpClient - Status: %s", response.status_code)
         logger.debug("AsteriskHttpClient - Got http response:\n%s",
