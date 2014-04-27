@@ -51,20 +51,30 @@ def get_class(full_class_name):
             full_class_name))
     module_name = ".".join(splitted[0:-1])
     class_name = splitted[-1]
+
     try:
-        module = __import__(module_name)
-        clazz = getattr(module, class_name)
-    except AttributeError as e:
-        msg = "No se pudo obtener la clase '{0}', o el modulo "\
-            "no posee dicha clase".format(full_class_name)
-        logger.warn(msg)
-        raise FtsError(msg, e)
-    except ImportError as e:
-        msg = "No se pudo importar el modulo '{0}'".format(module_name)
-        logger.warn(msg)
-        raise FtsError(msg, e)
+
+        try:
+            module = __import__(module_name)
+        except ImportError as e:
+            msg = "No se pudo importar el modulo '{0}'".format(module_name)
+            logger.warn(msg)
+            raise FtsError(msg, e)
+
+        try:
+            clazz = getattr(module, class_name)
+        except AttributeError as e:
+            msg = "El modulo '{0}' no posee la clase '{1}'".format(
+                module_name, class_name)
+            logger.warn(msg)
+            raise FtsError(msg, e)
+
+    except FtsError:
+        raise
+
     except Exception as e:
         msg = "No se pudo obtener la clase '{0}'".format(full_class_name)
         logger.warn(msg)
         raise FtsError(msg, e)
+
     return clazz
