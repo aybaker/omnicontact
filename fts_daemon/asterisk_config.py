@@ -35,6 +35,28 @@ TEMPLATE_DIALPLAN_START = """
 ;   Autogenerado {date}
 ;----------------------------------------------------------------------
 
+;----------------------------------------------------------------------
+; Para usar local channels
+;----------------------------------------------------------------------
+
+[FTS_local_campana_{fts_campana_id}]
+
+exten => _X.,1,NoOp(FTS,INICIO,llamada=${{EXTEN}},campana={fts_campana_id})
+exten => _X.,n,Set(FtsDaemonCallId=${{CUT(EXTEN,,1)}})
+exten => _X.,n,Set(NumberToCall=${{CUT(EXTEN,,2)}})
+exten => _X.,n,NoOp(FTS,FtsDaemonCallId=${{FtsDaemonCallId}},NumberToCall=${{NumberToCall}})
+exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/local-pre-dial/)
+; *** FIXME: QUITAR '172.19.1.101' hardcodeado!!!!
+; *** FIXME: QUITAR 'timeout' hardcodeado!!!!
+exten => _X.,n,Dial(IAX2/172.19.1.101/${{NumberToCall}},8)
+; *** WARN: el siguiente 'AGI()' a veces no es llamado
+exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/local-post-dial/dial-status/${{DIALSTATUS}}/)
+exten => _X.,n,Hangup()
+
+;----------------------------------------------------------------------
+; Dialplan de campana (audio, opciones, etc)
+;----------------------------------------------------------------------
+
 [campania_{fts_campana_id}]
 
 exten => _ftsX!,1,NoOp(FTS,INICIO,llamada=${{EXTEN:3}},campana={fts_campana_id})
@@ -46,6 +68,8 @@ exten => _ftsX!,n,Answer()
 exten => _ftsX!,n(audio),Background({fts_audio_file})
 exten => _ftsX!,n,WaitExten(10)
 exten => _ftsX!,n,Hangup()
+; *** TODO: funciona este AGI post-hangout? O es que deberia ir antes?
+exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin/)
 
 """
 
@@ -163,7 +187,7 @@ def generar_dialplan(campana):
                 "".format(opcion.accion))
 
     partes.append(TEMPLATE_DIALPLAN_END.format(**param_generales))
-    
+
     return ''.join(partes)
 
 
