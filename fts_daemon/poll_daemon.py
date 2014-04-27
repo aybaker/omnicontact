@@ -11,16 +11,18 @@ import time
 
 import logging as _logging
 
+from fts_web.utiles import get_class
 
 logger = _logging.getLogger('poll_daemon')
 
 
 def setup():
+    # TODO: por que importamos aca!?
     from django.conf import settings  # @UnusedImport
     from fts_web.models import Campana  # @UnusedImport
 
 
-def procesar_campana(campana, generador_de_llamadas):
+def procesar_campana(campana):
     """Procesa una campana (no chequea su estado, se suponque que
     la campaña esta en el estado correcto).
 
@@ -33,23 +35,15 @@ def procesar_campana(campana, generador_de_llamadas):
     Returns:
         cant_contactos_procesados
     """
-    from fts_web.models import Campana, IntentoDeContacto
+    # TODO: por que importamos aca!?
+    from fts_web.models import Campana
 
     assert isinstance(campana, Campana)
     logger.info("Iniciando procesado de campana %s", campana.id)
     contador_contactos = 0
 
     for pendiente in campana.obtener_intentos_pendientes():
-        assert isinstance(pendiente, IntentoDeContacto)
-        logger.info("Realizando originate para IntentoDeContacto %s",
-            pendiente.id)
-        context = campana.get_nombre_contexto_para_asterisk()
-        res = generador_de_llamadas(pendiente.contacto.telefono, pendiente.id,
-            context)
-
-        IntentoDeContacto.objects.update_resultado_si_corresponde(
-            pendiente.id, res)
-
+        procesar_contacto(pendiente, campana)
         contador_contactos += 1
     else:
         logger.info("Marcando campana %s como FINALIZADA", campana.id)
@@ -58,19 +52,45 @@ def procesar_campana(campana, generador_de_llamadas):
     return contador_contactos
 
 
+def procesar_contacto(pendiente, campana):
+    # TODO: por que importamos aca!?
+    from fts_web.models import IntentoDeContacto
+    from fts_daemon.asterisk_originate import originate
+    from django.conf import settings
+
+    assert isinstance(pendiente, IntentoDeContacto)
+    logger.info("Realizando originate para IntentoDeContacto %s",
+        pendiente.id)
+
+    # Local/{callId}-{numberToCall}@FTS_local_campana_{campanaId}
+    channel = settings.ASTERISK['LOCAL_CHANNEL'].format(
+        callId=str(pendiente.id),
+        numberToCall=str(pendiente.contacto.telefono),
+        campanaId=str(campana.id),
+    )
+    context = campana.get_nombre_contexto_para_asterisk()
+    exten = settings.ASTERISK['EXTEN'].format(
+        callId=str(pendiente.id),
+    )
+
+    clazz = get_class(settings.FTS_ORIGINATE_SERVICE_CLASS)
+
+    process = clazz(channel, context, exten)
+    res = originate(process)
+    IntentoDeContacto.objects.update_resultado_si_corresponde(
+        pendiente.id, res)
+
+
 if __name__ == '__main__':
     logger.info("Inicianodo FTSenderDaemon...")
     setup()
     logger.info("Setup de Django OK")
 
-    from fts_daemon.asterisk_originate import generador_de_llamadas_asterisk_factory
     from fts_web.models import Campana
-
-    generador_de_llamadas = generador_de_llamadas_asterisk_factory()
 
     logger.info("Iniciando loop: obteniendo campanas activas...")
     while True:
         campanas = Campana.objects.obtener_activas()
         for campana in campanas:
-            procesar_campana(campana, generador_de_llamadas)
+            procesar_campana(campana)
         time.sleep(2)
