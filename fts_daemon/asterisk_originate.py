@@ -13,7 +13,6 @@ import time
 from twisted.internet import reactor
 
 from django.conf import settings
-from fts_web.settings import FTS_JOIN_TIMEOUT_MARGIN
 import logging as _logging
 from starpy import manager
 from starpy.error import AMICommandFailure
@@ -40,7 +39,8 @@ def generador_de_llamadas_asterisk_dummy_factory():
     """Llamador DUMMY, para tests"""
     def generador_de_llamadas_asterisk(telefono, call_id, context):
         """Loguea intento y devuelve SUCCESS"""
-        logger.info("GENERADOR DE LLAMADAS DUMMY: %s [%s] %s", telefono, call_id, context)
+        logger.info("GENERADOR DE LLAMADAS DUMMY: %s [%s] %s",
+            telefono, call_id, context)
         return ORIGINATE_RESULT_SUCCESS
     return generador_de_llamadas_asterisk
 
@@ -53,7 +53,6 @@ def generador_de_llamadas_asterisk_factory():
         c) el contexto donde ubicar la llamada
     y devolver el resultado, uno de los valores de ORIGINATE_RESULT_*
     """
-    from django.conf import settings
 
     def generador_de_llamadas_asterisk(telefono, callid, context):
         result = originate(
@@ -213,7 +212,7 @@ class OriginateService(Process):
 
     def run(self):
         """Metodo ejecutado en subproceso"""
-        reactor.callWhenRunning(# @UndefinedVariable
+        reactor.callWhenRunning(  # @UndefinedVariable
             self._login_and_originate)
         logger.info("Iniciando reactor en subproceso %s", self.pid)
         reactor.run(installSignalHandlers=0)  # @UndefinedVariable
@@ -247,7 +246,7 @@ def originate(username, password, server, port,
     logger.info("Ejecutando ORIGINATE en subproceso")
     child_process.start()
     logger.info("Ejecutando join() en subproceso %s", child_process.pid)
-    join_timeout = timeout + FTS_JOIN_TIMEOUT_MARGIN
+    join_timeout = timeout + settings.FTS_JOIN_TIMEOUT_MARGIN
     child_process.join(join_timeout)
     if child_process.is_alive():
         logger.warn("El subproceso %s NO ha devuelto el control"
