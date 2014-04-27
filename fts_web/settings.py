@@ -70,8 +70,11 @@ TMPL_FTS_AUDIO_CONVERSOR = None
 
 """Booleano que indica si hay que ejecutar tests que implican
 una interaccion con Asterisk"""
+# TODO: renombrar a FTS_ASTERISK_TEST
 ASTERISK_TEST = False
 
+FTS_ORIGINATE_SERVICE_CLASS = "fts_daemon.asterisk_originate."\
+    "OriginateServiceProcess"
 
 ALLOWED_HOSTS = []
 
