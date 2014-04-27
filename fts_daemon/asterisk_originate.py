@@ -16,10 +16,9 @@ from django.conf import settings
 import logging as _logging
 from starpy import manager
 from starpy.error import AMICommandFailure
+import collections
 
 
-# `JOIN_TIMEOUT_MARGIN` lo importamos directamente, justamente para evitar
-# importar nada de Django, ya que NO usamos nada de Django aqui
 logger = _logging.getLogger('asterisk_originate')
 
 """No se sabe si el comando pudo ser ejecutado"""
@@ -35,52 +34,13 @@ ORIGINATE_RESULT_FAILED = 57
 ORIGINATE_RESULT_CONNECT_FAILED = 56
 
 
-def generador_de_llamadas_asterisk_dummy_factory():
-    """Llamador DUMMY, para tests"""
-    def generador_de_llamadas_asterisk(telefono, call_id, context):
-        """Loguea intento y devuelve SUCCESS"""
-        logger.info("GENERADOR DE LLAMADAS DUMMY: %s [%s] %s",
-            telefono, call_id, context)
-        return ORIGINATE_RESULT_SUCCESS
-    return generador_de_llamadas_asterisk
-
-
-def generador_de_llamadas_asterisk_factory():
-    """Factory de funcion que se encarga de realizar llamadas
-    La funcion generada debe recibir por parametro:
-        a) el numero telefonico
-        b) un identificador UNICO para la llamada
-        c) el contexto donde ubicar la llamada
-    y devolver el resultado, uno de los valores de ORIGINATE_RESULT_*
-    """
-
-    def generador_de_llamadas_asterisk(telefono, callid, context):
-        result = originate(
-            settings.ASTERISK['USERNAME'],
-            settings.ASTERISK['PASSWORD'],
-            settings.ASTERISK['HOST'],
-            settings.ASTERISK['PORT'],
-            settings.ASTERISK['CHANNEL_PREFIX'].format(telefono),
-            context,
-            settings.ASTERISK['EXTEN'].format(callid),
-            settings.ASTERISK['PRIORITY'],
-            settings.ASTERISK['TIMEOUT']
-        )
-        return result
-
-    return generador_de_llamadas_asterisk
-
-
-def _get_result(exitstatus):
-    if exitstatus == ORIGINATE_RESULT_UNKNOWN:
-        return "ORIGINATE_RESULT_UNKNOWN"
-    if exitstatus == ORIGINATE_RESULT_SUCCESS:
-        return "ORIGINATE_RESULT_SUCCESS"
-    if exitstatus == ORIGINATE_RESULT_FAILED:
-        return "ORIGINATE_RESULT_FAILED"
-    if exitstatus == ORIGINATE_RESULT_CONNECT_FAILED:
-        return "ORIGINATE_RESULT_CONNECT_FAILED"
-    return "desconocido"
+ORIGINATE_RESULT_DICT = collections.defaultdict(lambda: 'desconocido')
+ORIGINATE_RESULT_DICT.update({
+    ORIGINATE_RESULT_UNKNOWN: "ORIGINATE_RESULT_UNKNOWN",
+    ORIGINATE_RESULT_SUCCESS: "ORIGINATE_RESULT_SUCCESS",
+    ORIGINATE_RESULT_FAILED: "ORIGINATE_RESULT_FAILED",
+    ORIGINATE_RESULT_CONNECT_FAILED: "ORIGINATE_RESULT_CONNECT_FAILED",
+})
 
 
 def _ami_login(username, password, server, port):
@@ -92,28 +52,31 @@ def _ami_login(username, password, server, port):
     return ami_protocol
 
 
-class OriginateService(Process):
+class OriginateServiceProcess(Process):
     """Genera ORIGINATEs usando AMI"""
 
-    def __init__(self, username, password, server, port, channel, context,
-        exten, priority, timeout):
+    def __init__(self, channel, context, exten, priority=None,
+        username=None, password=None, server=None, port=None, timeout=None):
         """Constructor. Recibe todos los parametros necesarios"""
 
-        super(OriginateService, self).__init__()
+        super(OriginateServiceProcess, self).__init__()
+
+        ASTK = settings.ASTERISK
 
         # Instancia de AMIProtocol
         self.ami = None
         self.originate_success = ORIGINATE_RESULT_UNKNOWN
 
-        self.username = username
-        self.password = password
-        self.server = server
-        self.port = port
         self.channel = channel
         self.context = context
         self.exten = exten
-        self.priority = priority
-        self.timeout = timeout
+
+        self.priority = priority or ASTK['PRIORITY']
+        self.username = username or ASTK['USERNAME']
+        self.password = password or ASTK['PASSWORD']
+        self.server = server or ASTK['HOST']
+        self.port = port or ASTK['PORT']
+        self.timeout = timeout or ASTK['TIMEOUT']
 
     def onResult(self, result):
         logger.debug("onResult(): result: %s", result)
@@ -226,14 +189,13 @@ class OriginateService(Process):
 #
 #    Returns: subproceso ya arrancado
 #    """
-#    child_process = OriginateService(username, password, server, port,
+#    child_process = OriginateServiceProcess(username, password, server, port,
 #        outgoing_channel, context, exten, priority, timeout)
 #    child_process.start()
 #    return child_process
 
 
-def originate(username, password, server, port,
-    outgoing_channel, context, exten, priority, timeout):
+def originate(originate_process):
     """Origina una llamada, en un subproceso separado.
     Espera a que se finalice la ejecucion. Por lo tanto, bloqueara,
     hasta que Asterisk devuelva OCUPADO, o hasta que el destinatario
@@ -241,33 +203,33 @@ def originate(username, password, server, port,
 
     Devuelve: alguno de los valores de ORIGINATE_RESULT_*
     """
-    child_process = OriginateService(username, password, server, port,
-        outgoing_channel, context, exten, priority, timeout)
     logger.info("Ejecutando ORIGINATE en subproceso")
-    child_process.start()
-    logger.info("Ejecutando join() en subproceso %s", child_process.pid)
-    join_timeout = timeout + settings.FTS_JOIN_TIMEOUT_MARGIN
-    child_process.join(join_timeout)
-    if child_process.is_alive():
+    originate_process.start()
+    logger.info("Ejecutando join() en subproceso %s", originate_process.pid)
+    join_timeout = originate_process.timeout +\
+        settings.FTS_JOIN_TIMEOUT_MARGIN
+    originate_process.join(join_timeout)
+    if originate_process.is_alive():
         logger.warn("El subproceso %s NO ha devuelto el control"
             " despues de %s segundos. El proceso sera terminado.",
-            child_process.pid, join_timeout)
-        child_process.terminate()
+            originate_process.pid, join_timeout)
+        originate_process.terminate()
         for _ in range(0, 20):
-            if child_process.exitcode is not None:
+            if originate_process.exitcode is not None:
                 break
             time.sleep(0.1)
-        if child_process.exitcode is None:
+        if originate_process.exitcode is None:
             logger.warn("No se consiguio 'exitcode' luego de 1 segundo")
     logger.info("El subproceso %s ha devuelto el control "
-        "con exit code %s (%s)", child_process.pid, child_process.exitcode,
-        _get_result(child_process.exitcode))
+        "con exit code %s (%s)", originate_process.pid,
+        originate_process.exitcode,
+        ORIGINATE_RESULT_DICT[originate_process.exitcode])
 
-    if child_process.exitcode in (ORIGINATE_RESULT_UNKNOWN,
+    if originate_process.exitcode in (ORIGINATE_RESULT_UNKNOWN,
         ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,
         ORIGINATE_RESULT_CONNECT_FAILED):
-        return child_process.exitcode
+        return originate_process.exitcode
     else:
         logger.warn("Returning ORIGINATE_RESULT_UNKNOWN because %s is unknown",
-            child_process.exitcode)
+            originate_process.exitcode)
         return ORIGINATE_RESULT_UNKNOWN
