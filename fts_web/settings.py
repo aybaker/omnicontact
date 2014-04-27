@@ -206,6 +206,7 @@ assert "<OUTPUT_FILE>" in TMPL_FTS_AUDIO_CONVERSOR, \
 # ~~~~~ Check ASTERISK
 
 for key in ('USERNAME', 'PASSWORD', 'HOST', 'PORT', 'CHANNEL_PREFIX',
-    'CONTEXT', 'EXTEN', 'PRIORITY', 'TIMEOUT', 'HTTP_AMI_URL',):
+    'LOCAL_CHANNEL', 'CONTEXT', 'EXTEN', 'PRIORITY', 'TIMEOUT',
+    'HTTP_AMI_URL'):
     assert key in ASTERISK, \
-        "Falta key {0} en configuracion de ASTERISK".format(key)
+        "Falta key '{0}' en configuracion de ASTERISK".format(key)
