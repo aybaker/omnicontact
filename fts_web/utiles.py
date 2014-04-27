@@ -43,14 +43,14 @@ def resolve_strftime(text):
     return time.strftime(text)  # time.gmtime()
 
 
-def get_class(full_class_name):
-    """Devuelve clase referenciada por `full_class_name`"""
-    splitted = full_class_name.split(r".")
+def get_class(full_name):
+    """Devuelve clase  o func referenciada por `full_name`"""
+    splitted = full_name.split(r".")
     if len(splitted) < 2:
-        raise FtsError("La clase sepecificada no es valida: '{0}'".format(
-            full_class_name))
+        raise FtsError("La clase/func sepecificada no es valida: '{0}'".format(
+            full_name))
     module_name = ".".join(splitted[0:-1])
-    class_name = splitted[-1]
+    class_or_func_name = splitted[-1]
 
     try:
 
@@ -61,11 +61,14 @@ def get_class(full_class_name):
             logger.warn(msg)
             raise FtsError(msg, e)
 
+        for sub_module_name in splitted[1:-1]:
+            module = getattr(module, sub_module_name)
+
         try:
-            clazz = getattr(module, class_name)
+            clazz = getattr(module, class_or_func_name)
         except AttributeError as e:
-            msg = "El modulo '{0}' no posee la clase '{1}'".format(
-                module_name, class_name)
+            msg = "El modulo '{0}' no posee la clase o func '{1}'".format(
+                module_name, class_or_func_name)
             logger.warn(msg)
             raise FtsError(msg, e)
 
@@ -73,7 +76,7 @@ def get_class(full_class_name):
         raise
 
     except Exception as e:
-        msg = "No se pudo obtener la clase '{0}'".format(full_class_name)
+        msg = "No se pudo obtener la clase o func '{0}'".format(full_name)
         logger.warn(msg)
         raise FtsError(msg, e)
 
