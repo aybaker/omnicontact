@@ -317,14 +317,21 @@ class AsteriskHttpClient(object):
 
     def _request(self, url, params, timeout=5):
         """Make requests to the Asterisk.
+        Parameters:
+            - url
+            - params: (dict) query parameters for the GET request
+            - timeout: (int) timeout in seconds, > 0
+
         Returns tuple with:
-            - response_body (contents returned by the server)
+            - response_body (contents returned by the server, ie: XML)
             - response object
         """
-        # TODO: mover timeout a settings
         # https://docs.python.org/2.6/library/httplib.html
         logger.debug("AsteriskHttpClient - _request(): %s", url)
         assert url.startswith('/')
+        assert type(timeout) == int
+        assert timeout > 0, "Timeout must be GREATER than 0"
+
         full_url = "{0}{1}".format(settings.ASTERISK['HTTP_AMI_URL'], url)
         response = self.session.get(full_url, params=params, timeout=timeout)
         logger.debug("AsteriskHttpClient - Status: %s", response.status_code)
@@ -366,8 +373,9 @@ class AsteriskHttpClient(object):
         """
         Send an ORIGINATE action.
         Parameters:
-            - channel, context, exten, priority, async: ORIGINATE parameters
-            - timeout: timeout of the originate action (in ms)
+            - channel, context, exten, priority: ORIGINATE parameters
+            - timeout: (int) timeout of the originate action (in ms)
+            - async: (bool)
 
         Returns:
             - the parser instance
@@ -375,8 +383,18 @@ class AsteriskHttpClient(object):
         Raises:
             - AsteriskHttpOriginateError: if originate failed
         """
-        timeout = int(timeout)
-        request_timeout = math.ceil(timeout) + 2
+        assert type(timeout) == int
+        assert type(async) == bool
+
+        if async:
+            request_timeout = 5
+            logger.debug("AsteriskHttpClient.originate(): async=True - "
+                "timeout: %s - request_timeout: %s", timeout, request_timeout)
+        else:
+            request_timeout = math.ceil(timeout / 1000) + 5
+            logger.debug("AsteriskHttpClient.originate(): async=False - "
+                "timeout: %s - request_timeout: %s", timeout, request_timeout)
+
         response_body, _ = self._request("/mxml", {
             'action': 'originate',
             'channel': channel,
