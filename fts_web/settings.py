@@ -85,6 +85,8 @@ una interaccion con Asterisk"""
 # TODO: renombrar a FTS_ASTERISK_TEST
 ASTERISK_TEST = False
 
+FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS = True
+
 #FTS_ORIGINATE_SERVICE_CLASS = "fts_daemon.asterisk_originate."\
 #    "OriginateServiceProcess"
 
