@@ -114,17 +114,17 @@ class CampanaForm(forms.ModelForm):
 class AudioForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AudioForm, self).__init__(*args, **kwargs)
-        self.fields['reproduccion'].required = True
+        self.fields['audio_original'].required = True
 
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Field('reproduccion'),
+            Field('audio_original'),
         )
 
     class Meta:
         model = Campana
-        fields = ('reproduccion',)
+        fields = ('audio_original',)
 
 
 class ConfirmaForm(forms.ModelForm):
