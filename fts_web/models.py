@@ -828,6 +828,14 @@ class Actuacion(models.Model):
         especificado y en el día semanal seleccionado.
         """
 
+        if self.hora_desde >= self.hora_hasta:
+            raise ValidationError({
+                'hora_desde': ["La hora desde debe ser\
+                    menor o igual a la hora hasta."],
+                'hora_hasta': ["La hora hasta debe ser\
+                    mayor a la hora desde."],
+            })
+
         conflicto = self.campana.actuaciones.filter(
             dia_semanal=self.dia_semanal,
             hora_desde__lte=self.hora_hasta,
