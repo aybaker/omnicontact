@@ -73,8 +73,10 @@ una interaccion con Asterisk"""
 # TODO: renombrar a FTS_ASTERISK_TEST
 ASTERISK_TEST = False
 
-FTS_ORIGINATE_SERVICE_CLASS = "fts_daemon.asterisk_originate."\
-    "OriginateServiceProcess"
+#FTS_ORIGINATE_SERVICE_CLASS = "fts_daemon.asterisk_originate."\
+#    "OriginateServiceProcess"
+
+FTS_ASTERISK_HTTP_CLIENT = "fts_daemon.asterisk_ami_http.AsteriskHttpClient"
 
 ALLOWED_HOSTS = []
 
