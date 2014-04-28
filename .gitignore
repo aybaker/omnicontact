@@ -6,3 +6,4 @@ settings_local.py
 /media_root
 /virtualenv26
 /fts_web_settings_local.py
+/pydev_manage.py
