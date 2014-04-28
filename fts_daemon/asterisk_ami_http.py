@@ -4,14 +4,11 @@
 
 from __future__ import unicode_literals
 
-import httplib
-
 from django.conf import settings
 from fts_web.errors import FtsError
 import logging as _logging
 import xml.etree.ElementTree as ET
-import cookielib
-import urllib2
+import math
 import requests
 
 
@@ -274,17 +271,18 @@ class AsteriskHttpClient(object):
     def __init__(self):
         self.session = requests.Session()
 
-    def _request(self, url, params):
+    def _request(self, url, params, timeout=5):
         """Make requests to the Asterisk.
         Returns tuple with:
             - response_body (contents returned by the server)
             - response object
         """
+        # TODO: mover timeout a settings
         # https://docs.python.org/2.6/library/httplib.html
         logger.debug("AsteriskHttpClient - _request(): %s", url)
         assert url.startswith('/')
         full_url = "{0}{1}".format(settings.ASTERISK['HTTP_AMI_URL'], url)
-        response = self.session.get(full_url, params=params, timeout=5)
+        response = self.session.get(full_url, params=params, timeout=timeout)
         logger.debug("AsteriskHttpClient - Status: %s", response.status_code)
         logger.debug("AsteriskHttpClient - Got http response:\n%s",
             response.content)
@@ -318,6 +316,26 @@ class AsteriskHttpClient(object):
         parser = AsteriskXmlParserForPing()
         parser.parse(response_body)
         return parser
+
+    def originate(self, channel, context, exten, priority, timeout):
+        timeout = int(timeout)
+        request_timeout = math.ceil(timeout) + 2
+        response_body, _ = self._request("/mxml", {
+            'action': 'originate',
+            'channel': channel,
+            'context': context,
+            'exten': exten,
+            'priority': priority,
+            'timeout': timeout,
+        }, timeout=request_timeout)
+
+        #parser = AsteriskXmlParserForOriginate()
+        #parser.parse(response_body)
+        #return parser
+
+        print(response_body)
+
+        raise NotImplementedError()
 
 
 #==============================================================================
