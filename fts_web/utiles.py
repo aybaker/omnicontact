@@ -10,12 +10,14 @@ from __future__ import unicode_literals
 import re
 import time
 import uuid
+import os
 
 from fts_web.errors import FtsError
 
 from django.conf import settings
 
 import logging as _logging
+import tempfile
 
 logger = _logging.getLogger('poll_daemon')
 
@@ -41,6 +43,40 @@ def upload_to(prefix, max_length):
 def resolve_strftime(text):
     """Ejecuta strftime() en texto pasado por parametro"""
     return time.strftime(text)  # time.gmtime()
+
+
+def crear_archivo_en_media_root(filename_template):
+    """Crea un archivo en el directorio MEDIA_ROOT. Si los directorios
+    no existen, los crea tambien.
+
+    Para la creacion del archivo usa `tempfile.mkstemp`
+
+    Ej:
+        crear_archivo('data/%Y/%m/audio-original'):
+            En este caso, se creara (si no existen) los
+            directorios `data`, ANIO y MES, y `audio-original`
+            es parte del prefijo del archivo.
+
+        El prefijo del nombre de archivo es OBLIGATORIO, por lo tanto,
+            `filename_template` NO puede finalizar en '/'
+
+    Devuelve: tupla con
+        (directorio_relativo_a_MEDIA_ROOT, nombre_de_archivo)
+    """
+    assert filename_template[-1] != '/'
+
+    relative_filename = resolve_strftime(filename_template)
+    output_directory_rel, tempfile_prefix = os.path.split(relative_filename)
+    output_directory_abs = os.path.join(
+        settings.MEDIA_ROOT, output_directory_rel)
+
+    if not os.path.exists(output_directory_abs):
+        os.makedirs(output_directory_abs)
+
+    _, output_filename = tempfile.mkstemp(
+        dir=output_directory_abs, prefix=tempfile_prefix)
+
+    return output_directory_rel, os.path.split(output_filename)[1]
 
 
 # TODO: rename to 'get_class_or_func'
