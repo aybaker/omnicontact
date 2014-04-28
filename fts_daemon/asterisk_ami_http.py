@@ -72,7 +72,8 @@ class AsteriskXmlParser(object):
         raise NotImplementedError()
 
     def _parse_and_check(self, xml, check_errors=True,
-        exception_for_error=None):
+        exception_for_error=None,
+        check_success=False):
         """Parses the XML string, and do basic checks.
         The root is saved on `self.root`.
         The response dict is saved on `self.response_dict`
@@ -89,6 +90,8 @@ class AsteriskXmlParser(object):
         logger.debug("Parseo finalizado")
 
         self.response_dict = get_response_on_first_element(self.root)
+        exception_for_error = exception_for_error or\
+            AsteriskHttpResponseWithError
 
         if self.response_dict:
             self.response_value = self.response_dict.get('response', '').lower()
@@ -98,16 +101,16 @@ class AsteriskXmlParser(object):
                     " response_dict: '%s' - XML:\n%s", str(self.response_dict),
                     xml)
                 if check_errors:
-                    if exception_for_error:
-                        raise exception_for_error()
-                    else:
-                        raise AsteriskHttpResponseWithError()
+                    raise exception_for_error()
             elif self.response_value == 'success':
                 pass
             else:
                 logger.warn("_parse_and_check(): unknown 'response'. "
                     "response_dict: '%s' - XML:\n%s", str(self.response_dict),
                     xml)
+
+            if check_success and self.response_value != 'success':
+                raise exception_for_error()
 
 
 class AsteriskXmlParserForPing(AsteriskXmlParser):
@@ -123,13 +126,7 @@ class AsteriskXmlParserForPing(AsteriskXmlParser):
         # <generic response='Success' ping='Pong'
         #    timestamp='1398544611.316607'/>
 
-        self._parse_and_check(xml)
-        # TODO: usar self.response_dict
-        response_dict = get_response_on_first_element(self.root)
-        response = response_dict.get('response', '').lower()
-
-        if response != 'success':
-            raise AsteriskHttpPingError()
+        self._parse_and_check(xml, check_success=True)
 
 
 class AsteriskXmlParserForLogin(AsteriskXmlParser):
@@ -151,9 +148,8 @@ class AsteriskXmlParserForLogin(AsteriskXmlParser):
         # <generic response="Error" message="Authentication failed"/>
 
         self._parse_and_check(xml,
-            exception_for_error=AsteriskHttpAuthenticationFailedError)
-
-        # TODO: assert 'self.response_dict'
+            exception_for_error=AsteriskHttpAuthenticationFailedError,
+            check_success=True)
 
 
 class AsteriskXmlParserForOriginate(AsteriskXmlParser):
@@ -170,10 +166,8 @@ class AsteriskXmlParserForOriginate(AsteriskXmlParser):
         #        message='Originate successfully queued' />
 
         self._parse_and_check(xml,
-            exception_for_error=AsteriskHttpOriginateError)
-
-        if self.response_value != 'success':
-            raise AsteriskHttpOriginateError()
+            exception_for_error=AsteriskHttpOriginateError,
+            check_success=True)
 
 
 class AsteriskXmlParserForStatus(AsteriskXmlParser):
