@@ -340,10 +340,9 @@ class Campana(models.Model):
     segundos_ring = models.PositiveIntegerField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-    # TODO: renombrar a audio_original
     # TODO: ajustar max_length
     # TODO: evaluar de crear callable para `upload_to`
-    reproduccion = models.FileField(
+    audio_original = models.FileField(
         #TODO: Definir path para los archivos.
         upload_to='campana/%Y/%m/%d',
         null=True, blank=True,
