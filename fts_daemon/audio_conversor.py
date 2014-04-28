@@ -50,7 +50,10 @@ def convertir_audio(input_file_abs, output_filename_template):
         input_file: path a archivo de entrada (.wav)
 
     Returns:
-        - lo mismo que `crear_archivo()`
+        - lo mismo que `crear_archivo_en_media_root()`: una tupla
+            con 2 elementos:
+                1) el directorio destino, relativo a MEDIA_ROOT
+                2) el nombre del archivo
 
     Raises:
         FtsAudioConversionError: si se produjo algun tipo de error
