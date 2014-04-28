@@ -8,6 +8,8 @@ from django.conf import settings
 from fts_web.errors import FtsError
 import logging as _logging
 import xml.etree.ElementTree as ET
+from xml.parsers.expat import ExpatError
+
 import math
 import requests
 
@@ -90,7 +92,12 @@ class AsteriskXmlParser(object):
 
         # https://docs.python.org/2.6/library/xml.etree.elementtree.html
         logger.debug("Iniciando parseo... XML:\n%s", xml)
-        self.root = ET.fromstring(xml)
+        try:
+            self.root = ET.fromstring(xml)
+        except ExpatError as e:
+            logger.exception("Error al parsear XML. "
+                "ExpatError.code: {0.code}. XML:\n{1}".format(e, xml))
+            raise
         logger.debug("Parseo finalizado")
 
         self.response_dict = get_response_on_first_element(self.root)
