@@ -102,7 +102,6 @@ class CampanaForm(forms.ModelForm):
             Field('segundos_ring'),
             Field('fecha_inicio'),
             Field('fecha_fin'),
-            Field('reproduccion'),
             Field('bd_contacto')
         )
         super(CampanaForm, self).__init__(*args, **kwargs)
@@ -110,6 +109,22 @@ class CampanaForm(forms.ModelForm):
     class Meta:
         model = Campana
         exclude = ('estado',)
+
+
+class AudioForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AudioForm, self).__init__(*args, **kwargs)
+        self.fields['reproduccion'].required = True
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('reproduccion'),
+        )
+
+    class Meta:
+        model = Campana
+        fields = ('reproduccion',)
 
 
 class ConfirmaForm(forms.ModelForm):

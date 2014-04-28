@@ -349,6 +349,7 @@ class Campana(models.Model):
     reproduccion = models.FileField(
         #TODO: Definir path para los archivos.
         upload_to='campana/%Y/%m/%d',
+        null=True, blank=True,
     )
     audio_asterisk = models.FileField(
         upload_to=upload_to_audios_asterisk,
