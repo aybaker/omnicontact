@@ -25,10 +25,10 @@
 
                     {% crispy form %}                                       
 
-                    {% if campana.reproduccion %}
+                    {% if campana.audio_original %}
                         <div>
                             <h4>Audio de la Campaña</h4>
-                            <audio src="{{ campana.reproduccion.url }}" controls></audio>
+                            <audio src="{{ campana.audio_original.url }}" controls></audio>
                         </div>
                     {% endif %}
                     
@@ -38,7 +38,7 @@
                         Guardar Audio
                     </button>
                     <br>
-                    {% if campana.reproduccion %}
+                    {% if campana.audio_original %}
                         <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-primary" role="button">
                             Continuar
                         </a> 

@@ -32,7 +32,7 @@ def convertir_audio_de_campana(campana):
     """
     assert isinstance(campana, Campana)
 
-    wav_full_path = default_storage.path(campana.reproduccion.name)
+    wav_full_path = default_storage.path(campana.audio_original.name)
     assert os.path.exists(wav_full_path)
 
     output_dir, outpu_filename = convertir_audio(wav_full_path,
