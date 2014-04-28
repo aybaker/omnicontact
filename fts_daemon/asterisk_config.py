@@ -134,18 +134,29 @@ def generar_dialplan(campana):
     assert campana.estado != Campana.ESTADO_EN_DEFINICION,\
         "Campana: estado == ESTADO_EN_DEFINICION "
     assert campana.id is not None, "campana.id == None"
-    assert campana.audio_original is not None, "campana.audio_original == None"
-    assert campana.audio_original.name is not None,\
-        "campana.audio_original.name == None"
     assert campana.segundos_ring is not None
 
-    partes = []
-    # TODO: usar archivo convertido!
-    #fts_audio_file = os.path.join(settings.MEDIA_ROOT,
-    #        campana.audio_asterisk.name)
+    # audio_original -> lo chqeueamos por las dudas nomas...
+    assert campana.audio_original is not None, "campana.audio_original == None"
+    assert campana.audio_original.name,\
+        "campana.audio_original.name no esta seteado"
+
+    # audio_asterisk -> este tiene que existir si o si
+    assert campana.audio_asterisk is not None, "campana.audio_asterisk == None"
+    assert campana.audio_asterisk.name,\
+        "campana.audio_asterisk.name no esta seteado"
+
     fts_audio_file = os.path.join(settings.MEDIA_ROOT,
-            campana.audio_original.name)
+        campana.audio_asterisk.name)
+    if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
+        if not os.path.exists(fts_audio_file):
+            raise Exception("No se encontro el archivo de audio '%s' "
+                "para la campana '%s'", fts_audio_file, campana.id)
+
+    # Quitamos extension (Asterisk lo requiere asi)
     fts_audio_file = os.path.splitext(fts_audio_file)[0]
+
+    partes = []
     param_generales = {
         'fts_campana_id': campana.id,
         'fts_campana_dial_timeout': campana.segundos_ring,
