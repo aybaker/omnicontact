@@ -11,9 +11,6 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from fts_daemon.asterisk_originate import ORIGINATE_RESULT_UNKNOWN,\
-    ORIGINATE_RESULT_SUCCESS, ORIGINATE_RESULT_FAILED,\
-    ORIGINATE_RESULT_CONNECT_FAILED
 from fts_web.utiles import upload_to
 
 
@@ -612,7 +609,7 @@ class IntentoDeContactoManager(models.Manager):
         return self.filter(campana=campana_id,
             estado=IntentoDeContacto.ESTADO_ERROR_INTERNO)
 
-    def update_resultado_si_corresponde(self, intento_id, resultado):
+    def update_estado_por_originate(self, intento_id, originate_ok):
         """Actualiza el estado del intento, dependiendo del resultado
         del comando originate.
         """
@@ -620,49 +617,15 @@ class IntentoDeContactoManager(models.Manager):
         # TODO: quiza haria falta un estado 'DESCONOCIDO'
         # TODO: evaluar usar eventos en vez de cambios de estados en la BD
         #  (al estilo NoSQL)
-        if resultado == ORIGINATE_RESULT_SUCCESS:
-            logger.info("update_resultado_si_corresponde(): "
-                "actualizando si corresponde: SUCCESS")
-            # el otro lado ha atendido, actualizamos SOLO si el registro
-            # no esta actualizado
+        
+        if originate_ok:
             self.filter(id=intento_id,
                 estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
-                    estado=IntentoDeContacto.ESTADO_CONTESTO)
-
-        elif resultado == ORIGINATE_RESULT_FAILED:
-            # el comando AMI ORIGINATE fallo. No sabemos si se ha originado
-            # la llamada o no.
-            # ¿Que hacemos? Filtamos intentos en estado 'ESTADO_PROGRAMADO',
-            # y los actualizamos. Si la llamada se ha realizado, AGI debio
-            # actualizarlo a 'ATENDIO' o 'NO ATENDIO', y listo, esto no
-            # habra hecho nada
-            logger.info("update_resultado_si_corresponde(): "
-                "actualizando si corresponde: FAILED")
-            self.filter(id=intento_id,
-                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
-                    estado=IntentoDeContacto.ESTADO_NO_CONTESTO)
-
-        elif resultado == ORIGINATE_RESULT_CONNECT_FAILED:
-            # No se pudo conectar a Asterisk
-            logger.info("update_resultado_si_corresponde(): "
-                "actualizando si corresponde: ESTADO_ERROR_INTERNO")
-            self.filter(id=intento_id,
-                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
-                    estado=IntentoDeContacto.ESTADO_ERROR_INTERNO)
-
-        elif resultado == ORIGINATE_RESULT_UNKNOWN:
-            # No sabemos que paso con el comando AGI...
-            # Actualizamos SOLO si no está actualizado...
-            logger.info("update_resultado_si_corresponde(): "
-                "actualizando si corresponde: UNKNOWN")
-            self.filter(id=intento_id,
-                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
-                    estado=IntentoDeContacto.ESTADO_NO_CONTESTO)
-
+                    estado=IntentoDeContacto.ESTADO_ORIGINATE_SUCCESSFUL)
         else:
-            logger.error("update_resultado_si_corresponde(): "
-                "resultado NO VALIDO '%s' para IntentoDeContacto %s",
-                resultado, intento_id)
+            self.filter(id=intento_id,
+                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
+                    estado=IntentoDeContacto.ESTADO_ORIGINATE_FAILED)
 
 
 class IntentoDeContacto(models.Model):
@@ -677,17 +640,25 @@ class IntentoDeContacto(models.Model):
     """EL intento esta pendiente de ser realizado"""
     ESTADO_PROGRAMADO = 1
 
+    """El originate se produjo exitosamente"""
+    ESTADO_ORIGINATE_SUCCESSFUL = 2
+
+    """El originate devolvio error"""
+    ESTADO_ORIGINATE_FAILED = 3
+
     """El destinatario no ha atendido el llamado"""
-    ESTADO_NO_CONTESTO = 2
+    ESTADO_NO_CONTESTO = 4
 
     """El destinatario atendio el llamado"""
-    ESTADO_CONTESTO = 3
+    ESTADO_CONTESTO = 5
 
     """Se produjo un error interno del sistema"""
-    ESTADO_ERROR_INTERNO = 4
+    ESTADO_ERROR_INTERNO = 5
 
     ESTADO = (
         (ESTADO_PROGRAMADO, 'Pendiente'),
+        (ESTADO_ORIGINATE_SUCCESSFUL, 'Originate OK'),
+        (ESTADO_ORIGINATE_FAILED, 'Originate Fallo'),
         (ESTADO_NO_CONTESTO, 'No atendio'),
         (ESTADO_CONTESTO, 'Atendio'),
         (ESTADO_ERROR_INTERNO, 'Error interno'),
