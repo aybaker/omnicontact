@@ -99,7 +99,8 @@ def convertir_audio(input_file_abs, output_filename_abs):
 
     # ejecutamos comando...
     try:
-        logger.info("Iniciando conversion de audio de %s", input_file_abs)
+        logger.info("Iniciando conversion de audio de %s -> %s",
+            input_file_abs, output_filename_abs)
         subprocess.check_call(FTS_AUDIO_CONVERSOR,
             stdout=stdout_file, stderr=stderr_file)
         logger.info("Conversion de audio finalizada exitosamente")
