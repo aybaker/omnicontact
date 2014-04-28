@@ -14,7 +14,8 @@ import logging as _logging
 from django.conf import settings
 from fts_web.models import Campana, IntentoDeContacto
 from fts_web.utiles import get_class
-from fts_daemon.asterisk_originate import originate
+from fts_daemon.asterisk_ami_http import AsteriskHttpClient,\
+    AsteriskHttpOriginateError
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
 #  el logger se llamara '__main__'
@@ -64,12 +65,18 @@ def procesar_contacto(pendiente, campana):
         callId=str(pendiente.id),
     )
 
-    clazz = get_class(settings.FTS_ORIGINATE_SERVICE_CLASS)
+    http_client_clazz = get_class(settings.FTS_ASTERISK_HTTP_CLIENT)
+    http_ami_client = http_client_clazz()
+    try:
+        http_ami_client.login()
+        http_ami_client.originate(channel, context, exten, 1, 5000, async=True)
+        originate_ok = True
+    except AsteriskHttpOriginateError:
+        originate_ok = False
+        logger.exception("Originate failed")
 
-    process = clazz(channel, context, exten)
-    res = originate(process)
-    IntentoDeContacto.objects.update_resultado_si_corresponde(
-        pendiente.id, res)
+    IntentoDeContacto.objects.update_estado_por_originate(pendiente.id,
+        originate_ok)
 
 
 def main():
