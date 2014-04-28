@@ -45,11 +45,18 @@ def resolve_strftime(text):
     return time.strftime(text)  # time.gmtime()
 
 
-def crear_archivo_en_media_root(filename_template):
+def crear_archivo_en_media_root(filename_template, suffix=""):
     """Crea un archivo en el directorio MEDIA_ROOT. Si los directorios
     no existen, los crea tambien.
 
     Para la creacion del archivo usa `tempfile.mkstemp`
+
+    Parametros:
+        - filename_template
+        - suffix (para poder especificar una extension)
+
+    Devuelve: tupla con
+        (directorio_relativo_a_MEDIA_ROOT, nombre_de_archivo)
 
     Ej:
         crear_archivo('data/%Y/%m/audio-original'):
@@ -57,11 +64,11 @@ def crear_archivo_en_media_root(filename_template):
             directorios `data`, ANIO y MES, y `audio-original`
             es parte del prefijo del archivo.
 
-        El prefijo del nombre de archivo es OBLIGATORIO, por lo tanto,
-            `filename_template` NO puede finalizar en '/'
+            crear_archivo('data/%Y/%m/audio-original'):
 
-    Devuelve: tupla con
-        (directorio_relativo_a_MEDIA_ROOT, nombre_de_archivo)
+            El prefijo para el nombre del archivo (o sea, `audio-original`)
+                es OBLIGATORIO, por lo tanto, `filename_template` NO
+                puede finalizar en '/'
     """
     assert filename_template[-1] != '/'
 
@@ -74,7 +81,8 @@ def crear_archivo_en_media_root(filename_template):
         os.makedirs(output_directory_abs)
 
     _, output_filename = tempfile.mkstemp(
-        dir=output_directory_abs, prefix=tempfile_prefix)
+        dir=output_directory_abs, prefix=tempfile_prefix,
+        suffix=suffix)
 
     return output_directory_rel, os.path.split(output_filename)[1]
 
