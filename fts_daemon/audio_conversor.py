@@ -16,7 +16,7 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from fts_web.errors import FtsAudioConversionError
 from fts_web.models import Campana, upload_to_audios_asterisk
-from fts_web.utiles import resolve_strftime
+from fts_web.utiles import crear_archivo_en_media_root
 import logging as _logging
 
 
@@ -40,35 +40,6 @@ def convertir_audio_de_campana(campana):
     relative_filename = os.path.join(output_dir, outpu_filename)
     campana.audio_asterisk = relative_filename
     campana.save()
-
-
-def crear_archivo(filename_template):
-    """Crea un archivo en el directorio MEDIA_ROOT.
-
-    Ej:
-        crear_archivo('audio/%Y/%m/audio') - En este caso, `audio`
-            es parte del prefijo del archivo.
-
-        El prefijo es OBLIGATORIO, por lo tanto, `filename_template`
-            NO puede finalizar en '/'
-
-    Devuelve: tupla con
-        (directorio_relativo_a_MEDIA_ROOT, nombre_de_archivo)
-    """
-    assert filename_template[-1] != '/'
-
-    relative_filename = resolve_strftime(filename_template)
-    output_directory_rel, tempfile_prefix = os.path.split(relative_filename)
-    output_directory_abs = os.path.join(
-        settings.MEDIA_ROOT, output_directory_rel)
-
-    if not os.path.exists(output_directory_abs):
-        os.makedirs(output_directory_abs)
-
-    _, output_filename = tempfile.mkstemp(
-        dir=output_directory_abs, prefix=tempfile_prefix)
-
-    return output_directory_rel, os.path.split(output_filename)[1]
 
 
 def convertir_audio(input_file_abs, output_filename_template):
@@ -96,7 +67,8 @@ def convertir_audio(input_file_abs, output_filename_template):
         raise FtsAudioConversionError("El archivo de entrada no es "
             "un path absoluto")
 
-    output_dir, outpu_filename = crear_archivo(output_filename_template)
+    output_dir, outpu_filename = crear_archivo_en_media_root(
+        output_filename_template)
     output_dir_abs = os.path.join(settings.MEDIA_ROOT, output_dir)
     output_file_abs = os.path.join(output_dir_abs, outpu_filename)
     # FIXME: borrar el temporal creado si se produce un error (asserts, etc.)
