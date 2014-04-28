@@ -24,10 +24,10 @@
                 <form role="form" method="post">
                     {% csrf_token %}                         
                     
-                    {% if campana.reproduccion %}
+                    {% if campana.audio_original %}
                         <div>
                             <h4>Audio de la Campaña</h4>
-                            <audio src="{{ campana.reproduccion.url }}" controls></audio>
+                            <audio src="{{ campana.audio_original.url }}" controls></audio>
                         </div>
                     {% endif %}
 

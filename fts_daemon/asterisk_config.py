@@ -134,9 +134,9 @@ def generar_dialplan(campana):
     assert campana.estado != Campana.ESTADO_EN_DEFINICION,\
         "Campana: estado == ESTADO_EN_DEFINICION "
     assert campana.id is not None, "campana.id == None"
-    assert campana.reproduccion is not None, "campana.reproduccion == None"
-    assert campana.reproduccion.name is not None,\
-        "campana.reproduccion.name == None"
+    assert campana.audio_original is not None, "campana.audio_original == None"
+    assert campana.audio_original.name is not None,\
+        "campana.audio_original.name == None"
     assert campana.segundos_ring is not None
 
     partes = []
@@ -144,7 +144,7 @@ def generar_dialplan(campana):
     #fts_audio_file = os.path.join(settings.MEDIA_ROOT,
     #        campana.audio_asterisk.name)
     fts_audio_file = os.path.join(settings.MEDIA_ROOT,
-            campana.reproduccion.name)
+            campana.audio_original.name)
     fts_audio_file = os.path.splitext(fts_audio_file)[0]
     param_generales = {
         'fts_campana_id': campana.id,

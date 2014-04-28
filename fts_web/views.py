@@ -460,7 +460,7 @@ class AudioCampanaCreateView(UpdateView):
             convertir_audio_de_campana(self.object)
             return redirect(self.get_success_url())
         except FtsAudioConversionError:
-            self.object.reproduccion = None
+            self.object.audio_original = None
             self.object.save()
 
             message = '<strong>Operación Errónea!</strong> \

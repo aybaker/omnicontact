@@ -34,7 +34,7 @@ def convertir_audio_de_campana(campana):
     assert isinstance(campana, Campana)
 
     # chequea archivo original (a convertir)
-    wav_full_path = default_storage.path(campana.reproduccion.name)
+    wav_full_path = default_storage.path(campana.audio_original.name)
     assert os.path.exists(wav_full_path)
 
     # genera archivo de salida
