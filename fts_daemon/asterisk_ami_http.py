@@ -82,6 +82,10 @@ class AsteriskXmlParser(object):
             - xml: the XML string
             - check_errors: if True (default) check if the response
                 has been set as 'Error'.
+
+        Raises:
+            - AsteriskHttpResponseWithError: if an error is detected
+            - exception_for_error: if an error is detected
         """
 
         # https://docs.python.org/2.6/library/xml.etree.elementtree.html
@@ -94,7 +98,8 @@ class AsteriskXmlParser(object):
             AsteriskHttpResponseWithError
 
         if self.response_dict:
-            self.response_value = self.response_dict.get('response', '').lower()
+            self.response_value = self.response_dict.get('response', '').\
+                lower()
 
             if self.response_value == 'error':
                 logger.info("_parse_and_check(): found 'response' == 'Error'. "
@@ -351,6 +356,18 @@ class AsteriskHttpClient(object):
 
     def originate(self, channel, context, exten, priority, timeout,
         async=False):
+        """
+        Send an ORIGINATE action.
+        Parameters:
+            - channel, context, exten, priority, async: ORIGINATE parameters
+            - timeout: timeout of the originate action (in ms)
+
+        Returns:
+            - the parser instance
+
+        Raises:
+            - AsteriskHttpOriginateError: if originate failed
+        """
         timeout = int(timeout)
         request_timeout = math.ceil(timeout) + 2
         response_body, _ = self._request("/mxml", {
@@ -372,29 +389,29 @@ class AsteriskHttpClient(object):
 # Errors
 #==============================================================================
 
-class AsteriskHttpStatus(FtsError):
+class AsteriskHttpAmiError(FtsError):
     """Base class for exceptions related to the retrieval of information
     from Asterisk using http + xml
     """
 
 
-class AsteriskHttpResponseWithError(AsteriskHttpStatus):
+class AsteriskHttpResponseWithError(AsteriskHttpAmiError):
     """The 'response' element (the first child, if has a 'response' attribute)
     was 'Error'.
     """
 
 
-#class AsteriskHttpPermissionDeniedError(AsteriskHttpStatus):
+#class AsteriskHttpPermissionDeniedError(AsteriskHttpAmiError):
 #    """The Asterisk Http interface returned 'permission denied'"""
 
 
-class AsteriskHttpAuthenticationFailedError(AsteriskHttpStatus):
+class AsteriskHttpAuthenticationFailedError(AsteriskHttpAmiError):
     """The authentication failed"""
 
 
-class AsteriskHttpPingError(AsteriskHttpStatus):
+class AsteriskHttpPingError(AsteriskHttpAmiError):
     """The ping failed"""
 
 
-class AsteriskHttpOriginateError(AsteriskHttpStatus):
+class AsteriskHttpOriginateError(AsteriskHttpAmiError):
     """The originate command failed"""
