@@ -391,7 +391,7 @@ class AsteriskHttpClient(object):
             logger.debug("AsteriskHttpClient.originate(): async=True - "
                 "timeout: %s - request_timeout: %s", timeout, request_timeout)
         else:
-            request_timeout = math.ceil(timeout / 1000) + 5
+            request_timeout = int(math.ceil(timeout / 1000) + 5)
             logger.debug("AsteriskHttpClient.originate(): async=False - "
                 "timeout: %s - request_timeout: %s", timeout, request_timeout)
 
