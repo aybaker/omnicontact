@@ -38,10 +38,11 @@
                         Guardar Audio
                     </button>
                     <br>
-  
-                    <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-primary" role="button">
-                        Continuar
-                    </a> 
+                    {% if campana.reproduccion %}
+                        <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-primary" role="button">
+                            Continuar
+                        </a> 
+                    {% endif %}
                 </form>           
             </div>
         </div>
