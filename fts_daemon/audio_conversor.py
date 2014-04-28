@@ -15,9 +15,10 @@ import tempfile
 from django.conf import settings
 from django.core.files.storage import default_storage
 from fts_web.errors import FtsAudioConversionError
-from fts_web.models import Campana, upload_to_audios_asterisk
+from fts_web.models import Campana
 from fts_web.utiles import crear_archivo_en_media_root
 import logging as _logging
+import uuid
 
 
 logger = _logging.getLogger(__name__)
@@ -32,28 +33,33 @@ def convertir_audio_de_campana(campana):
     """
     assert isinstance(campana, Campana)
 
+    # chequea archivo original (a convertir)
     wav_full_path = default_storage.path(campana.reproduccion.name)
     assert os.path.exists(wav_full_path)
 
-    output_dir, outpu_filename = convertir_audio(wav_full_path,
-        upload_to_audios_asterisk(campana, "-convertido-"))
-    relative_filename = os.path.join(output_dir, outpu_filename)
-    campana.audio_asterisk = relative_filename
+    # genera archivo de salida
+    dirname, filename = crear_archivo_en_media_root("audio_asterisk/%Y/%m",
+        "c{0}-{1}-".format(campana.id, uuid.uuid4().hex),
+        settings.TMPL_FTS_AUDIO_CONVERSOR_EXTENSION)
+
+    abs_output_filename = os.path.join(settings.MEDIA_ROOT, dirname, filename)
+    assert os.path.exists(abs_output_filename)
+
+    # convierte archivo
+    convertir_audio(wav_full_path, abs_output_filename)
+
+    # guarda ref. a archivo convertido
+    campana.audio_asterisk = os.path.join(dirname, filename)
     campana.save()
 
 
-def convertir_audio(input_file_abs, output_filename_template):
+def convertir_audio(input_file_abs, output_filename_abs):
     """Convierte archivo de audio de campaña.
     El archivo destino es creado en esta funcion.
 
     Parametros:
-        input_file: path a archivo de entrada (.wav)
-
-    Returns:
-        - lo mismo que `crear_archivo_en_media_root()`: una tupla
-            con 2 elementos:
-                1) el directorio destino, relativo a MEDIA_ROOT
-                2) el nombre del archivo
+        input_file_abs: path a archivo de entrada (.wav)
+        output_filename_abs: path a archivo de salida
 
     Raises:
         FtsAudioConversionError: si se produjo algun tipo de error
@@ -70,14 +76,11 @@ def convertir_audio(input_file_abs, output_filename_template):
         raise FtsAudioConversionError("El archivo de entrada no es "
             "un path absoluto")
 
-    output_dir, outpu_filename = crear_archivo_en_media_root(
-        output_filename_template)
-    output_dir_abs = os.path.join(settings.MEDIA_ROOT, output_dir)
-    output_file_abs = os.path.join(output_dir_abs, outpu_filename)
-    # FIXME: borrar el temporal creado si se produce un error (asserts, etc.)
-
-    assert os.path.isabs(output_dir_abs)
-    assert os.path.isabs(output_file_abs)
+    if not os.path.abspath(input_file_abs):
+        logger.error("El archivo de salida no es un path absoluto: %s",
+            output_filename_abs)
+        raise FtsAudioConversionError("El archivo de salida no es "
+            "un path absoluto")
 
     stdout_file = tempfile.TemporaryFile()
     stderr_file = tempfile.TemporaryFile()
@@ -87,12 +90,12 @@ def convertir_audio(input_file_abs, output_filename_template):
         if item == "<INPUT_FILE>":
             FTS_AUDIO_CONVERSOR.append(input_file_abs)
         elif item == "<OUTPUT_FILE>":
-            FTS_AUDIO_CONVERSOR.append(output_file_abs)
+            FTS_AUDIO_CONVERSOR.append(output_filename_abs)
         else:
             FTS_AUDIO_CONVERSOR.append(item)
 
     assert input_file_abs in FTS_AUDIO_CONVERSOR
-    assert output_file_abs in FTS_AUDIO_CONVERSOR
+    assert output_filename_abs in FTS_AUDIO_CONVERSOR
 
     # ejecutamos comando...
     try:
@@ -100,7 +103,6 @@ def convertir_audio(input_file_abs, output_filename_template):
         subprocess.check_call(FTS_AUDIO_CONVERSOR,
             stdout=stdout_file, stderr=stderr_file)
         logger.info("Conversion de audio finalizada exitosamente")
-        return output_dir, outpu_filename
 
     except subprocess.CalledProcessError as e:
         logger.warn("Exit status erroneo: %s", e.returncode)
