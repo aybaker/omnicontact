@@ -45,6 +45,20 @@ FTS_QUEUE_FILENAME = "/tmp/queues_fts.conf"
 
 FTS_RELOAD_CMD = ["/usr/bin/logger", "reload-asterisk"]
 
+ASTERISK = {
+   'USERNAME': '',
+   'PASSWORD': '',
+   'HOST': '',
+   'PORT': -1,
+   'CHANNEL_PREFIX': "",
+   'LOCAL_CHANNEL': '',
+   'CONTEXT': "",
+   'EXTEN': "",
+   'PRIORITY': -1,
+   'TIMEOUT': -1,
+   'HTTP_AMI_URL': '',
+}
+
 # Ubuntu
 TMPL_FTS_AUDIO_CONVERSOR = ["sox", "-t", "wav", "<INPUT_FILE>",
     "-t", "gsm", "<OUTPUT_FILE>"]

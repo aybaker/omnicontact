@@ -78,6 +78,26 @@ ASTERISK_TEST = False
 
 FTS_ASTERISK_HTTP_CLIENT = "fts_daemon.asterisk_ami_http.AsteriskHttpClient"
 
+"""Configuracion para interactuar con Asterisk"""
+ASTERISK = {}
+
+# ~~~ Ejemplo ~~~
+# ASTERISK = {
+#    'USERNAME': 'asteriskadmin',
+#    'PASSWORD': 'unpassword',
+#    'HOST': '172.19.1.104',
+#    'PORT': 5038,
+#    'CHANNEL_PREFIX': "IAX2/172.19.1.101/{numberToCall}",
+#    'LOCAL_CHANNEL':
+#        'Local/{callId}-{numberToCall}@FTS_local_campana_{campanaId}',
+#    'CONTEXT': "campania_{campanaId}",
+#    'EXTEN': "fts{callId}",
+#    'PRIORITY': 1,
+#    'TIMEOUT': 5,
+#    'HTTP_AMI_URL': 'http://172.19.1.104:7088',
+# }
+
+
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = (
