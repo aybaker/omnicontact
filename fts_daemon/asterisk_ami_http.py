@@ -50,8 +50,23 @@ class AsteriskXmlParser(object):
     """Base class for parsing various responses from Asterisk"""
 
     def __init__(self):
+        """The root element of element-tree XML"""
         self.root = None
+
+        """The dict with the attributes of the first elements
+        The first element usually has response='Success' or
+        response='Error' and a 'message'
+
+        This dict is setted by _parse_and_check()
+        """
         self.response_dict = None
+
+        """The LOWERCASE value of the 'response' attribute, of the first
+        element of the XML respones (taken from `self.response_dict`)
+
+        This attribute is setted by _parse_and_check()
+        """
+        self.response_value = None
 
     def parse(self, xml):
         raise NotImplementedError()
@@ -76,9 +91,9 @@ class AsteriskXmlParser(object):
         self.response_dict = get_response_on_first_element(self.root)
 
         if self.response_dict:
-            response_lower = self.response_dict.get('response', '').lower()
+            self.response_value = self.response_dict.get('response', '').lower()
 
-            if response_lower == 'error':
+            if self.response_value == 'error':
                 logger.info("_parse_and_check(): found 'response' == 'Error'. "
                     " response_dict: '%s' - XML:\n%s", str(self.response_dict),
                     xml)
@@ -87,7 +102,7 @@ class AsteriskXmlParser(object):
                         raise exception_for_error()
                     else:
                         raise AsteriskHttpResponseWithError()
-            elif response_lower == 'success':
+            elif self.response_value == 'success':
                 pass
             else:
                 logger.warn("_parse_and_check(): unknown 'response'. "
@@ -109,6 +124,7 @@ class AsteriskXmlParserForPing(AsteriskXmlParser):
         #    timestamp='1398544611.316607'/>
 
         self._parse_and_check(xml)
+        # TODO: usar self.response_dict
         response_dict = get_response_on_first_element(self.root)
         response = response_dict.get('response', '').lower()
 
@@ -136,6 +152,28 @@ class AsteriskXmlParserForLogin(AsteriskXmlParser):
 
         self._parse_and_check(xml,
             exception_for_error=AsteriskHttpAuthenticationFailedError)
+
+        # TODO: assert 'self.response_dict'
+
+
+class AsteriskXmlParserForOriginate(AsteriskXmlParser):
+    """Parses the XML returned by Asterisk when
+    requesting `/mxml?action=originate`
+    """
+
+    def parse(self, xml):
+        """Parsea XML."""
+        # Busy, noanswer, channel-unavailable:
+        #  - <generic response='Error' message='Originate failed' />
+        # Answer:
+        #  - <generic response='Success'
+        #        message='Originate successfully queued' />
+
+        self._parse_and_check(xml,
+            exception_for_error=AsteriskHttpOriginateError)
+
+        if self.response_value != 'success':
+            raise AsteriskHttpOriginateError()
 
 
 class AsteriskXmlParserForStatus(AsteriskXmlParser):
@@ -329,13 +367,9 @@ class AsteriskHttpClient(object):
             'timeout': timeout,
         }, timeout=request_timeout)
 
-        #parser = AsteriskXmlParserForOriginate()
-        #parser.parse(response_body)
-        #return parser
-
-        print(response_body)
-
-        raise NotImplementedError()
+        parser = AsteriskXmlParserForOriginate()
+        parser.parse(response_body)
+        return parser
 
 
 #==============================================================================
@@ -364,3 +398,7 @@ class AsteriskHttpAuthenticationFailedError(AsteriskHttpStatus):
 
 class AsteriskHttpPingError(AsteriskHttpStatus):
     """The ping failed"""
+
+
+class AsteriskHttpOriginateError(AsteriskHttpStatus):
+    """The originate command failed"""
