@@ -103,7 +103,7 @@ class ParserXls(object):
             if validate_number(cell_value):
                 value_list.append(cell_value)
             else:
-                logger.info("Ignorando número %s, no valida"
+                logger.info("Ignorando número %s, no valida "
                     "como número telefónico.", cell.value)
                 self.erroneas += 1
 
@@ -193,7 +193,7 @@ class ParserCsv(object):
                     if validate_number(value):
                         value_list.append(value)
                     else:
-                        logger.info("Ignorando número %s, no valida"
+                        logger.info("Ignorando número %s, no valida "
                             "como número telefónico.", value)
                         self.erroneas += 1
                 else:
