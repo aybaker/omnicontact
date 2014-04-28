@@ -14,16 +14,16 @@ from twisted.internet import reactor
 from twisted.web.client import Agent
 from twisted.web.http_headers import Headers
 
+# Import settings & models to force setup of Django
+from django.conf import settings
+from fts_web.models import Campana
+
 import logging as _logging
 
 
-logger = _logging.getLogger('fastagi_daemon')
-
-
-def setup():
-    from django.conf import settings  # @UnusedImport
-    from fts_web.models import Campana  # @UnusedImport
-    # _logging.getLogger().setLevel(_logging.INFO)
+# Seteamos nombre, sino al ser ejecutado via uWSGI
+#  el logger se llamara '__main__'
+logger = _logging.getLogger('fts_daemon.fastagi_daemon')
 
 
 # FIXME: usar `SECRET_HEADER_NAME`!
@@ -33,10 +33,13 @@ SECRET_HEADER_NAME = 'FTSenderSecret'
 SECRET_HEADER_VALUE = 'NosisFej2gighKag4Ong9Mypphip0GhovAn3Ez0'
 
 # BIND = '172.19.1.104'
+# TODO: mover a settings
 BIND = '0.0.0.0'
 
+# TODO: mover a settings
 HTTP_SERVER = "http://localhost:8080"
 
+# TODO: mover a settings
 """Url para registrar que se ha atendido la llamada"""
 URL_REGISTRO_HA_ATENDIDO = "/_/agi/contesto/{0}/"
 
@@ -73,11 +76,11 @@ def fastagi_handler(agi):
     agi.finish()
 
 
-if __name__ == '__main__':
+def main():
     logger.info("Iniciando...")
-    setup()
 
-    logger.info("Setup de Django OK")
+    type(settings)  # hack to ignore pep8
+    type(Campana)  # hack to ignore pep8
 
     fast_agi_server = fastagi.FastAGIFactory(fastagi_handler)
     assert isinstance(fast_agi_server, FastAGIFactory)
@@ -85,3 +88,6 @@ if __name__ == '__main__':
         BIND)
     logger.info("Lanzando 'reactor.run()'")
     reactor.run()  # @UndefinedVariable
+
+if __name__ == '__main__':
+    main()

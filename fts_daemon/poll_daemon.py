@@ -8,18 +8,17 @@ Created on Mar 27, 2014
 from __future__ import unicode_literals
 
 import time
-
 import logging as _logging
 
+# Import settings & models to force setup of Django
+from django.conf import settings
+from fts_web.models import Campana, IntentoDeContacto
 from fts_web.utiles import get_class
+from fts_daemon.asterisk_originate import originate
 
-logger = _logging.getLogger('poll_daemon')
-
-
-def setup():
-    # TODO: por que importamos aca!?
-    from django.conf import settings  # @UnusedImport
-    from fts_web.models import Campana  # @UnusedImport
+# Seteamos nombre, sino al ser ejecutado via uWSGI
+#  el logger se llamara '__main__'
+logger = _logging.getLogger('fts_daemon.poll_daemon')
 
 
 def procesar_campana(campana):
@@ -35,9 +34,6 @@ def procesar_campana(campana):
     Returns:
         cant_contactos_procesados
     """
-    # TODO: por que importamos aca!?
-    from fts_web.models import Campana
-
     assert isinstance(campana, Campana)
     logger.info("Iniciando procesado de campana %s", campana.id)
     contador_contactos = 0
@@ -53,11 +49,6 @@ def procesar_campana(campana):
 
 
 def procesar_contacto(pendiente, campana):
-    # TODO: por que importamos aca!?
-    from fts_web.models import IntentoDeContacto
-    from fts_daemon.asterisk_originate import originate
-    from django.conf import settings
-
     assert isinstance(pendiente, IntentoDeContacto)
     logger.info("Realizando originate para IntentoDeContacto %s",
         pendiente.id)
@@ -81,16 +72,14 @@ def procesar_contacto(pendiente, campana):
         pendiente.id, res)
 
 
-if __name__ == '__main__':
-    logger.info("Inicianodo FTSenderDaemon...")
-    setup()
-    logger.info("Setup de Django OK")
-
-    from fts_web.models import Campana
-
+def main():
     logger.info("Iniciando loop: obteniendo campanas activas...")
     while True:
         campanas = Campana.objects.obtener_activas()
         for campana in campanas:
             procesar_campana(campana)
         time.sleep(2)
+
+
+if __name__ == '__main__':
+    main()

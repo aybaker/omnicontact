@@ -19,7 +19,7 @@ from starpy.error import AMICommandFailure
 import collections
 
 
-logger = _logging.getLogger('asterisk_originate')
+logger = _logging.getLogger(__name__)
 
 """No se sabe si el comando pudo ser ejecutado"""
 ORIGINATE_RESULT_UNKNOWN = 59
