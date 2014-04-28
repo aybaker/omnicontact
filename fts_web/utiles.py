@@ -43,6 +43,7 @@ def resolve_strftime(text):
     return time.strftime(text)  # time.gmtime()
 
 
+# TODO: rename to 'get_class_or_func'
 def get_class(full_name):
     """Devuelve clase  o func referenciada por `full_name`"""
     splitted = full_name.split(r".")
