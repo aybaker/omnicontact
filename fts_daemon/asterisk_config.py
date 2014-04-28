@@ -130,6 +130,15 @@ exten => i,n,Hangup()
 def generar_dialplan(campana):
     """Genera el dialplan para una campaña"""
 
+    assert campana is not None, "Campana == None"
+    assert campana.estado != Campana.ESTADO_EN_DEFINICION,\
+        "Campana: estado == ESTADO_EN_DEFINICION "
+    assert campana.id is not None, "campana.id == None"
+    assert campana.reproduccion is not None, "campana.reproduccion == None"
+    assert campana.reproduccion.name is not None,\
+        "campana.reproduccion.name == None"
+    assert campana.segundos_ring is not None
+
     partes = []
     # TODO: usar archivo convertido!
     #fts_audio_file = os.path.join(settings.MEDIA_ROOT,
