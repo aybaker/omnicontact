@@ -65,8 +65,20 @@ FTS_RELOAD_CMD = None
 """Comando para convertir audios (wav a gsm)
 Ej:
     TMPL_FTS_AUDIO_CONVERSOR = ["sox", "<INPUT_FILE>", "<OUTPUT_FILE>"]
+
+Para transformar WAV (cualquiera) -> WAV (compatible con Asterisk)
+    TMPL_FTS_AUDIO_CONVERSOR = ["sox", "-t", "wav", "<INPUT_FILE>",
+        "-r", "8k", "-c", "1", "-e", "signed-integer",
+        "-t", "wav", "<OUTPUT_FILE>"]
 """
 TMPL_FTS_AUDIO_CONVERSOR = None
+
+
+"""Extension a usar para archivo generado por `TMPL_FTS_AUDIO_CONVERSOR`
+Ej: wav
+    - por lo tanto, el archivo `<OUTPUT_FILE>` tendra la extension `.wav`
+"""
+TMPL_FTS_AUDIO_CONVERSOR_EXTENSION = None
 
 """Booleano que indica si hay que ejecutar tests que implican
 una interaccion con Asterisk"""
@@ -227,6 +239,11 @@ assert "<INPUT_FILE>" in TMPL_FTS_AUDIO_CONVERSOR, \
 
 assert "<OUTPUT_FILE>" in TMPL_FTS_AUDIO_CONVERSOR, \
     "Falta definir <OUTPUT_FILE> en TMPL_FTS_AUDIO_CONVERSOR"
+
+# ~~~~~ Check TMPL_FTS_AUDIO_CONVERSOR
+
+assert TMPL_FTS_AUDIO_CONVERSOR_EXTENSION is not None, \
+    "Falta definir setting para TMPL_FTS_AUDIO_CONVERSOR_EXTENSION"
 
 # ~~~~~ Check ASTERISK
 
