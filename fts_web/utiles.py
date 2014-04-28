@@ -45,46 +45,51 @@ def resolve_strftime(text):
     return time.strftime(text)  # time.gmtime()
 
 
-def crear_archivo_en_media_root(filename_template, suffix=""):
+def crear_archivo_en_media_root(dirname_template, prefix, suffix=""):
     """Crea un archivo en el directorio MEDIA_ROOT. Si los directorios
     no existen, los crea tambien.
 
     Para la creacion del archivo usa `tempfile.mkstemp`
 
     Parametros:
-        - filename_template
+        - dirname_template (directorio, acepta %Y, %m, etc.)
+        - prefix (prefijo para nombre de archivo)
         - suffix (para poder especificar una extension)
 
     Devuelve: tupla con
         (directorio_relativo_a_MEDIA_ROOT, nombre_de_archivo)
 
     Ej:
-        crear_archivo('data/%Y/%m/audio-original'):
+        crear_archivo('data/%Y/%m', 'audio-original'):
             En este caso, se creara (si no existen) los
-            directorios `data`, ANIO y MES, y `audio-original`
-            es parte del prefijo del archivo.
-
-            crear_archivo('data/%Y/%m/audio-original'):
-
-            El prefijo para el nombre del archivo (o sea, `audio-original`)
-                es OBLIGATORIO, por lo tanto, `filename_template` NO
-                puede finalizar en '/'
+            directorios `data`, ANIO y MES, y crea un archivo que
+            comienza con `audio-original`
     """
-    assert filename_template[-1] != '/'
+    assert dirname_template[-1] != '/'
+    assert dirname_template[0] != '/'
+    assert prefix.find('/') == -1
 
-    relative_filename = resolve_strftime(filename_template)
-    output_directory_rel, tempfile_prefix = os.path.split(relative_filename)
-    output_directory_abs = os.path.join(
-        settings.MEDIA_ROOT, output_directory_rel)
+    # relative_filename = resolve_strftime(dirname_template)
+    #output_directory_rel, tempfile_prefix = os.path.split(relative_filename)
+    #output_directory_abs = os.path.join(
+    #    settings.MEDIA_ROOT, output_directory_rel)
 
-    if not os.path.exists(output_directory_abs):
-        os.makedirs(output_directory_abs)
+    relative_dirname = resolve_strftime(dirname_template)
 
-    _, output_filename = tempfile.mkstemp(
-        dir=output_directory_abs, prefix=tempfile_prefix,
+    # Creamos directorios si no existen
+    abs_output_dir = os.path.join(settings.MEDIA_ROOT, relative_dirname)
+    logger.info("Se crearan directorios: %s", abs_output_dir)
+    if not os.path.exists(abs_output_dir):
+        os.makedirs(abs_output_dir)
+
+    fd, output_filename = tempfile.mkstemp(dir=abs_output_dir, prefix=prefix,
         suffix=suffix)
 
-    return output_directory_rel, os.path.split(output_filename)[1]
+    # Cerramos FD
+    os.close(fd)
+
+    _, generated_filename = os.path.split(output_filename)
+    return relative_dirname, generated_filename
 
 
 # TODO: rename to 'get_class_or_func'
