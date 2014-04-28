@@ -138,6 +138,9 @@ class BaseDatosContactoManager(models.Manager):
         return self.filter(sin_definir=False)
 
 
+upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
+
+
 class BaseDatosContacto(models.Model):
     objects = BaseDatosContactoManager()
 
@@ -152,8 +155,8 @@ class BaseDatosContacto(models.Model):
         blank=True, null=True,
     )
     archivo_importacion = models.FileField(
-        #TODO: Definir path para los archivos.
-        upload_to='base_datos/%Y/%m/%d',
+        upload_to=upload_to_archivos_importacion,
+        max_length=100,
     )
     nombre_archivo_importacion = models.CharField(
         max_length=256,
@@ -296,7 +299,8 @@ class CampanaManager(models.Manager):
         return campanas_ejecucion
 
 
-upload_to_audios_asterisk = upload_to("audios_asterisk", 180)
+upload_to_audios_asterisk = upload_to("audios_asterisk", 95)
+upload_to_audios_originales = upload_to("audios_reproduccion", 95)
 
 
 class Campana(models.Model):
@@ -340,16 +344,14 @@ class Campana(models.Model):
     segundos_ring = models.PositiveIntegerField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-    # TODO: ajustar max_length
-    # TODO: evaluar de crear callable para `upload_to`
     audio_original = models.FileField(
-        #TODO: Definir path para los archivos.
-        upload_to='campana/%Y/%m/%d',
+        upload_to=upload_to_audios_originales,
+        max_length=100,
         null=True, blank=True,
     )
     audio_asterisk = models.FileField(
         upload_to=upload_to_audios_asterisk,
-        max_length=200,
+        max_length=100,
         null=True, blank=True,
     )
 
