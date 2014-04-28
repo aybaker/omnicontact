@@ -22,7 +22,6 @@ import subprocess
 
 logger = _logging.getLogger(__name__)
 
-
 #def _safe(value):
 #    """Limpia texto usado para generar archivo de configuracion"""
 #    # FIXME: IMPLEMENTAR y usarlo!
@@ -47,8 +46,7 @@ exten => _X.,n,Set(NumberToCall=${{CUT(EXTEN,,2)}})
 exten => _X.,n,NoOp(FTS,FtsDaemonCallId=${{FtsDaemonCallId}},NumberToCall=${{NumberToCall}})
 exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/local-pre-dial/)
 ; *** FIXME: QUITAR '172.19.1.101' hardcodeado!!!!
-; *** FIXME: QUITAR 'timeout' hardcodeado!!!!
-exten => _X.,n,Dial(IAX2/172.19.1.101/${{NumberToCall}},8)
+exten => _X.,n,Dial(IAX2/172.19.1.101/${{NumberToCall}},{fts_campana_dial_timeout})
 ; *** WARN: el siguiente 'AGI()' a veces no es llamado
 exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/local-post-dial/dial-status/${{DIALSTATUS}}/)
 exten => _X.,n,Hangup()
@@ -141,6 +139,7 @@ def generar_dialplan(campana):
     fts_audio_file = os.path.splitext(fts_audio_file)[0]
     param_generales = {
         'fts_campana_id': campana.id,
+        'fts_campana_dial_timeout': campana.segundos_ring,
         'fts_audio_file': fts_audio_file,
         'fts_agi_server': 'localhost', # TODO: mover a settings
         'date': str(datetime.datetime.now())
