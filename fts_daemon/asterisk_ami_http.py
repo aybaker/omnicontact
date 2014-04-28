@@ -349,7 +349,8 @@ class AsteriskHttpClient(object):
         parser.parse(response_body)
         return parser
 
-    def originate(self, channel, context, exten, priority, timeout):
+    def originate(self, channel, context, exten, priority, timeout,
+        async=False):
         timeout = int(timeout)
         request_timeout = math.ceil(timeout) + 2
         response_body, _ = self._request("/mxml", {
@@ -359,6 +360,7 @@ class AsteriskHttpClient(object):
             'exten': exten,
             'priority': priority,
             'timeout': timeout,
+            'async': ("true" if async else "false")
         }, timeout=request_timeout)
 
         parser = AsteriskXmlParserForOriginate()
