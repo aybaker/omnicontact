@@ -82,7 +82,7 @@ def procesar_contacto(pendiente, campana):
 def main():
     logger.info("Iniciando loop: obteniendo campanas activas...")
     while True:
-        campanas = Campana.objects.obtener_activas()
+        campanas = Campana.objects.obtener_ejecucion()
         for campana in campanas:
             procesar_campana(campana)
         time.sleep(2)

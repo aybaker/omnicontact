@@ -285,7 +285,7 @@ class CampanaManager(models.Manager):
         """
         hoy = datetime.datetime.today()
         dia_semanal = hoy.weekday()
-        hora_actual = datetime.datetime.now().time()
+        hora_actual = hoy.time()
 
         campanas_hoy = self.obtener_activas().filter(
             fecha_inicio__lte=hoy,
