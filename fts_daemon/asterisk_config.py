@@ -126,6 +126,18 @@ exten => i,n,Hangup()
 
 """
 
+TEMPLATE_FAILED = """
+
+;----------------------------------------------------------------------
+; TEMPLATE_FAILED-{fts_campana_id}
+;   Autogenerado {date}
+;
+; La generacion de configuracin para la campana {fts_campana_id}
+;   a fallado.
+;----------------------------------------------------------------------
+
+"""
+
 
 def generar_dialplan(campana):
     """Genera el dialplan para una campaña"""
@@ -210,23 +222,35 @@ def generar_dialplan(campana):
     return ''.join(partes)
 
 
-def create_dialplan_config_file(campana=None):
+def create_dialplan_config_file(campana=None, campanas=None):
     """Crea el archivo de dialplan para campanas existentes
     (si `campana` es None). Si `campana` es pasada por parametro,
     se genera solo para dicha campana.
     """
 
-    if campana is None:
-        campanas = Campana.objects.obtener_todas_para_generar_dialplan()
-    else:
+    if campanas:
+        pass
+    elif campana:
         campanas = [campana]
+    else:
+        campanas = Campana.objects.obtener_todas_para_generar_dialplan()
 
     tmp_fd, tmp_filename = tempfile.mkstemp()
     try:
         tmp_file_obj = os.fdopen(tmp_fd, 'w')
         for campana in campanas:
             logger.info("Creando dialplan para campana %s", campana.id)
-            config_chunk = generar_dialplan(campana)
+            try:
+                config_chunk = generar_dialplan(campana)
+                logger.info("Dialplan generado OK para campana %s", campana.id)
+            except:
+                logger.exception("No se pudo generar configuracion de Asterisk"
+                    " para la campana {0}".format(campana.id))
+                config_chunk = TEMPLATE_FAILED.format(
+                    fts_campana_id=campana.id,
+                    date=str(datetime.datetime.now())
+                )
+
             tmp_file_obj.write(config_chunk)
 
         tmp_file_obj.close()
