@@ -10,14 +10,15 @@ Created on Apr 11, 2014
 from __future__ import unicode_literals
 
 import datetime
+import os
+import shutil
+import subprocess
+import tempfile
+import traceback
 
 from django.conf import settings
 from fts_web.models import Opcion, Campana, GrupoAtencion
-import os
 import logging as _logging
-import tempfile
-import shutil
-import subprocess
 
 
 logger = _logging.getLogger(__name__)
@@ -134,6 +135,9 @@ TEMPLATE_FAILED = """
 ;
 ; La generacion de configuracin para la campana {fts_campana_id}
 ;   a fallado.
+;
+; {traceback_lines}
+;
 ;----------------------------------------------------------------------
 
 """
@@ -246,9 +250,19 @@ def create_dialplan_config_file(campana=None, campanas=None):
             except:
                 logger.exception("No se pudo generar configuracion de Asterisk"
                     " para la campana {0}".format(campana.id))
+
+                try:
+                    traceback_lines = ["; {0}".format(line)
+                        for line in traceback.format_exc().splitlines()]
+                    traceback_lines = "\n".join(traceback_lines)
+                except:
+                    traceback_lines = "Error al intentar generar traceback"
+                    logger.exception("Error al intentar generar traceback")
+
                 config_chunk = TEMPLATE_FAILED.format(
                     fts_campana_id=campana.id,
-                    date=str(datetime.datetime.now())
+                    date=str(datetime.datetime.now()),
+                    traceback_lines=traceback_lines
                 )
 
             tmp_file_obj.write(config_chunk)
