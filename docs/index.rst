@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    fts_web
+   fts_daemon
 
 
 Indices and tables
