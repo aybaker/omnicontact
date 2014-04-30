@@ -2,33 +2,36 @@
 
 from __future__ import unicode_literals
 
+import logging as logging_
+
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http.response import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import (
     CreateView, ListView, DeleteView,
     UpdateView, DetailView)
-
+from fts_daemon.asterisk_config import create_dialplan_config_file, \
+    reload_config
+from fts_daemon.audio_conversor import convertir_audio_de_campana
+from fts_web.errors import (FtsAudioConversionError,
+    FtsParserCsvDelimiterError,
+    FtsParserMinRowError, FtsParserOpenFileError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm,
     BaseDatosContactoForm, OpcionForm)
 from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion,
-    BaseDatosContacto, IntentoDeContacto, Opcion)
+    BaseDatosContacto, Opcion)
 from fts_web.parser import autodetectar_parser
-from fts_web.errors import (FtsAudioConversionError, FtsParserCsvDelimiterError,
- FtsParserMinRowError, FtsParserOpenFileError)
-
-from fts_daemon.audio_conversor import convertir_audio_de_campana
-from fts_daemon.asterisk_config import create_dialplan_config_file,\
-    reload_config
 
 
-#===============================================================================
+logger = logging_.getLogger(__name__)
+
+
+#==============================================================================
 # Grupos de Atención
-#===============================================================================
+#==============================================================================
 
 
 class GrupoAtencionListView(ListView):
@@ -208,9 +211,9 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
 #         return reverse('lista_grupo_atencion')
 
 
-#===============================================================================
+#==============================================================================
 # Base Datos Contacto
-#===============================================================================
+#==============================================================================
 
 
 class BaseDatosContactoListView(ListView):
@@ -397,9 +400,9 @@ class DefineBaseDatosContactoView(UpdateView):
 #             kwargs={"pk": self.object.pk})
 
 
-#===============================================================================
+#==============================================================================
 # Campaña
-#===============================================================================
+#==============================================================================
 
 
 class CampanaListView(ListView):
@@ -851,9 +854,9 @@ class ActivaCampanaView(UpdateView):
 #             kwargs={"pk": self.object.pk})
 
 
-#===============================================================================
+#==============================================================================
 # Estados
-#===============================================================================
+#==============================================================================
 
 
 class CampanaPorEstadoListView(ListView):
@@ -883,9 +886,9 @@ class CampanaPorEstadoDetailView(DetailView):
     model = Campana
 
 
-#===============================================================================
+#==============================================================================
 # Reporte
-#===============================================================================
+#==============================================================================
 
 
 class CampanaReporteListView(ListView):
@@ -915,12 +918,9 @@ class CampanaReporteDetailView(DetailView):
     model = Campana
 
 
-#===============================================================================
+#==============================================================================
 # AGI
-#===============================================================================
+#==============================================================================
 
-def registar_llamada_contestada(request, call_id):
-    # TODO: chequear host origen
-    intento = IntentoDeContacto.objects.get(pk=call_id)
-    intento.registra_contesto()
-    return HttpResponse('ok')
+def handle_agi_proxy_request(request, agi_network_script):
+    logger.info("handle_agi_proxy_request(): '%s'", agi_network_script)

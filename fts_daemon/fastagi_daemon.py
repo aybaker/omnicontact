@@ -26,54 +26,39 @@ import logging as _logging
 logger = _logging.getLogger('fts_daemon.fastagi_daemon')
 
 
-# FIXME: usar `SECRET_HEADER_NAME`!
-SECRET_HEADER_NAME = 'FTSenderSecret'
-
-# FIXME: usar `SECRET_HEADER_VALUE`!
-SECRET_HEADER_VALUE = 'NosisFej2gighKag4Ong9Mypphip0GhovAn3Ez0'
-
 # BIND = '172.19.1.104'
 # TODO: mover a settings
 BIND = '0.0.0.0'
 
 # TODO: mover a settings
-HTTP_SERVER = "http://localhost:8080"
-
-# TODO: mover a settings
 """Url para registrar que se ha atendido la llamada"""
-URL_REGISTRO_HA_ATENDIDO = "/_/agi/contesto/{0}/"
+URL_REGISTRO_HA_ATENDIDO = "http://localhost:8080/_/agi-proxy/{0}"
 
 
 def fastagi_handler(agi):
     logger.debug('Iniciando ejecucion de handler...')
     assert isinstance(agi, FastAGIProtocol)
+
     agi_network_script = agi.variables.get('agi_network_script', '')
-    # {fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/repetir/
-    splitted = agi_network_script.split('/')
-    if len(splitted) >= 4 and splitted[2] == 'opcion':
-        logger.info('Request AGI: %s // campana: %s - call id: %s - opcion: %s',
-            agi_network_script, splitted[0], splitted[1], splitted[3])
-    else:
-        logger.info('Request AGI: %s', agi_network_script)
-    if len(splitted) == 2:
-        if splitted[1] == 'ha-contestado':
-            id_intento = splitted[0]
-            logger.info("Ha contestado: %s", id_intento)
-            agent = Agent(reactor)
-            header = Headers({
-                SECRET_HEADER_NAME: [SECRET_HEADER_VALUE]
-            })
-            url = HTTP_SERVER + URL_REGISTRO_HA_ATENDIDO.format(
-                id_intento)
-            d = agent.request('GET', url, header, None)
-            # d.addBoth(informar_ha_atendido)
+    url = URL_REGISTRO_HA_ATENDIDO.format(agi_network_script)
+    logger.info('Request AGI: %s -> %s', agi_network_script, url)
 
-            def cbResponse(ignored):
-                logger.info("Respusta HTTP recibida")
+    if not agi_network_script:
+        logger.error("Se ha recibido 'agi_network_script' vacio")
+        agi.finish()
+        return
 
-            d.addCallback(cbResponse)
+    agent = Agent(reactor)
+    header = Headers({
+        'FTSenderSecret': [settings.SECRET_KEY]
+    })
 
-    agi.finish()
+    def cbResponse(ignored):
+        logger.debug("Respuesta de servidor HTTP recibida")
+
+    d = agent.request('GET', url, header, None)
+    # d.addBoth(informar_ha_atendido)
+    d.addCallback(cbResponse)
 
 
 def main():
