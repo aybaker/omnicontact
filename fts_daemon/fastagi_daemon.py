@@ -30,9 +30,7 @@ logger = _logging.getLogger('fts_daemon.fastagi_daemon')
 # TODO: mover a settings
 BIND = '0.0.0.0'
 
-# TODO: mover a settings
-"""Url para registrar que se ha atendido la llamada"""
-URL_REGISTRO_HA_ATENDIDO = "http://localhost:8080/_/agi-proxy/{0}"
+URL = settings.FTS_FAST_AGI_DAEMON_PROXY_URL + "/_/agi-proxy/{0}"
 
 
 def fastagi_handler(agi):
@@ -40,7 +38,7 @@ def fastagi_handler(agi):
     assert isinstance(agi, FastAGIProtocol)
 
     agi_network_script = agi.variables.get('agi_network_script', '')
-    url = URL_REGISTRO_HA_ATENDIDO.format(agi_network_script)
+    url = URL.format(agi_network_script)
     logger.info('Request AGI: %s -> %s', agi_network_script, url)
 
     if not agi_network_script:

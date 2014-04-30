@@ -92,6 +92,13 @@ FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS = True
 
 FTS_ASTERISK_HTTP_CLIENT = "fts_daemon.asterisk_ami_http.AsteriskHttpClient"
 
+"""URL donde `fastagi_daemon` realizará el request.
+Debe ser el URL para acceder a Django (SIN el / final)
+
+Ej: http://localhost:8080
+"""
+FTS_FAST_AGI_DAEMON_PROXY_URL = None
+
 """Configuracion para interactuar con Asterisk"""
 ASTERISK = {}
 
@@ -254,3 +261,6 @@ for key in ('USERNAME', 'PASSWORD', 'HOST', 'PORT', 'CHANNEL_PREFIX',
     'HTTP_AMI_URL'):
     assert key in ASTERISK, \
         "Falta key '{0}' en configuracion de ASTERISK".format(key)
+
+assert FTS_FAST_AGI_DAEMON_PROXY_URL is not None, \
+    "Falta definir setting para FTS_FAST_AGI_DAEMON_PROXY_URL"
