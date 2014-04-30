@@ -10,9 +10,10 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :glob:
 
-   fts_web
-   fts_daemon
+   fts_web_*
+   fts_daemon_*
 
 
 Indices and tables
