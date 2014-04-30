@@ -13,7 +13,7 @@ import logging as _logging
 
 # Import settings & models to force setup of Django
 from django.conf import settings
-from fts_web.models import Campana, IntentoDeContacto
+from fts_web.models import Campana, IntentoDeContacto, EventoDeContacto
 from fts_web.utiles import get_class
 from fts_daemon.asterisk_ami_http import AsteriskHttpOriginateError
 
@@ -79,6 +79,9 @@ def procesar_contacto(pendiente, campana):
     logger.info("Realizando originate para IntentoDeContacto %s",
         pendiente.id)
 
+    EventoDeContacto.objects.create_evento_daemon_programado(
+        campana.id, pendiente.contacto.id)
+
     # Local/{callId}-{numberToCall}@FTS_local_campana_{campanaId}
     channel = settings.ASTERISK['LOCAL_CHANNEL'].format(
         callId=str(pendiente.id),
@@ -92,17 +95,26 @@ def procesar_contacto(pendiente, campana):
 
     http_client_clazz = get_class(settings.FTS_ASTERISK_HTTP_CLIENT)
     http_ami_client = http_client_clazz()
+
     try:
         http_ami_client.login()
         http_ami_client.originate(channel, context, exten, 1,
             (campana.segundos_ring + 2) * 1000, async=True)
-        originate_ok = True
+        EventoDeContacto.objects.\
+            create_evento_daemon_originate_successful(
+                campana.id, pendiente.contacto.id)
     except AsteriskHttpOriginateError:
-        originate_ok = False
-        logger.exception("Originate failed")
-
-    IntentoDeContacto.objects.update_estado_por_originate(pendiente.id,
-        originate_ok)
+        logger.exception("Originate failed - campana: %s - contacto: %s",
+            campana.id, pendiente.contacto.id)
+        EventoDeContacto.objects.\
+            create_evento_daemon_originate_failed(
+                campana.id, pendiente.contacto.id)
+    except:
+        logger.exception("Originate failed - campana: %s - contacto: %s",
+            campana.id, pendiente.contacto.id)
+        EventoDeContacto.objects.\
+            create_evento_daemon_originate_internal_error(
+                campana.id, pendiente.contacto.id)
 
 
 def main():
