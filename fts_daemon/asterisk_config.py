@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
-'''
-Created on Apr 11, 2014
-
-@author: Horacio G. de Oro
-'''
-
+"""
+Genera archivos de configuración para Asterisk: dialplan y queues.
+"""
 
 from __future__ import unicode_literals
 
@@ -144,7 +141,14 @@ TEMPLATE_FAILED = """
 
 
 def generar_dialplan(campana):
-    """Genera el dialplan para una campaña"""
+    """Genera el dialplan para una campaña
+
+    :param campana: Campana para la cual hay crear el dialplan
+    :type campana: fts_web.models.Campana
+    :returns: str -- dialplan para la campaña
+    :raises: Exception en caso de problemas (ej: no se encuentra
+        el archivo de audio)
+    """
 
     assert campana is not None, "Campana == None"
     assert campana.estado != Campana.ESTADO_EN_DEFINICION,\

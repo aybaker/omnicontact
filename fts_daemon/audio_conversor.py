@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-'''
-Created on Apr 14, 2014
-
-@author: Horacio G. de Oro
-'''
+"""
+Conversión de archivos de audio para Asterisk.
+"""
 
 from __future__ import unicode_literals
 
