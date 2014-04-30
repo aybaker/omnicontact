@@ -26,10 +26,11 @@ logger = _logging.getLogger(__name__)
 
 def convertir_audio_de_campana(campana):
     """Convierte archivo de audio de campaña,
-    y actualiza la instancia de campaña
+    y actualiza la instancia de campaña.
 
-    Raises:
-        FtsAudioConversionError: si se produjo algun tipo de error
+    :param campana: Campana para la cual hay que convertir el audio
+    :type campana: fts_web.models.Campana
+    :raises: FtsAudioConversionError
     """
     assert isinstance(campana, Campana)
 
@@ -54,15 +55,14 @@ def convertir_audio_de_campana(campana):
 
 
 def convertir_audio(input_file_abs, output_filename_abs):
-    """Convierte archivo de audio de campaña.
-    El archivo destino es creado en esta funcion.
+    """Convierte archivo de audio.
 
-    Parametros:
-        input_file_abs: path a archivo de entrada (.wav)
-        output_filename_abs: path a archivo de salida
+    :param input_file_abs: path absoluto a archivo de entrada (.wav)
+    :type input_file_abs: str
+    :param output_filename_abs: path absoluto a archivo de salida
+    :type output_filename_abs: str
 
-    Raises:
-        FtsAudioConversionError: si se produjo algun tipo de error
+    :raises: FtsAudioConversionError: si se produjo algun tipo de error
     """
 
     # chequeos...
@@ -76,7 +76,7 @@ def convertir_audio(input_file_abs, output_filename_abs):
         raise FtsAudioConversionError("El archivo de entrada no es "
             "un path absoluto")
 
-    if not os.path.abspath(input_file_abs):
+    if not os.path.abspath(output_filename_abs):
         logger.error("El archivo de salida no es un path absoluto: %s",
             output_filename_abs)
         raise FtsAudioConversionError("El archivo de salida no es "
