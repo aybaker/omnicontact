@@ -8,3 +8,4 @@ settings_local.py
 /fts_web_settings_local.py
 /pydev_manage.py
 /.coverage
+/docs/_build
