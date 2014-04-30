@@ -11,8 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: fts_web.models
-   :members:
+   fts_web
 
 
 Indices and tables
