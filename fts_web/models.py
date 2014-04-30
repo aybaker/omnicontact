@@ -300,6 +300,12 @@ class CampanaManager(models.Manager):
 
         return campanas_ejecucion
 
+    def verifica_estado_pausada(self, pk):
+        campana = self.get(pk=pk)
+        if campana.estado == Campana.ESTADO_PAUSADA:
+            return True
+        return False
+
 
 upload_to_audios_asterisk = upload_to("audios_asterisk", 95)
 upload_to_audios_originales = upload_to("audios_reproduccion", 95)
