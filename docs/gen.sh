@@ -2,7 +2,7 @@
 
 cd $(dirname $0)
 
-for x in $(cd ../fts_web ; ls -1 *.py | cut -d . -f 1 | sort) ; do
+for x in $(cd ../fts_web ; ls -1 *.py | cut -d . -f 1 | grep -v sample_settings_local | grep -v __init__ | sort) ; do
 	F=fts_web_${x}.rst
 
 cat > $F <<EOF
@@ -20,7 +20,7 @@ EOF
 done
 
 
-for x in $(cd ../fts_daemon ; ls -1 *.py | cut -d . -f 1 | sort) ; do
+for x in $(cd ../fts_daemon ; ls -1 *.py | cut -d . -f 1 | grep -v __init__ | sort) ; do
 	F=fts_daemon_${x}.rst
 
 cat > $F <<EOF
