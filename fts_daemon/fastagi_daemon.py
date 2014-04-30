@@ -53,6 +53,8 @@ def fastagi_handler(agi):
     # d.addBoth(informar_ha_atendido)
     d.addCallback(cbResponse)
 
+    agi.finish()
+
 
 def main():
     logger.info("Iniciando...")

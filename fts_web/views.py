@@ -24,6 +24,7 @@ from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion,
     BaseDatosContacto, Opcion)
 from fts_web.parser import autodetectar_parser
+from django.http.response import HttpResponse
 
 
 logger = logging_.getLogger(__name__)
@@ -924,3 +925,5 @@ class CampanaReporteDetailView(DetailView):
 
 def handle_agi_proxy_request(request, agi_network_script):
     logger.info("handle_agi_proxy_request(): '%s'", agi_network_script)
+    # FIXME: implementar
+    return HttpResponse("OK")

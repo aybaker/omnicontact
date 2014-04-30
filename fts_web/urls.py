@@ -124,8 +124,7 @@ urlpatterns = patterns('',
     #==========================================================================
     # AGI
     #==========================================================================
-    url(r'^/_/agi-proxy/(?P<agi_network_script>.+)/$',
-        
+    url(r'^_/agi-proxy/(?P<agi_network_script>.+)/$',
         views.handle_agi_proxy_request,
         name='handle_agi_proxy_request',
     ),
