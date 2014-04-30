@@ -8,6 +8,7 @@ Created on Mar 27, 2014
 from __future__ import unicode_literals
 
 import time
+import datetime
 import logging as _logging
 
 # Import settings & models to force setup of Django
@@ -38,7 +39,32 @@ def procesar_campana(campana):
     logger.info("Iniciando procesado de campana %s", campana.id)
     contador_contactos = 0
 
+    #Fecha y Hora local de inicio de procesado de campana.
+    hoy_ahora = datetime.datetime.today()
+    assert (hoy_ahora.tzinfo is None)
+
+    #Rango horario de hoy y ahora por la que se tiene que procesar la
+    #campana.
+    rango_horario =\
+        campana.obtener_rango_horario_actuacion_en_fecha_hora(hoy_ahora)
+
+    if not rango_horario:
+        return contador_contactos
+
     for pendiente in campana.obtener_intentos_pendientes():
+        #Hora actual local.
+        hora_actual = datetime.datetime.today().time()
+        assert (hora_actual.tzinfo is None)
+
+        #Valida que la hora actual esté en rango de procesado en cada
+        #pasada.
+        if not rango_horario[0] <= hora_actual <= rango_horario[1]:
+            return contador_contactos
+
+        #Valida que la campana no se haya pausado.
+        if Campana.objects.verifica_estado_pausada(campana.pk):
+            return contador_contactos
+
         procesar_contacto(pendiente, campana)
         contador_contactos += 1
     else:
