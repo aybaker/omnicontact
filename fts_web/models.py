@@ -753,11 +753,48 @@ class IntentoDeContacto(models.Model):
 # EventoDeContacto
 #==============================================================================
 
+class EventoDeContactoManager(models.Manager):
+    """Manager para EventoDeContacto"""
+
+    def create_evento_daemon_programado(self,
+        campana_id, contacto_id):
+        """Crea evento EVENTO_DAEMON_PROGRAMADO"""
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=EventoDeContacto.EVENTO_DAEMON_PROGRAMADO)
+
+    def create_evento_daemon_originate_successful(self,
+        campana_id, contacto_id):
+        """Crea evento EVENTO_DAEMON_ORIGINATE_SUCCESSFUL"""
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=EventoDeContacto.\
+                EVENTO_DAEMON_ORIGINATE_SUCCESSFUL)
+
+    def create_evento_daemon_originate_failed(self,
+        campana_id, contacto_id):
+        """Crea evento EVENTO_DAEMON_ORIGINATE_FAILED"""
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=EventoDeContacto.\
+                EVENTO_DAEMON_ORIGINATE_FAILED)
+
+    def create_evento_daemon_originate_internal_error(self,
+        campana_id, contacto_id):
+        """Crea evento EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR"""
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=EventoDeContacto.\
+                EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR)
+
+
 class EventoDeContacto(models.Model):
     """
     - http://www.voip-info.org/wiki/view/Asterisk+cmd+Dial
     - http://www.voip-info.org/wiki/view/Asterisk+variable+DIALSTATUS
     """
+
+    objects = EventoDeContactoManager()
 
     """EL intento ha sido tomado por Daemon para que se intente
     realizar un llamado"""
@@ -766,8 +803,15 @@ class EventoDeContacto(models.Model):
     """El originate se produjo exitosamente"""
     EVENTO_DAEMON_ORIGINATE_SUCCESSFUL = 2
 
-    """El originate devolvio error"""
+    """El comando ORIGINATE se ejecutó, pero devolvio error"""
     EVENTO_DAEMON_ORIGINATE_FAILED = 3
+
+    """El originate no se pudo realizar por algun problema
+    interno (ej: Asterisk caido, problema de login, etc.)
+    Este tipo de error implica que el originate pudo no
+    haber llegado al Asterisk
+    """
+    EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR = 15
 
     """Asterisk delegó control al context de la campaña.
     Este evento representa el inicio del proceso de la llamada
@@ -801,28 +845,33 @@ class EventoDeContacto(models.Model):
     """Dial() - DIALSTATUS: INVALIDARGS"""
     EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS = 13
 
+    """Dial() - El valor de DIALSTATUS no es ninguno
+    de los reconocidos por el sistema
+    """
+    EVENTO_ASTERISK_DIALSTATUS_UNKNOWN = 14
+
     # """Dial() - DIALSTATUS: evento customizado (usa `dato`)"""
-    # EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS = 14
+    # EVENTO_ASTERISK_DIALSTATUS_CUSTOM = xxx
 
     # """Evento customizado"""
-    # EVENTO_CUSTOMIZADO = 15
+    # EVENTO_CUSTOMIZADO = xxx
 
-    """Opcion seleccionada"""
-    EVENTO_ASTERISK_OPCION_SELECCIONADA = 16
+    #"""Opcion seleccionada"""
+    #EVENTO_ASTERISK_OPCION_SELECCIONADA = xxx
 
-    """Valores de `dato` para `evento`
-    EVENTO_ASTERISK_OPCION_SELECCIONADA
-    """
-    DATO_OPCION_0 = 1
-    DATO_OPCION_1 = 2
-    DATO_OPCION_2 = 3
-    DATO_OPCION_3 = 4
-    DATO_OPCION_4 = 5
-    DATO_OPCION_5 = 6
-    DATO_OPCION_6 = 7
-    DATO_OPCION_7 = 8
-    DATO_OPCION_8 = 9
-    DATO_OPCION_9 = 10
+    #"""Valores de `dato` para `evento`
+    #EVENTO_ASTERISK_OPCION_SELECCIONADA
+    #"""
+    #DATO_OPCION_0 = 1
+    #DATO_OPCION_1 = 2
+    #DATO_OPCION_2 = 3
+    #DATO_OPCION_3 = 4
+    #DATO_OPCION_4 = 5
+    #DATO_OPCION_5 = 6
+    #DATO_OPCION_6 = 7
+    #DATO_OPCION_7 = 8
+    #DATO_OPCION_8 = 9
+    #DATO_OPCION_9 = 10
 
     campana_id = models.IntegerField(db_index=True)
     contacto_id = models.IntegerField(db_index=True)
