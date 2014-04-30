@@ -828,7 +828,7 @@ class EventoDeContacto(models.Model):
     contacto_id = models.IntegerField(db_index=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     evento = models.SmallIntegerField(db_index=True)
-    dato = models.SmallIntegerField()
+    dato = models.SmallIntegerField(null=True)
 
     def __unicode__(self):
         return "EventoDeContacto-{0}-{1}".format(
