@@ -123,9 +123,9 @@ class AgenteGrupoAtencion(models.Model):
     #            self.save()
 
 
-#===============================================================================
+#==============================================================================
 # Base Datos Contactos
-#===============================================================================
+#==============================================================================
 
 class BaseDatosContactoManager(models.Manager):
     """Manager para BaseDatosContacto"""
@@ -237,9 +237,9 @@ class Contacto(models.Model):
             self.bd_contacto, self.telefono)
 
 
-#===============================================================================
+#==============================================================================
 # Campaña
-#===============================================================================
+#==============================================================================
 
 class CampanaManager(models.Manager):
     """Manager para Campanas"""
@@ -583,9 +583,9 @@ class Campana(models.Model):
             })
 
 
-#===============================================================================
+#==============================================================================
 # IntentoDeContacto
-#===============================================================================
+#==============================================================================
 
 class IntentoDeContactoManager(models.Manager):
     """Manager para el modelo IntentoDeContacto"""
@@ -749,9 +749,95 @@ class IntentoDeContacto(models.Model):
             self.campana, self.contacto.id)
 
 
-#===============================================================================
+#==============================================================================
+# EventoDeContacto
+#==============================================================================
+
+class EventoDeContacto(models.Model):
+    """
+    - http://www.voip-info.org/wiki/view/Asterisk+cmd+Dial
+    - http://www.voip-info.org/wiki/view/Asterisk+variable+DIALSTATUS
+    """
+
+    """EL intento ha sido tomado por Daemon para que se intente
+    realizar un llamado"""
+    EVENTO_DAEMON_PROGRAMADO = 1
+
+    """El originate se produjo exitosamente"""
+    EVENTO_DAEMON_ORIGINATE_SUCCESSFUL = 2
+
+    """El originate devolvio error"""
+    EVENTO_DAEMON_ORIGINATE_FAILED = 3
+
+    """Asterisk delegó control al context de la campaña.
+    Este evento representa el inicio del proceso de la llamada
+    por Asterisk"""
+    EVENTO_ASTERISK_CMD_DIAL_INICIADO = 4
+
+    """Dial() - DIALSTATUS: ANSWER"""
+    EVENTO_ASTERISK_DIALSTATUS_ANSWER = 5
+
+    """Dial() - DIALSTATUS: BUSY"""
+    EVENTO_ASTERISK_DIALSTATUS_BUSY = 6
+
+    """Dial() - DIALSTATUS: NOANSWER"""
+    EVENTO_ASTERISK_DIALSTATUS_NOANSWER = 7
+
+    """Dial() - DIALSTATUS: CANCEL"""
+    EVENTO_ASTERISK_DIALSTATUS_CANCEL = 8
+
+    """Dial() - DIALSTATUS: CONGESTION"""
+    EVENTO_ASTERISK_DIALSTATUS_CONGESTION = 9
+
+    """Dial() - DIALSTATUS: CHANUNAVAIL"""
+    EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL = 10
+
+    """Dial() - DIALSTATUS: DONTCALL"""
+    EVENTO_ASTERISK_DIALSTATUS_DONTCALL = 11
+
+    """Dial() - DIALSTATUS: TORTURE"""
+    EVENTO_ASTERISK_DIALSTATUS_TORTURE = 12
+
+    """Dial() - DIALSTATUS: INVALIDARGS"""
+    EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS = 13
+
+    # """Dial() - DIALSTATUS: evento customizado (usa `dato`)"""
+    # EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS = 14
+
+    # """Evento customizado"""
+    # EVENTO_CUSTOMIZADO = 15
+
+    """Opcion seleccionada"""
+    EVENTO_ASTERISK_OPCION_SELECCIONADA = 16
+
+    """Valores de `dato` para `evento`
+    EVENTO_ASTERISK_OPCION_SELECCIONADA
+    """
+    DATO_OPCION_0 = 1
+    DATO_OPCION_1 = 2
+    DATO_OPCION_2 = 3
+    DATO_OPCION_3 = 4
+    DATO_OPCION_4 = 5
+    DATO_OPCION_5 = 6
+    DATO_OPCION_6 = 7
+    DATO_OPCION_7 = 8
+    DATO_OPCION_8 = 9
+    DATO_OPCION_9 = 10
+
+    campana_id = models.IntegerField(db_index=True)
+    contacto_id = models.IntegerField(db_index=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    evento = models.SmallIntegerField(db_index=True)
+    dato = models.SmallIntegerField()
+
+    def __unicode__(self):
+        return "EventoDeContacto-{0}-{1}".format(
+            self.campana_id, self.contacto_id)
+
+
+#==============================================================================
 # Opciones
-#===============================================================================
+#==============================================================================
 
 class Opcion(models.Model):
     """
@@ -827,9 +913,9 @@ class Opcion(models.Model):
         )
 
 
-#===============================================================================
+#==============================================================================
 # Actuaciones
-#===============================================================================
+#==============================================================================
 
 class Actuacion(models.Model):
     """
