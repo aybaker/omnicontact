@@ -25,11 +25,6 @@ import logging as _logging
 #  el logger se llamara '__main__'
 logger = _logging.getLogger('fts_daemon.fastagi_daemon')
 
-
-# BIND = '172.19.1.104'
-# TODO: mover a settings
-BIND = '0.0.0.0'
-
 URL = settings.FTS_FAST_AGI_DAEMON_PROXY_URL + "/_/agi-proxy/{0}"
 
 
@@ -68,7 +63,7 @@ def main():
     fast_agi_server = fastagi.FastAGIFactory(fastagi_handler)
     assert isinstance(fast_agi_server, FastAGIFactory)
     reactor.listenTCP(4573, fast_agi_server, 50,  # @UndefinedVariable
-        BIND)
+        settings.FTS_FAST_AGI_DAEMON_BIND)
     logger.info("Lanzando 'reactor.run()'")
     reactor.run()  # @UndefinedVariable
 
