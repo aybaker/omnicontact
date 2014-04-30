@@ -6,3 +6,7 @@ MarkupSafe==0.21
 pep8==1.5.6
 Pygments==1.6
 Sphinx==1.2.2
+pylint==1.2.1
+logilab-common==0.61.0
+astroid==1.1.1
+unittest2==0.5.1
