@@ -595,21 +595,7 @@ class IntentoDeContactoManager(models.Manager):
         """Crea todas las instancias de 'IntentoDeContacto'
         para la campaña especificada por parametro.
         """
-        # TODO: refactorizar este metodo (ver comentario que sigue)
-        # Esto de la creacion de los intentos NO sigue la idea documentada
-        # en 'obtener_intentos_pendientes()'
-        # Para continuar con dicha idea, este metodo deberia ser privado
-        # y se deberia crear un metodo en Campana que llame a este de aca.
-        # El estado y demas cuestiones de Campana se chequearian en dicha clase
-        logger.info("Creando IntentoDeContacto para campana %s", campana_id)
-        campana = Campana.objects.get(pk=campana_id)
-        assert campana.estado == Campana.ESTADO_ACTIVA
-        assert campana.bd_contacto is not None
-        assert not self._obtener_pendientes_de_campana(campana_id).exists()
-
-        for contacto in campana.bd_contacto.contactos.all():
-            # TODO: esto traera problemas de performance
-            self.create(contacto=contacto, campana=campana)
+        raise NotImplementedError()
 
     def _obtener_pendientes_de_campana(self, campana_id):
         """Devuelve QuerySet con intentos pendientes de una campana, ignora
@@ -621,8 +607,7 @@ class IntentoDeContactoManager(models.Manager):
         Para buscar intentos pendientes de una campaña, usar:
             Campana.obtener_intentos_pendientes()
         """
-        return self.filter(campana=campana_id,
-            estado=IntentoDeContacto.ESTADO_PROGRAMADO)
+        raise NotImplementedError()
 
     def _obtener_no_contesto_de_campana(self, campana_id):
         """Devuelve QuerySet con intentos no contestados de una campana, ignora
@@ -634,8 +619,7 @@ class IntentoDeContactoManager(models.Manager):
         Para buscar intentos no contestados de una campaña, usar:
             Campana.obtener_intentos_no_contestados()
         """
-        return self.filter(campana=campana_id,
-            estado=IntentoDeContacto.ESTADO_NO_CONTESTO)
+        raise NotImplementedError()
 
     def _obtener_contesto_de_campana(self, campana_id):
         """Devuelve QuerySet con intentos contestados de una campana, ignora
@@ -647,8 +631,7 @@ class IntentoDeContactoManager(models.Manager):
         Para buscar intentos no contestados de una campaña, usar:
             Campana.obtener_intentos_contestados()
         """
-        return self.filter(campana=campana_id,
-            estado=IntentoDeContacto.ESTADO_CONTESTO)
+        raise NotImplementedError()
 
     def _obtener_error_interno_de_campana(self, campana_id):
         """Devuelve QuerySet con intentos erroneos de una campana, ignora
@@ -660,64 +643,17 @@ class IntentoDeContactoManager(models.Manager):
         Para buscar intentos no contestados de una campaña, usar:
             Campana.obtener_intentos_error_interno()
         """
-        return self.filter(campana=campana_id,
-            estado=IntentoDeContacto.ESTADO_ERROR_INTERNO)
+        raise NotImplementedError()
 
     def update_estado_por_originate(self, intento_id, originate_ok):
         """Actualiza el estado del intento, dependiendo del resultado
         del comando originate.
         """
-        # FIXME: falta implementar tests
-        # TODO: quiza haria falta un estado 'DESCONOCIDO'
-        # TODO: evaluar usar eventos en vez de cambios de estados en la BD
-        #  (al estilo NoSQL)
-        
-        if originate_ok:
-            self.filter(id=intento_id,
-                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
-                    estado=IntentoDeContacto.ESTADO_ORIGINATE_SUCCESSFUL)
-        else:
-            self.filter(id=intento_id,
-                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
-                    estado=IntentoDeContacto.ESTADO_ORIGINATE_FAILED)
+        raise NotImplementedError()
 
 
 class IntentoDeContacto(models.Model):
-    """Representa un contacto por contactar, asociado a
-    una campaña. Estas instancias son actualizadas con
-    cada intento, y aqui se guarda el estado final
-    (ej: si se ha contactado o no)
-    """
-
     objects = IntentoDeContactoManager()
-
-    ESTADO_PROGRAMADO = 1
-    """EL intento esta pendiente de ser realizado"""
-
-    ESTADO_ORIGINATE_SUCCESSFUL = 2
-    """El originate se produjo exitosamente"""
-
-    ESTADO_ORIGINATE_FAILED = 3
-    """El originate devolvio error"""
-
-    ESTADO_NO_CONTESTO = 4
-    """El destinatario no ha atendido el llamado"""
-
-    ESTADO_CONTESTO = 5
-    """El destinatario atendio el llamado"""
-
-    ESTADO_ERROR_INTERNO = 5
-    """Se produjo un error interno del sistema"""
-
-    ESTADO = (
-        (ESTADO_PROGRAMADO, 'Pendiente'),
-        (ESTADO_ORIGINATE_SUCCESSFUL, 'Originate OK'),
-        (ESTADO_ORIGINATE_FAILED, 'Originate Fallo'),
-        (ESTADO_NO_CONTESTO, 'No atendio'),
-        (ESTADO_CONTESTO, 'Atendio'),
-        (ESTADO_ERROR_INTERNO, 'Error interno'),
-    )
-
     contacto = models.ForeignKey(
         'Contacto',
         related_name='+'
@@ -729,25 +665,10 @@ class IntentoDeContacto(models.Model):
     fecha_intento = models.DateTimeField(
         null=True, blank=True
     )
-    estado = models.PositiveIntegerField(
-        choices=ESTADO,
-        default=ESTADO_PROGRAMADO,
-    )
-
-    def registra_contesto(self):
-        """Registra el resultado del intento como que el destinatario
-        ha contestado
-        """
-        # FIXME: testear
-        logger.info("Registrando IntentoDeContacto %s como ESTADO_CONTESTO",
-            self.id)
-        assert self.estado == IntentoDeContacto.ESTADO_PROGRAMADO
-        self.estado = IntentoDeContacto.ESTADO_CONTESTO
-        self.save()
+    estado = models.PositiveIntegerField()
 
     def __unicode__(self):
-        return "Intento de campaña {0} a contacto {1}".format(
-            self.campana, self.contacto.id)
+        raise NotImplementedError()
 
 
 #==============================================================================
