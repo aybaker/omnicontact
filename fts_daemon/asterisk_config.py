@@ -42,7 +42,7 @@ exten => _X.,1,NoOp(FTS,INICIO,llamada=${{EXTEN}},campana={fts_campana_id})
 exten => _X.,n,Set(FtsDaemonCallId=${{CUT(EXTEN,,1)}})
 exten => _X.,n,Set(NumberToCall=${{CUT(EXTEN,,2)}})
 exten => _X.,n,NoOp(FTS,FtsDaemonCallId=${{FtsDaemonCallId}},NumberToCall=${{NumberToCall}})
-exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/local-pre-dial/)
+exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/local-channel-pre-dial/)
 ; *** FIXME: QUITAR '172.19.1.101' hardcodeado!!!!
 exten => _X.,n,Dial(IAX2/172.19.1.101/${{NumberToCall}},{fts_campana_dial_timeout})
 ; *** WARN: el siguiente 'AGI()' a veces no es llamado

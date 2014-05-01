@@ -782,17 +782,21 @@ class EventoDeContactoManager(models.Manager):
 
     def create_evento_daemon_originate_internal_error(self,
         campana_id, contacto_id):
-        """Crea evento EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR"""
+        """Crea evento
+        EventoDeContacto.EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR"""
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
                 EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR)
 
-    def dialplan_iniciado(self, campana_id, contacto_id):
-        """Crea evento EVENTO_ASTERISK_DIALPLAN_INICIADO"""
+    def dialplan_local_channel_iniciado(self, campana_id, contacto_id):
+        """Crea evento
+        EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO
+        """
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
-            evento=EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_INICIADO)
+            evento=EventoDeContacto.\
+                EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO)
 
 
 class EventoDeContacto(models.Model):
@@ -804,55 +808,79 @@ class EventoDeContacto(models.Model):
     objects = EventoDeContactoManager()
 
     EVENTO_DAEMON_PROGRAMADO = 1
-    """EL intento ha sido tomado por Daemon para que se intente
-    realizar un llamado"""
+    """EL intento ha sido tomado por Daemon para ser procesado.
+    Este evento *NO* implica que se haya realizado la llamada, pero
+    *SI* que se ha tomado el contacto (asociado a este eveto)
+    para intentar ser procesado. Representa un *INTENTO* de llamado.
 
-    EVENTO_DAEMON_ORIGINATE_SUCCESSFUL = 2
-    """El originate se produjo exitosamente"""
+    *Este evento es registrado por el daemon que realiza las llamadas.*
+    """
 
-    EVENTO_DAEMON_ORIGINATE_FAILED = 3
-    """El comando ORIGINATE se ejecutó, pero devolvio error"""
+    EVENTO_DAEMON_ORIGINATE_SUCCESSFUL = 11
+    """El originate se produjo exitosamente.
 
-    EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR = 15
+    *Este evento es registrado por el daemon que realiza las llamadas.*
+    """
+
+    EVENTO_DAEMON_ORIGINATE_FAILED = 12
+    """El comando ORIGINATE se ejecutó, pero devolvio error.
+
+    *Este evento es registrado por el daemon que realiza las llamadas.*
+    """
+
+    EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR = 13
     """El originate no se pudo realizar por algun problema
     interno (ej: Asterisk caido, problema de login, etc.)
-    Este tipo de error implica que el originate pudo no
-    haber llegado al Asterisk
+    Este tipo de error implica que el ORIGINATE seguramente no
+    ha llegado al Asterisk.
+
+    *Este evento es registrado por el daemon que realiza las llamadas.*
     """
 
-    EVENTO_ASTERISK_DIALPLAN_INICIADO = 4
-    """Asterisk delegó control al context de la campaña.
-    Este evento indica que Asterisk ha inicio del proceso de la llamada
+    EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO = 21
+    """Este evento indica que Asterisk ha inicio del proceso de la llamada,
+    en en LOCAL CHANNEL (ej: en el contexto '[FTS_local_campana_NNN]').
+
+    *Este evento es registrado via el proxy AGI.*
     """
 
-    EVENTO_ASTERISK_DIALSTATUS_ANSWER = 5
+    EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO = 22
+    """Asterisk delegó control al context (de Local channel) de la campaña.
+    Este evento indica que Asterisk ha inicio del proceso REAL de la llamada,
+    en el contexto asociado a la campaña (ej: en el contexto '[campania_NNN]').
+    Todavia no se ha realizado el Dial() al numero del contacto.
+
+    *Este evento es registrado via el proxy AGI.*
+    """
+
+    EVENTO_ASTERISK_DIALSTATUS_ANSWER = 31
     """Dial() - DIALSTATUS: ANSWER"""
 
-    EVENTO_ASTERISK_DIALSTATUS_BUSY = 6
+    EVENTO_ASTERISK_DIALSTATUS_BUSY = 32
     """Dial() - DIALSTATUS: BUSY"""
 
-    EVENTO_ASTERISK_DIALSTATUS_NOANSWER = 7
+    EVENTO_ASTERISK_DIALSTATUS_NOANSWER = 33
     """Dial() - DIALSTATUS: NOANSWER"""
 
-    EVENTO_ASTERISK_DIALSTATUS_CANCEL = 8
+    EVENTO_ASTERISK_DIALSTATUS_CANCEL = 34
     """Dial() - DIALSTATUS: CANCEL"""
 
-    EVENTO_ASTERISK_DIALSTATUS_CONGESTION = 9
+    EVENTO_ASTERISK_DIALSTATUS_CONGESTION = 35
     """Dial() - DIALSTATUS: CONGESTION"""
 
-    EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL = 10
+    EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL = 36
     """Dial() - DIALSTATUS: CHANUNAVAIL"""
 
-    EVENTO_ASTERISK_DIALSTATUS_DONTCALL = 11
+    EVENTO_ASTERISK_DIALSTATUS_DONTCALL = 37
     """Dial() - DIALSTATUS: DONTCALL"""
 
-    EVENTO_ASTERISK_DIALSTATUS_TORTURE = 12
+    EVENTO_ASTERISK_DIALSTATUS_TORTURE = 38
     """Dial() - DIALSTATUS: TORTURE"""
 
-    EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS = 13
+    EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS = 39
     """Dial() - DIALSTATUS: INVALIDARGS"""
 
-    EVENTO_ASTERISK_DIALSTATUS_UNKNOWN = 14
+    EVENTO_ASTERISK_DIALSTATUS_UNKNOWN = 40
     """Dial() - El valor de DIALSTATUS no es ninguno
     de los reconocidos por el sistema
     """

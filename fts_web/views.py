@@ -956,8 +956,8 @@ def handle_agi_proxy_request(request, agi_network_script):
     logger.info("handle_agi_proxy_request() - campana_id: %s - "
         "contacto_id: %s - evento: %s", campana_id, contacto_id, evento)
 
-    if evento == "local-pre-dial":
-        evento_id = EventoDeContacto.objects.dialplan_iniciado(
+    if evento == "local-channel-pre-dial":
+        evento_id = EventoDeContacto.objects.dialplan_local_channel_iniciado(
             campana_id, contacto_id).id
         return HttpResponse("OK,{0}".format(evento_id))
 
@@ -976,7 +976,7 @@ def handle_agi_proxy_request(request, agi_network_script):
             logger.error("handle_agi_proxy_request(): [/fin_err/] el "
                 "request '%s' posee menos de 4 elementos")
 
-    # {fts_campana_id}/${{FtsDaemonCallId}}/local-pre-dial/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/local-channel-pre-dial/)
     # {fts_campana_id}/${{FtsDaemonCallId}}/local-post-dial/dial-status/
     #     ${{DIALSTATUS}}/)
     # {fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
