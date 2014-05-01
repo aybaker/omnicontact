@@ -940,6 +940,10 @@ def handle_agi_proxy_request(request, agi_network_script):
     contacto_id = splitted[1]
     evento = splitted[2]
 
+    #
+    # Intentamos convertir ints
+    #
+
     try:
         campana_id = int(campana_id)
     except ValueError:
@@ -953,6 +957,10 @@ def handle_agi_proxy_request(request, agi_network_script):
         logger.exception("Error al convertir contacto_id a entero. "
             "agi_network_script: '%s'", agi_network_script)
         return HttpResponseServerError("ERROR,contacto_id")
+
+    #
+    # Procesamos el evento recibido
+    #
 
     logger.info("handle_agi_proxy_request() - campana_id: %s - "
         "contacto_id: %s - evento: %s", campana_id, contacto_id, evento)
@@ -1006,11 +1014,19 @@ def handle_agi_proxy_request(request, agi_network_script):
             campana_id, contacto_id, mapped_ev).id
         return HttpResponse("OK,{0}".format(evento_id))
 
-    elif evento == "fin_err":
-        # FIXME: IMPLEMENTAR!
-        if len(splitted) < 4:
-            logger.error("handle_agi_proxy_request(): [/fin_err/] el "
-                "request '%s' posee menos de 4 elementos", agi_network_script)
+    elif evento == "fin_err_t":
+        evento_id = EventoDeContacto.objects.fin_err_t(
+            campana_id, contacto_id).id
+        return HttpResponse("OK,{0}".format(evento_id))
+
+    elif evento == "fin_err_i":
+        evento_id = EventoDeContacto.objects.fin_err_i(
+            campana_id, contacto_id).id
+        return HttpResponse("OK,{0}".format(evento_id))
+
+    logger.error("handle_agi_proxy_request(): el request '%s' "
+        "hace referencia a evento desconocido", agi_network_script)
+    return HttpResponseServerError("ERROR,evento-deconocido")
 
     # {fts_campana_id}/${{FtsDaemonCallId}}/local-channel-pre-dial/)
     # {fts_campana_id}/${{FtsDaemonCallId}}/local-channel-post-dial/
@@ -1024,6 +1040,3 @@ def handle_agi_proxy_request(request, agi_network_script):
     # {fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/voicemail/)
     # {fts_campana_id}/${{FtsDaemonCallId}}/fin_err/t/)
     # {fts_campana_id}/${{FtsDaemonCallId}}/fin_err/i/)
-
-    # FIXME: implementar
-    return HttpResponse("OK")

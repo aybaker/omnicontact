@@ -824,6 +824,24 @@ class EventoDeContactoManager(models.Manager):
             evento=EventoDeContacto.\
                 EVENTO_ASTERISK_DIALPLAN_CAMPANA_FINALIZADO)
 
+    def fin_err_i(self, campana_id, contacto_id):
+        """Crea evento
+        EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_I
+        """
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=EventoDeContacto.\
+                EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_I)
+
+    def fin_err_t(self, campana_id, contacto_id):
+        """Crea evento
+        EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_T
+        """
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=EventoDeContacto.\
+                EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_T)
+
 
 class EventoDeContacto(models.Model):
     """
@@ -884,6 +902,20 @@ class EventoDeContacto(models.Model):
 
     EVENTO_ASTERISK_DIALPLAN_CAMPANA_FINALIZADO = 23
     """Asterisk llego al final del context de la campana.
+
+    *Este evento es registrado via el proxy AGI.*
+    """
+
+    EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_T = 24
+    """Asterisk llego al final del context de la campana,
+    pero como un error (exten t).
+
+    *Este evento es registrado via el proxy AGI.*
+    """
+
+    EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_I = 25
+    """Asterisk llego al final del context de la campana,
+    pero como un error (exten i).
 
     *Este evento es registrado via el proxy AGI.*
     """

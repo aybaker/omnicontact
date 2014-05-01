@@ -113,11 +113,11 @@ TEMPLATE_DIALPLAN_END = """
 
 ; TEMPLATE_DIALPLAN_END-{fts_campana_id}
 exten => t,1,NoOp(FTS,ERR_T,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-exten => t,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin_err/t/)
+exten => t,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin_err_t/)
 exten => t,n,Hangup()
 
 exten => i,1,NoOp(FTS,ERR_I,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-exten => i,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin_err/i/)
+exten => i,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin_err_i/)
 exten => i,n,Hangup()
 
 """
