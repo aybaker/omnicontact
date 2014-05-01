@@ -24,7 +24,7 @@ from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion,
     BaseDatosContacto, Opcion)
 from fts_web.parser import autodetectar_parser
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseServerError
 
 
 logger = logging_.getLogger(__name__)
@@ -925,5 +925,66 @@ class CampanaReporteDetailView(DetailView):
 
 def handle_agi_proxy_request(request, agi_network_script):
     logger.info("handle_agi_proxy_request(): '%s'", agi_network_script)
+
+    splitted = agi_network_script.split("/")
+    if splitted[-1] == '':
+        # si 'agi_network_script' finaliza en '/', el último elemento es vacio
+        splitted[0:-1]
+
+    if len(splitted) < 3:
+        logger.error("handle_agi_proxy_request(): el request '%s' "
+            "posee menos de 3 elementos")
+
+    campana_id = splitted[0]
+    contacto_id = splitted[1]
+    evento = splitted[2]
+
+    try:
+        campana_id = int(campana_id)
+    except ValueError:
+        logger.exception("Error al convertir campana_id a entero. "
+            "agi_network_script: '%s'", agi_network_script)
+        return HttpResponseServerError("ERROR campana_id")
+
+    try:
+        contacto_id = int(contacto_id)
+    except ValueError:
+        logger.exception("Error al convertir contacto_id a entero. "
+            "agi_network_script: '%s'", agi_network_script)
+        return HttpResponseServerError("ERROR contacto_id")
+
+    logger.info("handle_agi_proxy_request() - campana_id: %s - "
+        "contacto_id: %s - evento: %s", campana_id, contacto_id, evento)
+
+    if evento == "local-pre-dial":
+        pass
+    elif evento == "local-post-dial":
+        pass
+    elif evento == "inicio":
+        pass
+    elif evento == "fin":
+        pass
+    elif evento == "opcion":
+        if len(splitted) < 5:
+            logger.error("handle_agi_proxy_request(): [/opcion/] el "
+                "request '%s' posee menos de 4 elementos")
+    elif evento == "fin_err":
+        if len(splitted) < 4:
+            logger.error("handle_agi_proxy_request(): [/fin_err/] el "
+                "request '%s' posee menos de 4 elementos")
+
+    # {fts_campana_id}/${{FtsDaemonCallId}}/local-pre-dial/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/local-post-dial/dial-status/
+    #     ${{DIALSTATUS}}/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/fin/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/repetir/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/derivar/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/opcion/
+    #     {fts_opcion_id}/calificar/{fts_calificacion_id}/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/voicemail/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/fin_err/t/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/fin_err/i/)
+
     # FIXME: implementar
     return HttpResponse("OK")
