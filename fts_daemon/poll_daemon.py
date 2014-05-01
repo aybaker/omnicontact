@@ -79,7 +79,7 @@ def procesar_contacto(pendiente, campana):
     logger.info("Realizando originate para IntentoDeContacto %s",
         pendiente.id)
 
-    EventoDeContacto.objects.create_evento_daemon_programado(
+    EventoDeContacto.objects.inicia_intento(
         campana.id, pendiente.contacto.id)
 
     # Local/{callId}-{numberToCall}@FTS_local_campana_{campanaId}

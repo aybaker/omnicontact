@@ -678,12 +678,12 @@ class IntentoDeContacto(models.Model):
 class EventoDeContactoManager(models.Manager):
     """Manager para EventoDeContacto"""
 
-    def create_evento_daemon_programado(self,
+    def inicia_intento(self,
         campana_id, contacto_id):
-        """Crea evento EVENTO_DAEMON_PROGRAMADO"""
+        """Crea evento EVENTO_DAEMON_INICIA_INTENTO"""
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
-            evento=EventoDeContacto.EVENTO_DAEMON_PROGRAMADO)
+            evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
 
     def create_evento_daemon_originate_successful(self,
         campana_id, contacto_id):
@@ -782,7 +782,7 @@ class EventoDeContacto(models.Model):
 
     objects = EventoDeContactoManager()
 
-    EVENTO_DAEMON_PROGRAMADO = 1
+    EVENTO_DAEMON_INICIA_INTENTO = 1
     """EL intento ha sido tomado por Daemon para ser procesado.
     Este evento *NO* implica que se haya realizado la llamada, pero
     *SI* que se ha tomado el contacto (asociado a este eveto)
