@@ -789,7 +789,7 @@ class EventoDeContactoManager(models.Manager):
             evento=EventoDeContacto.\
                 EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR)
 
-    def dialplan_local_channel_iniciado(self, campana_id, contacto_id):
+    def dialplan_local_channel_pre_dial(self, campana_id, contacto_id):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO
         """
@@ -797,6 +797,15 @@ class EventoDeContactoManager(models.Manager):
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
                 EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO)
+
+    def dialplan_local_channel_post_dial(self, campana_id, contacto_id, ev):
+        """Crea evento"""
+        if not ev in EventoDeContacto.DIALSTATUS_MAP.keys():
+            logger.warn("dialplan_local_channel_post_dial(): se recibio "
+                "evento que no es parte de DIALSTATUS_MAP: %s", ev)
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=ev)
 
 
 class EventoDeContacto(models.Model):
@@ -881,8 +890,8 @@ class EventoDeContacto(models.Model):
     """Dial() - DIALSTATUS: INVALIDARGS"""
 
     EVENTO_ASTERISK_DIALSTATUS_UNKNOWN = 40
-    """Dial() - El valor de DIALSTATUS no es ninguno
-    de los reconocidos por el sistema
+    """Dial() - El valor de DIALSTATUS recibido por el sistema
+    no es ninguno de los reconocidos por el sistema
     """
 
     # EVENTO_ASTERISK_DIALSTATUS_CUSTOM = xxx
@@ -896,6 +905,18 @@ class EventoDeContacto(models.Model):
 
     #EVENTO_ASTERISK_OPCION_SELECCIONADA
     #"""Valores de `dato` para `evento`
+
+    DIALSTATUS_MAP = {
+        'ANSWER': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER,
+        'BUSY': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
+        'NOANSWER': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
+        'CANCEL': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CANCEL,
+        'CONGESTION': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION,
+        'CHANUNAVAIL': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
+        'DONTCALL': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_DONTCALL,
+        'TORTURE': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_TORTURE,
+        'INVALIDARGS': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS,
+    }
 
     #DATO_OPCION_0 = 1
     #DATO_OPCION_1 = 2

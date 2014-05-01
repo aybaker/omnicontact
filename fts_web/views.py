@@ -25,6 +25,7 @@ from fts_web.models import (
     BaseDatosContacto, Opcion, EventoDeContacto)
 from fts_web.parser import autodetectar_parser
 from django.http.response import HttpResponse, HttpResponseServerError
+import collections
 
 
 logger = logging_.getLogger(__name__)
@@ -957,28 +958,57 @@ def handle_agi_proxy_request(request, agi_network_script):
         "contacto_id: %s - evento: %s", campana_id, contacto_id, evento)
 
     if evento == "local-channel-pre-dial":
-        evento_id = EventoDeContacto.objects.dialplan_local_channel_iniciado(
+        evento_id = EventoDeContacto.objects.dialplan_local_channel_pre_dial(
             campana_id, contacto_id).id
         return HttpResponse("OK,{0}".format(evento_id))
 
-    elif evento == "local-post-dial":
-        pass
+    elif evento == "local-channel-post-dial":
+        # splitted[3] -> dial-status
+        # splitted[4] -> DIALSTATUS
+        if len(splitted) < 5:
+            logger.error("handle_agi_proxy_request(): "
+                "[/local-channel-post-dial/] el request '%s' posee menos "
+                "de 5 elementos", agi_network_script)
+            return HttpResponseServerError("ERROR,local-channel-post-dial")
+
+        if splitted[3] != "dial-status":
+            logger.error("handle_agi_proxy_request(): "
+                "[/local-channel-post-dial/] el request '%s' no posee "
+                "el elemento 'dial-status'", agi_network_script)
+            return HttpResponseServerError("ERROR,local-channel-post-dial")
+
+        try:
+            mapped_ev = EventoDeContacto.DIALSTATUS_MAP[splitted[4].upper()]
+        except KeyError:
+            mapped_ev = EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_UNKNOWN
+            logger.warn("handle_agi_proxy_request(): "
+                "[/local-channel-post-dial/] el request '%s' no posee "
+                "un valor de DIALSTATUS reconocido (se guardara evento como"
+                "EVENTO_ASTERISK_DIALSTATUS_UNKNOWN", agi_network_script)
+
+        evento_id = EventoDeContacto.objects.dialplan_local_channel_post_dial(
+            campana_id, contacto_id, mapped_ev).id
+        return HttpResponse("OK,{0}".format(evento_id))
+
     elif evento == "inicio":
         pass
+
     elif evento == "fin":
         pass
+
     elif evento == "opcion":
         if len(splitted) < 5:
             logger.error("handle_agi_proxy_request(): [/opcion/] el "
-                "request '%s' posee menos de 4 elementos")
+                "request '%s' posee menos de 5 elementos", agi_network_script)
+
     elif evento == "fin_err":
         if len(splitted) < 4:
             logger.error("handle_agi_proxy_request(): [/fin_err/] el "
-                "request '%s' posee menos de 4 elementos")
+                "request '%s' posee menos de 4 elementos", agi_network_script)
 
     # {fts_campana_id}/${{FtsDaemonCallId}}/local-channel-pre-dial/)
-    # {fts_campana_id}/${{FtsDaemonCallId}}/local-post-dial/dial-status/
-    #     ${{DIALSTATUS}}/)
+    # {fts_campana_id}/${{FtsDaemonCallId}}/local-channel-post-dial/
+    #     dial-status/${{DIALSTATUS}}/)
     # {fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
     # {fts_campana_id}/${{FtsDaemonCallId}}/fin/)
     # {fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/repetir/)

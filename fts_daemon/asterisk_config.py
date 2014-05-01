@@ -46,7 +46,7 @@ exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/
 ; *** FIXME: QUITAR '172.19.1.101' hardcodeado!!!!
 exten => _X.,n,Dial(IAX2/172.19.1.101/${{NumberToCall}},{fts_campana_dial_timeout})
 ; *** WARN: el siguiente 'AGI()' a veces no es llamado
-exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/local-post-dial/dial-status/${{DIALSTATUS}}/)
+exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/local-channel-post-dial/dial-status/${{DIALSTATUS}}/)
 exten => _X.,n,Hangup()
 
 ;----------------------------------------------------------------------
