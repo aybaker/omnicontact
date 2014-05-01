@@ -815,6 +815,15 @@ class EventoDeContactoManager(models.Manager):
             contacto_id=contacto_id,
             evento=EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO)
 
+    def dialplan_campana_finalizado(self, campana_id, contacto_id):
+        """Crea evento
+        EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_FINALIZADO
+        """
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=EventoDeContacto.\
+                EVENTO_ASTERISK_DIALPLAN_CAMPANA_FINALIZADO)
+
 
 class EventoDeContacto(models.Model):
     """
@@ -869,6 +878,12 @@ class EventoDeContacto(models.Model):
     Asterisk "conecta" con el contex "[campania_NNN]" cuando el destinatario
     ha atendido. Por lo tanto, la existencia de este evento asociado a una
     llamada, implica que el destinatario ha contestado.
+
+    *Este evento es registrado via el proxy AGI.*
+    """
+
+    EVENTO_ASTERISK_DIALPLAN_CAMPANA_FINALIZADO = 23
+    """Asterisk llego al final del context de la campana.
 
     *Este evento es registrado via el proxy AGI.*
     """

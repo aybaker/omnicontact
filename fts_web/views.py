@@ -968,8 +968,9 @@ def handle_agi_proxy_request(request, agi_network_script):
         return HttpResponse("OK,{0}".format(evento_id))
 
     elif evento == "fin":
-        # FIXME: IMPLEMENTAR!
-        pass
+        evento_id = EventoDeContacto.objects.dialplan_campana_finalizado(
+            campana_id, contacto_id).id
+        return HttpResponse("OK,{0}".format(evento_id))
 
     elif evento == "opcion":
         # FIXME: IMPLEMENTAR!

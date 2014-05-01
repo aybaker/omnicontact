@@ -63,10 +63,8 @@ exten => _ftsX!,n,Wait(1)
 exten => _ftsX!,n,Answer()
 exten => _ftsX!,n(audio),Background({fts_audio_file})
 exten => _ftsX!,n,WaitExten(10)
-exten => _ftsX!,n,Hangup()
-; *** TODO: funciona este AGI post-hangout? O es que deberia ir antes?
 exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin/)
-
+exten => _ftsX!,n,Hangup()
 """
 
 
