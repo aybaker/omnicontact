@@ -691,23 +691,23 @@ class IntentoDeContacto(models.Model):
 
     objects = IntentoDeContactoManager()
 
-    """EL intento esta pendiente de ser realizado"""
     ESTADO_PROGRAMADO = 1
+    """EL intento esta pendiente de ser realizado"""
 
-    """El originate se produjo exitosamente"""
     ESTADO_ORIGINATE_SUCCESSFUL = 2
+    """El originate se produjo exitosamente"""
 
-    """El originate devolvio error"""
     ESTADO_ORIGINATE_FAILED = 3
+    """El originate devolvio error"""
 
-    """El destinatario no ha atendido el llamado"""
     ESTADO_NO_CONTESTO = 4
+    """El destinatario no ha atendido el llamado"""
 
-    """El destinatario atendio el llamado"""
     ESTADO_CONTESTO = 5
+    """El destinatario atendio el llamado"""
 
-    """Se produjo un error interno del sistema"""
     ESTADO_ERROR_INTERNO = 5
+    """Se produjo un error interno del sistema"""
 
     ESTADO = (
         (ESTADO_PROGRAMADO, 'Pendiente'),
@@ -788,6 +788,12 @@ class EventoDeContactoManager(models.Manager):
             evento=EventoDeContacto.\
                 EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR)
 
+    def dialplan_iniciado(self, campana_id, contacto_id):
+        """Crea evento EVENTO_ASTERISK_DIALPLAN_INICIADO"""
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_INICIADO)
+
 
 class EventoDeContacto(models.Model):
     """
@@ -814,10 +820,10 @@ class EventoDeContacto(models.Model):
     haber llegado al Asterisk
     """
 
-    EVENTO_ASTERISK_CMD_DIAL_INICIADO = 4
+    EVENTO_ASTERISK_DIALPLAN_INICIADO = 4
     """Asterisk delegó control al context de la campaña.
-    Este evento representa el inicio del proceso de la llamada
-    por Asterisk"""
+    Este evento indica que Asterisk ha inicio del proceso de la llamada
+    """
 
     EVENTO_ASTERISK_DIALSTATUS_ANSWER = 5
     """Dial() - DIALSTATUS: ANSWER"""
