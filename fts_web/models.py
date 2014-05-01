@@ -48,11 +48,11 @@ class GrupoAtencion(models.Model):
         (RRMEMORY, 'RRMEMORY'),
     )
 
-    """Texto a usar en configuracion de Asterisk"""
     RING_STRATEGY_PARA_ASTERISK = dict([
         (RINGALL, 'ringall'),
         (RRMEMORY, 'rrmemory'),
     ])
+    """Texto a usar en configuracion de Asterisk"""
 
     nombre = models.CharField(
         max_length=128,
@@ -313,11 +313,13 @@ upload_to_audios_originales = upload_to("audios_reproduccion", 95)
 
 class Campana(models.Model):
     """Una campaña del call center"""
+
     objects = CampanaManager()
 
-    """La campaña esta siendo definida en el wizard"""
     ESTADO_EN_DEFINICION = 1
+    """La campaña esta siendo definida en el wizard"""
 
+    ESTADO_ACTIVA = 2
     """La campaña esta activa, o sea, EN_CURSO o PROGRAMADA
     A nivel de modelos, solo queremos registrar si está ACTIVA, y no nos
     importa si esta EN_CURSO (o sea, si en este momento el daemon está
@@ -325,13 +327,12 @@ class Campana(models.Model):
     estamos en el rango de dias y horas en los que se deben generar
     las llamadas)
     """
-    ESTADO_ACTIVA = 2
 
-    """La capaña fue pausada"""
     ESTADO_PAUSADA = 3
+    """La capaña fue pausada"""
 
-    """La campaña fue finalizada, automatica o manualmente"""
     ESTADO_FINALIZADA = 4
+    """La campaña fue finalizada, automatica o manualmente"""
 
     ESTADOS = (
         (ESTADO_EN_DEFINICION, '(en definicion)'),
@@ -914,17 +915,17 @@ class Opcion(models.Model):
         choices=DIGITO_CHOICES,
     )
 
-    """Deriva la llamada. Ejemplo Grupo Atencion."""
     DERIVAR = 0
+    """Deriva la llamada. Ejemplo Grupo Atencion."""
 
-    """Estable una calificación a la llamada."""
     CALIFICAR = 1
+    """Estable una calificación a la llamada."""
 
-    """Habilita para dejar un mensaje de voz."""
     VOICEMAIL = 2
+    """Habilita para dejar un mensaje de voz."""
 
-    """Repetir el mensaje."""
     REPETIR = 3
+    """Repetir el mensaje."""
 
     ACCION_CHOICES = (
         (DERIVAR, 'DERIVAR'),
