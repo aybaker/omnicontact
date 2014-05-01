@@ -22,7 +22,7 @@ from fts_web.forms import (
     BaseDatosContactoForm, OpcionForm)
 from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion,
-    BaseDatosContacto, Opcion)
+    BaseDatosContacto, Opcion, EventoDeContacto)
 from fts_web.parser import autodetectar_parser
 from django.http.response import HttpResponse, HttpResponseServerError
 
@@ -944,20 +944,23 @@ def handle_agi_proxy_request(request, agi_network_script):
     except ValueError:
         logger.exception("Error al convertir campana_id a entero. "
             "agi_network_script: '%s'", agi_network_script)
-        return HttpResponseServerError("ERROR campana_id")
+        return HttpResponseServerError("ERROR,campana_id")
 
     try:
         contacto_id = int(contacto_id)
     except ValueError:
         logger.exception("Error al convertir contacto_id a entero. "
             "agi_network_script: '%s'", agi_network_script)
-        return HttpResponseServerError("ERROR contacto_id")
+        return HttpResponseServerError("ERROR,contacto_id")
 
     logger.info("handle_agi_proxy_request() - campana_id: %s - "
         "contacto_id: %s - evento: %s", campana_id, contacto_id, evento)
 
     if evento == "local-pre-dial":
-        pass
+        evento_id = EventoDeContacto.objects.dialplan_iniciado(
+            campana_id, contacto_id).id
+        return HttpResponse("OK,{0}".format(evento_id))
+
     elif evento == "local-post-dial":
         pass
     elif evento == "inicio":
