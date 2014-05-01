@@ -962,6 +962,21 @@ def handle_agi_proxy_request(request, agi_network_script):
             campana_id, contacto_id).id
         return HttpResponse("OK,{0}".format(evento_id))
 
+    elif evento == "inicio":
+        evento_id = EventoDeContacto.objects.dialplan_campana_iniciado(
+            campana_id, contacto_id).id
+        return HttpResponse("OK,{0}".format(evento_id))
+
+    elif evento == "fin":
+        # FIXME: IMPLEMENTAR!
+        pass
+
+    elif evento == "opcion":
+        # FIXME: IMPLEMENTAR!
+        if len(splitted) < 5:
+            logger.error("handle_agi_proxy_request(): [/opcion/] el "
+                "request '%s' posee menos de 5 elementos", agi_network_script)
+
     elif evento == "local-channel-post-dial":
         # splitted[3] -> dial-status
         # splitted[4] -> DIALSTATUS
@@ -990,18 +1005,8 @@ def handle_agi_proxy_request(request, agi_network_script):
             campana_id, contacto_id, mapped_ev).id
         return HttpResponse("OK,{0}".format(evento_id))
 
-    elif evento == "inicio":
-        pass
-
-    elif evento == "fin":
-        pass
-
-    elif evento == "opcion":
-        if len(splitted) < 5:
-            logger.error("handle_agi_proxy_request(): [/opcion/] el "
-                "request '%s' posee menos de 5 elementos", agi_network_script)
-
     elif evento == "fin_err":
+        # FIXME: IMPLEMENTAR!
         if len(splitted) < 4:
             logger.error("handle_agi_proxy_request(): [/fin_err/] el "
                 "request '%s' posee menos de 4 elementos", agi_network_script)

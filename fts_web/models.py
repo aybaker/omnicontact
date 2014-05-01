@@ -799,13 +799,21 @@ class EventoDeContactoManager(models.Manager):
                 EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO)
 
     def dialplan_local_channel_post_dial(self, campana_id, contacto_id, ev):
-        """Crea evento"""
+        """Crea evento asociado a resultado de Dial() / DIALSTATUS"""
         if not ev in EventoDeContacto.DIALSTATUS_MAP.keys():
             logger.warn("dialplan_local_channel_post_dial(): se recibio "
                 "evento que no es parte de DIALSTATUS_MAP: %s", ev)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=ev)
+
+    def dialplan_campana_iniciado(self, campana_id, contacto_id):
+        """Crea evento
+        EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO
+        """
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO)
 
 
 class EventoDeContacto(models.Model):
@@ -854,10 +862,13 @@ class EventoDeContacto(models.Model):
     """
 
     EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO = 22
-    """Asterisk delegó control al context (de Local channel) de la campaña.
+    """Asterisk delegó control al context de la campaña.
     Este evento indica que Asterisk ha inicio del proceso REAL de la llamada,
     en el contexto asociado a la campaña (ej: en el contexto '[campania_NNN]').
-    Todavia no se ha realizado el Dial() al numero del contacto.
+
+    Asterisk "conecta" con el contex "[campania_NNN]" cuando el destinatario
+    ha atendido. Por lo tanto, la existencia de este evento asociado a una
+    llamada, implica que el destinatario ha contestado.
 
     *Este evento es registrado via el proxy AGI.*
     """
@@ -907,15 +918,15 @@ class EventoDeContacto(models.Model):
     #"""Valores de `dato` para `evento`
 
     DIALSTATUS_MAP = {
-        'ANSWER': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER,
-        'BUSY': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
-        'NOANSWER': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
-        'CANCEL': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CANCEL,
-        'CONGESTION': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION,
-        'CHANUNAVAIL': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
-        'DONTCALL': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_DONTCALL,
-        'TORTURE': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_TORTURE,
-        'INVALIDARGS': EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS,
+        'ANSWER': EVENTO_ASTERISK_DIALSTATUS_ANSWER,
+        'BUSY': EVENTO_ASTERISK_DIALSTATUS_BUSY,
+        'NOANSWER': EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
+        'CANCEL': EVENTO_ASTERISK_DIALSTATUS_CANCEL,
+        'CONGESTION': EVENTO_ASTERISK_DIALSTATUS_CONGESTION,
+        'CHANUNAVAIL': EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
+        'DONTCALL': EVENTO_ASTERISK_DIALSTATUS_DONTCALL,
+        'TORTURE': EVENTO_ASTERISK_DIALSTATUS_TORTURE,
+        'INVALIDARGS': EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS,
     }
 
     #DATO_OPCION_0 = 1
