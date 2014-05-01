@@ -796,72 +796,72 @@ class EventoDeContacto(models.Model):
 
     objects = EventoDeContactoManager()
 
+    EVENTO_DAEMON_PROGRAMADO = 1
     """EL intento ha sido tomado por Daemon para que se intente
     realizar un llamado"""
-    EVENTO_DAEMON_PROGRAMADO = 1
 
-    """El originate se produjo exitosamente"""
     EVENTO_DAEMON_ORIGINATE_SUCCESSFUL = 2
+    """El originate se produjo exitosamente"""
 
-    """El comando ORIGINATE se ejecutó, pero devolvio error"""
     EVENTO_DAEMON_ORIGINATE_FAILED = 3
+    """El comando ORIGINATE se ejecutó, pero devolvio error"""
 
+    EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR = 15
     """El originate no se pudo realizar por algun problema
     interno (ej: Asterisk caido, problema de login, etc.)
     Este tipo de error implica que el originate pudo no
     haber llegado al Asterisk
     """
-    EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR = 15
 
+    EVENTO_ASTERISK_CMD_DIAL_INICIADO = 4
     """Asterisk delegó control al context de la campaña.
     Este evento representa el inicio del proceso de la llamada
     por Asterisk"""
-    EVENTO_ASTERISK_CMD_DIAL_INICIADO = 4
 
-    """Dial() - DIALSTATUS: ANSWER"""
     EVENTO_ASTERISK_DIALSTATUS_ANSWER = 5
+    """Dial() - DIALSTATUS: ANSWER"""
 
-    """Dial() - DIALSTATUS: BUSY"""
     EVENTO_ASTERISK_DIALSTATUS_BUSY = 6
+    """Dial() - DIALSTATUS: BUSY"""
 
-    """Dial() - DIALSTATUS: NOANSWER"""
     EVENTO_ASTERISK_DIALSTATUS_NOANSWER = 7
+    """Dial() - DIALSTATUS: NOANSWER"""
 
-    """Dial() - DIALSTATUS: CANCEL"""
     EVENTO_ASTERISK_DIALSTATUS_CANCEL = 8
+    """Dial() - DIALSTATUS: CANCEL"""
 
-    """Dial() - DIALSTATUS: CONGESTION"""
     EVENTO_ASTERISK_DIALSTATUS_CONGESTION = 9
+    """Dial() - DIALSTATUS: CONGESTION"""
 
-    """Dial() - DIALSTATUS: CHANUNAVAIL"""
     EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL = 10
+    """Dial() - DIALSTATUS: CHANUNAVAIL"""
 
-    """Dial() - DIALSTATUS: DONTCALL"""
     EVENTO_ASTERISK_DIALSTATUS_DONTCALL = 11
+    """Dial() - DIALSTATUS: DONTCALL"""
 
-    """Dial() - DIALSTATUS: TORTURE"""
     EVENTO_ASTERISK_DIALSTATUS_TORTURE = 12
+    """Dial() - DIALSTATUS: TORTURE"""
 
-    """Dial() - DIALSTATUS: INVALIDARGS"""
     EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS = 13
+    """Dial() - DIALSTATUS: INVALIDARGS"""
 
+    EVENTO_ASTERISK_DIALSTATUS_UNKNOWN = 14
     """Dial() - El valor de DIALSTATUS no es ninguno
     de los reconocidos por el sistema
     """
-    EVENTO_ASTERISK_DIALSTATUS_UNKNOWN = 14
 
-    # """Dial() - DIALSTATUS: evento customizado (usa `dato`)"""
     # EVENTO_ASTERISK_DIALSTATUS_CUSTOM = xxx
+    # """Dial() - DIALSTATUS: evento customizado (usa `dato`)"""
 
-    # """Evento customizado"""
     # EVENTO_CUSTOMIZADO = xxx
+    # """Evento customizado"""
 
-    #"""Opcion seleccionada"""
     #EVENTO_ASTERISK_OPCION_SELECCIONADA = xxx
+    #"""Opcion seleccionada"""
 
-    #"""Valores de `dato` para `evento`
     #EVENTO_ASTERISK_OPCION_SELECCIONADA
-    #"""
+    #"""Valores de `dato` para `evento`
+
     #DATO_OPCION_0 = 1
     #DATO_OPCION_1 = 2
     #DATO_OPCION_2 = 3
