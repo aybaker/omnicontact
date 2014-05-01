@@ -62,6 +62,7 @@ exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId
 exten => _ftsX!,n,Wait(1)
 exten => _ftsX!,n,Answer()
 exten => _ftsX!,n(audio),Background({fts_audio_file})
+# FIXME: alcanza 'WaitExten(10)'??? No deberia ser un poco mas q' el tiempo del WAV/GSM/MP3?
 exten => _ftsX!,n,WaitExten(10)
 exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin/)
 exten => _ftsX!,n,Hangup()
@@ -72,7 +73,7 @@ TEMPLATE_OPCION_REPETIR = """
 
 ; TEMPLATE_OPCION_REPETIR-{fts_opcion_id}
 exten => {fts_opcion_digito},1,NoOp(FTS,REPETIR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/repetir/)
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/repetir/)
 exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
 exten => {fts_opcion_digito},n,Hangup()
 
@@ -82,7 +83,7 @@ TEMPLATE_OPCION_DERIVAR = """
 
 ; TEMPLATE_OPCION_DERIVAR-{fts_opcion_id}-{fts_grup_atencion_id}-{fts_queue_name}
 exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id},queue={fts_queue_name})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/derivar/)
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivar/)
 exten => {fts_opcion_digito},n,Queue({fts_queue_name})
 exten => {fts_opcion_digito},n,Hangup()
 
@@ -92,7 +93,7 @@ TEMPLATE_OPCION_CALIFICAR = """
 
 ; TEMPLATE_OPCION_CALIFICAR-{fts_opcion_id}-{fts_calificacion_id}-{fts_calificacion_nombre}
 exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id},calificacion={fts_calificacion_id}-fts_calificacion_nombre)
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/calificar/{fts_calificacion_id}/)
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/calificar/{fts_calificacion_id}/)
 exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
 exten => {fts_opcion_digito},n,Hangup()
 
@@ -102,7 +103,7 @@ TEMPLATE_OPCION_VOICEMAIL = """
 
 ; TEMPLATE_OPCION_VOICEMAIL-{fts_opcion_id}
 exten => {fts_opcion_digito},1,NoOp(FTS,VOICEMAIL,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_id}/voicemail/)
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/voicemail/)
 exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
 ; TODO: IMPLEMENTAR!
 exten => {fts_opcion_digito},n,Hangup()

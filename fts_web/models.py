@@ -842,6 +842,16 @@ class EventoDeContactoManager(models.Manager):
             evento=EventoDeContacto.\
                 EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_T)
 
+    def opcion_seleccionada(self, campana_id, contacto_id, numero):
+        """Crea evento
+        EventoDeContacto.EVENTO_ASTERISK_OPCION_SELECCIONADA
+        """
+        return self.create(campana_id=campana_id,
+            contacto_id=contacto_id,
+            evento=EventoDeContacto.\
+                EVENTO_ASTERISK_OPCION_SELECCIONADA,
+            dato=numero)
+
 
 class EventoDeContacto(models.Model):
     """
@@ -952,17 +962,13 @@ class EventoDeContacto(models.Model):
     no es ninguno de los reconocidos por el sistema
     """
 
-    # EVENTO_ASTERISK_DIALSTATUS_CUSTOM = xxx
-    # """Dial() - DIALSTATUS: evento customizado (usa `dato`)"""
+    EVENTO_ASTERISK_OPCION_SELECCIONADA = 50
+    """El usuario ha seleccionado una opción utilizando utilizando
+    el teclado numerico.
 
-    # EVENTO_CUSTOMIZADO = xxx
-    # """Evento customizado"""
-
-    #EVENTO_ASTERISK_OPCION_SELECCIONADA = xxx
-    #"""Opcion seleccionada"""
-
-    #EVENTO_ASTERISK_OPCION_SELECCIONADA
-    #"""Valores de `dato` para `evento`
+    El atributo `dato` posee el numero presionado.
+    """
+    # FIXME: que pasa si el usuario selecciona una opcion inexistente?
 
     DIALSTATUS_MAP = {
         'ANSWER': EVENTO_ASTERISK_DIALSTATUS_ANSWER,
@@ -975,17 +981,6 @@ class EventoDeContacto(models.Model):
         'TORTURE': EVENTO_ASTERISK_DIALSTATUS_TORTURE,
         'INVALIDARGS': EVENTO_ASTERISK_DIALSTATUS_INVALIDARGS,
     }
-
-    #DATO_OPCION_0 = 1
-    #DATO_OPCION_1 = 2
-    #DATO_OPCION_2 = 3
-    #DATO_OPCION_3 = 4
-    #DATO_OPCION_4 = 5
-    #DATO_OPCION_5 = 6
-    #DATO_OPCION_6 = 7
-    #DATO_OPCION_7 = 8
-    #DATO_OPCION_8 = 9
-    #DATO_OPCION_9 = 10
 
     campana_id = models.IntegerField(db_index=True)
     contacto_id = models.IntegerField(db_index=True)
