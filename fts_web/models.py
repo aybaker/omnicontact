@@ -785,6 +785,12 @@ class EventoDeContactoManager(models.Manager):
         Hace algo equivalente al viejo
         *IntentoDeContacto.objects.crear_intentos_para_campana()*.
         """
+        raise NotImplementedError()
+
+
+class EventoDeContactoManagerPostgreSql(EventoDeContactoManager):
+
+    def programar_campana(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
         # id          | integer
@@ -813,13 +819,26 @@ class EventoDeContactoManager(models.Manager):
         cursor.execute(sql)
 
 
+class EventoDeContactoManagerSqlite(EventoDeContactoManager):
+
+    def programar_campana(self, campana_id):
+        campana = Campana.objects.get(pk=campana_id)
+        for contacto in campana.bd_contacto.contactos.all():
+            EventoDeContacto.objects.create(
+                campana_id=campana.id,
+                contacto_id=contacto.id,
+                evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
+            )
+
+
 class EventoDeContacto(models.Model):
     """
     - http://www.voip-info.org/wiki/view/Asterisk+cmd+Dial
     - http://www.voip-info.org/wiki/view/Asterisk+variable+DIALSTATUS
     """
 
-    objects = EventoDeContactoManager()
+    # objects = EventoDeContactoManagerPostgreSql()
+    objects = EventoDeContactoManagerSqlite()
 
     EVENTO_CONTACTO_PROGRAMADO = 1
     """El contacto asociado al evento ha sido programado, o sea,
