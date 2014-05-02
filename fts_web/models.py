@@ -773,6 +773,7 @@ class SimuladorEventoDeContactoManager():
         assert settings.DEBUG
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
+        # TODO: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
         INSERT INTO fts_web_eventodecontacto
             SELECT
@@ -806,6 +807,7 @@ class SimuladorEventoDeContactoManager():
         )
 
         cursor = connection.cursor()
+        # TODO: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
             INSERT INTO fts_web_contacto
                 SELECT
@@ -820,7 +822,6 @@ class SimuladorEventoDeContactoManager():
         with log_timing(logger,
             "crear_bd_contactos_con_datos_random() tardo %s seg"):
             cursor.execute(sql)
-        cursor.execute(sql)
         return bd_contactos
 
 
@@ -900,6 +901,7 @@ class GestionDeLlamadasManager(models.Manager):
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
         # FIXME: PERFORMANCE: quitar sub-select
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """SELECT DISTINCT ev_count, count(*) FROM
             (
                 SELECT count(*) AS "ev_count"
@@ -914,6 +916,32 @@ class GestionDeLlamadasManager(models.Manager):
 
         with log_timing(logger, "obtener_info_de_intentos() "
             "tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+        return values
+
+    def obtener_count_eventos(self, campana_id):
+        """
+        Devuelve una lista de listas con información de count de eventos
+        para una campana.
+
+        Ejemplo: _((1, 412,), (2, 874,))_ implica que hay 412 eventos
+        del tipo '1', 874 eventos de tipo '2'.
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        # FIXME: PERFORMANCE: quitar sub-select
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """SELECT evento, count(*)
+            FROM fts_web_eventodecontacto
+            WHERE campana_id = {0}
+            GROUP BY evento
+            ORDER BY 1
+        """.format(campana.id)
+
+        cursor.execute(sql)
+        with log_timing(logger,
+            "obtener_count_eventos() tardo %s seg"):
             cursor.execute(sql)
             values = cursor.fetchall()
         return values
