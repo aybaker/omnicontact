@@ -823,7 +823,7 @@ class EventoDeContactoManager(models.Manager):
         *IntentoDeContacto.objects.crear_intentos_para_campana()*.
         """
         programar_campana_func = getattr(self,
-            settings.FTS_XXX)
+            settings.FTS_PROGRAMAR_CAMPANA_FUNC)
         return programar_campana_func(campana_id)
 
 
