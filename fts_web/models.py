@@ -893,10 +893,6 @@ class GestionDeLlamadasManager(models.Manager):
         """
         campana = Campana.objects.get(pk=campana_id)
 
-        #
-        # Primero chequeamos contactos NUNCA contactados
-        #
-
         # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
         SELECT contacto_id
@@ -925,8 +921,8 @@ class GestionDeLlamadasManager(models.Manager):
         if id_contactos:
             contactos = Contacto.objects.filter(pk__in=id_contactos)
             return contactos
-
-        raise NotImplementedError()
+        else:
+            return Contacto.objects.none()
 
     def obtener_info_de_intentos(self, campana_id):
         """Devuelve una lista de listas con información de intentos
