@@ -148,5 +148,4 @@ def log_timing(logger, template_message):
     """
     start = time.time()
     yield
-    end = time.time()
-    logger.info(template_message, (end - start))
+    logger.info(template_message, (time.time() - start))
