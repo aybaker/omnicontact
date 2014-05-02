@@ -131,3 +131,5 @@ def get_class(full_name):
         raise FtsError(msg, e)
 
     return clazz
+
+get_class_or_func = get_class

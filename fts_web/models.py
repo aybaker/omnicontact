@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.db import models
-from fts_web.utiles import upload_to
+from fts_web.utiles import upload_to, get_class_or_func
 import pygal
 
 
@@ -777,20 +777,7 @@ class EventoDeContactoManager(models.Manager):
                 EVENTO_ASTERISK_OPCION_SELECCIONADA,
             dato=numero)
 
-    def programar_campana(self, campana_id):
-        """
-        Crea eventos EVENTO_CONTACTO_PROGRAMADO para todos los contactos
-        de la campana.
-
-        Hace algo equivalente al viejo
-        *IntentoDeContacto.objects.crear_intentos_para_campana()*.
-        """
-        raise NotImplementedError()
-
-
-class EventoDeContactoManagerPostgreSql(EventoDeContactoManager):
-
-    def programar_campana(self, campana_id):
+    def programar_campana_postgresql(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
         # id          | integer
@@ -818,10 +805,7 @@ class EventoDeContactoManagerPostgreSql(EventoDeContactoManager):
 
         cursor.execute(sql)
 
-
-class EventoDeContactoManagerSqlite(EventoDeContactoManager):
-
-    def programar_campana(self, campana_id):
+    def programar_campana_sqlite(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
         for contacto in campana.bd_contacto.contactos.all():
             EventoDeContacto.objects.create(
@@ -830,6 +814,18 @@ class EventoDeContactoManagerSqlite(EventoDeContactoManager):
                 evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
             )
 
+    def programar_campana(self, campana_id):
+        """
+        Crea eventos EVENTO_CONTACTO_PROGRAMADO para todos los contactos
+        de la campana.
+
+        Hace algo equivalente al viejo
+        *IntentoDeContacto.objects.crear_intentos_para_campana()*.
+        """
+        programar_campana_func = getattr(self,
+            settings.FTS_XXX)
+        return programar_campana_func(campana_id)
+
 
 class EventoDeContacto(models.Model):
     """
@@ -837,8 +833,7 @@ class EventoDeContacto(models.Model):
     - http://www.voip-info.org/wiki/view/Asterisk+variable+DIALSTATUS
     """
 
-    # objects = EventoDeContactoManagerPostgreSql()
-    objects = EventoDeContactoManagerSqlite()
+    objects = EventoDeContactoManager()
 
     EVENTO_CONTACTO_PROGRAMADO = 1
     """El contacto asociado al evento ha sido programado, o sea,

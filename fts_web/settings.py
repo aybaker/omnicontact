@@ -102,6 +102,8 @@ FTS_FAST_AGI_DAEMON_PROXY_URL = None
 """Bind de fast agi daemon"""
 FTS_FAST_AGI_DAEMON_BIND = "0.0.0.0"
 
+FTS_XXX = "programar_campana_sqlite"
+
 """Configuracion para interactuar con Asterisk"""
 ASTERISK = {}
 
