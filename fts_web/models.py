@@ -371,7 +371,9 @@ class Campana(models.Model):
         self.save()
 
         # FIXME: este proceso puede ser costoso, deberia ser asincrono
-        EventoDeContacto.objects.programar_campana(self.id)
+        # TODO: log timing
+        EventoDeContacto.objects_gestion_llamadas.programar_campana(
+            self.id)
 
     def finalizar(self):
         """
@@ -760,7 +762,32 @@ class EventoDeContactoManager(models.Manager):
                 EVENTO_ASTERISK_OPCION_SELECCIONADA,
             dato=numero)
 
-    def programar_campana_postgresql(self, campana_id):
+
+class GestionDeLlamadasManager(models.Manager):
+    """Manager para EventoDeContacto, con la funcionalidad
+    que es utilizada para la gestión más basica de las llamadas.
+
+    Incluye la funcionalidad de programar llamadas a realizar,
+    buscar llamadas pendientes, etc.
+
+    Esta funcionalidad es la más crítica del sistema, en cuestiones
+    de robustez y performance. Todos estos metodos deben estar
+    extensamenete probados.
+    """
+
+    def programar_campana(self, campana_id):
+        """
+        Crea eventos EVENTO_CONTACTO_PROGRAMADO para todos los contactos
+        de la campana.
+
+        Hace algo equivalente al viejo
+        *IntentoDeContacto.objects.crear_intentos_para_campana()*.
+        """
+        programar_campana_func = getattr(self,
+            settings.FTS_PROGRAMAR_CAMPANA_FUNC)
+        return programar_campana_func(campana_id)
+
+    def _programar_campana_postgresql(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
 
@@ -780,11 +807,11 @@ class EventoDeContactoManager(models.Manager):
             bd_contacto_id=campana.bd_contacto.id,
             evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
 
-        with log_timing(logger, "programar_campana_postgresql() "
+        with log_timing(logger, "_programar_campana_postgresql() "
             "tardo %s seg"):
             cursor.execute(sql)
 
-    def programar_campana_sqlite(self, campana_id):
+    def _programar_campana_sqlite(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
         for contacto in campana.bd_contacto.contactos.all():
             EventoDeContacto.objects.create(
@@ -792,18 +819,6 @@ class EventoDeContactoManager(models.Manager):
                 contacto_id=contacto.id,
                 evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
             )
-
-    def programar_campana(self, campana_id):
-        """
-        Crea eventos EVENTO_CONTACTO_PROGRAMADO para todos los contactos
-        de la campana.
-
-        Hace algo equivalente al viejo
-        *IntentoDeContacto.objects.crear_intentos_para_campana()*.
-        """
-        programar_campana_func = getattr(self,
-            settings.FTS_PROGRAMAR_CAMPANA_FUNC)
-        return programar_campana_func(campana_id)
 
 
 class EventoDeContacto(models.Model):
@@ -813,6 +828,7 @@ class EventoDeContacto(models.Model):
     """
 
     objects = EventoDeContactoManager()
+    objects_gestion_llamadas = GestionDeLlamadasManager()
 
     EVENTO_CONTACTO_PROGRAMADO = 1
     """El contacto asociado al evento ha sido programado, o sea,
