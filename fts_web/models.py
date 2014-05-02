@@ -414,6 +414,9 @@ class Campana(models.Model):
         dia_semanal = hoy_ahora.weekday()
         hora_actual = hoy_ahora.time()
 
+        # FIXME: PERFORMANCE: ver si el resultado de 'filter()' se cachea,
+        # sino, usar algo que se cachee, ya que este metodo es ejecutado
+        # muchas veces desde el daemon
         actuaciones_hoy = self.actuaciones.filter(dia_semanal=dia_semanal)
         if not actuaciones_hoy:
             return None
@@ -758,7 +761,16 @@ class SimuladorEventoDeContactoManager():
     en produccion.
     """
 
-    def simular_realizacion_de_intentos(self, campana_id):
+    def simular_realizacion_de_intentos(self, campana_id, probabilidad=0.33):
+        """
+        Crea eventos EVENTO_DAEMON_INICIA_INTENTO para contactos de
+        una campana.
+
+        :param probabilidad: Para que porcentage (aprox) de los contactos hay
+               que crear intentos. Para crear intentos para TODOS, usar valor
+               mayor a 1.0
+        :type probabilidad: float
+        """
         assert settings.DEBUG
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
@@ -776,10 +788,11 @@ class SimuladorEventoDeContactoManager():
                     SELECT DISTINCT contacto_id as "contacto_id"
                         FROM fts_web_eventodecontacto
                         WHERE campana_id = {campana_id}
-                            AND random() > 0.77
+                            AND random() <= {probabilidad}
                 ) as "contacto_id"
         """.format(campana_id=campana.id,
-                evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
+                evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+                probabilidad=float(probabilidad))
 
         with log_timing(logger,
             "simular_realizacion_de_intentos() tardo %s seg"):
@@ -827,8 +840,7 @@ class GestionDeLlamadasManager(models.Manager):
     """
 
     def programar_campana(self, campana_id):
-        """
-        Crea eventos EVENTO_CONTACTO_PROGRAMADO para todos los contactos
+        """Crea eventos EVENTO_CONTACTO_PROGRAMADO para todos los contactos
         de la campana.
 
         Hace algo equivalente al viejo
@@ -872,9 +884,52 @@ class GestionDeLlamadasManager(models.Manager):
                 evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
             )
 
-    def obtener_info_de_intentos(self, campana_id):
+    def obtener_contactos_pendientes(self, campana_id):
+        """Devuelve info de contactos pendientes de ser contactados.
+        Se fija que cant. de eventos EVENTO_DAEMON_INICIA_INTENTO no
+        supere a los de la campana, y busca contactos que todavia no posee
+        eventos EVENTO_DAEMON_INICIA_INTENTO (o sea, q' todavia no fueron
+        contactados).
         """
-        Devuelve una lista de listas con información de intentos
+        campana = Campana.objects.get(pk=campana_id)
+
+        #
+        # Primero chequeamos contactos NUNCA contactados
+        #
+
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """
+        SELECT contacto_id
+        FROM fts_web_eventodecontacto
+        WHERE evento = {ev_programado}
+            AND campana_id = {campana_id}
+            AND contacto_id NOT IN (
+                SELECT DISTINCT contacto_id
+                FROM fts_web_eventodecontacto
+                WHERE evento = {ev_intento}
+                    AND campana_id = {campana_id})
+        LIMIT {limit}
+        """.format(campana_id=campana.id,
+            ev_programado=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
+            ev_intento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+            limit=100)
+
+        cursor = connection.cursor()
+        with log_timing(logger,
+            "obtener_contactos_pendientes() tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+
+        id_contactos = [row[0] for row in values]
+
+        if id_contactos:
+            contactos = Contacto.objects.filter(pk__in=id_contactos)
+            return contactos
+
+        raise NotImplementedError()
+
+    def obtener_info_de_intentos(self, campana_id):
+        """Devuelve una lista de listas con información de intentos
         realizados, ordenados por cantidad de intentos (ej: 1, 2, etc.)
 
         Los elementos de la lista devuelta son listas, que contienen
@@ -910,8 +965,7 @@ class GestionDeLlamadasManager(models.Manager):
         return values
 
     def obtener_count_eventos(self, campana_id):
-        """
-        Devuelve una lista de listas con información de count de eventos
+        """Devuelve una lista de listas con información de count de eventos
         para una campana.
 
         Ejemplo: _((1, 412,), (2, 874,))_ implica que hay 412 eventos
