@@ -26,51 +26,12 @@ import logging as _logging
 logger = _logging.getLogger('fts_daemon.poll_daemon')
 
 
-#class Tracker(object):
-#
-#    def __init__(self, campana):
-#        self._campana = campana
-#        self._valido = True
-#
-#    @property
-#    def campana(self):
-#        return self._campana
-#
-#    @property
-#    def valido(self):
-#        """Un tracker es valido mientras deba ser tenido en cuenta
-#        para realizar llamadas.
-#
-#        Deja de ser valido cuando:
-#        1. la fecha actual esta fuera del rango de fechas de la campana
-#        2. la hora actual esta fuera del rango de actuaciones
-#        3. la campana esta paudada
-#        """
-#        return self._valido
-#
-#    def invalidar(self):
-#        self._valido = False
-#
-#    def get_contacto(self):
-#        pass
-
-
-class Llamador(object):
-    """Clase base para implementar el llamador"""
-
-    def loop(self):
-        raise NotImplementedError()
-
-    def run(self):
-        while True:
-            self.loop()
-
-
 class CancelLoop(Exception):
+    """Excepcion usada para cancelar loop externo"""
     pass
 
 
-class LlamadorGenerador(Llamador):
+class Llamador(object):
 
     def _pendientes(self):
         """Generador, devuelve datos para realizar llamadas"""
@@ -123,7 +84,7 @@ class LlamadorGenerador(Llamador):
                 logger.debug("No hay campanas en ejecucion. Esperaremos...")
                 time.sleep(2)
 
-    def loop(self, max_loops=0):
+    def run(self, max_loops=0):
         current_loop = 1
         for campana, id_contacto, numero in self._pendientes():
             logger.debug("loop(): campana: %s - id_contacto: %s - numero: %s",
@@ -134,95 +95,6 @@ class LlamadorGenerador(Llamador):
             if max_loops > 0 and current_loop > max_loops:
                 logger.info("max_loops alcanzado... saliendo...")
                 return
-
-
-#class LlamadorPoll(Llamador):
-#
-#    def __init__(self):
-#        self._trackers = dict()
-#
-#    def _refrescar_trackers(self):
-#        """Refresca la lista de self._trackers, si corresponde"""
-#
-#        for invalidado in ........
-#
-#        old_trackers = dict(self._trackers) # asi no tocamos `self._trackers`
-#        new_trackers = dict()
-#
-#        for campana in Campana.objects.obtener_ejecucion():
-#            if campana in old_trackers:
-#                logger.info("Campana %s ya esta siendo trackeada", campana.id)
-#                new_trackers[campana] = old_trackers[campana]
-#                del old_trackers[campana]
-#            else:
-#                logger.info("Se comenzara a trackear Campana %s", campana.id)
-#                new_trackers[campana] = Tracker(campana)
-#
-#        for campana in old_trackers:
-#            logger.info("Dejando de trackear Campana %s", campana.id)
-#
-#        # Y seteamos el nuevo dict de trackers
-#        self._trackers = new_trackers
-#
-#    def loop(self):
-#        # Refrescamos si correspodne
-#        self._refrescar_trackers()
-#
-#        # Iteramos copia, para poder eliminar camanas q' ya no estan en curso
-#        for campana, tracker in self._trackers:
-#
-#            # Chequeamos actuacion
-#            actuacion = campana.obtener_actuacion_actual()
-#            if not actuacion:
-#                tracker.invalidar()
-#                continue
-
-
-#def procesar_campana(campana):
-#    """Procesa una campana (no chequea su estado, se suponque que
-#    la campaña esta en el estado correcto).
-#
-#    El procesado incluye: buscar intentos de envios pendientes e
-#    intentar la llamadas.
-#
-#    Una vez que se procesaro tondos los intentos pendientes, se
-#    marca la campaña como finalizada.
-#
-#    Returns:
-#        cant_contactos_procesados
-#    """
-#    assert isinstance(campana, Campana)
-#    logger.info("Iniciando procesado de campana %s", campana.id)
-#    contador_contactos = 0
-#
-#    actuacion = campana.obtener_actuacion_actual()
-#    if not actuacion:
-#        return contador_contactos
-#
-#    for pendiente in campana.obtener_intentos_pendientes():
-#        # Fecha actual local.
-#        hoy_ahora = datetime.datetime.now()
-#
-#        # Esto quiza no haga falta, porque en teoria
-#        # el siguiente control de actuacion detectara el
-#        # cambio de dia, igual hacemos este re-control
-#        if not campana.verifica_fecha(hoy_ahora):
-#            return contador_contactos
-#
-#        if not actuacion.verifica_actuacion(hoy_ahora):
-#            return contador_contactos
-#
-#        # Valida que la campana no se haya pausado.
-#        if Campana.objects.verifica_estado_pausada(campana.pk):
-#            return contador_contactos
-#
-#        procesar_contacto(pendiente, campana)
-#        contador_contactos += 1
-#    else:
-#        logger.info("Marcando campana %s como FINALIZADA", campana.id)
-#        campana.finalizar()
-#
-#    return contador_contactos
 
 
 def procesar_contacto(campana, contacto_id, numero):
@@ -270,13 +142,8 @@ def procesar_contacto(campana, contacto_id, numero):
 
 def main():
     logger.info("Iniciando loop: obteniendo campanas activas...")
-    #while True:
-    #    campanas = Campana.objects.obtener_ejecucion()
-    #    for campana in campanas:
-    #        procesar_campana(campana)
-    #    time.sleep(2)
     FTS_MAX_LOOPS = int(os.environ.get("FTS_MAX_LOOPS", "0"))
-    LlamadorGenerador().loop(max_loops=FTS_MAX_LOOPS)
+    Llamador().run(max_loops=FTS_MAX_LOOPS)
 
 
 if __name__ == '__main__':
