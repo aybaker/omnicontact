@@ -884,7 +884,7 @@ class GestionDeLlamadasManager(models.Manager):
                 evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
             )
 
-    def obtener_contactos_pendientes(self, campana_id):
+    def obtener_contactos_nunca_intentados(self, campana_id):
         """Devuelve info de contactos pendientes de ser contactados.
         Se fija que cant. de eventos EVENTO_DAEMON_INICIA_INTENTO no
         supere a los de la campana, y busca contactos que todavia no posee
@@ -916,7 +916,7 @@ class GestionDeLlamadasManager(models.Manager):
 
         cursor = connection.cursor()
         with log_timing(logger,
-            "obtener_contactos_pendientes() tardo %s seg"):
+            "obtener_contactos_nunca_intentados() tardo %s seg"):
             cursor.execute(sql)
             values = cursor.fetchall()
 
