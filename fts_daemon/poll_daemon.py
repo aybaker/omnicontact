@@ -77,15 +77,15 @@ def procesar_contacto(pendiente, campana):
     EventoDeContacto.objects.inicia_intento(
         campana.id, pendiente.contacto.id)
 
-    # Local/{callId}-{numberToCall}@FTS_local_campana_{campanaId}
+    # Local/{contactoId}-{numberToCall}@FTS_local_campana_{campanaId}
     channel = settings.ASTERISK['LOCAL_CHANNEL'].format(
-        callId=str(pendiente.id),
+        contactoId=str(pendiente.contacto.id),
         numberToCall=str(pendiente.contacto.telefono),
         campanaId=str(campana.id),
     )
     context = campana.get_nombre_contexto_para_asterisk()
     exten = settings.ASTERISK['EXTEN'].format(
-        callId=str(pendiente.id),
+        contactoId=str(pendiente.id),
     )
 
     http_client_clazz = get_class(settings.FTS_ASTERISK_HTTP_CLIENT)

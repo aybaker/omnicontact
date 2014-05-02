@@ -108,20 +108,20 @@ FTS_PROGRAMAR_CAMPANA_FUNC = "_programar_campana_sqlite"
 ASTERISK = {}
 
 # ~~~ Ejemplo ~~~
-# ASTERISK = {
-#    'USERNAME': 'asteriskadmin',
-#    'PASSWORD': 'unpassword',
-#    'HOST': '172.19.1.104',
+#ASTERISK = {
+#    'USERNAME': 'xx',
+#    'PASSWORD': 'xx',
+#    'HOST': 'xx.xx.xx.xx',
 #    'PORT': 5038,
-#    'CHANNEL_PREFIX': "IAX2/172.19.1.101/{numberToCall}",
+#    'CHANNEL_PREFIX': "IAX2/xx.xx.xx.xx/{numberToCall}",
 #    'LOCAL_CHANNEL':
-#        'Local/{callId}-{numberToCall}@FTS_local_campana_{campanaId}',
+#        'Local/{contactoId}-{numberToCall}@FTS_local_campana_{campanaId}',
 #    'CONTEXT': "campania_{campanaId}",
-#    'EXTEN': "fts{callId}",
+#    'EXTEN': "fts{contactoId}",
 #    'PRIORITY': 1,
 #    'TIMEOUT': 5,
-#    'HTTP_AMI_URL': 'http://172.19.1.104:7088',
-# }
+#    'HTTP_AMI_URL': 'http://xx.xx.xx.xx:7088',
+#}
 
 
 ALLOWED_HOSTS = []
