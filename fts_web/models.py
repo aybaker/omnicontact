@@ -435,49 +435,49 @@ class Campana(models.Model):
             return True
         return False
 
-    def obtener_intentos_pendientes(self):
-        """Devuelve instancias de IntentoDeContacto para los que
-        haya que intentar realizar llamadas.
-        Solo tiene sentido ejecutar este metodo en campanas activas.
-        """
-        # (a) Este metodo tambien se podria poner en IntentoDeContactoManager
-        # pero me parece mas asertado implementarlo en campaña, asi se
-        # pueden controlar cosas como el estado de la campaña, por ejemplo.
-        # (b) Otra forma sería dejar este metodo (para poder hacer controles
-        # a nivel de campaña), pero la busqueda de las instancias de
-        # IntentoDeContacto hacerlo usando IntentoDeContactoManager.
-        # Esta alternativa me gusta (cada modelo maneja su logica), pero
-        # tengo la duda de que valga la pena hacer 2 metodos en vez de 1.
-        # La ventaja es que, con esta última idea, cada modelo es
-        # manejado por si mismo, algo que puede ayudar a la mantenibilidad.
-        # DECISION: que cada modelo maneje su parte
-        #assert self.estado in [Campana.ESTADO_ACTIVA]
-        return IntentoDeContacto.objects._obtener_pendientes_de_campana(
-            self.id)
-
-    def obtener_intentos_contesto(self):
-        """
-        Devuelve instancias de IntentoDeContacto para los que
-        haya que se contesto la llamadas.
-        """
-        return IntentoDeContacto.objects._obtener_contesto_de_campana(
-            self.id)
-
-    def obtener_intentos_no_contesto(self):
-        """
-        Devuelve instancias de IntentoDeContacto para los que
-        haya que no se contesto la llamadas.
-        """
-        return IntentoDeContacto.objects._obtener_no_contesto_de_campana(
-            self.id)
-
-    def obtener_intentos_error_interno(self):
-        """
-        Devuelve instancias de IntentoDeContacto para los que
-        haya que se registro un error interno en la llamadas.
-        """
-        return IntentoDeContacto.objects._obtener_error_interno_de_campana(
-            self.id)
+#    def obtener_intentos_pendientes(self):
+#        """Devuelve instancias de IntentoDeContacto para los que
+#        haya que intentar realizar llamadas.
+#        Solo tiene sentido ejecutar este metodo en campanas activas.
+#        """
+#        # (a) Este metodo tambien se podria poner en IntentoDeContactoManager
+#        # pero me parece mas asertado implementarlo en campaña, asi se
+#        # pueden controlar cosas como el estado de la campaña, por ejemplo.
+#        # (b) Otra forma sería dejar este metodo (para poder hacer controles
+#        # a nivel de campaña), pero la busqueda de las instancias de
+#        # IntentoDeContacto hacerlo usando IntentoDeContactoManager.
+#        # Esta alternativa me gusta (cada modelo maneja su logica), pero
+#        # tengo la duda de que valga la pena hacer 2 metodos en vez de 1.
+#        # La ventaja es que, con esta última idea, cada modelo es
+#        # manejado por si mismo, algo que puede ayudar a la mantenibilidad.
+#        # DECISION: que cada modelo maneje su parte
+#        #assert self.estado in [Campana.ESTADO_ACTIVA]
+#        return IntentoDeContacto.objects._obtener_pendientes_de_campana(
+#            self.id)
+#
+#    def obtener_intentos_contesto(self):
+#        """
+#        Devuelve instancias de IntentoDeContacto para los que
+#        haya que se contesto la llamadas.
+#        """
+#        return IntentoDeContacto.objects._obtener_contesto_de_campana(
+#            self.id)
+#
+#    def obtener_intentos_no_contesto(self):
+#        """
+#        Devuelve instancias de IntentoDeContacto para los que
+#        haya que no se contesto la llamadas.
+#        """
+#        return IntentoDeContacto.objects._obtener_no_contesto_de_campana(
+#            self.id)
+#
+#    def obtener_intentos_error_interno(self):
+#        """
+#        Devuelve instancias de IntentoDeContacto para los que
+#        haya que se registro un error interno en la llamadas.
+#        """
+#        return IntentoDeContacto.objects._obtener_error_interno_de_campana(
+#            self.id)
 
     def url_grafico_torta(self):
         """
@@ -568,85 +568,85 @@ class Campana(models.Model):
                 })
 
 
-#==============================================================================
-# IntentoDeContacto
-#==============================================================================
-
-class IntentoDeContactoManager(models.Manager):
-    """Manager para el modelo IntentoDeContacto"""
-
-    def _obtener_pendientes_de_campana(self, campana_id):
-        """Devuelve QuerySet con intentos pendientes de una campana, ignora
-        completamente las cuestiones de la campaña, como su estado.
-
-        Esto es parte de la API interna, y no deberia usarse directamente
-        nada más que desde otros Managers.
-
-        Para buscar intentos pendientes de una campaña, usar:
-            Campana.obtener_intentos_pendientes()
-        """
-        raise NotImplementedError()
-
-    def _obtener_no_contesto_de_campana(self, campana_id):
-        """Devuelve QuerySet con intentos no contestados de una campana, ignora
-        completamente las cuestiones de la campaña, como su estado.
-
-        Esto es parte de la API interna, y no deberia usarse directamente
-        nada más que desde otros Managers.
-
-        Para buscar intentos no contestados de una campaña, usar:
-            Campana.obtener_intentos_no_contestados()
-        """
-        raise NotImplementedError()
-
-    def _obtener_contesto_de_campana(self, campana_id):
-        """Devuelve QuerySet con intentos contestados de una campana, ignora
-        completamente las cuestiones de la campaña, como su estado.
-
-        Esto es parte de la API interna, y no deberia usarse directamente
-        nada más que desde otros Managers.
-
-        Para buscar intentos no contestados de una campaña, usar:
-            Campana.obtener_intentos_contestados()
-        """
-        raise NotImplementedError()
-
-    def _obtener_error_interno_de_campana(self, campana_id):
-        """Devuelve QuerySet con intentos erroneos de una campana, ignora
-        completamente las cuestiones de la campaña, como su estado.
-
-        Esto es parte de la API interna, y no deberia usarse directamente
-        nada más que desde otros Managers.
-
-        Para buscar intentos no contestados de una campaña, usar:
-            Campana.obtener_intentos_error_interno()
-        """
-        raise NotImplementedError()
-
-    def update_estado_por_originate(self, intento_id, originate_ok):
-        """Actualiza el estado del intento, dependiendo del resultado
-        del comando originate.
-        """
-        raise NotImplementedError()
-
-
-class IntentoDeContacto(models.Model):
-    objects = IntentoDeContactoManager()
-    contacto = models.ForeignKey(
-        'Contacto',
-        related_name='+'
-    )
-    campana = models.ForeignKey(
-        'Campana',
-        related_name='intentos_de_contactos'
-    )
-    fecha_intento = models.DateTimeField(
-        null=True, blank=True
-    )
-    estado = models.PositiveIntegerField()
-
-    def __unicode__(self):
-        raise NotImplementedError()
+##============================================================================
+## IntentoDeContacto
+##============================================================================
+#
+#class IntentoDeContactoManager(models.Manager):
+#    """Manager para el modelo IntentoDeContacto"""
+#
+#    def _obtener_pendientes_de_campana(self, campana_id):
+#        """Devuelve QuerySet con intentos pendientes de una campana, ignora
+#        completamente las cuestiones de la campaña, como su estado.
+#
+#        Esto es parte de la API interna, y no deberia usarse directamente
+#        nada más que desde otros Managers.
+#
+#        Para buscar intentos pendientes de una campaña, usar:
+#            Campana.obtener_intentos_pendientes()
+#        """
+#        raise NotImplementedError()
+#
+#    def _obtener_no_contesto_de_campana(self, campana_id):
+#        """Devuelve QuerySet con intentos no contestados de una campana,
+#        ignora completamente las cuestiones de la campaña, como su estado.
+#
+#        Esto es parte de la API interna, y no deberia usarse directamente
+#        nada más que desde otros Managers.
+#
+#        Para buscar intentos no contestados de una campaña, usar:
+#            Campana.obtener_intentos_no_contestados()
+#        """
+#        raise NotImplementedError()
+#
+#    def _obtener_contesto_de_campana(self, campana_id):
+#        """Devuelve QuerySet con intentos contestados de una campana, ignora
+#        completamente las cuestiones de la campaña, como su estado.
+#
+#        Esto es parte de la API interna, y no deberia usarse directamente
+#        nada más que desde otros Managers.
+#
+#        Para buscar intentos no contestados de una campaña, usar:
+#            Campana.obtener_intentos_contestados()
+#        """
+#        raise NotImplementedError()
+#
+#    def _obtener_error_interno_de_campana(self, campana_id):
+#        """Devuelve QuerySet con intentos erroneos de una campana, ignora
+#        completamente las cuestiones de la campaña, como su estado.
+#
+#        Esto es parte de la API interna, y no deberia usarse directamente
+#        nada más que desde otros Managers.
+#
+#        Para buscar intentos no contestados de una campaña, usar:
+#            Campana.obtener_intentos_error_interno()
+#        """
+#        raise NotImplementedError()
+#
+#    def update_estado_por_originate(self, intento_id, originate_ok):
+#        """Actualiza el estado del intento, dependiendo del resultado
+#        del comando originate.
+#        """
+#        raise NotImplementedError()
+#
+#
+#class IntentoDeContacto(models.Model):
+#    objects = IntentoDeContactoManager()
+#    contacto = models.ForeignKey(
+#        'Contacto',
+#        related_name='+'
+#    )
+#    campana = models.ForeignKey(
+#        'Campana',
+#        related_name='intentos_de_contactos'
+#    )
+#    fecha_intento = models.DateTimeField(
+#        null=True, blank=True
+#    )
+#    estado = models.PositiveIntegerField()
+#
+#    def __unicode__(self):
+#        raise NotImplementedError()
 
 
 #==============================================================================
