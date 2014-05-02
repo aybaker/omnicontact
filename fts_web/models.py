@@ -405,18 +405,14 @@ class Campana(models.Model):
 
     def obtener_actuacion_actual(self):
         """
-        Este método devuelve la actuación que se este procesado al
+        Este método devuelve la actuación correspondiente al
         momento de hacer la llamada al método.
         Si no hay ninguna devuelve None.
         """
         hoy_ahora = datetime.datetime.today()
         assert (hoy_ahora.tzinfo is None)
-        fecha_actual = hoy_ahora.date()
         dia_semanal = hoy_ahora.weekday()
         hora_actual = hoy_ahora.time()
-
-        if not self.fecha_inicio <= fecha_actual <= self.fecha_fin:
-            return None
 
         actuaciones_hoy = self.actuaciones.filter(dia_semanal=dia_semanal)
         if not actuaciones_hoy:
