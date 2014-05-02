@@ -884,77 +884,110 @@ class GestionDeLlamadasManager(models.Manager):
                 evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
             )
 
-    def obtener_contactos_nunca_intentados(self, campana_id):
-        """Devuelve info de contactos pendientes de ser contactados.
-        Se fija que cant. de eventos EVENTO_DAEMON_INICIA_INTENTO no
-        supere a los de la campana, y busca contactos que todavia no posee
-        eventos EVENTO_DAEMON_INICIA_INTENTO (o sea, q' todavia no fueron
-        contactados).
+    #def obtener_contactos_nunca_intentados(self, campana_id):
+    #    """Devuelve info de contactos pendientes de ser contactados.
+    #    Se fija que cant. de eventos EVENTO_DAEMON_INICIA_INTENTO no
+    #    supere a los de la campana, y busca contactos que todavia no posee
+    #    eventos EVENTO_DAEMON_INICIA_INTENTO (o sea, q' todavia no fueron
+    #    contactados).
+    #    """
+    #    campana = Campana.objects.get(pk=campana_id)
+    #
+    #    # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+    #    sql = """
+    #    SELECT contacto_id
+    #    FROM fts_web_eventodecontacto
+    #    WHERE evento = {ev_programado}
+    #        AND campana_id = {campana_id}
+    #        AND contacto_id NOT IN (
+    #            SELECT DISTINCT contacto_id
+    #            FROM fts_web_eventodecontacto
+    #            WHERE evento = {ev_intento}
+    #                AND campana_id = {campana_id})
+    #    LIMIT {limit}
+    #    """.format(campana_id=campana.id,
+    #        ev_programado=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
+    #        ev_intento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+    #        limit=100)
+    #
+    #    cursor = connection.cursor()
+    #    with log_timing(logger,
+    #        "obtener_contactos_nunca_intentados() tardo %s seg"):
+    #        cursor.execute(sql)
+    #        values = cursor.fetchall()
+    #
+    #    id_contactos = [row[0] for row in values]
+    #
+    #    if id_contactos:
+    #        contactos = Contacto.objects.filter(pk__in=id_contactos)
+    #        return contactos
+    #    else:
+    #        return Contacto.objects.none()
+
+    #def obtener_contactos_pendientes(self, campana_id, limit=100):
+    #    campana = Campana.objects.get(pk=campana_id)
+    #
+    #    # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+    #    sql = """
+    #    SELECT count(*) AS "ev_count", contacto_id AS "contacto_id"
+    #    FROM fts_web_eventodecontacto
+    #    WHERE evento = {ev_intento}
+    #        AND campana_id = {campana_id}
+    #    GROUP BY contacto_id
+    #    HAVING count(*) < {max_intentos}
+    #    ORDER BY 1
+    #    LIMIT {limit}
+    #    """.format(campana_id=campana.id,
+    #        max_intentos=campana.cantidad_intentos,
+    #        ev_intento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+    #        limit=int(limit))
+    #
+    #    cursor = connection.cursor()
+    #    with log_timing(logger,
+    #        "obtener_contactos_pendientes() tardo %s seg"):
+    #        cursor.execute(sql)
+    #        values = cursor.fetchall()
+    #
+    #    id_contactos = [row[1] for row in values]
+    #
+    #    if id_contactos:
+    #        contactos = Contacto.objects.filter(pk__in=id_contactos)
+    #        return contactos
+    #    else:
+    #        return Contacto.objects.none()
+
+    def obtener_pendientes(self, campana_id, limit=100):
+        """Devuelve lista de listas. Cada elemento de la lista contiene
+        una lista, con 2 items:
+        - item[0]: cantidad de veces intentado
+        - item[1]: id_contacto
         """
         campana = Campana.objects.get(pk=campana_id)
-
-        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
-        sql = """
-        SELECT contacto_id
-        FROM fts_web_eventodecontacto
-        WHERE evento = {ev_programado}
-            AND campana_id = {campana_id}
-            AND contacto_id NOT IN (
-                SELECT DISTINCT contacto_id
-                FROM fts_web_eventodecontacto
-                WHERE evento = {ev_intento}
-                    AND campana_id = {campana_id})
-        LIMIT {limit}
-        """.format(campana_id=campana.id,
-            ev_programado=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
-            ev_intento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
-            limit=100)
-
-        cursor = connection.cursor()
-        with log_timing(logger,
-            "obtener_contactos_nunca_intentados() tardo %s seg"):
-            cursor.execute(sql)
-            values = cursor.fetchall()
-
-        id_contactos = [row[0] for row in values]
-
-        if id_contactos:
-            contactos = Contacto.objects.filter(pk__in=id_contactos)
-            return contactos
-        else:
-            return Contacto.objects.none()
-
-    def obtener_contactos_pendientes(self, campana_id, limit=100):
-        campana = Campana.objects.get(pk=campana_id)
-
+    
         # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
         SELECT count(*) AS "ev_count", contacto_id AS "contacto_id"
         FROM fts_web_eventodecontacto
-        WHERE evento = {ev_intento}
+        WHERE (evento = {ev_programado} OR evento = {ev_intento})
             AND campana_id = {campana_id}
         GROUP BY contacto_id
-        HAVING count(*) < {max_intentos}
+        HAVING count(*) < {max_intentos} + 1
         ORDER BY 1
         LIMIT {limit}
         """.format(campana_id=campana.id,
             max_intentos=campana.cantidad_intentos,
+            ev_programado=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
             ev_intento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
             limit=int(limit))
 
         cursor = connection.cursor()
         with log_timing(logger,
-            "obtener_contactos_pendientes() tardo %s seg"):
+            "_obtener_pendientes() tardo %s seg"):
             cursor.execute(sql)
             values = cursor.fetchall()
-
-        id_contactos = [row[1] for row in values]
-
-        if id_contactos:
-            contactos = Contacto.objects.filter(pk__in=id_contactos)
-            return contactos
-        else:
-            return Contacto.objects.none()
+    
+        values = [(row[0] - 1, row[1], ) for row in values]
+        return values
 
     def obtener_info_de_intentos(self, campana_id):
         """Devuelve una lista de listas con información de intentos
