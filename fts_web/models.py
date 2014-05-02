@@ -242,13 +242,6 @@ class Contacto(models.Model):
 
 class CampanaManager(models.Manager):
     """Manager para Campanas"""
-    #    def get_queryset(self):
-    #        # F-I-X-M-E: esto no romperá los modelforms? Ej: form.campana. Si la campana
-    #        # que referencia el modelform esta ESTADO_EN_DEFINICION, ¿aparece en el html?
-    #        # Especificamente, en el caso de Campana.estado no habria problema, pero
-    #        # esta medotodologia de filtrado automatico ¿podria ser un peligro
-    #        # en el "borrado logico"?
-    #        return super(CampanaManager, self).exclude(estado=Campana.ESTADO_EN_DEFINICION)
 
     def obtener_activas(self):
         """Devuelve campañas en estado activas.
