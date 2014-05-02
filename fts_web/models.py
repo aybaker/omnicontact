@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.db import models
-from fts_web.utiles import upload_to, get_class_or_func
+from fts_web.utiles import upload_to
 import pygal
 
 
@@ -780,12 +780,6 @@ class EventoDeContactoManager(models.Manager):
     def programar_campana_postgresql(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
-        # id          | integer
-        # campana_id  | integer
-        # contacto_id | integer
-        # timestamp   | timestamp
-        # evento      | smallint
-        # dato        | smallint
 
         sql = """
         INSERT INTO fts_web_eventodecontacto
