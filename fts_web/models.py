@@ -763,6 +763,67 @@ class EventoDeContactoManager(models.Manager):
             dato=numero)
 
 
+class SimuladorEventoDeContactoManager():
+    """Simula acciones. Estos metodos son utilizados para pruebas,
+    o simular distintas acciones, pero NO deben utilizarse
+    en produccion.
+    """
+
+    def simular_realizacion_de_intentos(self, campana_id):
+        assert settings.DEBUG
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        sql = """
+        INSERT INTO fts_web_eventodecontacto
+            SELECT
+                nextval('fts_web_eventodecontacto_id_seq') as "id",
+                {campana_id} as "campana_id",
+                contacto_id as "contacto_id",
+                NOW() as "timestamp",
+                {evento} as "evento"
+            FROM
+                (
+                    SELECT DISTINCT contacto_id as "contacto_id"
+                        FROM fts_web_eventodecontacto
+                        WHERE campana_id = {campana_id}
+                            AND random() > 0.77
+                ) as "contacto_id"
+        """.format(campana_id=campana.id,
+                evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
+
+        with log_timing(logger,
+            "simular_realizacion_de_intentos() tardo %s seg"):
+            cursor.execute(sql)
+
+    def crear_bd_contactos_con_datos_random(self, cantidad):
+        assert settings.DEBUG
+        bd_contactos = BaseDatosContacto.objects.create(
+            nombre="PERF - {0} contactos".format(cantidad),
+            archivo_importacion='inexistete.csv',
+            nombre_archivo_importacion='inexistete.csv',
+            sin_definir=False,
+            columna_datos=1
+        )
+
+        cursor = connection.cursor()
+        sql = """
+            INSERT INTO fts_web_contacto
+                SELECT
+                    nextval('fts_web_contacto_id_seq') as "id",
+                    (random()*1000000000000)::bigint::text as "telefono",
+                    '' as "datos",
+                    {0} as "bd_contacto_id"
+                FROM
+                    generate_series(1, {1})
+        """.format(bd_contactos.id, cantidad)
+
+        with log_timing(logger,
+            "crear_bd_contactos_con_datos_random() tardo %s seg"):
+            cursor.execute(sql)
+        cursor.execute(sql)
+        return bd_contactos
+
+
 class GestionDeLlamadasManager(models.Manager):
     """Manager para EventoDeContacto, con la funcionalidad
     que es utilizada para la gestión más basica de las llamadas.
@@ -791,6 +852,7 @@ class GestionDeLlamadasManager(models.Manager):
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
 
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
         INSERT INTO fts_web_eventodecontacto
             SELECT
@@ -820,6 +882,42 @@ class GestionDeLlamadasManager(models.Manager):
                 evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
             )
 
+    def obtener_info_de_intentos(self, campana_id):
+        """
+        Devuelve una lista de listas con información de intentos
+        realizados, ordenados por cantidad de intentos (ej: 1, 2, etc.)
+
+        Los elementos de la lista devuelta son listas, que contienen
+        dos elementos:
+
+        1. cantidad de intentos (1, 2, etc)
+        2. count, cantidad de contactos que poseen esa cantidad
+           de intentos
+
+        Ejemplo: _((1, 721,), (2, 291,))_ 721 contactos fueron
+        intentados 1 vez, 291 contactos 2 veces
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        # FIXME: PERFORMANCE: quitar sub-select
+        sql = """SELECT DISTINCT ev_count, count(*) FROM
+            (
+                SELECT count(*) AS "ev_count"
+                FROM fts_web_eventodecontacto
+                WHERE evento = {evento} and campana_id = {campana_id}
+                GROUP BY contacto_id
+            ) AS "ev_count"
+            GROUP BY ev_count
+            ORDER BY 1
+        """.format(campana_id=campana.id,
+            evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
+
+        with log_timing(logger, "obtener_info_de_intentos() "
+            "tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+        return values
+
 
 class EventoDeContacto(models.Model):
     """
@@ -829,6 +927,7 @@ class EventoDeContacto(models.Model):
 
     objects = EventoDeContactoManager()
     objects_gestion_llamadas = GestionDeLlamadasManager()
+    objects_simulacion = SimuladorEventoDeContactoManager()
 
     EVENTO_CONTACTO_PROGRAMADO = 1
     """El contacto asociado al evento ha sido programado, o sea,
