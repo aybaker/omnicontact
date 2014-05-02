@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import os
-import logging
 import datetime
-import pygal
+import logging
+import os
 
 from django.conf import settings
-
-from django.db import models
 from django.core.exceptions import ValidationError
-
-from fts_web.utiles import upload_to
+from django.db import connection
+from django.db import models
+from fts_web.utiles import upload_to, log_timing
+import pygal
 
 
 logger = logging.getLogger(__name__)
@@ -243,13 +242,6 @@ class Contacto(models.Model):
 
 class CampanaManager(models.Manager):
     """Manager para Campanas"""
-    #    def get_queryset(self):
-    #        # F-I-X-M-E: esto no romperá los modelforms? Ej: form.campana. Si la campana
-    #        # que referencia el modelform esta ESTADO_EN_DEFINICION, ¿aparece en el html?
-    #        # Especificamente, en el caso de Campana.estado no habria problema, pero
-    #        # esta medotodologia de filtrado automatico ¿podria ser un peligro
-    #        # en el "borrado logico"?
-    #        return super(CampanaManager, self).exclude(estado=Campana.ESTADO_EN_DEFINICION)
 
     def obtener_activas(self):
         """Devuelve campañas en estado activas.
@@ -378,7 +370,10 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_ACTIVA
         self.save()
 
-        IntentoDeContacto.objects.crear_intentos_para_campana(self.id)
+        # FIXME: este proceso puede ser costoso, deberia ser asincrono
+        # TODO: log timing
+        EventoDeContacto.objects_gestion_llamadas.programar_campana(
+            self.id)
 
     def finalizar(self):
         """
@@ -583,26 +578,6 @@ class Campana(models.Model):
 class IntentoDeContactoManager(models.Manager):
     """Manager para el modelo IntentoDeContacto"""
 
-    def crear_intentos_para_campana(self, campana_id):
-        """Crea todas las instancias de 'IntentoDeContacto'
-        para la campaña especificada por parametro.
-        """
-        # TODO: refactorizar este metodo (ver comentario que sigue)
-        # Esto de la creacion de los intentos NO sigue la idea documentada
-        # en 'obtener_intentos_pendientes()'
-        # Para continuar con dicha idea, este metodo deberia ser privado
-        # y se deberia crear un metodo en Campana que llame a este de aca.
-        # El estado y demas cuestiones de Campana se chequearian en dicha clase
-        logger.info("Creando IntentoDeContacto para campana %s", campana_id)
-        campana = Campana.objects.get(pk=campana_id)
-        assert campana.estado == Campana.ESTADO_ACTIVA
-        assert campana.bd_contacto is not None
-        assert not self._obtener_pendientes_de_campana(campana_id).exists()
-
-        for contacto in campana.bd_contacto.contactos.all():
-            # TODO: esto traera problemas de performance
-            self.create(contacto=contacto, campana=campana)
-
     def _obtener_pendientes_de_campana(self, campana_id):
         """Devuelve QuerySet con intentos pendientes de una campana, ignora
         completamente las cuestiones de la campaña, como su estado.
@@ -613,8 +588,7 @@ class IntentoDeContactoManager(models.Manager):
         Para buscar intentos pendientes de una campaña, usar:
             Campana.obtener_intentos_pendientes()
         """
-        return self.filter(campana=campana_id,
-            estado=IntentoDeContacto.ESTADO_PROGRAMADO)
+        raise NotImplementedError()
 
     def _obtener_no_contesto_de_campana(self, campana_id):
         """Devuelve QuerySet con intentos no contestados de una campana, ignora
@@ -626,8 +600,7 @@ class IntentoDeContactoManager(models.Manager):
         Para buscar intentos no contestados de una campaña, usar:
             Campana.obtener_intentos_no_contestados()
         """
-        return self.filter(campana=campana_id,
-            estado=IntentoDeContacto.ESTADO_NO_CONTESTO)
+        raise NotImplementedError()
 
     def _obtener_contesto_de_campana(self, campana_id):
         """Devuelve QuerySet con intentos contestados de una campana, ignora
@@ -639,8 +612,7 @@ class IntentoDeContactoManager(models.Manager):
         Para buscar intentos no contestados de una campaña, usar:
             Campana.obtener_intentos_contestados()
         """
-        return self.filter(campana=campana_id,
-            estado=IntentoDeContacto.ESTADO_CONTESTO)
+        raise NotImplementedError()
 
     def _obtener_error_interno_de_campana(self, campana_id):
         """Devuelve QuerySet con intentos erroneos de una campana, ignora
@@ -652,64 +624,17 @@ class IntentoDeContactoManager(models.Manager):
         Para buscar intentos no contestados de una campaña, usar:
             Campana.obtener_intentos_error_interno()
         """
-        return self.filter(campana=campana_id,
-            estado=IntentoDeContacto.ESTADO_ERROR_INTERNO)
+        raise NotImplementedError()
 
     def update_estado_por_originate(self, intento_id, originate_ok):
         """Actualiza el estado del intento, dependiendo del resultado
         del comando originate.
         """
-        # FIXME: falta implementar tests
-        # TODO: quiza haria falta un estado 'DESCONOCIDO'
-        # TODO: evaluar usar eventos en vez de cambios de estados en la BD
-        #  (al estilo NoSQL)
-        
-        if originate_ok:
-            self.filter(id=intento_id,
-                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
-                    estado=IntentoDeContacto.ESTADO_ORIGINATE_SUCCESSFUL)
-        else:
-            self.filter(id=intento_id,
-                estado=IntentoDeContacto.ESTADO_PROGRAMADO).update(
-                    estado=IntentoDeContacto.ESTADO_ORIGINATE_FAILED)
+        raise NotImplementedError()
 
 
 class IntentoDeContacto(models.Model):
-    """Representa un contacto por contactar, asociado a
-    una campaña. Estas instancias son actualizadas con
-    cada intento, y aqui se guarda el estado final
-    (ej: si se ha contactado o no)
-    """
-
     objects = IntentoDeContactoManager()
-
-    ESTADO_PROGRAMADO = 1
-    """EL intento esta pendiente de ser realizado"""
-
-    ESTADO_ORIGINATE_SUCCESSFUL = 2
-    """El originate se produjo exitosamente"""
-
-    ESTADO_ORIGINATE_FAILED = 3
-    """El originate devolvio error"""
-
-    ESTADO_NO_CONTESTO = 4
-    """El destinatario no ha atendido el llamado"""
-
-    ESTADO_CONTESTO = 5
-    """El destinatario atendio el llamado"""
-
-    ESTADO_ERROR_INTERNO = 5
-    """Se produjo un error interno del sistema"""
-
-    ESTADO = (
-        (ESTADO_PROGRAMADO, 'Pendiente'),
-        (ESTADO_ORIGINATE_SUCCESSFUL, 'Originate OK'),
-        (ESTADO_ORIGINATE_FAILED, 'Originate Fallo'),
-        (ESTADO_NO_CONTESTO, 'No atendio'),
-        (ESTADO_CONTESTO, 'Atendio'),
-        (ESTADO_ERROR_INTERNO, 'Error interno'),
-    )
-
     contacto = models.ForeignKey(
         'Contacto',
         related_name='+'
@@ -721,25 +646,10 @@ class IntentoDeContacto(models.Model):
     fecha_intento = models.DateTimeField(
         null=True, blank=True
     )
-    estado = models.PositiveIntegerField(
-        choices=ESTADO,
-        default=ESTADO_PROGRAMADO,
-    )
-
-    def registra_contesto(self):
-        """Registra el resultado del intento como que el destinatario
-        ha contestado
-        """
-        # FIXME: testear
-        logger.info("Registrando IntentoDeContacto %s como ESTADO_CONTESTO",
-            self.id)
-        assert self.estado == IntentoDeContacto.ESTADO_PROGRAMADO
-        self.estado = IntentoDeContacto.ESTADO_CONTESTO
-        self.save()
+    estado = models.PositiveIntegerField()
 
     def __unicode__(self):
-        return "Intento de campaña {0} a contacto {1}".format(
-            self.campana, self.contacto.id)
+        raise NotImplementedError()
 
 
 #==============================================================================
@@ -749,12 +659,12 @@ class IntentoDeContacto(models.Model):
 class EventoDeContactoManager(models.Manager):
     """Manager para EventoDeContacto"""
 
-    def create_evento_daemon_programado(self,
+    def inicia_intento(self,
         campana_id, contacto_id):
-        """Crea evento EVENTO_DAEMON_PROGRAMADO"""
+        """Crea evento EVENTO_DAEMON_INICIA_INTENTO"""
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
-            evento=EventoDeContacto.EVENTO_DAEMON_PROGRAMADO)
+            evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
 
     def create_evento_daemon_originate_successful(self,
         campana_id, contacto_id):
@@ -845,6 +755,190 @@ class EventoDeContactoManager(models.Manager):
             dato=numero)
 
 
+class SimuladorEventoDeContactoManager():
+    """Simula acciones. Estos metodos son utilizados para pruebas,
+    o simular distintas acciones, pero NO deben utilizarse
+    en produccion.
+    """
+
+    def simular_realizacion_de_intentos(self, campana_id):
+        assert settings.DEBUG
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        # TODO: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """
+        INSERT INTO fts_web_eventodecontacto
+            SELECT
+                nextval('fts_web_eventodecontacto_id_seq') as "id",
+                {campana_id} as "campana_id",
+                contacto_id as "contacto_id",
+                NOW() as "timestamp",
+                {evento} as "evento"
+            FROM
+                (
+                    SELECT DISTINCT contacto_id as "contacto_id"
+                        FROM fts_web_eventodecontacto
+                        WHERE campana_id = {campana_id}
+                            AND random() > 0.77
+                ) as "contacto_id"
+        """.format(campana_id=campana.id,
+                evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
+
+        with log_timing(logger,
+            "simular_realizacion_de_intentos() tardo %s seg"):
+            cursor.execute(sql)
+
+    def crear_bd_contactos_con_datos_random(self, cantidad):
+        assert settings.DEBUG
+        bd_contactos = BaseDatosContacto.objects.create(
+            nombre="PERF - {0} contactos".format(cantidad),
+            archivo_importacion='inexistete.csv',
+            nombre_archivo_importacion='inexistete.csv',
+            sin_definir=False,
+            columna_datos=1
+        )
+
+        cursor = connection.cursor()
+        # TODO: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """
+            INSERT INTO fts_web_contacto
+                SELECT
+                    nextval('fts_web_contacto_id_seq') as "id",
+                    (random()*1000000000000)::bigint::text as "telefono",
+                    '' as "datos",
+                    {0} as "bd_contacto_id"
+                FROM
+                    generate_series(1, {1})
+        """.format(bd_contactos.id, cantidad)
+
+        with log_timing(logger,
+            "crear_bd_contactos_con_datos_random() tardo %s seg"):
+            cursor.execute(sql)
+        return bd_contactos
+
+
+class GestionDeLlamadasManager(models.Manager):
+    """Manager para EventoDeContacto, con la funcionalidad
+    que es utilizada para la gestión más basica de las llamadas.
+
+    Incluye la funcionalidad de programar llamadas a realizar,
+    buscar llamadas pendientes, etc.
+
+    Esta funcionalidad es la más crítica del sistema, en cuestiones
+    de robustez y performance. Todos estos metodos deben estar
+    extensamenete probados.
+    """
+
+    def programar_campana(self, campana_id):
+        """
+        Crea eventos EVENTO_CONTACTO_PROGRAMADO para todos los contactos
+        de la campana.
+
+        Hace algo equivalente al viejo
+        *IntentoDeContacto.objects.crear_intentos_para_campana()*.
+        """
+        programar_campana_func = getattr(self,
+            settings.FTS_PROGRAMAR_CAMPANA_FUNC)
+        return programar_campana_func(campana_id)
+
+    def _programar_campana_postgresql(self, campana_id):
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """
+        INSERT INTO fts_web_eventodecontacto
+            SELECT
+                nextval('fts_web_eventodecontacto_id_seq') as "id",
+                {campana_id} as "campana_id",
+                fts_web_contacto.id as "contacto_id",
+                NOW() as "timestamp",
+                {evento} as "evento"
+            FROM
+                fts_web_contacto
+            WHERE
+                bd_contacto_id = {bd_contacto_id}
+        """.format(campana_id=campana.id,
+            bd_contacto_id=campana.bd_contacto.id,
+            evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+
+        with log_timing(logger, "_programar_campana_postgresql() "
+            "tardo %s seg"):
+            cursor.execute(sql)
+
+    def _programar_campana_sqlite(self, campana_id):
+        campana = Campana.objects.get(pk=campana_id)
+        for contacto in campana.bd_contacto.contactos.all():
+            EventoDeContacto.objects.create(
+                campana_id=campana.id,
+                contacto_id=contacto.id,
+                evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
+            )
+
+    def obtener_info_de_intentos(self, campana_id):
+        """
+        Devuelve una lista de listas con información de intentos
+        realizados, ordenados por cantidad de intentos (ej: 1, 2, etc.)
+
+        Los elementos de la lista devuelta son listas, que contienen
+        dos elementos:
+
+        1. cantidad de intentos (1, 2, etc)
+        2. count, cantidad de contactos que poseen esa cantidad
+           de intentos
+
+        Ejemplo: _((1, 721,), (2, 291,))_ 721 contactos fueron
+        intentados 1 vez, 291 contactos 2 veces
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        # FIXME: PERFORMANCE: quitar sub-select
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """SELECT DISTINCT ev_count, count(*) FROM
+            (
+                SELECT count(*) AS "ev_count"
+                FROM fts_web_eventodecontacto
+                WHERE evento = {evento} and campana_id = {campana_id}
+                GROUP BY contacto_id
+            ) AS "ev_count"
+            GROUP BY ev_count
+            ORDER BY 1
+        """.format(campana_id=campana.id,
+            evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
+
+        with log_timing(logger, "obtener_info_de_intentos() "
+            "tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+        return values
+
+    def obtener_count_eventos(self, campana_id):
+        """
+        Devuelve una lista de listas con información de count de eventos
+        para una campana.
+
+        Ejemplo: _((1, 412,), (2, 874,))_ implica que hay 412 eventos
+        del tipo '1', 874 eventos de tipo '2'.
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        # FIXME: PERFORMANCE: quitar sub-select
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """SELECT evento, count(*)
+            FROM fts_web_eventodecontacto
+            WHERE campana_id = {0}
+            GROUP BY evento
+            ORDER BY 1
+        """.format(campana.id)
+
+        cursor.execute(sql)
+        with log_timing(logger,
+            "obtener_count_eventos() tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+        return values
+
+
 class EventoDeContacto(models.Model):
     """
     - http://www.voip-info.org/wiki/view/Asterisk+cmd+Dial
@@ -852,8 +946,20 @@ class EventoDeContacto(models.Model):
     """
 
     objects = EventoDeContactoManager()
+    objects_gestion_llamadas = GestionDeLlamadasManager()
+    objects_simulacion = SimuladorEventoDeContactoManager()
 
-    EVENTO_DAEMON_PROGRAMADO = 1
+    EVENTO_CONTACTO_PROGRAMADO = 1
+    """El contacto asociado al evento ha sido programado, o sea,
+    eventualmente se generará una llamada al contacto en cuestión.
+
+    Todos los contactos que sólo poseen un evento de este tipo
+    son contactos que nunca fueron procesados por el daemon, ni una vez.
+
+    *Este evento es registrado por el daemon que realiza las llamadas.*
+    """
+
+    EVENTO_DAEMON_INICIA_INTENTO = 2
     """EL intento ha sido tomado por Daemon para ser procesado.
     Este evento *NO* implica que se haya realizado la llamada, pero
     *SI* que se ha tomado el contacto (asociado a este eveto)

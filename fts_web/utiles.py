@@ -7,19 +7,20 @@ Created on Apr 15, 2014
 '''
 
 from __future__ import unicode_literals
+
+from contextlib import contextmanager
+import os
 import re
+import tempfile
 import time
 import uuid
-import os
-
-from fts_web.errors import FtsError
 
 from django.conf import settings
-
+from fts_web.errors import FtsError
 import logging as _logging
-import tempfile
 
-logger = _logging.getLogger('poll_daemon')
+
+logger = _logging.getLogger(__name__)
 
 SUBSITUTE_REGEX = re.compile(r'[^a-z\._-]')
 
@@ -131,3 +132,20 @@ def get_class(full_name):
         raise FtsError(msg, e)
 
     return clazz
+
+get_class_or_func = get_class
+
+
+@contextmanager
+def log_timing(logger, template_message):
+    """Loguea el tiempo que ha tardado la ejecucion del codigo contenido
+    en `with`.
+    :param logger: Logger a utilizar para loguear el mensaje
+    :type logger: logging.Logger
+    :param template_message: Template para el mensaje. Debe contener %s,
+        para reemplazar por el tiempo transcurrido
+    :type template_message: str
+    """
+    start = time.time()
+    yield
+    logger.info(template_message, (time.time() - start))
