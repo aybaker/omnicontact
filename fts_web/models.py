@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import os
-import logging
 import datetime
-import pygal
+import logging
+import os
 
 from django.conf import settings
-
-from django.db import models
 from django.core.exceptions import ValidationError
-
+from django.db import connection
+from django.db import models
 from fts_web.utiles import upload_to
+import pygal
 
 
 logger = logging.getLogger(__name__)
@@ -378,7 +377,12 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_ACTIVA
         self.save()
 
-        IntentoDeContacto.objects.crear_intentos_para_campana(self.id)
+        # IntentoDeContacto.objects.crear_intentos_para_campana(self.id)
+        # FIXME: antes `activar()` creaba intentos, ahora lo hacemos
+        #  por fuera, pero esto cambia la semantica del metodo!
+        #  asi que hay que revisar donde impactay hacer los ajustes
+        #  necesarios. Algo equivalente, ahora es realizado
+        #  por EventoDeContactoManager.programar_campana()
 
     def finalizar(self):
         """
@@ -773,6 +777,41 @@ class EventoDeContactoManager(models.Manager):
                 EVENTO_ASTERISK_OPCION_SELECCIONADA,
             dato=numero)
 
+    def programar_campana(self, campana_id):
+        """
+        Crea eventos EVENTO_CONTACTO_PROGRAMADO para todos los contactos
+        de la campana.
+
+        Hace algo equivalente al viejo
+        *IntentoDeContacto.objects.crear_intentos_para_campana()*.
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        # id          | integer
+        # campana_id  | integer
+        # contacto_id | integer
+        # timestamp   | timestamp
+        # evento      | smallint
+        # dato        | smallint
+
+        sql = """
+        INSERT INTO fts_web_eventodecontacto
+            SELECT
+                nextval('fts_web_eventodecontacto_id_seq') as "id",
+                {campana_id} as "campana_id",
+                fts_web_contacto.id as "contacto_id",
+                NOW() as "timestamp",
+                {evento} as "evento"
+            FROM
+                fts_web_contacto
+            WHERE
+                bd_contacto_id = {bd_contacto_id}
+        """.format(campana_id=campana.id,
+            bd_contacto_id=campana.bd_contacto.id,
+            evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+
+        cursor.execute(sql)
+
 
 class EventoDeContacto(models.Model):
     """
@@ -782,7 +821,17 @@ class EventoDeContacto(models.Model):
 
     objects = EventoDeContactoManager()
 
-    EVENTO_DAEMON_INICIA_INTENTO = 1
+    EVENTO_CONTACTO_PROGRAMADO = 1
+    """El contacto asociado al evento ha sido programado, o sea,
+    eventualmente se generará una llamada al contacto en cuestión.
+
+    Todos los contactos que sólo poseen un evento de este tipo
+    son contactos que nunca fueron procesados por el daemon, ni una vez.
+
+    *Este evento es registrado por el daemon que realiza las llamadas.*
+    """
+
+    EVENTO_DAEMON_INICIA_INTENTO = 2
     """EL intento ha sido tomado por Daemon para ser procesado.
     Este evento *NO* implica que se haya realizado la llamada, pero
     *SI* que se ha tomado el contacto (asociado a este eveto)
