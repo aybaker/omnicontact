@@ -377,12 +377,8 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_ACTIVA
         self.save()
 
-        # IntentoDeContacto.objects.crear_intentos_para_campana(self.id)
-        # FIXME: antes `activar()` creaba intentos, ahora lo hacemos
-        #  por fuera, pero esto cambia la semantica del metodo!
-        #  asi que hay que revisar donde impactay hacer los ajustes
-        #  necesarios. Algo equivalente, ahora es realizado
-        #  por EventoDeContactoManager.programar_campana()
+        # FIXME: este proceso puede ser costoso, deberia ser asincrono
+        EventoDeContacto.objects.programar_campana(self.id)
 
     def finalizar(self):
         """
@@ -594,12 +590,6 @@ class Campana(models.Model):
 
 class IntentoDeContactoManager(models.Manager):
     """Manager para el modelo IntentoDeContacto"""
-
-    def crear_intentos_para_campana(self, campana_id):
-        """Crea todas las instancias de 'IntentoDeContacto'
-        para la campaña especificada por parametro.
-        """
-        raise NotImplementedError()
 
     def _obtener_pendientes_de_campana(self, campana_id):
         """Devuelve QuerySet con intentos pendientes de una campana, ignora
