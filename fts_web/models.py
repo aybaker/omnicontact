@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.db import models
-from fts_web.utiles import upload_to
+from fts_web.utiles import upload_to, log_timing
 import pygal
 
 
@@ -797,7 +797,9 @@ class EventoDeContactoManager(models.Manager):
             bd_contacto_id=campana.bd_contacto.id,
             evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
 
-        cursor.execute(sql)
+        with log_timing(logger, "programar_campana_postgresql() "
+            "tardo %s seg"):
+            cursor.execute(sql)
 
     def programar_campana_sqlite(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
