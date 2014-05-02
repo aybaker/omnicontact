@@ -408,49 +408,41 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_ACTIVA
         self.save()
 
-    def obtener_actuaciones_en_fecha_hora(self, hoy_ahora):
+    def obtener_actuacion_actual(self):
         """
-        Este método devuelve las actuaciones que tiene la campaña al
-        en el momento *hoy_ahora* especificado.
-        Valida que la fecha del momento hoy_ahora este en el rango
-        de la fecha de inicio y fin de la campaña, de lo contrario
-        devuelve None.
+        Este método devuelve la actuación que se este procesado al
+        momento de hacer la llamada al método.
+        Si no hay ninguna devuelve None.
         """
+        hoy_ahora = datetime.datetime.today()
+        assert (hoy_ahora.tzinfo is None)
         fecha_actual = hoy_ahora.date()
         dia_semanal = hoy_ahora.weekday()
+        hora_actual = hoy_ahora.time()
 
-        if self.fecha_inicio <= fecha_actual <= self.fecha_fin:
-            return self.actuaciones.filter(dia_semanal=dia_semanal) or None
-        return None
-
-    def obtener_rango_horario_actuacion_en_fecha_hora(self, hoy_ahora):
-        """
-        Este método devuelve el rango horario de la actuación en
-        el momento *hoy_ahora* para la campaña actual.
-        Valida que la hora del momento hoy_ahora este en el rango
-        de la hora de incio y fin de la actuación, de lo contrario
-        devuelve None.
-        """
-        #Devuelve None si no tiene actuaciones hoy y ahora.
-        actuaciones_hoy_ahora = self.obtener_actuaciones_en_fecha_hora(
-            hoy_ahora)
-        if not actuaciones_hoy_ahora:
+        if not self.fecha_inicio <= fecha_actual <= self.fecha_fin:
             return None
 
-        #Arma lista de tuplas con los  rangos horarios de
-        #las actuaciones de hoy y ahora.
-        actuaciones = [(actuacion.hora_desde, actuacion.hora_hasta)
-            for actuacion in actuaciones_hoy_ahora]
+        actuaciones_hoy = self.actuaciones.filter(dia_semanal=dia_semanal)
+        if not actuaciones_hoy:
+            return None
 
-        #Toma la actuación por la que se está ejecutando la campaña.
-        #La campaña no puede tener mas de 1 actuación en una hora determinada.
-        actuacion = None
-        for hora_desde, hora_hasta in actuaciones:
-            hora_actual = hoy_ahora.time()
-            if hora_desde <= hora_actual <= hora_hasta:
-                actuacion = (hora_desde, hora_hasta)
+        for actuacion in actuaciones_hoy:
+            if actuacion.hora_desde <= hora_actual <= actuacion.hora_hasta:
+                return actuacion
+        return None
 
-        return actuacion
+    def verifica_fecha(self, hoy_ahora):
+        """
+        Este método se encarga de verificar si la fecha pasada como
+        parametro en hoy_ahora es válida para la campaña actual.
+        Devuelve True o False.
+        """
+        fecha_actual = hoy_ahora.date()
+
+        if self.fecha_inicio <= fecha_actual <= self.fecha_fin:
+            return True
+        return False
 
     def obtener_intentos_pendientes(self):
         """Devuelve instancias de IntentoDeContacto para los que
@@ -1116,6 +1108,25 @@ class Actuacion(models.Model):
             self.campana,
             self.get_dia_semanal_display(),
         )
+
+    def verifica_actuacion(self, hoy_ahora):
+        """
+        Este método verifica que el día de la semana y la hora
+        pasada en el parámetro hoy_ahora sea válida para la
+        actuación actual.
+        Devuelve True o False.
+        """
+        dia_semanal = hoy_ahora.weekday()
+        hora_actual = datetime.time(
+            hoy_ahora.hour, hoy_ahora.minute, hoy_ahora.second)
+
+        if not self.dia_semanal == dia_semanal:
+            return False
+
+        if not self.hora_desde <= hora_actual <= self.hora_hasta:
+            return False
+
+        return True
 
     def clean(self):
         """
