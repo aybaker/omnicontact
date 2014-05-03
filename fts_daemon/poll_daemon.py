@@ -198,6 +198,7 @@ class RoundRobinTracker(object):
                 try:
                     yield tracker_campana.next()
                 except CampanaNoEnEjecucion:
+                    self._banear_campana(campana)
                     logger.debug("CampanaNoEnEjecucion: %s", campana.id)
                     try:
                         del self.trackers_campana[campana]
@@ -205,7 +206,10 @@ class RoundRobinTracker(object):
                         pass
                 except NoMasContactosEnCampana:
                     # Esta excepcion es generada cuando la campaña esta
-                    # en curso, pero ya fue finalizada
+                    # en curso (el estado), pero ya no tiene pendientes
+                    # FIXME: aca habria q' marcar la campana como finalizada?
+                    # El tema es que puede haber llamadas en curso, pero esto
+                    # no deberia ser problema...
                     self._banear_campana(campana)
                     logger.debug("NoMasContactosEnCampana: %s", campana.id)
                     try:
