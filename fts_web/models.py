@@ -759,6 +759,9 @@ class SimuladorEventoDeContactoManager():
     """Simula acciones. Estos metodos son utilizados para pruebas,
     o simular distintas acciones, pero NO deben utilizarse
     en produccion.
+
+    Tambien tiene metodos utilizados en scripst de pruebas
+    y tests cases.
     """
 
     def simular_realizacion_de_intentos(self, campana_id, probabilidad=0.33):
@@ -825,6 +828,67 @@ class SimuladorEventoDeContactoManager():
             "crear_bd_contactos_con_datos_random() tardo %s seg"):
             cursor.execute(sql)
         return bd_contactos
+
+    def obtener_info_de_intentos(self, campana_id):
+        """Devuelve una lista de listas con información de intentos
+        realizados, ordenados por cantidad de intentos (ej: 1, 2, etc.)
+
+        Los elementos de la lista devuelta son listas, que contienen
+        dos elementos:
+
+        1. cantidad de intentos (1, 2, etc)
+        2. count, cantidad de contactos que poseen esa cantidad
+           de intentos
+
+        Ejemplo: _((1, 721,), (2, 291,))_ 721 contactos fueron
+        intentados 1 vez, 291 contactos 2 veces
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        # FIXME: PERFORMANCE: quitar sub-select
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """SELECT DISTINCT ev_count, count(*) FROM
+            (
+                SELECT count(*) AS "ev_count"
+                FROM fts_web_eventodecontacto
+                WHERE evento = {evento} and campana_id = {campana_id}
+                GROUP BY contacto_id
+            ) AS "ev_count"
+            GROUP BY ev_count
+            ORDER BY 1
+        """.format(campana_id=campana.id,
+            evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
+
+        with log_timing(logger, "obtener_info_de_intentos() "
+            "tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+        return values
+
+    def obtener_count_eventos(self, campana_id):
+        """Devuelve una lista de listas con información de count de eventos
+        para una campana.
+
+        Ejemplo: _((1, 412,), (2, 874,))_ implica que hay 412 eventos
+        del tipo '1', 874 eventos de tipo '2'.
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        # FIXME: PERFORMANCE: quitar sub-select
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """SELECT evento, count(*)
+            FROM fts_web_eventodecontacto
+            WHERE campana_id = {0}
+            GROUP BY evento
+            ORDER BY 1
+        """.format(campana.id)
+
+        cursor.execute(sql)
+        with log_timing(logger,
+            "obtener_count_eventos() tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+        return values
 
 
 class GestionDeLlamadasManager(models.Manager):
@@ -987,67 +1051,6 @@ class GestionDeLlamadasManager(models.Manager):
             values = cursor.fetchall()
     
         values = [(row[0] - 1, row[1], ) for row in values]
-        return values
-
-    def obtener_info_de_intentos(self, campana_id):
-        """Devuelve una lista de listas con información de intentos
-        realizados, ordenados por cantidad de intentos (ej: 1, 2, etc.)
-
-        Los elementos de la lista devuelta son listas, que contienen
-        dos elementos:
-
-        1. cantidad de intentos (1, 2, etc)
-        2. count, cantidad de contactos que poseen esa cantidad
-           de intentos
-
-        Ejemplo: _((1, 721,), (2, 291,))_ 721 contactos fueron
-        intentados 1 vez, 291 contactos 2 veces
-        """
-        campana = Campana.objects.get(pk=campana_id)
-        cursor = connection.cursor()
-        # FIXME: PERFORMANCE: quitar sub-select
-        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
-        sql = """SELECT DISTINCT ev_count, count(*) FROM
-            (
-                SELECT count(*) AS "ev_count"
-                FROM fts_web_eventodecontacto
-                WHERE evento = {evento} and campana_id = {campana_id}
-                GROUP BY contacto_id
-            ) AS "ev_count"
-            GROUP BY ev_count
-            ORDER BY 1
-        """.format(campana_id=campana.id,
-            evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
-
-        with log_timing(logger, "obtener_info_de_intentos() "
-            "tardo %s seg"):
-            cursor.execute(sql)
-            values = cursor.fetchall()
-        return values
-
-    def obtener_count_eventos(self, campana_id):
-        """Devuelve una lista de listas con información de count de eventos
-        para una campana.
-
-        Ejemplo: _((1, 412,), (2, 874,))_ implica que hay 412 eventos
-        del tipo '1', 874 eventos de tipo '2'.
-        """
-        campana = Campana.objects.get(pk=campana_id)
-        cursor = connection.cursor()
-        # FIXME: PERFORMANCE: quitar sub-select
-        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
-        sql = """SELECT evento, count(*)
-            FROM fts_web_eventodecontacto
-            WHERE campana_id = {0}
-            GROUP BY evento
-            ORDER BY 1
-        """.format(campana.id)
-
-        cursor.execute(sql)
-        with log_timing(logger,
-            "obtener_count_eventos() tardo %s seg"):
-            cursor.execute(sql)
-            values = cursor.fetchall()
         return values
 
 
