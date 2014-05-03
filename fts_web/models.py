@@ -786,6 +786,21 @@ class SimuladorEventoDeContactoManager():
         :type probabilidad: float
         """
         assert settings.DEBUG
+        return self.simular_evento(campana_id,
+            evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+            probabilidad=probabilidad)
+
+    def simular_evento(self, campana_id, evento, probabilidad=0.33):
+        """
+        Crea evento para contactos de una campana.
+        :param probabilidad: Para que porcentage (aprox) de los contactos hay
+               que crear eventos. Para crear intentos para TODOS, usar valor
+               mayor a 1.0
+        :type probabilidad: float
+        :param evento Evento a insertar
+        :type evento: int
+        """
+        assert settings.DEBUG
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
         # TODO: SEGURIDAD: sacar 'format()', usar api de BD
@@ -805,7 +820,7 @@ class SimuladorEventoDeContactoManager():
                             AND random() <= {probabilidad}
                 ) as "contacto_id"
         """.format(campana_id=campana.id,
-                evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+                evento=int(evento),
                 probabilidad=float(probabilidad))
 
         with log_timing(logger,
