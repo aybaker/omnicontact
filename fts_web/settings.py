@@ -104,6 +104,10 @@ FTS_FAST_AGI_DAEMON_BIND = "0.0.0.0"
 
 FTS_PROGRAMAR_CAMPANA_FUNC = "_programar_campana_sqlite"
 
+FTS_EVENTOS_FINALIZADORES = [
+    "EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO",
+]
+
 """Configuracion para interactuar con Asterisk"""
 ASTERISK = {}
 
