@@ -7,7 +7,7 @@ Created on Mar 27, 2014
 
 from __future__ import unicode_literals
 
-import datetime
+from datetime import datetime, timedelta
 import os
 import random
 import time
@@ -63,7 +63,7 @@ class CampanaTracker(object):
         Raises:
         - NoMasContactosEnCampana: si no hay mas llamados pendientes
         """
-        if not self.campana.verifica_fecha(datetime.datetime.now()):
+        if not self.campana.verifica_fecha(datetime.now()):
             raise CampanaNoEnEjecucion()
 
 #        self.actuacion = self.campana.obtener_actuacion_actual()
@@ -99,7 +99,7 @@ class CampanaTracker(object):
         while True:
 
             # Fecha actual local.
-            hoy_ahora = datetime.datetime.now()
+            hoy_ahora = datetime.now()
 
             # Esto quiza no haga falta, porque en teoria
             # el siguiente control de actuacion detectara el
@@ -124,9 +124,33 @@ class RoundRobinTracker(object):
 
     def __init__(self):
         self.trackers_campana = {}
+        """dict(): Campana -> CampanaTracker"""
+
+        self.campanas_baneadas = {}
+        """dict(): Campana -> datetime (hasta el momento que esta
+        baneado"""
+
         self.cache = []
         self.iter_count = 0
         self.espera_sin_campanas = 2
+
+    def _get_timedelta_baneo(self):
+        return timedelta(minutes=1)
+
+    def _banear_campana(self, campana):
+        self.campanas_baneadas[campana] = datetime.now() + \
+            self._get_timedelta_baneo()
+
+    def _esta_baneada(self, campana):
+        if not campana in self.campanas_baneadas:
+            return False
+
+        baneada_hasta = self.campanas_baneadas[campana]
+        if datetime.now() < baneada_hasta:
+            return True
+        else:
+            del self.campanas_baneadas[campana]
+            return False
 
     def _update_trackers_campana(self):
         """Raises:
@@ -142,8 +166,12 @@ class RoundRobinTracker(object):
         old_trackers = dict(self.trackers_campana)
         new_trackers = {}
         for campana in Campana.objects.obtener_ejecucion():
+
+            if self._esta_baneada(campana):
+                continue
+
             if campana in old_trackers:
-                # Ya existia de antes
+                # Ya existia de antes, la mantenemos
                 new_trackers[campana] = old_trackers[campana]
                 del old_trackers[campana]
             else:
@@ -176,6 +204,9 @@ class RoundRobinTracker(object):
                     except KeyError:
                         pass
                 except NoMasContactosEnCampana:
+                    # Esta excepcion es generada cuando la campaña esta
+                    # en curso, pero ya fue finalizada
+                    self._banear_campana(campana)
                     logger.debug("NoMasContactosEnCampana: %s", campana.id)
                     try:
                         del self.trackers_campana[campana]
@@ -239,7 +270,7 @@ class Llamador(object):
 #                    for pendiente in pendientes:
 #
 #                        # Fecha actual local.
-#                        hoy_ahora = datetime.datetime.now()
+#                        hoy_ahora = datetime.now()
 #
 #                        # Esto quiza no haga falta, porque en teoria
 #                        # el siguiente control de actuacion detectara el
