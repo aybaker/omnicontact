@@ -14,7 +14,7 @@ import time
 
 from django.conf import settings
 from fts_daemon.asterisk_ami_http import AsteriskHttpOriginateError
-from fts_web.models import Campana, EventoDeContacto, Contacto
+from fts_web.models import Campana, EventoDeContacto
 from fts_web.utiles import get_class
 import logging as _logging
 
@@ -170,15 +170,18 @@ class RoundRobinTracker(object):
                 try:
                     yield tracker_campana.next()
                 except CampanaNoEnEjecucion:
+                    logger.debug("CampanaNoEnEjecucion: %s", campana.id)
                     try:
                         del self.trackers_campana[campana]
                     except KeyError:
                         pass
                 except NoMasContactosEnCampana:
+                    logger.debug("NoMasContactosEnCampana: %s", campana.id)
                     try:
                         del self.trackers_campana[campana]
                     except KeyError:
                         pass
+
             try:
                 self._update_trackers_campana()
             except NoHayCampanaEnEjecucion:
