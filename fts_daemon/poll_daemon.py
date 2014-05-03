@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 
 import datetime
 import os
+import random
 import time
 
 from django.conf import settings
@@ -50,6 +51,11 @@ class CampanaTracker(object):
         self.campana = campana
         self.actuacion = None
         self.generator = None
+        self.fetch_min = 20
+        self.fetch_max = 100
+
+    def _get_fetch(self):
+        return random.randint(1, 100)
 
     def _populate_cache(self):
         """Guarda datos a devolver en `self.cache`.
@@ -67,16 +73,16 @@ class CampanaTracker(object):
 #            raise CampanaNoEnEjecucion()
 
         contactos_values = EventoDeContacto.objects_gestion_llamadas.\
-            obtener_pendientes(self.campana.id, 50)
+            obtener_pendientes(self.campana.id, self._get_fetch())
 
         if not contactos_values:
             raise NoMasContactosEnCampana()
 
-        contactos = [Contacto.objects.get(pk=tmp[1])
-            for tmp in contactos_values]
+        id_contacto_y_telefono = EventoDeContacto.objects_gestion_llamadas.\
+            obtener_datos_de_contactos([tmp[1] for tmp in contactos_values])
 
-        self.cache = [(self.campana, contacto.id, contacto.telefono)
-            for contacto in contactos]
+        self.cache = [(self.campana, contacto_id, telefono)
+            for contacto_id, telefono in id_contacto_y_telefono]
 
     def next(self):
         if self.generator is None:

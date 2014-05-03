@@ -1053,6 +1053,17 @@ class GestionDeLlamadasManager(models.Manager):
         values = [(row[0] - 1, row[1], ) for row in values]
         return values
 
+    def obtener_datos_de_contactos(self, id_contactos):
+        """Devuelve los datos necesarios para generar llamadas
+        para los contactos pasados por parametros (lista de IDs)
+        """
+        with log_timing(logger, "obtener_datos_de_contactos() tardo %s seg"):
+            # forzamos query
+            values = list(Contacto.objects.filter(
+                id__in=id_contactos).values_list('id', 'telefono'))
+
+        return values
+
 
 class EventoDeContacto(models.Model):
     """
