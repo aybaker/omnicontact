@@ -632,24 +632,6 @@ class Campana(models.Model):
 #        """
 #        raise NotImplementedError()
 #
-#
-#class IntentoDeContacto(models.Model):
-#    objects = IntentoDeContactoManager()
-#    contacto = models.ForeignKey(
-#        'Contacto',
-#        related_name='+'
-#    )
-#    campana = models.ForeignKey(
-#        'Campana',
-#        related_name='intentos_de_contactos'
-#    )
-#    fecha_intento = models.DateTimeField(
-#        null=True, blank=True
-#    )
-#    estado = models.PositiveIntegerField()
-#
-#    def __unicode__(self):
-#        raise NotImplementedError()
 
 
 #==============================================================================
