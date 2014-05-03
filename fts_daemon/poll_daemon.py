@@ -120,6 +120,7 @@ class RoundRobinTracker(object):
         self.trackers_campana = {}
         self.cache = []
         self.iter_count = 0
+        self.espera_sin_campanas = 2
 
     def _update_trackers_campana(self):
         """Raises:
@@ -158,24 +159,26 @@ class RoundRobinTracker(object):
 
     def generator(self):
         while True:
-            for tracker_campana in list(self.trackers_campana.values()):
+            dict_copy = dict(self.trackers_campana)
+            for campana, tracker_campana in dict_copy.iteritems():
                 try:
                     yield tracker_campana.next()
                 except CampanaNoEnEjecucion:
                     try:
-                        self.trackers_campana.remove(tracker_campana)
-                    except ValueError:
+                        del self.trackers_campana[campana]
+                    except KeyError:
                         pass
                 except NoMasContactosEnCampana:
                     try:
-                        self.trackers_campana.remove(tracker_campana)
-                    except ValueError:
+                        del self.trackers_campana[campana]
+                    except KeyError:
                         pass
             try:
                 self._update_trackers_campana()
             except NoHayCampanaEnEjecucion:
-                logger.debug("No hay campanas en ejecucion. Esperaremos...")
-                time.sleep(2)
+                logger.debug("No hay campanas en ejecucion. "
+                    "Esperaremos %s segs.", self.espera_sin_campanas)
+                time.sleep(self.espera_sin_campanas)
 
 
 class Llamador(object):
