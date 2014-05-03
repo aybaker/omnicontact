@@ -785,7 +785,7 @@ class SimuladorEventoDeContactoManager():
                mayor a 1.0
         :type probabilidad: float
         """
-        assert settings.DEBUG
+        assert settings.DEBUG or settings.FTS_TESTING_MODE
         return self.simular_evento(campana_id,
             evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
             probabilidad=probabilidad)
@@ -800,7 +800,7 @@ class SimuladorEventoDeContactoManager():
         :param evento Evento a insertar
         :type evento: int
         """
-        assert settings.DEBUG
+        assert settings.DEBUG or settings.FTS_TESTING_MODE
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
         # TODO: SEGURIDAD: sacar 'format()', usar api de BD
@@ -828,7 +828,7 @@ class SimuladorEventoDeContactoManager():
             cursor.execute(sql)
 
     def crear_bd_contactos_con_datos_random(self, cantidad):
-        assert settings.DEBUG
+        assert settings.DEBUG or settings.FTS_TESTING_MODE
         bd_contactos = BaseDatosContacto.objects.create(
             nombre="PERF - {0} contactos".format(cantidad),
             archivo_importacion='inexistete.csv',
@@ -1053,13 +1053,23 @@ class GestionDeLlamadasManager(models.Manager):
         - item[1]: id_contacto
         """
         campana = Campana.objects.get(pk=campana_id)
-    
+
+        finalizadores = ",".join([str(int(x))
+            for x in EventoDeContacto.objects.get_eventos_finalizadores()])
+
         # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
         SELECT count(*) AS "ev_count", contacto_id AS "contacto_id"
         FROM fts_web_eventodecontacto
         WHERE (evento = {ev_programado} OR evento = {ev_intento})
             AND campana_id = {campana_id}
+            AND contacto_id NOT IN
+            (
+                SELECT DISTINCT contacto_id AS "contacto_id"
+                FROM fts_web_eventodecontacto
+                WHERE campana_id = {campana_id} AND
+                    evento IN ({lista_eventos_finalizadores})
+            )
         GROUP BY contacto_id
         HAVING count(*) < {max_intentos} + 1
         ORDER BY 1
@@ -1068,7 +1078,9 @@ class GestionDeLlamadasManager(models.Manager):
             max_intentos=campana.cantidad_intentos,
             ev_programado=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
             ev_intento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
-            limit=int(limit))
+            limit=int(limit),
+            lista_eventos_finalizadores=finalizadores
+        )
 
         cursor = connection.cursor()
         with log_timing(logger,
