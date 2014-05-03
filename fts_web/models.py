@@ -754,6 +754,17 @@ class EventoDeContactoManager(models.Manager):
                 EVENTO_ASTERISK_OPCION_SELECCIONADA,
             dato=numero)
 
+    def get_eventos_finalizadores(self):
+        """Devuelve eventos que permiten marcar una llamada como
+        finalizada, o sea, que ya no debe ser tendia en cuenta
+        al realizar futuras llamadas para la campaña.
+        """
+        values = []
+        for name in settings.FTS_EVENTOS_FINALIZADORES:
+            assert name in dir(EventoDeContacto)
+            values.append(getattr(EventoDeContacto, name))
+        return values
+
 
 class SimuladorEventoDeContactoManager():
     """Simula acciones. Estos metodos son utilizados para pruebas,
