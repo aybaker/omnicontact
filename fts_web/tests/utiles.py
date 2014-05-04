@@ -139,18 +139,16 @@ class FTSenderBaseTest(TestCase):
         """Devuelve el path completo a archivo del directorio test/
         o resources/
         """
-        tmp_base = os.path.dirname(os.path.dirname(__file__))
-        base = os.path.split(tmp_base)[1]
-        tmp = os.path.dirname(tmp_base)
+        tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        resource1 = os.path.join(tmp, "test", resource)
+        resource2 = os.path.join(tmp, "fts_tests", "resources", resource)
+        if os.path.exists(resource1):
+            return resource1
+        elif os.path.exists(resource2):
+            return resource2
 
-        if base == "fts_web":
-            tmp = os.path.join(tmp, "test", resource)
-        elif base == "fts_tests":
-            tmp = os.path.join(tmp, "resources", resource)
-        else:
-            assert False, "Directorio base desconocido: {0}".format(base)
-        assert os.path.exists(tmp), "{0} no existe".format(tmp)
-        return tmp
+        self.fail("Resource {0} no existe en ningulo "
+            "de los directorios buscados".format(resource))
 
     def read_test_resource(self, resource):
         """Devuelve el contenido de un archivo del directorio test/"""
