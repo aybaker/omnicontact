@@ -810,6 +810,7 @@ class SimuladorEventoDeContactoManager():
             cursor.execute(sql)
 
     def crear_bd_contactos_con_datos_random(self, cantidad):
+        """Crea BD con muchos contactos"""
         assert settings.DEBUG or settings.FTS_TESTING_MODE
         bd_contactos = BaseDatosContacto.objects.create(
             nombre="PERF - {0} contactos".format(cantidad),
@@ -837,7 +838,11 @@ class SimuladorEventoDeContactoManager():
             cursor.execute(sql)
         return bd_contactos
 
-    def obtener_info_de_intentos(self, campana_id):
+
+class EventoDeContactoEstadisticasManager():
+    """Devuelve información resumida de eventos"""
+
+    def obtener_count_intentos(self, campana_id):
         """Devuelve una lista de listas con información de intentos
         realizados, ordenados por cantidad de intentos (ej: 1, 2, etc.)
 
@@ -867,7 +872,7 @@ class SimuladorEventoDeContactoManager():
         """.format(campana_id=campana.id,
             evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
 
-        with log_timing(logger, "obtener_info_de_intentos() "
+        with log_timing(logger, "obtener_count_intentos() "
             "tardo %s seg"):
             cursor.execute(sql)
             values = cursor.fetchall()
@@ -1028,6 +1033,7 @@ class EventoDeContacto(models.Model):
     objects = EventoDeContactoManager()
     objects_gestion_llamadas = GestionDeLlamadasManager()
     objects_simulacion = SimuladorEventoDeContactoManager()
+    objects_estadisticas = EventoDeContactoEstadisticasManager()
 
     EVENTO_CONTACTO_PROGRAMADO = 1
     """El contacto asociado al evento ha sido programado, o sea,
