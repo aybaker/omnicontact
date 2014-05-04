@@ -1006,8 +1006,11 @@ class GestionDeLlamadasManager(models.Manager):
 
     def obtener_datos_de_contactos(self, id_contactos):
         """Devuelve los datos necesarios para generar llamadas
-        para los contactos pasados por parametros (lista de IDs)
+        para los contactos pasados por parametros (lista de IDs).
         """
+        if len(id_contactos) > 100:
+            logger.warn("obtener_datos_de_contactos(): de id_contactos "
+                "contiene muchos elementos, exactamente %s", len(id_contactos))
         with log_timing(logger, "obtener_datos_de_contactos() tardo %s seg"):
             # forzamos query
             values = list(Contacto.objects.filter(
