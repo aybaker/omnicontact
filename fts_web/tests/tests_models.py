@@ -168,9 +168,6 @@ class CampanaTest(FTSenderBaseTest):
         - Campana.objects.obtener_activas()
         """
 
-        # FIXME: migrar tests a EventoDeContacto
-        return  # @@@@@@@@@@
-
         campanas = [self.crear_campana() for _ in range(0, 10)]
         campanas[0].activar()
         campanas[1].activar()
@@ -198,9 +195,6 @@ class CampanaTest(FTSenderBaseTest):
         - Campana.pausar()
         - Campana.objects.obtener_pausadas()
         """
-
-        # FIXME: migrar tests a EventoDeContacto
-        return  # @@@@@@@@@@
 
         campanas = [self.crear_campana() for _ in range(0, 10)]
         campanas[0].activar()
@@ -232,9 +226,6 @@ class CampanaTest(FTSenderBaseTest):
         - Campana.despausar()
         """
 
-        # FIXME: migrar tests a EventoDeContacto
-        return  # @@@@@@@@@@
-
         campanas = [self.crear_campana() for _ in range(0, 10)]
         campanas[0].activar()
         campanas[1].activar()
@@ -261,9 +252,6 @@ class CampanaTest(FTSenderBaseTest):
         - Campana.finalizar()
         - Campana.objects.obtener_finalizadas()
         """
-
-        # FIXME: migrar tests a EventoDeContacto
-        return  # @@@@@@@@@@
 
         campanas = [self.crear_campana() for _ in range(0, 10)]
         campanas[0].activar()

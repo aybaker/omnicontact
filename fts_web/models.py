@@ -386,7 +386,10 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
 
-        self._genera_grafico_torta()
+        try:
+            self._genera_grafico_torta()
+        except:
+            logger.exception("No se pudo generar el grafico")
 
     def pausar(self):
         """Setea la campaña como ESTADO_PAUSADA"""
