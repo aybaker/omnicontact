@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-'''
-Created on Mar 27, 2014
-
-@author: Horacio G. de Oro
-'''
+"""
+Daemon que busca pendientes y realiza envios.
+"""
 
 from __future__ import unicode_literals
 
@@ -13,9 +11,8 @@ import random
 import time
 
 from django.conf import settings
-from fts_daemon.asterisk_ami_http import AsteriskHttpOriginateError
+from fts_daemon.llamador_contacto import procesar_contacto
 from fts_web.models import Campana, EventoDeContacto
-from fts_web.utiles import get_class
 import logging as _logging
 
 
@@ -235,6 +232,7 @@ class Llamador(object):
         for campana, id_contacto, numero in self.rr_tracker.generator():
             logger.debug("loop(): campana: %s - id_contacto: %s - numero: %s",
                 campana, id_contacto, numero)
+
             procesar_contacto(campana, id_contacto, numero)
 
             current_loop += 1
@@ -313,49 +311,6 @@ class Llamador(object):
 #            if max_loops > 0 and current_loop > max_loops:
 #                logger.info("max_loops alcanzado... saliendo...")
 #                return
-
-
-def procesar_contacto(campana, contacto_id, numero):
-    """Intenta contactar"""
-
-    logger.info("Realizando originate - campana: %s - contacto: %s",
-        campana.id, contacto_id)
-
-    EventoDeContacto.objects.inicia_intento(campana.id, contacto_id)
-
-    # Local/{contactoId}-{numberToCall}@FTS_local_campana_{campanaId}
-    channel = settings.ASTERISK['LOCAL_CHANNEL'].format(
-        contactoId=str(contacto_id),
-        numberToCall=str(numero),
-        campanaId=str(campana.id),
-    )
-    context = campana.get_nombre_contexto_para_asterisk()
-    exten = settings.ASTERISK['EXTEN'].format(
-        contactoId=str(contacto_id),
-    )
-
-    http_client_clazz = get_class(settings.FTS_ASTERISK_HTTP_CLIENT)
-    http_ami_client = http_client_clazz()
-
-    try:
-        http_ami_client.login()
-        http_ami_client.originate(channel, context, exten, 1,
-            (campana.segundos_ring + 2) * 1000, async=True)
-        EventoDeContacto.objects.\
-            create_evento_daemon_originate_successful(
-                campana.id, contacto_id)
-    except AsteriskHttpOriginateError:
-        logger.exception("Originate failed - campana: %s - contacto: %s",
-            campana.id, contacto_id)
-        EventoDeContacto.objects.\
-            create_evento_daemon_originate_failed(
-                campana.id, contacto_id)
-    except:
-        logger.exception("Originate failed - campana: %s - contacto: %s",
-            campana.id, contacto_id)
-        EventoDeContacto.objects.\
-            create_evento_daemon_originate_internal_error(
-                campana.id, contacto_id)
 
 
 def main():
