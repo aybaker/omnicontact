@@ -747,6 +747,16 @@ class EventoDeContactoManager(models.Manager):
             values.append(getattr(EventoDeContacto, name))
         return values
 
+    def get_nombre_de_evento(self, evento_id):
+        # TODO: cachear estas cosas pre-procesadas!
+        names = [x for x in dir(EventoDeContacto) if x.startswith("EVENTO_")]
+        names = [x for x in names
+            if type(getattr(EventoDeContacto, x)) == int]
+        for name in names:
+            if getattr(EventoDeContacto, name) == evento_id:
+                return name
+        return None
+
 
 class SimuladorEventoDeContactoManager():
     """Simula acciones. Estos metodos son utilizados para pruebas,
