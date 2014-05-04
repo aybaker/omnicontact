@@ -961,6 +961,9 @@ class GestionDeLlamadasManager(models.Manager):
         una lista, con 2 items:
         - item[0]: cantidad de veces intentado
         - item[1]: id_contacto
+
+        Cuando todos los pendientes han sido finalizados, devuelve
+        una lista vacia.
         """
         campana = Campana.objects.get(pk=campana_id)
 
