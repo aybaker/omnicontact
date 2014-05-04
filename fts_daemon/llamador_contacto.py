@@ -18,7 +18,9 @@ logger = _logging.getLogger(__name__)
 
 
 def procesar_contacto(campana, contacto_id, numero):
-    """Intenta contactar"""
+    """Registra realizacion de intento (usando EventoDeContacto)
+    y luego realiza ORIGINATE, registrando el resultado de dicho comando.
+    """
 
     logger.info("Realizando originate - campana: %s - contacto: %s",
         campana.id, contacto_id)
