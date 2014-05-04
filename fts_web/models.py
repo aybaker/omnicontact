@@ -983,10 +983,10 @@ class GestionDeLlamadasManager(models.Manager):
             AND campana_id = {campana_id}
             AND contacto_id NOT IN
             (
-                SELECT DISTINCT contacto_id AS "contacto_id"
-                FROM fts_web_eventodecontacto
-                WHERE campana_id = {campana_id} AND
-                    evento IN ({lista_eventos_finalizadores})
+                SELECT DISTINCT tmp.contacto_id
+                FROM fts_web_eventodecontacto AS tmp
+                WHERE tmp.campana_id = {campana_id} AND
+                    tmp.evento IN ({lista_eventos_finalizadores})
             )
         GROUP BY contacto_id
         HAVING count(*) < {max_intentos} + 1
@@ -1005,8 +1005,8 @@ class GestionDeLlamadasManager(models.Manager):
             "_obtener_pendientes() tardo %s seg"):
             cursor.execute(sql)
             values = cursor.fetchall()
-    
-        values = [(row[0] - 1, row[1], ) for row in values]
+
+        values = [(row[0] - 1, row[1],) for row in values]
         return values
 
     def obtener_datos_de_contactos(self, id_contactos):
