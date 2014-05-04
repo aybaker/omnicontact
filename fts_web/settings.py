@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 from __future__ import unicode_literals
 
-import os
-
 from django.contrib import messages
 
 
@@ -195,6 +193,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 TEST_RUNNER = "fts_web.tests.utiles.FTSenderDiscoverRunner"
 
+FTS_SETTING_CUSTOMIZERS = []
+
 #==============================================================================
 # Import de `fts_web_settings_local`
 #==============================================================================
@@ -273,3 +273,9 @@ for key in ('USERNAME', 'PASSWORD', 'HOST', 'PORT', 'CHANNEL_PREFIX',
 
 assert FTS_FAST_AGI_DAEMON_PROXY_URL is not None, \
     "Falta definir setting para FTS_FAST_AGI_DAEMON_PROXY_URL"
+
+
+# ~~~~~ Customizators
+
+for customizator_func in FTS_SETTING_CUSTOMIZERS:
+    customizator_func(locals())

@@ -93,3 +93,6 @@ LOGGING = {
     }
 }
 
+# Para importar tests
+from fts_tests.models import customize_INSTALLED_APPS
+FTS_SETTING_CUSTOMIZERS = [customize_INSTALLED_APPS]
