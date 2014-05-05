@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from _collections import defaultdict
 import datetime
 import logging
 import os
@@ -942,6 +943,51 @@ class EventoDeContactoEstadisticasManager():
             cursor.execute(sql)
             values = cursor.fetchall()
         return values
+
+    def obtener_estadisticas_de_campana(self, campana_id):
+        """Procesa estadisticas para una campana.
+
+        Devuelve dicts: counter_finalizados, counter_intentos
+
+        - counter_finalizados[True] -> contador
+        - counter_finalizados[False] -> contador
+        - counter_intentos[0] -> contador
+        - counter_intentos[1] -> contador
+        - counter_intentos[2] -> contador
+        """
+        array_eventos = self.obtener_array_eventos_por_contacto(campana_id)
+        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
+
+        counter_finalizados = {True: 0, False: 0}
+        counter_intentos = defaultdict(lambda: 0)
+
+        for item in array_eventos:
+            # item[0] -> contact_id
+            # item[1] -> ARRAY
+            # item[2] -> timestamp
+            eventos = set(item[1])
+
+            ##
+            ## Chequea finalizados y no finalizados
+            ##
+
+            finalizado = False
+            for finalizador in finalizadores:
+                if finalizador in eventos:
+                    finalizado = True
+                    break
+
+            counter_finalizados[finalizado] += 1
+
+            ##
+            ## Chequeamos cantidad de intentos
+            ##
+
+            cant_intentos = len([ev_id for ev_id in item[1]
+                if ev_id == EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO])
+            counter_intentos[cant_intentos] += 1
+
+        return counter_finalizados, counter_intentos
 
 
 class GestionDeLlamadasManager(models.Manager):
