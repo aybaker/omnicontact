@@ -4,7 +4,6 @@
 from __future__ import unicode_literals
 
 import datetime
-import os
 
 from django.db import IntegrityError
 from fts_web.models import AgenteGrupoAtencion, Campana, Opcion, \
@@ -445,15 +444,3 @@ class ActuacionTests(FTSenderBaseTest):
         #Testea que el método devuelva False. La campanaña *NO*
         #esta en rango de actuación.
         self.assertFalse(actuacion1.verifica_actuacion(hoy_ahora))
-
-
-#=====================================================================
-# Selenium
-#=====================================================================
-
-if 'SKIP_SELENIUM' not in os.environ:
-    print "# Ejecutando test con Selenium"
-    print "# Para no ejecutarlos, use:"
-    print "    $ SKIP_SELENIUM=1 python manage.py test fts_web"
-
-    from fts_web.tests.selenium import *
