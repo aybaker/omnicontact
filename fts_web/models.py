@@ -753,13 +753,16 @@ class EventoDeContactoManager(models.Manager):
 
     def get_nombre_de_evento(self, evento_id):
         # TODO: cachear estas cosas pre-procesadas!
-        names = [x for x in dir(EventoDeContacto) if x.startswith("EVENTO_")]
-        names = [x for x in names
-            if type(getattr(EventoDeContacto, x)) == int]
-        for name in names:
-            if getattr(EventoDeContacto, name) == evento_id:
-                return name
-        return None
+        _cached = getattr(self, '__map_nombres_de_evento')
+        if not _cached:
+            names = [const for const in dir(EventoDeContacto)
+                if const.startswith("EVENTO_")]
+            names = [const for const in names
+                if type(getattr(EventoDeContacto, const)) == int]
+            _cached = dict([(getattr(EventoDeContacto, const), const)
+                for const in names])
+            self.__map_nombres_de_evento = _cached
+        return _cached.get(evento_id, None)
 
 
 class SimuladorEventoDeContactoManager():
