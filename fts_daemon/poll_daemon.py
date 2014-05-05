@@ -391,9 +391,9 @@ class Llamador(object):
 #                return
 
 
-def main():
+def main(max_loop=0):
     logger.info("Iniciando loop: obteniendo campanas activas...")
-    FTS_MAX_LOOPS = int(os.environ.get("FTS_MAX_LOOPS", "0"))
+    FTS_MAX_LOOPS = int(os.environ.get("FTS_MAX_LOOPS", max_loop))
     Llamador().run(max_loops=FTS_MAX_LOOPS)
 
 
