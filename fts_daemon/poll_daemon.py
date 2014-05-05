@@ -52,7 +52,7 @@ class CampanaTracker(object):
         self.fetch_max = 100
 
     def _get_fetch(self):
-        return random.randint(1, 100)
+        return random.randint(self.fetch_min, self.fetch_max)
 
     def _populate_cache(self):
         """Guarda datos a devolver en `self.cache`.
