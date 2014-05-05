@@ -951,64 +951,59 @@ class EventoDeContactoEstadisticasManager():
         """Procesa estadisticas para una campana.
 
         Devuelve dicts:
-        - counter_finalizados: contactos q' poseen al menos 1 de los eventos
-          "finalizadores".
+        - counter_x_estado: cuantos contactos estan en los distintos estados
         - counter_intentos: cuantos contactos se han intentado distinta
           cantidad de veces.
 
         Ejemplos:
 
-        - counter_finalizados[True] -> cant. contactos q' poseen evento
-          finalizador
-        - counter_finalizados[False] -> cant. contactos q' NO poseen evento
-          finalizador, pero esto no implica que haya que intentar
-          contactarlos, porque aunque no posean 'evento finalizador', se pudo
-          haber llegado al limite max. de cantidad de intentos.
-
         - counter_intentos[0] -> cuantos contactos no se intentaron
         - counter_intentos[1] -> cuantos contactos se intentaron 1 vez
         - counter_intentos[2] -> cuantos contactos se intentaron 2 veces
 
-        TODO:
-        - counter_pendientes[True] -> cant. de contactos a los que hay que
-          seguir intentando
-        - counter_pendientes[False] -> cant. de contactos a los que NO hay que
-          intentar más, ya sea porque están finalizados (o sea, con evento
-          finalizador), o porque se llegó al límite maximo de intentos.
+        - counter_x_estado['finalizado_x_evento_finalizador']
+        - counter_x_estado['finalizado_x_limite_intentos']
+        - counter_x_estado['pendientes']
         """
-        array_eventos = self.obtener_array_eventos_por_contacto(campana_id)
+        campana = Campana.objects.get(pk=campana_id)
+        array_eventos_por_contacto = self.obtener_array_eventos_por_contacto(
+            campana_id)
         finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
 
-        counter_finalizados = {True: 0, False: 0}
+        # counter_finalizados ««« ELIMINAR!
+        counter_x_estado = {
+            'finalizado_x_evento_finalizador': 0,
+            'finalizado_x_limite_intentos': 0,
+            'pendientes': 0,
+        }
+
         counter_intentos = defaultdict(lambda: 0)
 
-        for item in array_eventos:
-            # item[0] -> contact_id
-            # item[1] -> ARRAY
-            # item[2] -> timestamp
-            eventos = set(item[1])
+        # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
+        for _, array_eventos, _ in array_eventos_por_contacto:
+            eventos = set(array_eventos)
 
-            ##
+            ## Chequeamos cantidad de intentos
+            cant_intentos = len([ev for ev in array_eventos
+                if ev == EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO])
+            counter_intentos[cant_intentos] += 1
+
             ## Chequea finalizados y no finalizados
-            ##
-
             finalizado = False
             for finalizador in finalizadores:
                 if finalizador in eventos:
                     finalizado = True
                     break
 
-            counter_finalizados[finalizado] += 1
+            if finalizado:
+                counter_x_estado['finalizado_x_evento_finalizador'] += 1
+            else:
+                if cant_intentos >= campana.cantidad_intentos:
+                    counter_x_estado['finalizado_x_limite_intentos'] += 1
+                else:
+                    counter_x_estado['pendientes'] += 1
 
-            ##
-            ## Chequeamos cantidad de intentos
-            ##
-
-            cant_intentos = len([ev_id for ev_id in item[1]
-                if ev_id == EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO])
-            counter_intentos[cant_intentos] += 1
-
-        return counter_finalizados, counter_intentos
+        return counter_x_estado, counter_intentos
 
 
 class GestionDeLlamadasManager(models.Manager):
