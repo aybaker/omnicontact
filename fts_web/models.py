@@ -951,19 +951,20 @@ class EventoDeContactoEstadisticasManager():
         """Procesa estadisticas para una campana.
 
         Devuelve dicts:
+
         - counter_x_estado: cuantos contactos estan en los distintos estados
         - counter_intentos: cuantos contactos se han intentado distinta
           cantidad de veces.
 
         Ejemplos:
 
-        - counter_intentos[0] -> cuantos contactos no se intentaron
-        - counter_intentos[1] -> cuantos contactos se intentaron 1 vez
-        - counter_intentos[2] -> cuantos contactos se intentaron 2 veces
-
         - counter_x_estado['finalizado_x_evento_finalizador']
         - counter_x_estado['finalizado_x_limite_intentos']
         - counter_x_estado['pendientes']
+
+        - counter_intentos[0] -> cuantos contactos no se intentaron
+        - counter_intentos[1] -> cuantos contactos se intentaron 1 vez
+        - counter_intentos[2] -> cuantos contactos se intentaron 2 veces
         """
         campana = Campana.objects.get(pk=campana_id)
         array_eventos_por_contacto = self.obtener_array_eventos_por_contacto(
