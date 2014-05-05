@@ -920,9 +920,10 @@ class EventoDeContactoEstadisticasManager():
         """Devuelve una lista de listas con array de eventos para
         cada contacto.
 
-        Ejemplo: _((783474, {1,22,13},), (8754278, {1,17,},))_
+        Ejemplo: _((783474, {1,22,13}, dt1), (8754278, {1,17,}, dt2))_
         implica que hay eventos de 2 contactos (783474 y 8754278), y los
-        tipos de eventos son los indicados en los arrays.
+        tipos de eventos son los indicados en los arrays. `dt` es el
+        datetime del ultimo evento registrado.
         """
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
@@ -931,9 +932,9 @@ class EventoDeContactoEstadisticasManager():
         sql = """SELECT contacto_id AS "contacto_id", array_agg(evento),
                     max(timestamp)
             FROM fts_web_eventodecontacto
-            WHERE campana_id = 70
+            WHERE campana_id = {campana_id}
             GROUP BY contacto_id;
-        """.format(campana.id)
+        """.format(campana_id=campana.id)
 
         cursor.execute(sql)
         with log_timing(logger,
