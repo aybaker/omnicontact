@@ -753,7 +753,7 @@ class EventoDeContactoManager(models.Manager):
 
     def get_nombre_de_evento(self, evento_id):
         # TODO: cachear estas cosas pre-procesadas!
-        _cached = getattr(self, '__map_nombres_de_evento')
+        _cached = getattr(self, '__map_nombres_de_evento', None)
         if not _cached:
             names = [const for const in dir(EventoDeContacto)
                 if const.startswith("EVENTO_")]
