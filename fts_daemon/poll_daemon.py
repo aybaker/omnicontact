@@ -201,6 +201,7 @@ class RoundRobinTracker(object):
         """Raises:
         - NoHayCampanaEnEjecucion
         """
+        self._last_query_time = datetime.now()
         old_trackers = dict(self.trackers_campana)
         new_trackers = {}
         for campana in Campana.objects.obtener_ejecucion():
