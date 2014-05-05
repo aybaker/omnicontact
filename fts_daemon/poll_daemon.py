@@ -192,8 +192,11 @@ class RoundRobinTracker(object):
         falta para que una campana se active (por fecha de la
         campaña o Actuacion).
         """
+        # Quizá habria q' chequear más seguido si el server no
+        # está haciendo nada, pero más espaciado si hay
+        # llamadas en curso, no?
         delta = datetime.now() - self._last_query_time
-        if delta.days > 0 or delta.seconds > 60:
+        if delta.days > 0 or delta.seconds > 10:
             return True
         return False
 
@@ -240,6 +243,11 @@ class RoundRobinTracker(object):
         logger.debug("No hay campanas en ejecucion. "
             "Esperaremos %s segs.", self.espera_sin_campanas)
         time.sleep(self.espera_sin_campanas)
+        # FIXME: aca se espera `espera_sin_campanas`, pero
+        #  `necesita_refrescar_trackers()` usa otros tiempos...
+        #  Seguramente deberiamos "unificar", ya q' para qué
+        #   esperar '2 segudnos' si no se va a volver a chequear
+        #  la BD hasta dentro de 10 segundos!?
 
     def onCampanaNoEnEjecucion(self, campana):
         """Ejecutado por generator() cuando se detecta

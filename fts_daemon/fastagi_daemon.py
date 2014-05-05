@@ -19,6 +19,7 @@ from django.conf import settings
 from fts_web.models import Campana
 
 import logging as _logging
+from twisted.python import log
 
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
@@ -57,6 +58,9 @@ def fastagi_handler(agi):
 
 
 def main():
+    observer = log.PythonLoggingObserver()
+    observer.start()
+
     logger.info("Iniciando...")
 
     type(settings)  # hack to ignore pep8
