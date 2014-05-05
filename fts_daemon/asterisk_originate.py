@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+# from __future__ import unicode_literals
 
 #from multiprocessing import Process
 #import sys
@@ -138,7 +138,8 @@ from __future__ import unicode_literals
 #            logger.info("Originate - channel: %s - context: %s - exten: %s",
 #                self.channel, self.context, self.exten)
 #            df = ami.originate(self.channel,
-#                context=self.context, exten=self.exten, priority=self.priority,
+#                context=self.context, exten=self.exten,
+#                priority=self.priority,
 #                timeout=self.timeout)
 #            df.addCallbacks(self.onResult, self.onError)
 #            df.addCallbacks(self.onFinished, self.onFinished)
@@ -225,7 +226,7 @@ from __future__ import unicode_literals
 #        ORIGINATE_RESULT_CONNECT_FAILED):
 #        return originate_process.exitcode
 #    else:
-#        logger.warn("Returning ORIGINATE_RESULT_UNKNOWN because %s is unknown",
-#            originate_process.exitcode)
+#        logger.warn("Returning ORIGINATE_RESULT_UNKNOWN because %s is "
+#            "unknown", originate_process.exitcode)
 #        return ORIGINATE_RESULT_UNKNOWN
 #
