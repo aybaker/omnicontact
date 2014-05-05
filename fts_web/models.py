@@ -732,13 +732,12 @@ class EventoDeContactoManager(models.Manager):
 
     def opcion_seleccionada(self, campana_id, contacto_id, numero):
         """Crea evento
-        EventoDeContacto.EVENTO_ASTERISK_OPCION_SELECCIONADA
+        EventoDeContacto.EVENTO_ASTERISK_OPCION_X
         """
+        evento = EventoDeContacto.NUMERO_OPCION_MAP[int(numero)]
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
-            evento=EventoDeContacto.\
-                EVENTO_ASTERISK_OPCION_SELECCIONADA,
-            dato=numero)
+            evento=evento)
 
     def get_eventos_finalizadores(self):
         """Devuelve eventos que permiten marcar una llamada como
@@ -1249,13 +1248,69 @@ class EventoDeContacto(models.Model):
     no es ninguno de los reconocidos por el sistema
     """
 
-    EVENTO_ASTERISK_OPCION_SELECCIONADA = 50
-    """El usuario ha seleccionado una opción utilizando utilizando
+    EVENTO_ASTERISK_OPCION_0 = 50
+    """El usuario ha seleccionado una opción 0 utilizando utilizando
     el teclado numerico.
-
-    El atributo `dato` posee el numero presionado.
     """
-    # FIXME: que pasa si el usuario selecciona una opcion inexistente?
+
+    EVENTO_ASTERISK_OPCION_1 = 51
+    """El usuario ha seleccionado una opción 1 utilizando utilizando
+    el teclado numerico.
+    """
+
+    EVENTO_ASTERISK_OPCION_2 = 52
+    """El usuario ha seleccionado una opción 2 utilizando utilizando
+    el teclado numerico.
+    """
+
+    EVENTO_ASTERISK_OPCION_3 = 53
+    """El usuario ha seleccionado una opción 3 utilizando utilizando
+    el teclado numerico.
+    """
+
+    EVENTO_ASTERISK_OPCION_4 = 54
+    """El usuario ha seleccionado una opción 4 utilizando utilizando
+    el teclado numerico.
+    """
+
+    EVENTO_ASTERISK_OPCION_5 = 55
+    """El usuario ha seleccionado una opción 5 utilizando utilizando
+    el teclado numerico.
+    """
+
+    EVENTO_ASTERISK_OPCION_6 = 56
+    """El usuario ha seleccionado una opción 6 utilizando utilizando
+    el teclado numerico.
+    """
+
+    EVENTO_ASTERISK_OPCION_7 = 57
+    """El usuario ha seleccionado una opción 7 utilizando utilizando
+    el teclado numerico.
+    """
+
+    EVENTO_ASTERISK_OPCION_8 = 58
+    """El usuario ha seleccionado una opción 8 utilizando utilizando
+    el teclado numerico.
+    """
+
+    EVENTO_ASTERISK_OPCION_9 = 59
+    """El usuario ha seleccionado una opción 9 utilizando utilizando
+    el teclado numerico.
+    """
+
+    NUMERO_OPCION_MAP = {
+        0: EVENTO_ASTERISK_OPCION_0,
+        1: EVENTO_ASTERISK_OPCION_1,
+        2: EVENTO_ASTERISK_OPCION_2,
+        3: EVENTO_ASTERISK_OPCION_3,
+        4: EVENTO_ASTERISK_OPCION_4,
+        5: EVENTO_ASTERISK_OPCION_5,
+        6: EVENTO_ASTERISK_OPCION_6,
+        7: EVENTO_ASTERISK_OPCION_7,
+        8: EVENTO_ASTERISK_OPCION_8,
+        9: EVENTO_ASTERISK_OPCION_9,
+    }
+    """Mapea ENTERO (numero de opcion) a EVENTO_ASTERISK_OPCION_9"""
 
     DIALSTATUS_MAP = {
         'ANSWER': EVENTO_ASTERISK_DIALSTATUS_ANSWER,
