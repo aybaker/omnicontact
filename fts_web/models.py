@@ -916,6 +916,32 @@ class EventoDeContactoEstadisticasManager():
             values = cursor.fetchall()
         return values
 
+    def obtener_array_eventos_por_contacto(self, campana_id):
+        """Devuelve una lista de listas con array de eventos para
+        cada contacto.
+
+        Ejemplo: _((783474, {1,22,13},), (8754278, {1,17,},))_
+        implica que hay eventos de 2 contactos (783474 y 8754278), y los
+        tipos de eventos son los indicados en los arrays.
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        # FIXME: PERFORMANCE: quitar sub-select
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """SELECT contacto_id AS "contacto_id", array_agg(evento),
+                    max(timestamp)
+            FROM fts_web_eventodecontacto
+            WHERE campana_id = 70
+            GROUP BY contacto_id;
+        """.format(campana.id)
+
+        cursor.execute(sql)
+        with log_timing(logger,
+            "obtener_array_eventos_por_contacto() tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+        return values
+
 
 class GestionDeLlamadasManager(models.Manager):
     """Manager para EventoDeContacto, con la funcionalidad
