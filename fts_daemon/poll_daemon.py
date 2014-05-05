@@ -70,7 +70,8 @@ class CampanaTracker(object):
 #            raise CampanaNoEnEjecucion()
 
         contactos_values = EventoDeContacto.objects_gestion_llamadas.\
-            obtener_pendientes(self.campana.id, self._get_fetch())
+            obtener_pendientes(self.campana.id,
+                limit=self._get_fetch())
 
         if not contactos_values:
             raise NoMasContactosEnCampana()
@@ -82,12 +83,20 @@ class CampanaTracker(object):
             for contacto_id, telefono in id_contacto_y_telefono]
 
     def next(self):
+        """Devuelve datos de contacto a contactar:
+        (campana, contacto_id, telefono)
+
+        Raises:
+        - CampanaNoEnEjecucion
+        - NoMasContactosEnCampana
+        """
         if self.generator is None:
             self.generator = self.get_generator()
         return next(self.generator)
 
     def get_generator(self):
-        """Devuelve datos de contacto a contactar
+        """Devuelve datos de contacto a contactar:
+        (campana, contacto_id, telefono)
 
         Raises:
         - CampanaNoEnEjecucion
@@ -107,6 +116,8 @@ class CampanaTracker(object):
 #            if not self.actuacion.verifica_actuacion(hoy_ahora):
 #                raise CampanaNoEnEjecucion()
 
+            # FIXME: chequear q' el estado sea VALIDO, o sea,
+            #  que no este pausada, pero tampoco finalizada, etc.
             # Valida que la campana no se haya pausado.
             if Campana.objects.verifica_estado_pausada(self.campana.pk):
                 raise CampanaNoEnEjecucion()
