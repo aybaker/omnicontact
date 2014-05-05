@@ -128,57 +128,84 @@ class CampanaTracker(object):
             yield self.cache.pop(0)
 
 
-class RoundRobinTracker(object):
+class BanManager(object):
+    """Gestiona baneo de campañas"""
 
     def __init__(self):
-        self.trackers_campana = {}
-        """dict(): Campana -> CampanaTracker"""
-
         self.campanas_baneadas = {}
         """dict(): Campana -> datetime (hasta el momento que esta
         baneado"""
 
-        self.cache = []
-        self.iter_count = 0
-        self.espera_sin_campanas = 2
-
-    def _get_timedelta_baneo(self):
+    def get_timedelta_baneo(self):
         """Devuelve tiempo por default de baneo"""
         return timedelta(minutes=1)
 
-    def _banear_campana(self, campana):
+    def banear_campana(self, campana):
         """Banea una campana"""
         self.campanas_baneadas[campana] = datetime.now() + \
-            self._get_timedelta_baneo()
+            self.get_timedelta_baneo()
 
-    def _esta_baneada(self, campana):
+    def esta_baneada(self, campana):
         """Devuelve booleano indicando si la campana esta baneada"""
-        if not campana in self.campanas_baneadas:
+        try:
+            baneada_hasta = self.campanas_baneadas[campana]
+        except KeyError:
+            # Campaña no existe, asi q' no esta baneada...
             return False
 
-        baneada_hasta = self.campanas_baneadas[campana]
+        # Existe! Chequeamos si todavia está vigente
         if datetime.now() < baneada_hasta:
             return True
         else:
             del self.campanas_baneadas[campana]
             return False
 
-    def _update_trackers_campana(self):
+
+class RoundRobinTracker(object):
+
+    def __init__(self):
+        self.trackers_campana = {}
+        """dict(): Campana -> CampanaTracker"""
+
+        self.ban_manager = BanManager()
+        """Administrador de baneos"""
+
+        self.espera_sin_campanas = 2
+        """Cuantos segundos esperar si la consulta a la BD
+        no devuelve ninguna campana activa"""
+
+        self._last_query_time = datetime.now() - timedelta(days=30)
+        """Ultima vez q' se consulto la BD"""
+
+    def necesita_refrescar_trackers(self):
+        """Devuleve booleano, indicando si debe o no consultarse a
+        la base de datos. Este metodo es ejecutado luego de cada
+        intento de envio, por lo tanto es ejecutado muchas veces.
+
+        Si devuelve 'True', se consultara la BD para actualizar
+        la lista de campanas. Sino, se seguira utilizando la
+        lista cacheada.
+
+        En una futura implementación, además de utilizar un "timeout",
+        podriamos chequear alguna variable que sea seteada
+        asincronamente (ej: usando Redis), o podriamos conocer cuanto
+        falta para que una campana se active (por fecha de la
+        campaña o Actuacion).
+        """
+        delta = datetime.now() - self._last_query_time
+        if delta.days > 0 or delta.seconds > 60:
+            return True
+        return False
+
+    def refrescar_trackers(self):
         """Raises:
         - NoHayCampanaEnEjecucion
         """
-        self.iter_count += 1
-        if self.iter_count <= 10:
-            return
-
-        # Reseteamos y refrescamos
-        self.iter_count = 0
-
         old_trackers = dict(self.trackers_campana)
         new_trackers = {}
         for campana in Campana.objects.obtener_ejecucion():
 
-            if self._esta_baneada(campana):
+            if self.ban_manager.esta_baneada(campana):
                 continue
 
             if campana in old_trackers:
@@ -221,7 +248,7 @@ class RoundRobinTracker(object):
         La implementación por default banea a la campana, y la
         elimina de `self.trackers_campana`
         """
-        self._banear_campana(campana)
+        self.ban_manager.banear_campana(campana)
         logger.debug("onCampanaNoEnEjecucion: %s", campana.id)
         try:
             del self.trackers_campana[campana]
@@ -237,7 +264,7 @@ class RoundRobinTracker(object):
         La implementación por default banea a la campana, y la
         elimina de `self.trackers_campana`
         """
-        self._banear_campana(campana)
+        self.ban_manager.banear_campana(campana)
         logger.debug("onNoMasContactosEnCampana: %s", campana.id)
         try:
             del self.trackers_campana[campana]
@@ -245,6 +272,9 @@ class RoundRobinTracker(object):
             pass
 
     def generator(self):
+        """Devuelve datos de contacto a contactar:
+        (campana, contacto_id, telefono)
+        """
         while True:
             # Trabajamos en copia, por si hace falta modificarse
             dict_copy = dict(self.trackers_campana)
@@ -262,10 +292,11 @@ class RoundRobinTracker(object):
                     self.onNoMasContactosEnCampana(campana)
 
             # Actualizamos lista de tackers
-            try:
-                self._update_trackers_campana()
-            except NoHayCampanaEnEjecucion:
-                self.onNoHayCampanaEnEjecucion()
+            if self.necesita_refrescar_trackers():
+                try:
+                    self.refrescar_trackers()
+                except NoHayCampanaEnEjecucion:
+                    self.onNoHayCampanaEnEjecucion()
 
 
 class Llamador(object):
