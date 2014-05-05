@@ -143,13 +143,16 @@ class RoundRobinTracker(object):
         self.espera_sin_campanas = 2
 
     def _get_timedelta_baneo(self):
+        """Devuelve tiempo por default de baneo"""
         return timedelta(minutes=1)
 
     def _banear_campana(self, campana):
+        """Banea una campana"""
         self.campanas_baneadas[campana] = datetime.now() + \
             self._get_timedelta_baneo()
 
     def _esta_baneada(self, campana):
+        """Devuelve booleano indicando si la campana esta baneada"""
         if not campana in self.campanas_baneadas:
             return False
 
@@ -199,38 +202,70 @@ class RoundRobinTracker(object):
             # No se encontraron campanas en ejecucion
             raise NoHayCampanaEnEjecucion()
 
+    def onNoHayCampanaEnEjecucion(self):
+        """Ejecutado por generator() cuando se detecta
+        NoHayCampanaEnEjecucion.
+        
+        La implementación por default solo espera
+        `self.espera_sin_campanas` segundos y retorna el control.
+        """
+        logger.debug("No hay campanas en ejecucion. "
+            "Esperaremos %s segs.", self.espera_sin_campanas)
+        time.sleep(self.espera_sin_campanas)
+
+    def onCampanaNoEnEjecucion(self, campana):
+        """Ejecutado por generator() cuando se detecta
+        CampanaNoEnEjecucion. Esto implica que la campana que se
+        estaba por ejecutar, NO debio tenerse en cuenta.
+
+        La implementación por default banea a la campana, y la
+        elimina de `self.trackers_campana`
+        """
+        self._banear_campana(campana)
+        logger.debug("onCampanaNoEnEjecucion: %s", campana.id)
+        try:
+            del self.trackers_campana[campana]
+        except KeyError:
+            pass
+
+    def onNoMasContactosEnCampana(self, campana):
+        """Ejecutado por generator() cuando se detecta
+        NoMasContactosEnCampana. Esto implica que la campana que se
+        estaba teniendo en cuenta en realidad no posee contactos
+        a procesar
+
+        La implementación por default banea a la campana, y la
+        elimina de `self.trackers_campana`
+        """
+        self._banear_campana(campana)
+        logger.debug("onNoMasContactosEnCampana: %s", campana.id)
+        try:
+            del self.trackers_campana[campana]
+        except KeyError:
+            pass
+
     def generator(self):
         while True:
+            # Trabajamos en copia, por si hace falta modificarse
             dict_copy = dict(self.trackers_campana)
             for campana, tracker_campana in dict_copy.iteritems():
                 try:
                     yield tracker_campana.next()
                 except CampanaNoEnEjecucion:
-                    self._banear_campana(campana)
-                    logger.debug("CampanaNoEnEjecucion: %s", campana.id)
-                    try:
-                        del self.trackers_campana[campana]
-                    except KeyError:
-                        pass
+                    self.onCampanaNoEnEjecucion(campana)
                 except NoMasContactosEnCampana:
                     # Esta excepcion es generada cuando la campaña esta
                     # en curso (el estado), pero ya no tiene pendientes
                     # FIXME: aca habria q' marcar la campana como finalizada?
                     # El tema es que puede haber llamadas en curso, pero esto
                     # no deberia ser problema...
-                    self._banear_campana(campana)
-                    logger.debug("NoMasContactosEnCampana: %s", campana.id)
-                    try:
-                        del self.trackers_campana[campana]
-                    except KeyError:
-                        pass
+                    self.onNoMasContactosEnCampana(campana)
 
+            # Actualizamos lista de tackers
             try:
                 self._update_trackers_campana()
             except NoHayCampanaEnEjecucion:
-                logger.debug("No hay campanas en ejecucion. "
-                    "Esperaremos %s segs.", self.espera_sin_campanas)
-                time.sleep(self.espera_sin_campanas)
+                self.onNoHayCampanaEnEjecucion()
 
 
 class Llamador(object):
