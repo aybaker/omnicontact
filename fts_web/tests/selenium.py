@@ -454,6 +454,19 @@ class ZCargaCampanaTests(FTSenderSeleniumBaseTest, FTSenderBaseTest):
         #Verificamos que se haya creado.
         self.assertEqual(campana.opciones.count(), 2)
 
+        #Buscamos y seteamos los campos para una accion REPETIR.
+        Select(self.selenium.find_element_by_id(
+            'id_digito')).select_by_index(3)
+        Select(self.selenium.find_element_by_id(
+            'id_accion')).select_by_index(3)
+
+        #Hacemos click en botón de submit.
+        self.selenium.find_element_by_id(
+            'id_guardar').click()
+
+        #Verificamos que se haya creado.
+        self.assertEqual(campana.opciones.count(), 3)
+
         #==================================================================
         # Actuaciones
         #==================================================================
