@@ -954,6 +954,8 @@ class EventoDeContactoEstadisticasManager():
         - counter_x_estado: cuantos contactos estan en los distintos estados
         - counter_intentos: cuantos contactos se han intentado distinta
           cantidad de veces.
+        - counter_por_evento: cuantos eventos de cada tipo fueron producidos
+          por los contactos
 
         Ejemplos:
 
@@ -964,6 +966,9 @@ class EventoDeContactoEstadisticasManager():
         - counter_intentos[0] -> cuantos contactos no se intentaron
         - counter_intentos[1] -> cuantos contactos se intentaron 1 vez
         - counter_intentos[2] -> cuantos contactos se intentaron 2 veces
+
+        - counter_por_evento[5] -> cuantos eventos de tipo '5' existen
+        - counter_por_evento[41] -> cuantos eventos de tipo '41' existen
         """
         campana = Campana.objects.get(pk=campana_id)
         array_eventos_por_contacto = self.obtener_array_eventos_por_contacto(
@@ -978,6 +983,8 @@ class EventoDeContactoEstadisticasManager():
         }
 
         counter_intentos = defaultdict(lambda: 0)
+
+        counter_por_evento = defaultdict(lambda: 0)
 
         # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
         for _, array_eventos, _ in array_eventos_por_contacto:
@@ -995,6 +1002,14 @@ class EventoDeContactoEstadisticasManager():
                     finalizado = True
                     break
 
+            # TODO: unificar en iterador de más arriba
+            for evento in array_eventos:
+                # FIXME: aqui es un buen lugar donde ignorar eventos
+                # Ej: si elige más de 1 opcion, y hace falta que solo
+                #  se tenga en cuenta la 1era elegida
+                # (suponiendo que 'array_eventos' esta ordenado)
+                counter_por_evento[evento] += 1
+
             if finalizado:
                 counter_x_estado['finalizado_x_evento_finalizador'] += 1
             else:
@@ -1003,7 +1018,7 @@ class EventoDeContactoEstadisticasManager():
                 else:
                     counter_x_estado['pendientes'] += 1
 
-        return counter_x_estado, counter_intentos
+        return counter_x_estado, counter_intentos, counter_por_evento
 
 
 class GestionDeLlamadasManager(models.Manager):
