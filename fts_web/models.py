@@ -947,13 +947,31 @@ class EventoDeContactoEstadisticasManager():
     def obtener_estadisticas_de_campana(self, campana_id):
         """Procesa estadisticas para una campana.
 
-        Devuelve dicts: counter_finalizados, counter_intentos
+        Devuelve dicts:
+        - counter_finalizados: contactos q' poseen al menos 1 de los eventos
+          "finalizadores".
+        - counter_intentos: cuantos contactos se han intentado distinta
+          cantidad de veces.
 
-        - counter_finalizados[True] -> contador
-        - counter_finalizados[False] -> contador
-        - counter_intentos[0] -> contador
-        - counter_intentos[1] -> contador
-        - counter_intentos[2] -> contador
+        Ejemplos:
+
+        - counter_finalizados[True] -> cant. contactos q' poseen evento
+          finalizador
+        - counter_finalizados[False] -> cant. contactos q' NO poseen evento
+          finalizador, pero esto no implica que haya que intentar
+          contactarlos, porque aunque no posean 'evento finalizador', se pudo
+          haber llegado al limite max. de cantidad de intentos.
+
+        - counter_intentos[0] -> cuantos contactos no se intentaron
+        - counter_intentos[1] -> cuantos contactos se intentaron 1 vez
+        - counter_intentos[2] -> cuantos contactos se intentaron 2 veces
+
+        TODO:
+        - counter_pendientes[True] -> cant. de contactos a los que hay que
+          seguir intentando
+        - counter_pendientes[False] -> cant. de contactos a los que NO hay que
+          intentar más, ya sea porque están finalizados (o sea, con evento
+          finalizador), o porque se llegó al límite maximo de intentos.
         """
         array_eventos = self.obtener_array_eventos_por_contacto(campana_id)
         finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
