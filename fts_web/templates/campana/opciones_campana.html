@@ -64,19 +64,21 @@
                                 <tr>
                                     <td>{{ opcion.digito }}</td>
                                     <td>{{ opcion.get_accion_display }}</td>
-                                    {% if opcion.grupo_atencion %}
-                                        <td> Grupo Atención: <strong>{{ opcion.grupo_atencion }}</strong></td>
-                                    {% endif %}
+                                    <td>
+                                        {% if opcion.grupo_atencion %}
+                                            Grupo Atención: <strong>{{ opcion.grupo_atencion }}</strong>
+                                        {% endif %}
 
-                                    {% if opcion.calificacion %}
-                                        <td>Calificación: <strong>{{ opcion.calificacion }}</strong></td>
-                                    {% endif %}
+                                        {% if opcion.calificacion %}
+                                            Calificación: <strong>{{ opcion.calificacion }}</strong>
+                                        {% endif %}
+                                    </td>
                                     <td>
                                         <a href="{% url 'opcion_campana_elimina' opcion.pk %}"> Eliminar</a>                        
                                     </td>
                                     
                                 </tr>
-                             {% empty %}
+                            {% empty %}
                                 <tr>
                                     <td colspan="3">
                                         <p class="text-center text-danger">
