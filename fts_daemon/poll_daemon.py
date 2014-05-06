@@ -209,12 +209,14 @@ class RoundRobinTracker(object):
         """Raises:
         - NoHayCampanaEnEjecucion
         """
+        logger.debug("refrescar_trackers(): Iniciando...")
         self._last_query_time = datetime.now()
         old_trackers = dict(self.trackers_campana)
         new_trackers = {}
         for campana in Campana.objects.obtener_ejecucion():
 
             if self.ban_manager.esta_baneada(campana):
+                logger.debug("La campana %s esta baneada", campana.id)
                 continue
 
             if campana in old_trackers:
@@ -223,13 +225,15 @@ class RoundRobinTracker(object):
                 del old_trackers[campana]
             else:
                 # Es nueva
+                logger.debug("refrescar_trackers(): nueva campana: %s",
+                    campana.id)
                 new_trackers[campana] = CampanaTracker(campana)
 
         self.trackers_campana = new_trackers
 
         # Logueamos campanas q' no van mas...
         for campana in old_trackers:
-            logger.info("Ya no esta mas trackeada la campana %s",
+            logger.info("refrescar_trackers(): quitando campana %s",
                 campana.id)
 
         # Luego de procesar y loguear todo, si vemos q' no hay campanas
