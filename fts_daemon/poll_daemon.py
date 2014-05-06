@@ -174,6 +174,11 @@ class RoundRobinTracker(object):
         """Cuantos segundos esperar si la consulta a la BD
         no devuelve ninguna campana activa"""
 
+        self.espera_busy_wait = 1
+        """Cuantos segundos esperar si en la ultima iteracion
+        no se ha procesado ningún contacto. Esta espera es necesaria
+        para evitar q' el daemon haga un 'busy wait'"""
+
         self._last_query_time = datetime.now() - timedelta(days=30)
         """Ultima vez q' se consulto la BD"""
 
@@ -273,8 +278,8 @@ class RoundRobinTracker(object):
         La implementación por default banea a la campana, y la
         elimina de `self.trackers_campana`
         """
-        self.ban_manager.banear_campana(campana)
         logger.debug("onNoMasContactosEnCampana: %s", campana.id)
+        self.ban_manager.banear_campana(campana)
         try:
             del self.trackers_campana[campana]
         except KeyError:
@@ -286,10 +291,12 @@ class RoundRobinTracker(object):
         """
         while True:
             # Trabajamos en copia, por si hace falta modificarse
+            contactos_procesados = 0
             dict_copy = dict(self.trackers_campana)
             for campana, tracker_campana in dict_copy.iteritems():
                 try:
                     yield tracker_campana.next()
+                    contactos_procesados += 1
                 except CampanaNoEnEjecucion:
                     self.onCampanaNoEnEjecucion(campana)
                 except NoMasContactosEnCampana:
@@ -299,6 +306,12 @@ class RoundRobinTracker(object):
                     # El tema es que puede haber llamadas en curso, pero esto
                     # no deberia ser problema...
                     self.onNoMasContactosEnCampana(campana)
+
+            # Si no se procesaron contactos, esperamos 1 seg.
+            if contactos_procesados == 0:
+                logger.debug("No se procesaron contactos en esta iteracion. "
+                    "Esperaremos %s seg.", self.espera_busy_wait)
+                time.sleep(1)
 
             # Actualizamos lista de tackers
             if self.necesita_refrescar_trackers():
