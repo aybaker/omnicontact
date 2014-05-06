@@ -347,11 +347,16 @@ class FTSenderBaseTest(TestCase):
             campana=campana,
         ).save()
 
+        try:
+            ga = GrupoAtencion.objects.all()[0]
+        except IndexError:
+            ga = self.crear_grupo_atencion()
+
         Opcion(
             digito=2,
             accion=Opcion.DERIVAR,
             campana=campana,
-            grupo_atencion=GrupoAtencion.objects.all()[0],
+            grupo_atencion=ga,
         ).save()
 
         digito = 3
