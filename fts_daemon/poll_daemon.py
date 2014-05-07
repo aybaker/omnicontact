@@ -141,8 +141,6 @@ class CampanaTracker(object):
                 "tiene un limite de {1}").format(
                     self._llamadas_en_curso_aprox,
                     self.campana.cantidad_canales)
-            print ">>>>>", self._llamadas_en_curso_aprox
-            print ">>>>>", self.campana.cantidad_canales
             raise LimiteDeCanalesAlcanzadoError(msg)
 
         #if not self.actuacion.verifica_actuacion(hoy_ahora):
