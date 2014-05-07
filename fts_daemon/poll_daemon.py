@@ -222,7 +222,11 @@ class RoundRobinTracker(object):
 
         self.loop__limite_de_canales_alcanzado = False
         """Variable de 'loop' (o sea, seteada y usada en el
-        loop de generator()"""
+        cada ronda (ROUND) de generator()).
+
+        Bandera que indica que se detecto el limite para alguna de las
+        campañas procesadas.
+        """
 
     def necesita_refrescar_trackers(self):
         """Devuleve booleano, indicando si debe o no consultarse a
@@ -398,12 +402,22 @@ class RoundRobinTracker(object):
             pass
 
     def onLimiteDeCanalesAlcanzadoError(self, campana):
+        """Ejecutado por generator() cuando se detecta
+        LimiteDeCanalesAlcanzadoError. Esto implica que la campana que se
+        estaba teniendo en cuenta debe ignorarse por esta vez, ya que
+        ya se la colmado el límite de llamadas concurrentes.
+
+        La implementación por default setea en True la bandera
+        `self.loop__limite_de_canales_alcanzado`
+        """
         logger.debug("onLimiteDeCanalesAlcanzadoError: %s", campana.id)
         self.loop__limite_de_canales_alcanzado = True
 
     def generator(self):
-        """Devuelve datos de contacto a contactar:
-        (campana, contacto_id, telefono)
+        """Devuelve los datos de contacto a contactar, de a una
+        campaña por vez.
+
+        :returns: (campana, contacto_id, telefono)
         """
         while True:
             # Trabajamos en copia, por si hace falta modificarse
