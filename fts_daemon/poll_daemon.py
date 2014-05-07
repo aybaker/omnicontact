@@ -314,6 +314,7 @@ class RoundRobinTracker(object):
                 "porque la ultima actualizacion fue recientemente")
             return
 
+        # Dict con campañas trackeadas
         campana_by_id = dict([(c.id, c) for c in self.trackers_campana])
 
         logger.info("Actualizando status via AMI HTTP")
@@ -339,7 +340,7 @@ class RoundRobinTracker(object):
 
         # En este punto, campana_by_id tiene las campañas cuyos datos
         #  no fueron refrescados...
-        for campana in campana_by_id:
+        for campana in campana_by_id.values():
             # FIXME: esto que hacemos aca, no es algo peligroso? Y si habia
             # en ejecucion!? Quizá deberiamos, además de este control, llevar
             # control de la cantidad de llamadas generadas por minuto
