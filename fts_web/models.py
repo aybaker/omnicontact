@@ -293,11 +293,8 @@ class CampanaManager(models.Manager):
 
         return campanas_ejecucion
 
-    def verifica_estado_pausada(self, pk):
-        campana = self.get(pk=pk)
-        if campana.estado == Campana.ESTADO_PAUSADA:
-            return True
-        return False
+    def verifica_estado_en_ejecucion(self, pk):
+        return self.filter(pk=pk, estado=Campana.ESTADO_ACTIVA).exists()
 
 
 upload_to_audios_asterisk = upload_to("audios_asterisk", 95)

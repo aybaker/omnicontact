@@ -148,10 +148,8 @@ class CampanaTracker(object):
         #if not self.actuacion.verifica_actuacion(hoy_ahora):
         #    raise CampanaNoEnEjecucion()
 
-        # FIXME: chequear q' el estado sea VALIDO, o sea,
-        #  que no este pausada, pero tampoco finalizada, etc.
-        # Valida que la campana no se haya pausado.
-        if Campana.objects.verifica_estado_pausada(self.campana.pk):
+        # Valida que la campana esté en estado valido
+        if Campana.objects.verifica_estado_en_ejecucion(self.campana.pk):
             raise CampanaNoEnEjecucion()
 
         if not self.cache:
@@ -159,62 +157,6 @@ class CampanaTracker(object):
 
         self._llamadas_en_curso_aprox += 1
         return self.cache.pop(0)
-
-#    def next(self):
-#        """Devuelve los datos de datos de contacto a contactar,
-#        para la campaña asociada a este tracker. Internamente, se encarga
-#        de obtener el generador, y obtener un dato.
-#
-#        :returns: (campana, contacto_id, telefono)
-#
-#        :raises: CampanaNoEnEjecucion
-#        :raises: NoMasContactosEnCampana
-#        """
-#        if self.generator is None:
-#            self.generator = self.get_generator()
-#        return next(self.generator)
-#
-#    def get_generator(self):
-#        """Devuelve *generador* de datos de contacto a contactar,
-#        para la campaña asociada a este tracker.
-#
-#        :returns: (campana, contacto_id, telefono)
-#
-#        :raises: CampanaNoEnEjecucion
-#        :raises: NoMasContactosEnCampana
-#        """
-#        while True:
-#
-#            # Fecha actual local.
-#            hoy_ahora = datetime.now()
-#
-#            # Esto quiza no haga falta, porque en teoria
-#            # el siguiente control de actuacion detectara el
-#            # cambio de dia, igual hacemos este re-control
-#            if not self.campana.verifica_fecha(hoy_ahora):
-#                raise CampanaNoEnEjecucion()
-#
-#            if self._llamadas_en_curso_aprox >= self.campana.cantidad_canales:
-#                msg = "Hay {0} llamadas en curso (aprox), y la campana " + \
-#                    "tiene un limite de {1}".format(
-#                        self._llamadas_en_curso_aprox,
-#                        self.campana.cantidad_canales)
-#                raise LimiteDeCanalesAlcanzadoError(msg)
-#
-##            if not self.actuacion.verifica_actuacion(hoy_ahora):
-##                raise CampanaNoEnEjecucion()
-#
-#            # FIXME: chequear q' el estado sea VALIDO, o sea,
-#            #  que no este pausada, pero tampoco finalizada, etc.
-#            # Valida que la campana no se haya pausado.
-#            if Campana.objects.verifica_estado_pausada(self.campana.pk):
-#                raise CampanaNoEnEjecucion()
-#
-#            if not self.cache:
-#                self._populate_cache()  # -> NoMasContactosEnCampana
-#
-#            self._llamadas_en_curso_aprox += 1
-#            yield self.cache.pop(0)
 
 
 class BanManager(object):
