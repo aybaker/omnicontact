@@ -522,6 +522,14 @@ class Campana(models.Model):
             return url
         return None
 
+    def obtener_contadores(self):
+        """
+        Este método devuelve los contadores para las estadísticas de
+        la campaña actual.
+        """
+        return EventoDeContacto.objects_estadisticas.\
+            obtener_estadisticas_de_campana(self.id)
+
     def _genera_grafico_torta(self):
         """
         Genera el gráfico torta de los intentos de contacto de la
@@ -547,8 +555,7 @@ class Campana(models.Model):
 
             #Obtiene contadores para estadística.
             counter_x_estado, counter_intentos, counter_por_evento = \
-            EventoDeContacto.objects_estadisticas.\
-                obtener_estadisticas_de_campana(self.id)
+                self.obtener_contadores()
 
             #Gráfico Torta.
             cantidad_contesto = counter_x_estado[
