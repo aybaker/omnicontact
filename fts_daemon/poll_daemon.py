@@ -413,6 +413,18 @@ class RoundRobinTracker(object):
         logger.debug("onLimiteDeCanalesAlcanzadoError: %s", campana.id)
         self.loop__limite_de_canales_alcanzado = True
 
+    def onNoSeDevolvioContactoEnRoundActual(self):
+        """Ejecutado por generator() cuando se corrió el loop, pero no se
+        devolvio ningun contacto.
+
+        Las razones por las que no se proceso ningun contacto pueden ser
+        variadas: no hay campañas en ejecución, se llegó al límite
+        de canales por campaña, etc
+        """
+        logger.debug("No se procesaron contactos en esta iteracion. "
+            "Esperaremos %s seg.", self.espera_busy_wait)
+        time.sleep(self.espera_busy_wait)
+
     def generator(self):
         """Devuelve los datos de contacto a contactar, de a una
         campaña por vez.
@@ -452,12 +464,11 @@ class RoundRobinTracker(object):
 
             # Si no se procesaron contactos, esperamos 1 seg.
             if contactos_procesados == 0:
-                logger.debug("No se procesaron contactos en esta iteracion. "
-                    "Esperaremos %s seg.", self.espera_busy_wait)
+                self.onNoSeDevolvioContactoEnRoundActual()
+                ## ANTES SE HACIA ACA: time.sleep(1)
                 # TODO: unificar todas estas esperas en un solo lugar,
                 # al final, o aprovechar de hacer otros procesamientos,
                 # como finalizacoin de campanas...
-                time.sleep(1)
 
             # Actualizamos lista de tackers
             if self.necesita_refrescar_trackers():
