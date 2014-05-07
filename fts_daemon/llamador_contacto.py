@@ -22,8 +22,8 @@ def procesar_contacto(campana, contacto_id, numero):
     y luego realiza ORIGINATE, registrando el resultado de dicho comando.
     """
 
-    logger.info("Realizando originate - campana: %s - contacto: %s",
-        campana.id, contacto_id)
+    logger.info("Realizando originate - campana: %s - contacto: %s - "
+        "numero: %s", campana.id, contacto_id, numero)
 
     EventoDeContacto.objects.inicia_intento(campana.id, contacto_id)
 

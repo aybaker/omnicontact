@@ -5,12 +5,15 @@ Daemon que busca pendientes y realiza envios.
 
 from __future__ import unicode_literals
 
+import collections
 from datetime import datetime, timedelta
 import os
 import random
+import re
 import time
 
 from django.conf import settings
+from fts_daemon.asterisk_ami_http import AsteriskHttpClient
 from fts_daemon.llamador_contacto import procesar_contacto
 from fts_web.models import Campana, EventoDeContacto
 import logging as _logging
@@ -161,6 +164,65 @@ class BanManager(object):
             return False
 
 
+class AmiStatusTracker(object):
+
+    REGEX = re.compile("^Local/([0-9]+)-([0-9]+)@FTS_local_campana_([0-9]+)")
+
+    def __init__(self):
+        pass
+
+    def _parse(self, calls_dicts):
+        """
+        Devuelve:
+        1. dict, cuyo key es un string, con 3 elementos, separados por
+           espacios: [contacto_id, numero, campana_id], y el
+           valor es la lista de registros asociados a este key
+        2. lista, con registros no parseados
+        """
+        parseados = collections.defaultdict(lambda: list())
+        no_parseados = []
+        for item in calls_dicts:
+            if "channel" in item:
+                # Local/28-620@FTS_local_campana
+                match_obj = AmiStatusTracker.REGEX.match(item["channel"])
+                if match_obj:
+                    contacto_id = match_obj.group(1)
+                    numero = match_obj.group(2)
+                    campana_id = match_obj.group(3)
+                    key = " ".join([contacto_id, numero, campana_id])
+                    parseados[key].append(item)
+                else:
+                    no_parseados.append(item)
+            else:
+                no_parseados.append(item)
+        return parseados, no_parseados
+
+    def get_status_por_campana(self):
+        """Devuelve diccionario, cuyos KEYs son los ID de campana,
+        y VALUEs son listas. Cada lista es una lista con:
+        [contacto_id, numero, campana_id]
+        """
+
+        # FIXME: crear cliente, loguear y reutilizar!
+        client = AsteriskHttpClient()
+        client.login()
+        client.ping()
+        calls_dicts = client.get_status().calls_dicts
+        parseados, no_parseados = self._parse(calls_dicts)
+        if no_parseados:
+            logger.warn("Algunos registros no fueron parseados: %s registros",
+                len(no_parseados))
+
+        campanas = collections.defaultdict(lambda: list())
+        for key in parseados:
+            contacto_id, numero, campana_id = key.split()
+            campanas[int(campana_id)].append([
+                int(contacto_id), numero, int(campana_id)
+            ])
+
+        return campanas
+
+
 class RoundRobinTracker(object):
 
     def __init__(self):
@@ -173,6 +235,11 @@ class RoundRobinTracker(object):
         self.espera_sin_campanas = 2
         """Cuantos segundos esperar si la consulta a la BD
         no devuelve ninguna campana activa"""
+
+        self.espera_busy_wait = 1
+        """Cuantos segundos esperar si en la ultima iteracion
+        no se ha procesado ningún contacto. Esta espera es necesaria
+        para evitar q' el daemon haga un 'busy wait'"""
 
         self._last_query_time = datetime.now() - timedelta(days=30)
         """Ultima vez q' se consulto la BD"""
@@ -204,12 +271,14 @@ class RoundRobinTracker(object):
         """Raises:
         - NoHayCampanaEnEjecucion
         """
+        logger.debug("refrescar_trackers(): Iniciando...")
         self._last_query_time = datetime.now()
         old_trackers = dict(self.trackers_campana)
         new_trackers = {}
         for campana in Campana.objects.obtener_ejecucion():
 
             if self.ban_manager.esta_baneada(campana):
+                logger.debug("La campana %s esta baneada", campana.id)
                 continue
 
             if campana in old_trackers:
@@ -218,13 +287,15 @@ class RoundRobinTracker(object):
                 del old_trackers[campana]
             else:
                 # Es nueva
+                logger.debug("refrescar_trackers(): nueva campana: %s",
+                    campana.id)
                 new_trackers[campana] = CampanaTracker(campana)
 
         self.trackers_campana = new_trackers
 
         # Logueamos campanas q' no van mas...
         for campana in old_trackers:
-            logger.info("Ya no esta mas trackeada la campana %s",
+            logger.info("refrescar_trackers(): quitando campana %s",
                 campana.id)
 
         # Luego de procesar y loguear todo, si vemos q' no hay campanas
@@ -273,8 +344,8 @@ class RoundRobinTracker(object):
         La implementación por default banea a la campana, y la
         elimina de `self.trackers_campana`
         """
-        self.ban_manager.banear_campana(campana)
         logger.debug("onNoMasContactosEnCampana: %s", campana.id)
+        self.ban_manager.banear_campana(campana)
         try:
             del self.trackers_campana[campana]
         except KeyError:
@@ -286,10 +357,12 @@ class RoundRobinTracker(object):
         """
         while True:
             # Trabajamos en copia, por si hace falta modificarse
+            contactos_procesados = 0
             dict_copy = dict(self.trackers_campana)
             for campana, tracker_campana in dict_copy.iteritems():
                 try:
                     yield tracker_campana.next()
+                    contactos_procesados += 1
                 except CampanaNoEnEjecucion:
                     self.onCampanaNoEnEjecucion(campana)
                 except NoMasContactosEnCampana:
@@ -299,6 +372,12 @@ class RoundRobinTracker(object):
                     # El tema es que puede haber llamadas en curso, pero esto
                     # no deberia ser problema...
                     self.onNoMasContactosEnCampana(campana)
+
+            # Si no se procesaron contactos, esperamos 1 seg.
+            if contactos_procesados == 0:
+                logger.debug("No se procesaron contactos en esta iteracion. "
+                    "Esperaremos %s seg.", self.espera_busy_wait)
+                time.sleep(1)
 
             # Actualizamos lista de tackers
             if self.necesita_refrescar_trackers():
@@ -325,78 +404,6 @@ class Llamador(object):
             if max_loops > 0 and current_loop > max_loops:
                 logger.info("max_loops alcanzado... saliendo...")
                 return
-
-
-#class CancelLoop(Exception):
-#    """Excepcion usada para cancelar loop externo"""
-#    pass
-#
-#
-#class Llamador(object):
-#
-#    def _pendientes(self):
-#        """Generador, devuelve datos para realizar llamadas"""
-#
-#        while True:
-#            for campana in Campana.objects.obtener_ejecucion():
-#                logger.info("Iniciando procesado de campana %s", campana.id)
-#
-#                # Chequeamos actuacion
-#                actuacion = campana.obtener_actuacion_actual()
-#                if not actuacion:
-#                    logger.info("Cancelando xq no hay actuacion activa para "
-#                        "campana %s", campana.id)
-#                    continue
-#
-#                #
-#                # Busca pendientes de campana siendo procesada y arranca
-#                #
-#
-#                try:
-#                    pendientes = EventoDeContacto.objects_gestion_llamadas.\
-#                        obtener_pendientes(campana.id, 10)
-#                    for pendiente in pendientes:
-#
-#                        # Fecha actual local.
-#                        hoy_ahora = datetime.now()
-#
-#                        # Esto quiza no haga falta, porque en teoria
-#                        # el siguiente control de actuacion detectara el
-#                        # cambio de dia, igual hacemos este re-control
-#                        if not campana.verifica_fecha(hoy_ahora):
-#                            raise CancelLoop()
-#
-#                        if not actuacion.verifica_actuacion(hoy_ahora):
-#                            raise CancelLoop()
-#
-#                        # Valida que la campana no se haya pausado.
-#                        if Campana.objects.verifica_estado_pausada(
-#                            campana.pk):
-#                            raise CancelLoop()
-#
-#                        # Todo está OK. Generamos datos.
-#                        id_contacto = pendiente[1]
-#                        contacto = Contacto.objects.get(pk=id_contacto)
-#                        yield campana, id_contacto, contacto.telefono
-#
-#                except CancelLoop:
-#                    pass
-#
-#            else:
-#                logger.debug("No hay campanas en ejecucion. Esperaremos...")
-#                time.sleep(2)
-#
-#    def run(self, max_loops=0):
-#        current_loop = 1
-#        for campana, id_contacto, numero in self._pendientes():
-#            logger.debug("loop(): campana: %s - id_contacto: %s - numero: %s",
-#                campana, id_contacto, numero)
-#            procesar_contacto(campana, id_contacto, numero)
-#
-#            current_loop += 1
-#            if max_loops > 0 and current_loop > max_loops:
-#                logger.info("max_loops alcanzado... saliendo...")
-#                return
 
 
 def main(max_loop=0):
