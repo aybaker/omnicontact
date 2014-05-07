@@ -38,11 +38,9 @@
                     <thead>
                       <tr>                                
                         <th>Cantidad Contacto</th>                        
-                        <th>Cantidad Intentos</th>
                         <th>Intentos Contestados</th>
                         <th>Intentos No Contestados</th>
                         <th>Intentos Pendientes</th>
-                        <th>Intentos Erróneos</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -51,19 +49,13 @@
                                 {{ campana.bd_contacto.contactos.all.count }}
                             </td>
                             <td>
-                                {{ campana.intentos_de_contactos.all.count }}
+                                {{ counter_x_estado.finalizado_x_evento_finalizador }}
                             </td>
                             <td>
-                                {{ campana.obtener_intentos_contesto.count }}
+                                {{ counter_x_estado.finalizado_x_limite_intentos }}
                             </td>
                             <td>
-                                {{ campana.obtener_intentos_no_contesto.count }}
-                            </td>
-                            <td>
-                                {{ campana.obtener_intentos_pendientes.count }}
-                            </td>
-                            <td>
-                                {{ campana.obtener_intentos_error_interno.count }}
+                                {{ counter_x_estado.pendientes }}
                             </td>
                         </tr>
                     </tbody>
