@@ -141,5 +141,5 @@ if settings.DEBUG and settings.FTS_ENHANCED_URLS:
 
 if settings.FTS_TESTING_MODE:
     urlpatterns += patterns('',
-        url(r'^mxml', 'fts_tests.views.mxml'),
+        url(r'^asterisk-ami-http/(?P<code>.+)/mxml', 'fts_tests.views.mxml'),
     )
