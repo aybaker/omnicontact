@@ -327,12 +327,17 @@ class AsteriskHttpClient(object):
             - response object
         """
         # https://docs.python.org/2.6/library/httplib.html
-        logger.debug("AsteriskHttpClient - _request(): %s", url)
-        assert url.startswith('/')
-        assert type(timeout) == int
-        assert timeout > 0, "Timeout must be GREATER than 0"
+
+        # Generamos URL para poder loguearla al principio
+        assert url.startswith('/'), \
+            "Url no comienza con /: {0}".format(url)
+        assert type(timeout) == int, \
+            "timeout no es entero: {0}".format(type(timeout))
+        assert timeout > 0, \
+            "Timeout must be GREATER than 0. Timeout: {0}".format(timeout)
 
         full_url = "{0}{1}".format(settings.ASTERISK['HTTP_AMI_URL'], url)
+        logger.debug("AsteriskHttpClient: request a '%s'", full_url)
         response = self.session.get(full_url, params=params, timeout=timeout)
         logger.debug("AsteriskHttpClient - Status: %s", response.status_code)
         logger.debug("AsteriskHttpClient - Got http response:\n%s",
