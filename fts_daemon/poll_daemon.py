@@ -28,8 +28,8 @@ logger = _logging.getLogger('fts_daemon.poll_daemon')
 
 
 class CampanaNoEnEjecucion(Exception):
-    """Marca cancelacion de procesamiento de campaña,
-    ya sea porque está pausada, no esta en rango de fecha de campaña,
+    """Marca que la campaña en cuestion no está "en ejecucion",
+    ya sea por el estado (ej: pausada), no esta en rango de fecha de campaña,
     o en rango de horas de actuaciones
     """
 
@@ -147,7 +147,7 @@ class CampanaTracker(object):
         #    raise CampanaNoEnEjecucion()
 
         # Valida que la campana esté en estado valido
-        if Campana.objects.verifica_estado_en_ejecucion(self.campana.pk):
+        if not Campana.objects.verifica_estado_activa(self.campana.pk):
             raise CampanaNoEnEjecucion()
 
         if not self.cache:

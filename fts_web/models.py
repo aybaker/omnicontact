@@ -293,8 +293,15 @@ class CampanaManager(models.Manager):
 
         return campanas_ejecucion
 
-    def verifica_estado_en_ejecucion(self, pk):
-        return self.filter(pk=pk, estado=Campana.ESTADO_ACTIVA).exists()
+    def verifica_estado_activa(self, campana_id):
+        """Devuelve booleano indicando si el estado de la campaña
+        es 'ACTIVA'
+        :param campana_id: Id de la campaña
+        :type pk: int
+        :returns: bool -- si la campaña esta activa o no
+        """
+        return self.filter(pk=campana_id,
+            estado=Campana.ESTADO_ACTIVA).exists()
 
 
 upload_to_audios_asterisk = upload_to("audios_asterisk", 95)
