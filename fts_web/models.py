@@ -498,13 +498,41 @@ class Campana(models.Model):
             return url
         return None
 
+    def url_grafico_barra_intentos(self):
+        """
+        Devuelve la url al gráfico svg en medias files.
+        """
+        path = '{0}/graficos/{1}-barra-intentos.svg'.format(
+            settings.MEDIA_ROOT, self.id)
+        if os.path.exists(path):
+            url = '{0}graficos/{1}-barra-intentos.svg'.format(
+                settings.MEDIA_URL, self.id)
+            return url
+        return None
+
+    def url_grafico_barra_eventos(self):
+        """
+        Devuelve la url al gráfico svg en medias files.
+        """
+        path = '{0}/graficos/{1}-barra-eventos.svg'.format(settings.MEDIA_ROOT,
+            self.id)
+        if os.path.exists(path):
+            url = '{0}graficos/{1}-barra-eventos.svg'.format(settings.MEDIA_URL,
+                self.id)
+            return url
+        return None
+
     def _genera_grafico_torta(self):
         """
         Genera el gráfico torta de los intentos de contacto de la
         campaña finalizada.
         """
-        path = '{0}/graficos/{1}-torta.svg'.format(settings.MEDIA_ROOT,
+        path_torta = '{0}/graficos/{1}-torta.svg'.format(settings.MEDIA_ROOT,
             self.id)
+        path_barra_contactos_x_intentos = '{0}/graficos/{1}-barra-intentos.svg'\
+            .format(settings.MEDIA_ROOT, self.id)
+        path_barra_contactos_x_eventos = '{0}/graficos/{1}-barra-eventos.svg'\
+            .format(settings.MEDIA_ROOT, self.id)
 
         total_contactos = self.bd_contacto.contactos.all().count()
         if total_contactos > 0:
@@ -517,10 +545,17 @@ class Campana(models.Model):
                     logger.warn("Error al intentar crear directorio para "
                         "graficos: %s (se ignorara el error)", graficos_dir)
 
-            cantidad_contesto = self.obtener_intentos_contesto().count()
-            cantidad_no_contesto = self.obtener_intentos_no_contesto().count()
-            cantidad_pendientes = self.obtener_intentos_pendientes().count()
-            cantidad_error_interno = self.obtener_intentos_error_interno().count()
+            #Obtiene contadores para estadística.
+            counter_x_estado, counter_intentos, counter_por_evento = \
+            EventoDeContacto.objects_estadisticas.\
+                obtener_estadisticas_de_campana(self.id)
+
+            #Gráfico Torta.
+            cantidad_contesto = counter_x_estado[
+                'finalizado_x_evento_finalizador']
+            cantidad_no_contesto = counter_x_estado[
+                'finalizado_x_limite_intentos']
+            cantidad_pendientes = counter_x_estado['pendientes']
 
             porcentaje_contesto = float(100 * cantidad_contesto /
                 total_contactos)
@@ -528,17 +563,35 @@ class Campana(models.Model):
                 total_contactos)
             porcentaje_pendientes = float(100 * cantidad_pendientes /
                 total_contactos)
-            porcentaje_error_interno = float(100 * cantidad_error_interno /
-                total_contactos)
 
             pie_chart = pygal.Pie()  # @UndefinedVariable
-            pie_chart.title = 'Intentos de Contactos para la campaña {0}'.format(
+            pie_chart.title = 'Contactos para la campaña {0}'.format(
                 self.nombre)
             pie_chart.add('Contestados', porcentaje_contesto)
             pie_chart.add('No Contestados', porcentaje_no_contesto)
             pie_chart.add('Pendientes', porcentaje_pendientes)
-            pie_chart.add('Erróneos', porcentaje_error_interno)
-            pie_chart.render_to_file(path)
+            pie_chart.render_to_file(path_torta)
+
+            #Gráfico Barra Contactos x Intentos.
+            contactos_x_intentos = [counter_intentos[key] for key, counter in\
+                counter_intentos.items()]
+            line_chart = pygal.Bar(show_legend=False)
+            line_chart.title = 'Cantidad de Contactos por Cantidad de Intentos.'
+            line_chart.x_labels = map(str, range(0, len(counter_intentos)))
+            line_chart.add('Cantidad', contactos_x_intentos)
+            line_chart.render_to_file(path_barra_contactos_x_intentos)
+
+            #Gráfico Barra Contactos x Estados.
+            contactos_x_eventos = [(evento, counter)\
+            for evento, counter in counter_por_evento.items()]
+            line_chart = pygal.Bar(margin=50, truncate_legend=100)
+            line_chart.title = 'Cantidad de Contactos por Eventos.'
+            for evento in contactos_x_eventos:
+                line_chart.add(
+                    EventoDeContacto.objects.get_nombre_de_evento(evento[0]),
+                    evento[1])
+            line_chart.render_to_file(path_barra_contactos_x_eventos)
+
         else:
             logger.info("Ignorando campana %s (total_contactos == 0)", self.id)
 
