@@ -81,9 +81,12 @@ class AsteriskXmlParser(object):
         The response dict is saved on `self.response_dict`
 
         Parameters:
-            - xml: the XML string
-            - check_errors: if True (default) check if the response
-                has been set as 'Error'.
+
+        - xml: the XML string
+        - check_errors: if True (default) check if the response
+          has been set as 'Error' (and raises exception)
+        - check_success: if True, raises the exception if the
+          response isn't a 'success'.
 
         Raises:
             - AsteriskHttpResponseWithError: if an error is detected
@@ -121,8 +124,10 @@ class AsteriskXmlParser(object):
                     "response_dict: '%s' - XML:\n%s", str(self.response_dict),
                     xml)
 
-            if check_success and self.response_value != 'success':
-                raise exception_for_error()
+        # if check_success is True, check `response_value`
+        # and raise exception in case of error
+        if check_success and self.response_value != 'success':
+            raise exception_for_error()
 
 
 class AsteriskXmlParserForPing(AsteriskXmlParser):
@@ -139,6 +144,9 @@ class AsteriskXmlParserForPing(AsteriskXmlParser):
         #    timestamp='1398544611.316607'/>
 
         self._parse_and_check(xml, check_success=True)
+        if not self.response_dict.get('timestamp', ''):
+            raise AsteriskHttpPingError("Attribute 'timestamp' "
+                "not found in XML response")
 
 
 class AsteriskXmlParserForLogin(AsteriskXmlParser):
@@ -336,8 +344,11 @@ class AsteriskHttpClient(object):
         assert timeout > 0, \
             "Timeout must be GREATER than 0. Timeout: {0}".format(timeout)
 
+        query_as_string = "&".join(["{0}={1}".format(k, v)
+            for k, v in params.iteritems()])
         full_url = "{0}{1}".format(settings.ASTERISK['HTTP_AMI_URL'], url)
-        logger.debug("AsteriskHttpClient: request a '%s'", full_url)
+        logger.debug("AsteriskHttpClient: request a '%s?%s'",
+            full_url, query_as_string)
         response = self.session.get(full_url, params=params, timeout=timeout)
         logger.debug("AsteriskHttpClient - Status: %s", response.status_code)
         logger.debug("AsteriskHttpClient - Got http response:\n%s",
