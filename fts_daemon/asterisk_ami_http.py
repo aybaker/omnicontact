@@ -4,14 +4,17 @@
 
 from __future__ import unicode_literals
 
+from datetime import datetime
+import math
+import os
+import tempfile
+from xml.parsers.expat import ExpatError
+
 from django.conf import settings
 from fts_web.errors import FtsError
 import logging as _logging
-import xml.etree.ElementTree as ET
-from xml.parsers.expat import ExpatError
-
-import math
 import requests
+import xml.etree.ElementTree as ET
 
 
 logger = _logging.getLogger(__name__)
@@ -353,6 +356,18 @@ class AsteriskHttpClient(object):
         logger.debug("AsteriskHttpClient - Status: %s", response.status_code)
         logger.debug("AsteriskHttpClient - Got http response:\n%s",
             response.content)
+
+        if settings.FTS_DUMP_HTTP_AMI_RESPONSES:
+            prefix = "http-ami-respones-"
+            try:
+                tmp_fd, tmp_filename = tempfile.mkstemp(".xml",
+                    prefix=prefix)
+                tmp_file_obj = os.fdopen(tmp_fd, 'w')
+                tmp_file_obj.write(response.content)
+                logger.info("AsteriskHttpClient - Dump: %s", tmp_filename)
+            except:
+                logger.exception("No se pudo hacer dump de respuesta "
+                    "a archivo")
 
         return response.content, response
 

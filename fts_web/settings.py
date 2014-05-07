@@ -106,6 +106,8 @@ FTS_EVENTOS_FINALIZADORES = [
     "EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO",
 ]
 
+FTS_DUMP_HTTP_AMI_RESPONSES = False
+
 """Configuracion para interactuar con Asterisk"""
 ASTERISK = {}
 
