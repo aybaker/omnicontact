@@ -5,12 +5,15 @@ Daemon que busca pendientes y realiza envios.
 
 from __future__ import unicode_literals
 
+import collections
 from datetime import datetime, timedelta
 import os
 import random
+import re
 import time
 
 from django.conf import settings
+from fts_daemon.asterisk_ami_http import AsteriskHttpClient
 from fts_daemon.llamador_contacto import procesar_contacto
 from fts_web.models import Campana, EventoDeContacto
 import logging as _logging
@@ -159,6 +162,65 @@ class BanManager(object):
         else:
             del self.campanas_baneadas[campana]
             return False
+
+
+class AmiStatusTracker(object):
+
+    REGEX = re.compile("^Local/([0-9]+)-([0-9]+)@FTS_local_campana_([0-9]+)")
+
+    def __init__(self):
+        pass
+
+    def _parse(self, calls_dicts):
+        """
+        Devuelve:
+        1. dict, cuyo key es un string, con 3 elementos, separados por
+           espacios: [contacto_id, numero, campana_id], y el
+           valor es la lista de registros asociados a este key
+        2. lista, con registros no parseados
+        """
+        parseados = collections.defaultdict(lambda: list())
+        no_parseados = []
+        for item in calls_dicts:
+            if "channel" in item:
+                # Local/28-620@FTS_local_campana
+                match_obj = AmiStatusTracker.REGEX.match(item["channel"])
+                if match_obj:
+                    contacto_id = match_obj.group(1)
+                    numero = match_obj.group(2)
+                    campana_id = match_obj.group(3)
+                    key = " ".join([contacto_id, numero, campana_id])
+                    parseados[key].append(item)
+                else:
+                    no_parseados.append(item)
+            else:
+                no_parseados.append(item)
+        return parseados, no_parseados
+
+    def get_status_por_campana(self):
+        """Devuelve diccionario, cuyos KEYs son los ID de campana,
+        y VALUEs son listas. Cada lista es una lista con:
+        [contacto_id, numero, campana_id]
+        """
+
+        # FIXME: crear cliente, loguear y reutilizar!
+        client = AsteriskHttpClient()
+        client.login()
+        client.ping()
+        calls_dicts = client.get_status().calls_dicts
+        parseados, no_parseados = self._parse(calls_dicts)
+        if no_parseados:
+            logger.warn("Algunos registros no fueron parseados: %s registros",
+                len(no_parseados))
+
+        campanas = collections.defaultdict(lambda: list())
+        for key in parseados:
+            contacto_id, numero, campana_id = key.split()
+            campanas[int(campana_id)].append([
+                int(contacto_id), numero, int(campana_id)
+            ])
+
+        return campanas
 
 
 class RoundRobinTracker(object):

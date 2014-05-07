@@ -130,10 +130,16 @@ urlpatterns = patterns('',
     ),
 
     url(r'^admin/', include(admin.site.urls)),
+
 )
 
 if settings.DEBUG and settings.FTS_ENHANCED_URLS:
     urlpatterns += static(
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT
+    )
+
+if settings.FTS_TESTING_MODE:
+    urlpatterns += patterns('',
+        url(r'^mxml', 'fts_tests.views.mxml'),
     )
