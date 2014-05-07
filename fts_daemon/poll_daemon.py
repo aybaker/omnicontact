@@ -220,6 +220,11 @@ class RoundRobinTracker(object):
         self._ultimo_refresco_ami_status = datetime.now() - timedelta(days=30)
         """Ultima vez q' se ejecuto *ŝtatus* via AMI HTTP."""
 
+        #
+        # Variables de loop / ROUND, o sea, que son reseteadas en
+        #    cada iteracion
+        #
+
         self.loop__limite_de_canales_alcanzado = False
         """Variable de 'loop' (o sea, seteada y usada en el
         cada ronda (ROUND) de generator()).
@@ -227,6 +232,10 @@ class RoundRobinTracker(object):
         Bandera que indica que se detecto el limite para alguna de las
         campañas procesadas.
         """
+
+        self.loop__contactos_procesados = 0
+        """Cuantos contactos se procesaron/devolvieron
+        en este loop / ROUND"""
 
     def necesita_refrescar_trackers(self):
         """Devuleve booleano, indicando si debe o no consultarse a
@@ -432,20 +441,21 @@ class RoundRobinTracker(object):
         :returns: (campana, contacto_id, telefono)
         """
         while True:
-            # Trabajamos en copia, por si hace falta modificarse
-            contactos_procesados = 0
 
             ##
-            ## Hacemos un "round"
+            ## Arrancamos un "round"
             ##
 
+            self.loop__contactos_procesados = 0
             self.loop__limite_de_canales_alcanzado = False
 
+            # Trabajamos en copia, por si hace falta modificarse
             dict_copy = dict(self.trackers_campana)
+
             for campana, tracker_campana in dict_copy.iteritems():
                 try:
                     yield tracker_campana.next()
-                    contactos_procesados += 1
+                    self.loop__contactos_procesados += 1
                 except CampanaNoEnEjecucion:
                     self.onCampanaNoEnEjecucion(campana)
                 except NoMasContactosEnCampana:
@@ -459,13 +469,13 @@ class RoundRobinTracker(object):
                     self.onLimiteDeCanalesAlcanzadoError(campana)
 
             ##
-            ## Finalizamos "round", ahora chequeamos algunas condiciones
+            ## A esta altura ya terminamos de ejecutar el "round",
+            ##    ahora chequeamos algunas condiciones
             ##
 
             # Si no se procesaron contactos, esperamos 1 seg.
-            if contactos_procesados == 0:
+            if self.loop__contactos_procesados == 0:
                 self.onNoSeDevolvioContactoEnRoundActual()
-                ## ANTES SE HACIA ACA: time.sleep(1)
                 # TODO: unificar todas estas esperas en un solo lugar,
                 # al final, o aprovechar de hacer otros procesamientos,
                 # como finalizacoin de campanas...
