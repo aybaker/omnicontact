@@ -268,7 +268,10 @@ class RoundRobinTracker(object):
         return False
 
     def refrescar_trackers(self):
-        """Raises:
+        """Refresca la lista de trackers de campañas (self.trackers_campana),
+        que incluye buscar en BD las campañas en ejecucion.
+
+        Raises:
         - NoHayCampanaEnEjecucion
         """
         logger.debug("refrescar_trackers(): Iniciando...")
