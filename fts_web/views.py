@@ -918,6 +918,20 @@ class CampanaReporteDetailView(DetailView):
     context_object_name = 'campana'
     model = Campana
 
+    def get_context_data(self, **kwargs):
+        context = super(CampanaReporteDetailView, self).get_context_data(
+           **kwargs)
+
+        #Obtiene contadores para estadística.
+        counter_x_estado, counter_intentos, counter_por_evento = \
+            self.object.obtener_contadores()
+        context['counter_x_estado'] = counter_x_estado
+        context['counter_intentos'] = counter_intentos
+        context['counter_por_evento'] = counter_por_evento
+
+        return context
+
+
 
 #==============================================================================
 # AGI
