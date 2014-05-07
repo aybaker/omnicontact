@@ -4,14 +4,17 @@
 from __future__ import unicode_literals
 
 import datetime
+from random import random
 
 from django.db import IntegrityError
+from django.core.urlresolvers import reverse
+from django.test.client import Client
+from django.utils.unittest.case import skipUnless
+
 from fts_web.models import AgenteGrupoAtencion, Campana, Opcion, \
-    Calificacion, Actuacion
-from fts_web.tests.utiles import FTSenderBaseTest
-
-
-#from django.conf import settings
+    Calificacion, Actuacion, EventoDeContacto
+from fts_web.tests.utiles import FTSenderBaseTest, \
+    default_db_is_postgresql
 
 
 class GrupoAtencionTest(FTSenderBaseTest):
@@ -444,3 +447,57 @@ class ActuacionTests(FTSenderBaseTest):
         #Testea que el método devuelva False. La campanaña *NO*
         #esta en rango de actuación.
         self.assertFalse(actuacion1.verifica_actuacion(hoy_ahora))
+
+
+@skipUnless(default_db_is_postgresql(), "Requiere PostgreSql")
+class ReporteTest(FTSenderBaseTest):
+    def test_reporte(self):
+        cant_contactos = 100
+        numeros_telefonicos = [int(random() * 10000000000)\
+            for _ in range(cant_contactos)]
+
+        base_datos_contactos = self.crear_base_datos_contacto(
+            cant_contactos=cant_contactos,
+            numeros_telefonicos=numeros_telefonicos)
+
+        campana = self.crear_campana(bd_contactos=base_datos_contactos,
+            cantidad_intentos=3)
+        campana.activar()
+
+        #Progrmaa la campaña.
+        EventoDeContacto.objects_gestion_llamadas.programar_campana(
+            campana.pk)
+
+        #Intentos.
+        EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
+            campana.pk, probabilidad=0.3)
+
+        EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
+            campana.pk, probabilidad=0.3)
+
+        EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
+            campana.pk, probabilidad=0.3)
+
+        #Finaliza algunos.
+        EV_FINALIZADOR = EventoDeContacto.objects.\
+        get_eventos_finalizadores()[0]
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            evento=EV_FINALIZADOR, probabilidad=0.2)
+
+        campana.finalizar()
+
+        # Verificamos template detalle reporte campaña.
+        c = Client()
+        url = reverse('detalle_campana_reporte', kwargs={"pk": campana.pk})
+        response = c.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        grafico_torta = 'src="/media/graficos/{0}-torta.svg"'.format(campana.pk)
+        grafico_barra_contactos_x_intentos =\
+            'src="/media/graficos/{0}-barra-intentos.svg"'.format(campana.pk)
+        grafico_barra_contactos_x_eventos =\
+            'src="/media/graficos/{0}-barra-eventos.svg"'.format(campana.pk)
+
+        self.assertContains(response, grafico_torta)
+        self.assertContains(response, grafico_barra_contactos_x_intentos)
+        self.assertContains(response, grafico_barra_contactos_x_eventos)
