@@ -429,6 +429,12 @@ class RoundRobinTracker(object):
 
         :returns: (campana, contacto_id, telefono)
         """
+
+        try:
+            self.refrescar_trackers()
+        except NoHayCampanaEnEjecucion:
+            pass
+
         while True:
 
             ##
