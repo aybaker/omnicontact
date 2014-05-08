@@ -310,6 +310,7 @@ class RoundRobinTracker(object):
                 " porque la ultima actualizacion fue recientemente")
             return False
 
+        logger.debug("necesita_refrescar_channel_status(): True")
         return True
 
     def refrescar_channel_status(self):
