@@ -1,13 +1,21 @@
 # -*- coding: utf-8 -*-
+
+"""
+Mapeos de URLs para la aplicación
+"""
+
 from __future__ import unicode_literals
+
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
-from django.conf import settings
 from django.contrib import admin
 from django.views.generic.base import RedirectView
+from fts_web import views
+
+
 admin.autodiscover()
 
-from fts_web import views
 
 urlpatterns = patterns('',
     url(r'^$',

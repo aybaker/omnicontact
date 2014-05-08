@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+Parser de archivos CSV y Excel
+"""
+
 from __future__ import unicode_literals
 
 import csv

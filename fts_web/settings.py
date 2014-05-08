@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+
 """
-Django settings for fts_web project.
+Settings básicos de Django para la aplicación FTS.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
+
 """
 
 from __future__ import unicode_literals
@@ -19,69 +21,90 @@ from django.contrib import messages
 DEBUG = False
 TEMPLATE_DEBUG = False
 
+FTS_ENHANCED_URLS = False
 """Si FTS_ENHANCED_URLS value true, se sirve /media, /static, etc.
 En produccion deberia ser FALSE
 """
-FTS_ENHANCED_URLS = False
 
+FTS_STOP_ON_SELENIUM_ASSERT_ERROR = False
 """Usado en tests de Selenium, en conjunto al metodo `assertTrueSelenium()`.
 Si es verdadero y el assert falla, la ejecucion del test es pausada, para
 poder ver el mensaje en el navegador.
 
 Ver `assertTrueSelenium()` para mas informacion
 """
-FTS_STOP_ON_SELENIUM_ASSERT_ERROR = False
 
+FTS_JOIN_TIMEOUT_MARGIN = 5
 """Cuantos segundos esperar (mas alla del timeout para ORIGINATE)
 para que el proceso hijo termine
 """
-FTS_JOIN_TIMEOUT_MARGIN = 5
 
-"""Esta variable vale `True` cuando se estan ejecutando los test."""
 FTS_TESTING_MODE = False
+"""Esta variable vale `True` cuando se estan ejecutando los test."""
 
+FTS_DIALPLAN_FILENAME = None
 """Path completo (absoluto) al archivo donde se debe generar el dialplan
-Ej:
+
+Ejemplos:
+
+.. code-block:: python
+
     FTS_DIALPLAN_FILENAME = "/opt/asterisk-11/etc/extensions-ftsender.conf"
     FTS_DIALPLAN_FILENAME = "/opt/asterisk-11/etc/ftsender/extensions.conf"
 """
-FTS_DIALPLAN_FILENAME = None
 
+FTS_QUEUE_FILENAME = None
 """Path completo (absoluto) al archivo donde se debe generar queues
-Ej:
+
+Ejemplos:
+
+.. code-block:: python
+
     FTS_QUEUE_FILENAME = "/opt/asterisk-11/etc/queues-ftsender.conf"
     FTS_QUEUE_FILENAME = "/opt/asterisk-11/etc/ftsender/queues.conf"
 """
-FTS_QUEUE_FILENAME = None
 
+FTS_RELOAD_CMD = None
 """Comando a ejecutar para hacer reload de Asterisk
-Ej:
+
+Ejemplo:
+
+.. code-block:: python
+
     FTS_RELOAD_CMD = ["/usr/bin/asterisk", "-x", "reload"]
 """
-FTS_RELOAD_CMD = None
 
+TMPL_FTS_AUDIO_CONVERSOR = None
 """Comando para convertir audios (wav a gsm)
-Ej:
+
+Ejemplos:
+
+.. code-block:: python
+
     TMPL_FTS_AUDIO_CONVERSOR = ["sox", "<INPUT_FILE>", "<OUTPUT_FILE>"]
 
-Para transformar WAV (cualquiera) -> WAV (compatible con Asterisk)
+Para transformar WAV (cualquier formato) -> WAV (compatible con Asterisk):
+
+.. code-block:: python
+
     TMPL_FTS_AUDIO_CONVERSOR = ["sox", "-t", "wav", "<INPUT_FILE>",
         "-r", "8k", "-c", "1", "-e", "signed-integer",
-        "-t", "wav", "<OUTPUT_FILE>"]
-"""
-TMPL_FTS_AUDIO_CONVERSOR = None
+        "-t", "wav", "<OUTPUT_FILE>"
+    ]
 
-
-"""Extension a usar para archivo generado por `TMPL_FTS_AUDIO_CONVERSOR`
-Ej: wav
-    - por lo tanto, el archivo `<OUTPUT_FILE>` tendra la extension `.wav`
 """
+
 TMPL_FTS_AUDIO_CONVERSOR_EXTENSION = None
+"""Extension a usar para archivo generado por `TMPL_FTS_AUDIO_CONVERSOR`
 
-"""Booleano que indica si hay que ejecutar tests que implican
-una interaccion con Asterisk"""
+Ejemplo: *.wav* (con el . incluido):  el archivo `<OUTPUT_FILE>`
+tendra la extension `.wav`
+"""
+
 # TODO: renombrar a FTS_ASTERISK_TEST
 ASTERISK_TEST = False
+"""Booleano que indica si hay que ejecutar tests que implican
+una interaccion con Asterisk"""
 
 FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS = True
 
@@ -90,15 +113,15 @@ FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS = True
 
 FTS_ASTERISK_HTTP_CLIENT = "fts_daemon.asterisk_ami_http.AsteriskHttpClient"
 
+FTS_FAST_AGI_DAEMON_PROXY_URL = None
 """URL donde `fastagi_daemon` realizará el request.
 Debe ser el URL para acceder a Django (SIN el / final)
 
 Ej: http://localhost:8080
 """
-FTS_FAST_AGI_DAEMON_PROXY_URL = None
 
-"""Bind de fast agi daemon"""
 FTS_FAST_AGI_DAEMON_BIND = "0.0.0.0"
+"""Bind de fast agi daemon"""
 
 FTS_PROGRAMAR_CAMPANA_FUNC = "_programar_campana_sqlite"
 

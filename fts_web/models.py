@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+Modelos de la aplicación
+"""
+
 from __future__ import unicode_literals
 
 from _collections import defaultdict
