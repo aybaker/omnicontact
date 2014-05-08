@@ -464,9 +464,13 @@ class AmiStatusTracker(object):
         parseados = collections.defaultdict(lambda: list())
         no_parseados = []
         for item in calls_dicts:
-            if "channel" in item:
+            if "channel" in item or "bridgedchannel" in item:
                 # Local/28-620@FTS_local_campana
                 match_obj = AmiStatusTracker.REGEX.match(item["channel"])
+                if not match_obj:
+                    match_obj = AmiStatusTracker.REGEX.match(
+                        item["bridgedchannel"])
+
                 if match_obj:
                     contacto_id = match_obj.group(1)
                     numero = match_obj.group(2)
@@ -494,6 +498,8 @@ class AmiStatusTracker(object):
         if no_parseados:
             logger.warn("Algunos registros no fueron parseados: %s registros",
                 len(no_parseados))
+            # info(), porque son potenciales problemas!
+            logger.info("No parseados: %s", no_parseados)
 
         campanas = collections.defaultdict(lambda: list())
         for key in parseados:

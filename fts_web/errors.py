@@ -1,8 +1,8 @@
-'''
-Created on Apr 14, 2014
+#-*- coding: utf-8 -*-
 
-@author: Horacio G. de Oro
-'''
+"""
+Excepciones base del sistema.
+"""
 
 from __future__ import unicode_literals
 
