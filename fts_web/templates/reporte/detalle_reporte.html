@@ -28,71 +28,141 @@
                             <td>
                                 {{ campana.fecha_fin|date:"d/m/Y" }}
                             </td>
-                            <td>{{ campana.bd_contacto }}</td>
+                            <td>
+                                {{ campana.bd_contacto }} 
+                                ({{ campana.obtener_estadisticas.total_contactos }} Contactos)
+                            </td>
                             <td>{{ campana.get_estado_display }}</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <table class="table table-bordered">
-                    <thead>
-                      <tr>                                
-                        <th>Cantidad Contacto</th>                        
-                        <th>Intentos Contestados</th>
-                        <th>Intentos No Contestados</th>
-                        <th>Intentos Pendientes</th>
-                      </tr>
-                    </thead>
                     <tbody>
                         <tr>
-                            <td>
-                                {{ campana.bd_contacto.contactos.all.count }}
+                            <td  width="50%">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><h5>Cantidad Total Contestadas</h5></td>
+                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_contestadas }}</span></h5></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><h5>Cantidad Total No Contestadas</h5></td>
+                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_contestadas }}</span></h5></td>
+                                        </tr>
+
+                                         <tr>
+                                            <td><h5>Cantidad Total Pendientes</h5></td>
+                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_pendientes }}</span></h5></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </td>
-                            <td>
-                                {{ counter_x_estado.finalizado_x_evento_finalizador }}
-                            </td>
-                            <td>
-                                {{ counter_x_estado.finalizado_x_limite_intentos }}
-                            </td>
-                            <td>
-                                {{ counter_x_estado.pendientes }}
+                            <td align="center">
+                                {% if campana.url_grafico_torta %}
+                                    <figure>
+                                        <embed type="image/svg+xml" src="{{ campana.url_grafico_torta }}" height="400"/>
+                                    </figure>
+                                {% else%} 
+                                    <p class="text-center text-danger">
+                                        <em>El reporte gráfico no fue generado.</em>
+                                    </p>
+                                {% endif %}
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <div class="col-lg-6">
-                {% if campana.url_grafico_torta %}
-                    <figure>
-                        <embed type="image/svg+xml" src="{{ campana.url_grafico_torta }}" height="450"/>
-                    </figure>
-                {% else%} 
-                    <p class="text-center text-danger">
-                        <em>El reporte gráfico no fue generado.</em>
-                    </p>
-                {% endif %}
-                </div>
-                <div class="col-lg-6">
-                {% if campana.url_grafico_barra_intentos %}
-                    <figure>
-                        <embed type="image/svg+xml" src="{{ campana.url_grafico_barra_intentos }}" height="450"/>
-                    </figure>
-                {% else%} 
-                    <p class="text-center text-danger">
-                        <em>El reporte gráfico no fue generado.</em>
-                    </p>
-                {% endif %}
-                </div>
-                <div class="col-lg-12">
-                {% if campana.url_grafico_barra_eventos %}
-                    <figure>
-                        <embed type="image/svg+xml" src="{{ campana.url_grafico_barra_eventos }}" height="450"/>
-                    </figure>
-                {% else%} 
-                    <p class="text-center text-danger">
-                        <em>El reporte gráfico no fue generado.</em>
-                    </p>
-                {% endif %}
-                </div>
+
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td width="50%">
+                                <table class="table table-bordered table-hover">
+                                    <tbody>
+
+                                        {% for opcion_campana in campana.opciones.all %}
+                                            <tr>
+                                                <td><h5>#{{ opcion_campana.digito }}</h5></td>
+                                                <td><h5>{{ opcion_campana.get_accion_display }}</h5></td>
+                                                <td>
+                                                {% if opcion_campana.grupo_atencion %}
+                                                     Grupo Atención: <strong>{{ opcion_campana.grupo_atencion }}</strong>
+                                                {% endif %}
+
+                                                {% if opcion_campana.calificacion %}
+                                                    Calificación: <strong>{{ opcion_campana.calificacion }}</strong>
+                                                {% endif %}
+                                                </td>
+                                                <td width="10%">
+                                                    <h5>
+                                                        <span class="label label-primary">
+                                                            {% for opcion, cantidad in campana.obtener_estadisticas.opcion_x_cantidad.items %}
+                                                                {% if opcion == opcion_campana.digito %}
+                                                                    {{ cantidad }}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </span>
+                                                    </h5>
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="3">
+                                                    <p class="text-center text-danger">
+                                                        <em>No se encontraron Opciones creadas.</em>
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td align="center">
+                                {% if campana.url_grafico_torta_opciones %}
+                                    <figure>
+                                        <embed type="image/svg+xml" src="{{ campana.url_grafico_torta_opciones }}" height="400"/>
+                                    </figure>
+                                {% else%} 
+                                    <p class="text-center text-danger">
+                                        <em>El reporte gráfico no fue generado.</em>
+                                    </p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td width="50%">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        {% for intentos, cantidad in campana.obtener_estadisticas.dic_intento_x_contactos.items %}
+                                            <tr>
+                                                <td><h5>{{ intentos }} Intentos</h5></td>
+                                                <td width="10%"><h5><span class="label label-primary">{{ cantidad }}</span></h5></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td align="center">
+                                {% if campana.url_grafico_barra_intentos %}
+                                    <figure>
+                                        <embed type="image/svg+xml" src="{{ campana.url_grafico_barra_intentos }}" height="400"/>
+                                    </figure>
+                                {% else%} 
+                                    <p class="text-center text-danger">
+                                        <em>El reporte gráfico no fue generado.</em>
+                                    </p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
