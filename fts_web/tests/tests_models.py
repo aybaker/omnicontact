@@ -464,6 +464,9 @@ class ReporteTest(FTSenderBaseTest):
             cantidad_intentos=3)
         campana.activar()
 
+        self.crea_calificaciones(campana)
+        self.crea_todas_las_opcion_posibles(campana)
+
         #Progrmaa la campaña.
         EventoDeContacto.objects_gestion_llamadas.programar_campana(
             campana.pk)
@@ -478,6 +481,24 @@ class ReporteTest(FTSenderBaseTest):
         EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
             campana.pk, probabilidad=0.3)
 
+        #Opciones
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            EventoDeContacto.EVENTO_ASTERISK_OPCION_0)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            EventoDeContacto.EVENTO_ASTERISK_OPCION_1)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            EventoDeContacto.EVENTO_ASTERISK_OPCION_2)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            EventoDeContacto.EVENTO_ASTERISK_OPCION_3)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            EventoDeContacto.EVENTO_ASTERISK_OPCION_4)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            EventoDeContacto.EVENTO_ASTERISK_OPCION_5)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            EventoDeContacto.EVENTO_ASTERISK_OPCION_6)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            EventoDeContacto.EVENTO_ASTERISK_OPCION_7)
+
         #Finaliza algunos.
         EV_FINALIZADOR = EventoDeContacto.objects.\
         get_eventos_finalizadores()[0]
@@ -487,17 +508,15 @@ class ReporteTest(FTSenderBaseTest):
         campana.finalizar()
 
         # Verificamos template detalle reporte campaña.
-        c = Client()
         url = reverse('detalle_campana_reporte', kwargs={"pk": campana.pk})
+        c = Client()
         response = c.get(url)
         self.assertEqual(response.status_code, 200)
 
         grafico_torta = 'src="/media/graficos/{0}-torta.svg"'.format(campana.pk)
         grafico_barra_contactos_x_intentos =\
             'src="/media/graficos/{0}-barra-intentos.svg"'.format(campana.pk)
-        grafico_barra_contactos_x_eventos =\
-            'src="/media/graficos/{0}-barra-eventos.svg"'.format(campana.pk)
-
         self.assertContains(response, grafico_torta)
         self.assertContains(response, grafico_barra_contactos_x_intentos)
-        self.assertContains(response, grafico_barra_contactos_x_eventos)
+
+        #print response
