@@ -392,7 +392,7 @@ class Campana(models.Model):
         self.save()
 
         try:
-            self._genera_grafico_torta()
+            self._genera_graficos_estadisticas()
         except:
             logger.exception("No se pudo generar el grafico")
 
@@ -502,6 +502,18 @@ class Campana(models.Model):
             return url
         return None
 
+    def url_grafico_torta_opciones(self):
+        """
+        Devuelve la url al gráfico svg en medias files.
+        """
+        path = '{0}/graficos/{1}-torta-opciones.svg'.format(settings.MEDIA_ROOT,
+            self.id)
+        if os.path.exists(path):
+            url = '{0}graficos/{1}-torta-opciones.svg'.format(
+                settings.MEDIA_URL, self.id)
+            return url
+        return None
+
     def url_grafico_barra_intentos(self):
         """
         Devuelve la url al gráfico svg en medias files.
@@ -514,41 +526,102 @@ class Campana(models.Model):
             return url
         return None
 
-    def url_grafico_barra_eventos(self):
+    def obtener_estadisticas(self):
         """
-        Devuelve la url al gráfico svg en medias files.
-        """
-        path = '{0}/graficos/{1}-barra-eventos.svg'.format(settings.MEDIA_ROOT,
-            self.id)
-        if os.path.exists(path):
-            url = '{0}graficos/{1}-barra-eventos.svg'.format(settings.MEDIA_URL,
-                self.id)
-            return url
-        return None
-
-    def obtener_contadores(self):
-        """
-        Este método devuelve los contadores para las estadísticas de
+        Este método devuelve las estadísticas de
         la campaña actual.
+
+        Podría procesarse esta información directamente en EventoDeContacto.
         """
-        return EventoDeContacto.objects_estadisticas.\
+        dic_estado_x_cantidad, dic_intento_x_contactos, dic_evento_x_cantidad =\
+            EventoDeContacto.objects_estadisticas.\
             obtener_estadisticas_de_campana(self.id)
 
-    def _genera_grafico_torta(self):
+        total_contactos = dic_estado_x_cantidad[
+            'finalizado_x_evento_finalizador'] + dic_estado_x_cantidad[
+            'finalizado_x_limite_intentos'] + dic_estado_x_cantidad[
+            'pendientes']
+
+        cantidad_contestadas = dic_estado_x_cantidad[
+            'finalizado_x_evento_finalizador']
+        porcentaje_contestadas = float(100 * cantidad_contestadas /\
+            total_contactos)
+
+        cantidad_no_contestadas = dic_estado_x_cantidad[
+            'finalizado_x_limite_intentos']
+        porcentaje_no_contestadas = float(100 * cantidad_no_contestadas /\
+            total_contactos)
+
+        cantidad_pendientes = dic_estado_x_cantidad['pendientes']
+        porcentaje_pendientes = float(100 * cantidad_pendientes /\
+            total_contactos)
+
+        cantidad_no_intentados = dic_estado_x_cantidad[
+            'no_intentados']
+        porcentaje_no_intentados = float(100 * cantidad_no_intentados /\
+            total_contactos)
+
+        #Calcula, por cada opción, la cantidad de veces seleccionada.
+        opcion_x_cantidad = defaultdict(lambda: 0)
+        for opcion_campana in self.opciones.all():
+            evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion_campana.digito]
+            opcion_x_cantidad[opcion_campana.digito] +=\
+                dic_evento_x_cantidad.get(evento, 0)
+
+        #Calcula, por cada opción el porcentaje que representa.
+        total_opciones = sum(opcion_x_cantidad.values())
+        opcion_x_porcentaje = defaultdict(lambda: 0)
+        if total_opciones:
+            for opcion_campana, cantidad in opcion_x_cantidad.items():
+                opcion_x_porcentaje[opcion_campana] += float(100 * cantidad /\
+                total_opciones)
+
+        #TODO: Falta calcular las opciones inválidas.
+        #import pdb; pdb.set_trace()
+
+        return {
+            #Estadisticas Generales.
+            'total_contactos': total_contactos,
+
+            'cantidad_contestadas': cantidad_contestadas,
+            'porcentaje_contestadas': porcentaje_contestadas,
+
+            'cantidad_no_contestadas': cantidad_no_contestadas,
+            'porcentaje_no_contestadas': porcentaje_no_contestadas,
+
+            'cantidad_pendientes': cantidad_pendientes,
+            'porcentaje_pendientes': porcentaje_pendientes,
+
+            'cantidad_no_intentados': cantidad_no_intentados,
+            'porcentaje_no_intentados': porcentaje_no_intentados,
+
+            'dic_intento_x_contactos': dict(dic_intento_x_contactos),
+
+            #Estadisticas de las llamadas Contestadas.
+            'opcion_x_cantidad': dict(opcion_x_cantidad),
+            'opcion_x_porcentaje': dict(opcion_x_porcentaje),
+        }
+
+    def _genera_graficos_estadisticas(self):
         """
         Genera el gráfico torta de los intentos de contacto de la
         campaña finalizada.
         """
-        path_torta = '{0}/graficos/{1}-torta.svg'.format(settings.MEDIA_ROOT,
-            self.id)
-        path_barra_contactos_x_intentos = '{0}/graficos/{1}-barra-intentos.svg'\
-            .format(settings.MEDIA_ROOT, self.id)
-        path_barra_contactos_x_eventos = '{0}/graficos/{1}-barra-eventos.svg'\
-            .format(settings.MEDIA_ROOT, self.id)
 
-        total_contactos = self.bd_contacto.contactos.all().count()
-        if total_contactos > 0:
+        #Obtiene estadística.
+        estadisticas = self.obtener_estadisticas()
+
+        if estadisticas['total_contactos'] > 0:
             logger.info("Generando grafico para campana %s", self.id)
+
+            path_torta = '{0}/graficos/{1}-torta.svg'.format(
+                settings.MEDIA_ROOT, self.id)
+            path_torta_opciones = '{0}/graficos/{1}-torta-opciones.svg'.format(
+                settings.MEDIA_ROOT, self.id)
+            path_barra_contactos_x_intentos =\
+                '{0}/graficos/{1}-barra-intentos.svg'.format(
+                settings.MEDIA_ROOT, self.id)
+
             graficos_dir = '{0}/graficos/'.format(settings.MEDIA_ROOT)
             if not os.path.exists(graficos_dir):
                 try:
@@ -557,52 +630,33 @@ class Campana(models.Model):
                     logger.warn("Error al intentar crear directorio para "
                         "graficos: %s (se ignorara el error)", graficos_dir)
 
-            #Obtiene contadores para estadística.
-            counter_x_estado, counter_intentos, counter_por_evento = \
-                self.obtener_contadores()
-
-            #Gráfico Torta.
-            cantidad_contesto = counter_x_estado[
-                'finalizado_x_evento_finalizador']
-            cantidad_no_contesto = counter_x_estado[
-                'finalizado_x_limite_intentos']
-            cantidad_pendientes = counter_x_estado['pendientes']
-
-            porcentaje_contesto = float(100 * cantidad_contesto /
-                total_contactos)
-            porcentaje_no_contesto = float(100 * cantidad_no_contesto /
-                total_contactos)
-            porcentaje_pendientes = float(100 * cantidad_pendientes /
-                total_contactos)
-
+            #Torta: porcentajes de contestados, no contestados y pendientes.
             pie_chart = pygal.Pie()  # @UndefinedVariable
-            pie_chart.title = 'Contactos para la campaña {0}'.format(
-                self.nombre)
-            pie_chart.add('Contestados', porcentaje_contesto)
-            pie_chart.add('No Contestados', porcentaje_no_contesto)
-            pie_chart.add('Pendientes', porcentaje_pendientes)
+            pie_chart.title = 'Porcentajes Generales'
+            pie_chart.add('Contestados', estadisticas['porcentaje_contestadas'])
+            pie_chart.add('No Contestados', estadisticas[
+                'porcentaje_no_contestadas'])
+            pie_chart.add('Pendientes', estadisticas['porcentaje_pendientes'])
             pie_chart.render_to_file(path_torta)
 
-            #Gráfico Barra Contactos x Intentos.
-            contactos_x_intentos = [counter_intentos[key] for key, counter in\
-                counter_intentos.items()]
-            line_chart = pygal.Bar(show_legend=False)
-            line_chart.title = 'Cantidad de Contactos por Cantidad de Intentos.'
-            line_chart.x_labels = map(str, range(0, len(counter_intentos)))
-            line_chart.add('Cantidad', contactos_x_intentos)
+            #Torta: porcentajes de opciones selecionadas.
+            dic_opcion_x_porcentaje = estadisticas['opcion_x_porcentaje']
+            pie_chart = pygal.Pie()  # @UndefinedVariable
+            pie_chart.title = 'Porcentajes Opciones'
+            for opcion, porcentaje in dic_opcion_x_porcentaje.items():
+                pie_chart.add('#{0}'.format(opcion), porcentaje)
+            pie_chart.render_to_file(path_torta_opciones)
+
+            #Barra: intentos x cantidad contactos.
+            dic_intento_x_contactos = estadisticas['dic_intento_x_contactos']
+            intentos = [dic_intento_x_contactos[intentos] for intentos, _ in\
+                dic_intento_x_contactos.items()]
+            line_chart = pygal.Bar(show_legend=False)  # @UndefinedVariable
+            line_chart.title = 'Cantidad de Contactos por Número de Intentos.'
+            line_chart.x_labels = map(str, range(0,
+                len(dic_intento_x_contactos)))
+            line_chart.add('Cantidad', intentos)
             line_chart.render_to_file(path_barra_contactos_x_intentos)
-
-            #Gráfico Barra Contactos x Estados.
-            contactos_x_eventos = [(evento, counter)\
-            for evento, counter in counter_por_evento.items()]
-            line_chart = pygal.Bar(margin=50, truncate_legend=100)
-            line_chart.title = 'Cantidad de Contactos por Eventos.'
-            for evento in contactos_x_eventos:
-                line_chart.add(
-                    EventoDeContacto.objects.get_nombre_de_evento(evento[0]),
-                    evento[1])
-            line_chart.render_to_file(path_barra_contactos_x_eventos)
-
         else:
             logger.info("Ignorando campana %s (total_contactos == 0)", self.id)
 
@@ -1044,10 +1098,11 @@ class EventoDeContactoEstadisticasManager():
             'finalizado_x_evento_finalizador': 0,
             'finalizado_x_limite_intentos': 0,
             'pendientes': 0,
+            'no_intentados': 0,
+            'no_selecciono_opcion': 0,
         }
 
         counter_intentos = defaultdict(lambda: 0)
-
         counter_por_evento = defaultdict(lambda: 0)
 
         # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
@@ -1081,6 +1136,19 @@ class EventoDeContactoEstadisticasManager():
                     counter_x_estado['finalizado_x_limite_intentos'] += 1
                 else:
                     counter_x_estado['pendientes'] += 1
+
+            #Calcula la cantidad de contactos que no se llegó a intentar hacer
+            #la llamada. Supone que array_eventos tiene al menos el evento
+            #EVENTO_CONTACTO_PROGRAMADO.
+            if all(evento == EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO
+                for evento in array_eventos):
+                counter_x_estado['no_intentados'] += 1
+
+            #Calcula la cantidad de contactos que no seleccionaron ninguna
+            #opción de la campaña.
+            opciones = EventoDeContacto.NUMERO_OPCION_MAP.values()
+            if not any(opcion in eventos for opcion in opciones):
+                counter_x_estado['no_selecciono_opcion'] += 1
 
         return counter_x_estado, counter_intentos, counter_por_evento
 
