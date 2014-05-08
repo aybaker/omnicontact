@@ -341,11 +341,12 @@ class FTSenderBaseTest(TestCase):
             campana=campana,
         ).save()
 
-        Opcion(
-            digito=1,
-            accion=Opcion.VOICEMAIL,
-            campana=campana,
-        ).save()
+        #Por el momento no va VOICEMAIL.
+        # Opcion(
+        #     digito=1,
+        #     accion=Opcion.VOICEMAIL,
+        #     campana=campana,
+        # ).save()
 
         try:
             ga = GrupoAtencion.objects.all()[0]
