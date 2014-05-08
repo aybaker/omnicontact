@@ -493,7 +493,7 @@ class RoundRobinTracker(object):
             flags_limite_de_canales_alcanzado = [
                 tracker.loop__flag_limite_de_canales_alcanzado
                     for tracker in self.trackers_campana.values()]
-            if flags_limite_de_canales_alcanzado == [True]:
+            if set(flags_limite_de_canales_alcanzado) == set([True]):
                 self.sleep(settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
                 # *NO* hacemos `continue`! Necesitamos refrescar el status
                 #     de los canales via AMI.
