@@ -32,6 +32,10 @@ class FTSenderDiscoverRunner(DiscoverRunner):
     def __init__(self, *args, **kwargs):
         settings.FTS_TESTING_MODE = True
 
+        for key in os.environ.keys():
+            if key.find("proxy") > -1:
+                del os.environ[key]
+
         super(FTSenderDiscoverRunner, self).__init__(*args, **kwargs)
 
         def handleError(self, record):
