@@ -433,7 +433,7 @@ class RoundRobinTracker(object):
         try:
             self.refrescar_trackers()
         except NoHayCampanaEnEjecucion:
-            pass
+            self.onNoHayCampanaEnEjecucion()
 
         while True:
 
