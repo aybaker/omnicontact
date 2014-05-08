@@ -310,6 +310,8 @@ class RoundRobinTracker(object):
                 " porque la ultima actualizacion fue recientemente")
             return False
 
+        return True
+
     def refrescar_channel_status(self):
         """Refresca `llamadas_en_curso_aprox` de `self.trackers_campana`,
         en caso que sea necesario y conveniente.
