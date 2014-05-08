@@ -108,8 +108,18 @@ FTS_EVENTOS_FINALIZADORES = [
 
 FTS_DUMP_HTTP_AMI_RESPONSES = False
 
-"""Configuracion para interactuar con Asterisk"""
+FTS_DAEMON_SLEEP_SIN_TRABAJO = 2
+"""Cuantos segundos se esperará en el loop del daemon si no hay más
+trabajo por realizar
+"""
+
+FTS_DAEMON_SLEEP_LIMITE_DE_CANALES = 2
+"""Cuantos segundos se esperará en el loop del daemon si todos las
+campañas llegaron al límite de uso de canales
+"""
+
 ASTERISK = {}
+"""Configuracion para interactuar con Asterisk"""
 
 # ~~~ Ejemplo ~~~
 #ASTERISK = {

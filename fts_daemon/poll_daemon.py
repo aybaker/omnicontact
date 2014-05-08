@@ -73,6 +73,16 @@ class CampanaTracker(object):
         cantidad de canales ocupados.
         """
 
+        self.loop__flag_limite_de_canales_alcanzado = False
+        """Indica si es esta campana ha alcanzado el limite de canales"""
+
+    def reset_loop_flags(self):
+        """Resetea todas las variables y banderas de ROUND, o sea, las
+        variables y banderas que son reseteadas antes de iniciar el ROUND
+        """
+        # Por ahora, solo una bandera
+        self.loop__flag_limite_de_canales_alcanzado = False
+
     @property
     def llamadas_en_curso_aprox(self):
         return self._llamadas_en_curso_aprox
@@ -200,15 +210,6 @@ class RoundRobinTracker(object):
         self.ban_manager = BanManager()
         """Administrador de baneos"""
 
-        self.espera_sin_campanas = 2
-        """Cuantos segundos esperar si la consulta a la BD
-        no devuelve ninguna campana activa"""
-
-        self.espera_busy_wait = 1
-        """Cuantos segundos esperar si en la ultima iteracion
-        no se ha procesado ningún contacto. Esta espera es necesaria
-        para evitar q' el daemon haga un 'busy wait'"""
-
         # Quiza esto deberia estar en `self.trackers_campana`
         self._ultimo_refresco_trackers = datetime.now() - timedelta(days=30)
         """Ultima vez q' se consulto la BD, para refrescar los
@@ -219,23 +220,6 @@ class RoundRobinTracker(object):
         # Quiza esto deberia estar en `self.ami_status_tracker`
         self._ultimo_refresco_ami_status = datetime.now() - timedelta(days=30)
         """Ultima vez q' se ejecuto *ŝtatus* via AMI HTTP."""
-
-        #
-        # Variables de loop / ROUND, o sea, que son reseteadas en
-        #    cada iteracion
-        #
-
-        self.loop__limite_de_canales_alcanzado = False
-        """Variable de 'loop' (o sea, seteada y usada en el
-        cada ronda (ROUND) de generator()).
-
-        Bandera que indica que se detecto el limite para alguna de las
-        campañas procesadas.
-        """
-
-        self.loop__contactos_procesados = 0
-        """Cuantos contactos se procesaron/devolvieron
-        en este loop / ROUND"""
 
     def necesita_refrescar_trackers(self):
         """Devuleve booleano, indicando si debe o no consultarse a
@@ -263,6 +247,11 @@ class RoundRobinTracker(object):
     def refrescar_trackers(self):
         """Refresca la lista de trackers de campañas (self.trackers_campana),
         que incluye buscar en BD las campañas en ejecucion.
+
+        Se crean instancias de CampanaTracker SOLO para las nuevas campañas.
+        Las instancias de CampanaTracker para campañas que ya están siendo
+        traqueadas con mantenidas. Las instancias de CampanaTracker de campañas
+        que ya no son más trackeadas, son eliminadas.
 
         :raises: NoHayCampanaEnEjecucion
         """
@@ -303,21 +292,24 @@ class RoundRobinTracker(object):
         """Refresca `llamadas_en_curso_aprox` de `self.trackers_campana`,
         en caso que sea necesario y conveniente.
 
-        Si self.loop__limite_de_canales_alcanzado no está seteado, entonces
-        no es necesario.
-
-        Si se refrescó hace menos de 3 segundos, entonces, no es conveniente.
-
         En caso de error, no actualiza ningun valor.
         """
-        if not self.loop__limite_de_canales_alcanzado:
-            logger.debug("refrescar_ami_si_corresponde(): no actualizamos"
-                "porque no se alcanzo ningun limite")
-            return
+        #======================================================================
+        # Chequeamos si realmente hace falta
+        #======================================================================
 
         if not self.trackers_campana:
             logger.debug("refrescar_ami_si_corresponde(): no actualizamos"
                 "porque no hay self.trackers_campana")
+            return
+
+        flags_limite_de_canales_alcanzado = [
+            tracker.loop__flag_limite_de_canales_alcanzado
+                for tracker in self.trackers_campana.values()]
+
+        if True not in flags_limite_de_canales_alcanzado:
+            logger.debug("refrescar_ami_si_corresponde(): no actualizamos"
+                "porque no se alcanzo el limite en ninguna campaña")
             return
 
         delta = datetime.now() - self._ultimo_refresco_ami_status
@@ -326,6 +318,10 @@ class RoundRobinTracker(object):
             logger.debug("refrescar_ami_si_corresponde(): no actualizamos"
                 "porque la ultima actualizacion fue recientemente")
             return
+
+        #======================================================================
+        # SI hace falta!
+        #======================================================================
 
         # Dict con campañas trackeadas
         campana_by_id = dict([(c.id, c) for c in self.trackers_campana])
@@ -366,18 +362,8 @@ class RoundRobinTracker(object):
     def onNoHayCampanaEnEjecucion(self):
         """Ejecutado por generator() cuando se detecta
         NoHayCampanaEnEjecucion.
-        
-        La implementación por default solo espera
-        `self.espera_sin_campanas` segundos y retorna el control.
         """
-        logger.debug("No hay campanas en ejecucion. "
-            "Esperaremos %s segs.", self.espera_sin_campanas)
-        time.sleep(self.espera_sin_campanas)
-        # FIXME: aca se espera `espera_sin_campanas`, pero
-        #  `necesita_refrescar_trackers()` usa otros tiempos...
-        #  Seguramente deberiamos "unificar", ya q' para qué
-        #   esperar '2 segudnos' si no se va a volver a chequear
-        #  la BD hasta dentro de 10 segundos!?
+        logger.debug("No hay campanas en ejecucion.")
 
     def onCampanaNoEnEjecucion(self, campana):
         """Ejecutado por generator() cuando se detecta
@@ -415,12 +401,8 @@ class RoundRobinTracker(object):
         LimiteDeCanalesAlcanzadoError. Esto implica que la campana que se
         estaba teniendo en cuenta debe ignorarse por esta vez, ya que
         ya se la colmado el límite de llamadas concurrentes.
-
-        La implementación por default setea en True la bandera
-        `self.loop__limite_de_canales_alcanzado`
         """
         logger.debug("onLimiteDeCanalesAlcanzadoError: %s", campana.id)
-        self.loop__limite_de_canales_alcanzado = True
 
     def onNoSeDevolvioContactoEnRoundActual(self):
         """Ejecutado por generator() cuando se corrió el loop, pero no se
@@ -430,9 +412,11 @@ class RoundRobinTracker(object):
         variadas: no hay campañas en ejecución, se llegó al límite
         de canales por campaña, etc
         """
-        logger.debug("No se procesaron contactos en esta iteracion. "
-            "Esperaremos %s seg.", self.espera_busy_wait)
-        time.sleep(self.espera_busy_wait)
+        logger.debug("No se procesaron contactos en esta iteracion.")
+
+    def sleep(self, segundos):
+        """Wrapper de time.sleep()"""
+        time.sleep(segundos)
 
     def generator(self):
         """Devuelve los datos de contacto a contactar, de a una
@@ -446,16 +430,16 @@ class RoundRobinTracker(object):
             ## Arrancamos un "round"
             ##
 
-            self.loop__contactos_procesados = 0
-            self.loop__limite_de_canales_alcanzado = False
+            loop__campanas_procesadas = 0
 
             # Trabajamos en copia, por si hace falta modificarse
             dict_copy = dict(self.trackers_campana)
 
-            for campana, tracker_campana in dict_copy.iteritems():
+            for campana, tracker in dict_copy.iteritems():
+                tracker.reset_loop_flags()
                 try:
-                    yield tracker_campana.next()
-                    self.loop__contactos_procesados += 1
+                    yield tracker.next()
+                    loop__campanas_procesadas += 1
                 except CampanaNoEnEjecucion:
                     self.onCampanaNoEnEjecucion(campana)
                 except NoMasContactosEnCampana:
@@ -466,6 +450,7 @@ class RoundRobinTracker(object):
                     # no deberia ser problema...
                     self.onNoMasContactosEnCampana(campana)
                 except LimiteDeCanalesAlcanzadoError:
+                    tracker.loop__flag_limite_de_canales_alcanzado = True
                     self.onLimiteDeCanalesAlcanzadoError(campana)
 
             ##
@@ -473,27 +458,56 @@ class RoundRobinTracker(object):
             ##    ahora chequeamos algunas condiciones
             ##
 
-            # Si no se procesaron contactos, esperamos 1 seg.
-            if self.loop__contactos_procesados == 0:
+            if loop__campanas_procesadas == 0:
                 self.onNoSeDevolvioContactoEnRoundActual()
-                # TODO: unificar todas estas esperas en un solo lugar,
-                # al final, o aprovechar de hacer otros procesamientos,
-                # como finalizacoin de campanas...
 
-            # Actualizamos lista de tackers
+            # Actualizamos lista de trackers, si corresponde
             if self.necesita_refrescar_trackers():
                 try:
                     self.refrescar_trackers()
                 except NoHayCampanaEnEjecucion:
                     self.onNoHayCampanaEnEjecucion()
 
+            if not bool(self.trackers_campana):
+                # No hay trabajo! Esperamos y hacemos `continue`
+                # +------------------------------------------------------------
+                # | Los eventos que deberian despertar este 'sleep' son:
+                # | 1. campaña des-pausada
+                # | 2. campaña entra en curso (por fecha u hora de actuacion)
+                # | 3. campaña creada
+                # +------------------------------------------------------------
+                self.sleep(settings.FTS_DAEMON_SLEEP_SIN_TRABAJO)
+
+                # No importa q' no se refresque el status via ami, total,
+                #    no hay trabajo!
+                continue
+
+            # Si llegamos aca es porque tenemos trabajo por hacer, pero
+            # si TODAS las campañas han llegado al límite, no tiene seguido
+            # hacer un busy wait... mejor esperamos
+            # +----------------------------------------------------------------
+            # | Los eventos que deberian despertar este 'sleep' son:
+            # | 1. se ha finalizado la llamada de cualquiera de las
+            # |    campañas q' habian llegado al limite
+            # +----------------------------------------------------------------
+            flags_limite_de_canales_alcanzado = [
+                tracker.loop__flag_limite_de_canales_alcanzado
+                    for tracker in self.trackers_campana.values()]
+            if flags_limite_de_canales_alcanzado == [True]:
+                self.sleep(settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
+                # *NO* hacemos `continue`! Necesitamos refrescar el status
+                #     de los canales via AMI.
+                # continue
+
             # Refresca status de conexiones, AL FINAL, así nos aseguramos
             # de actualizar las instancias de trackers creadas
-            # por `necesita_refrescar_trackers()`
-            # TODO: si no hay campañas en ejecución, arriba se esperará,
-            # y luego se ejecutará el refresco de AMI... Esto no es un
-            # problema, ya que de cualquier manera no hay nada que
-            # refrescar, pero... ¿no seria mas correcto esperar al final?
+            # por `necesita_refrescar_trackers()` (aunque esto no es TAN asi,
+            # ya que el refresh reusa las intancias de tracker, por lo tanto,
+            # si chequearamos el status via AMI ANTES del refresh, seria
+            # lo mismo.
+
+            # Pero es importante refrescarla al final, así, en el proximo ROUND
+            # la información está actualizada.
             self.refrescar_ami_si_corresponde()
 
 
