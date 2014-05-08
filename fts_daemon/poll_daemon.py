@@ -288,7 +288,29 @@ class RoundRobinTracker(object):
             # No se encontraron campanas en ejecucion
             raise NoHayCampanaEnEjecucion()
 
-    def refrescar_ami_si_corresponde(self):
+    def necesita_refrescar_channel_status(self):
+        if not self.trackers_campana:
+            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
+                " porque no hay self.trackers_campana")
+            return False
+
+        flags_limite_de_canales_alcanzado = [
+            tracker.loop__flag_limite_de_canales_alcanzado
+                for tracker in self.trackers_campana.values()]
+
+        if True not in flags_limite_de_canales_alcanzado:
+            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
+                " porque no se alcanzo el limite en ninguna campaña")
+            return False
+
+        delta = datetime.now() - self._ultimo_refresco_ami_status
+        # No hacemos más de 1 consulta cada 3 segundos
+        if delta.days == 0 and delta.seconds < 3:
+            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
+                " porque la ultima actualizacion fue recientemente")
+            return False
+
+    def refrescar_channel_status(self):
         """Refresca `llamadas_en_curso_aprox` de `self.trackers_campana`,
         en caso que sea necesario y conveniente.
 
@@ -297,27 +319,6 @@ class RoundRobinTracker(object):
         #======================================================================
         # Chequeamos si realmente hace falta
         #======================================================================
-
-        if not self.trackers_campana:
-            logger.debug("refrescar_ami_si_corresponde(): no actualizamos"
-                "porque no hay self.trackers_campana")
-            return
-
-        flags_limite_de_canales_alcanzado = [
-            tracker.loop__flag_limite_de_canales_alcanzado
-                for tracker in self.trackers_campana.values()]
-
-        if True not in flags_limite_de_canales_alcanzado:
-            logger.debug("refrescar_ami_si_corresponde(): no actualizamos"
-                "porque no se alcanzo el limite en ninguna campaña")
-            return
-
-        delta = datetime.now() - self._ultimo_refresco_ami_status
-        # No hacemos más de 1 consulta cada 3 segundos
-        if delta.days == 0 and delta.seconds < 3:
-            logger.debug("refrescar_ami_si_corresponde(): no actualizamos"
-                "porque la ultima actualizacion fue recientemente")
-            return
 
         #======================================================================
         # SI hace falta!
@@ -343,7 +344,7 @@ class RoundRobinTracker(object):
                 tracker.llamadas_en_curso_aprox = len(info_de_llamadas)
                 del campana_by_id[campana]
             else:
-                logger.info("refrescar_ami_si_corresponde(): "
+                logger.info("refrescar_channel_status(): "
                     "Ignorando datos de campana %s (%s llamadas en curso)",
                     campana.id, len(info_de_llamadas))
 
@@ -353,7 +354,7 @@ class RoundRobinTracker(object):
             # FIXME: esto que hacemos aca, no es algo peligroso? Y si habia
             # en ejecucion!? Quizá deberiamos, además de este control, llevar
             # control de la cantidad de llamadas generadas por minuto
-            logger.info("refrescar_ami_si_corresponde(): no se recibieron "
+            logger.info("refrescar_channel_status(): no se recibieron "
                 "datos para la campana %s... Suponemos que no hay "
                 "llamadas en curso para dicha campana", campana.id)
             tracker = self.trackers_campana[campana]
@@ -508,7 +509,8 @@ class RoundRobinTracker(object):
 
             # Pero es importante refrescarla al final, así, en el proximo ROUND
             # la información está actualizada.
-            self.refrescar_ami_si_corresponde()
+            if self.necesita_refrescar_channel_status():
+                self.refrescar_channel_status()
 
 
 class Llamador(object):
