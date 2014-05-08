@@ -507,6 +507,18 @@ class Campana(models.Model):
             return url
         return None
 
+    def url_grafico_torta_no_intento(self):
+        """
+        Devuelve la url al gráfico svg en medias files.
+        """
+        path = '{0}/graficos/{1}-torta-no-intento.svg'.format(
+            settings.MEDIA_ROOT, self.id)
+        if os.path.exists(path):
+            url = '{0}graficos/{1}-torta-no-intento.svg'.format(
+                settings.MEDIA_URL, self.id)
+            return url
+        return None
+
     def url_grafico_torta_opciones(self):
         """
         Devuelve la url al gráfico svg en medias files.
@@ -621,6 +633,8 @@ class Campana(models.Model):
 
             path_torta = '{0}/graficos/{1}-torta.svg'.format(
                 settings.MEDIA_ROOT, self.id)
+            path_torta_no_intentados = '{0}/graficos/{1}-torta-no-intento.svg'\
+                .format(settings.MEDIA_ROOT, self.id)
             path_torta_opciones = '{0}/graficos/{1}-torta-opciones.svg'.format(
                 settings.MEDIA_ROOT, self.id)
             path_barra_contactos_x_intentos =\
@@ -643,6 +657,15 @@ class Campana(models.Model):
                 'porcentaje_no_contestadas'])
             pie_chart.add('Pendientes', estadisticas['porcentaje_pendientes'])
             pie_chart.render_to_file(path_torta)
+
+            #Torta: porcentajes de Contactos No llamados.
+            con_intentos = 100 - estadisticas['porcentaje_no_intentados']
+            pie_chart = pygal.Pie()  # @UndefinedVariable
+            pie_chart.title = 'Porcentaje Contactos sin intento de llamada'
+            pie_chart.add('Con Intento', con_intentos)
+            pie_chart.add('Sin Intento', estadisticas[
+                'porcentaje_no_intentados'])
+            pie_chart.render_to_file(path_torta_no_intentados)
 
             #Torta: porcentajes de opciones selecionadas.
             dic_opcion_x_porcentaje = estadisticas['opcion_x_porcentaje']
