@@ -415,7 +415,8 @@ class RoundRobinTracker(object):
         variadas: no hay campañas en ejecución, se llegó al límite
         de canales por campaña, etc
         """
-        logger.debug("No se procesaron contactos en esta iteracion.")
+        logger.debug("onNoSeDevolvioContactoEnRoundActual(): "
+            "No se procesaron contactos en esta iteracion.")
 
     def sleep(self, segundos):
         """Wrapper de time.sleep()"""
@@ -479,6 +480,9 @@ class RoundRobinTracker(object):
                 # | 2. campaña entra en curso (por fecha u hora de actuacion)
                 # | 3. campaña creada
                 # +------------------------------------------------------------
+                logger.debug("No hay trabajo. Esperamos %s segs. y luego "
+                    "hacemos continue (reiniciamos ROUND)",
+                    settings.FTS_DAEMON_SLEEP_SIN_TRABAJO)
                 self.sleep(settings.FTS_DAEMON_SLEEP_SIN_TRABAJO)
 
                 # No importa q' no se refresque el status via ami, total,
@@ -496,7 +500,12 @@ class RoundRobinTracker(object):
             flags_limite_de_canales_alcanzado = [
                 tracker.loop__flag_limite_de_canales_alcanzado
                     for tracker in self.trackers_campana.values()]
+
             if set(flags_limite_de_canales_alcanzado) == set([True]):
+                logger.debug("Todas las campañas han llegado al límite. "
+                    "Esperamos %s segs. y luego seguioms hasta terminar "
+                    "este ROUND",
+                    settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
                 self.sleep(settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
                 # *NO* hacemos `continue`! Necesitamos refrescar el status
                 #     de los canales via AMI.
