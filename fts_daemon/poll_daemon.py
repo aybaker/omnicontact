@@ -85,15 +85,21 @@ class CampanaTracker(object):
         cantidad de canales ocupados.
         """
 
-        self.loop__flag_limite_de_canales_alcanzado = False
-        """Indica si es esta campana ha alcanzado el limite de canales"""
+    def limite_alcanzado(self):
+        """Devuelve booleano si se ha alcanzado (o superado) el limite de
+        canales para la campaña siendo trackeada.
+
+        Ya que nos basamos en el valor de `_llamadas_en_curso_aprox`, pueden
+        reportarse "falsos positivos", o sea, que se indique que el limite
+        se ha alcanzado, pero no sea cierto.
+        """
+        return self._llamadas_en_curso_aprox >= self.campana.cantidad_canales
 
     def reset_loop_flags(self):
         """Resetea todas las variables y banderas de ROUND, o sea, las
         variables y banderas que son reseteadas antes de iniciar el ROUND
         """
-        # Por ahora, solo una bandera
-        self.loop__flag_limite_de_canales_alcanzado = False
+        pass # nada por ahora
 
     @property
     def llamadas_en_curso_aprox(self):
@@ -168,7 +174,7 @@ class CampanaTracker(object):
         if not self.campana.verifica_fecha(hoy_ahora):
             raise CampanaNoEnEjecucion()
 
-        if self._llamadas_en_curso_aprox >= self.campana.cantidad_canales:
+        if self.limite_alcanzado():
             msg = ("Hay {0} llamadas en curso (aprox), y la campana "
                 "tiene un limite de {1}").format(
                     self._llamadas_en_curso_aprox,
@@ -255,10 +261,12 @@ class RoundRobinTracker(object):
         self._ultimo_refresco_ami_status = datetime.now() - timedelta(days=30)
         """Ultima vez q' se ejecuto *ŝtatus* via AMI HTTP."""
 
+        self.max_iterations = None
+
     def necesita_refrescar_trackers(self):
         """Devuleve booleano, indicando si debe o no consultarse a
-        la base de datos. Este metodo es ejecutado luego de cada
-        intento de envio, por lo tanto es ejecutado muchas veces.
+        la base de datos. Este metodo es ejecutado en cada ROUND,
+        por lo tanto, debe ser rapido.
 
         Si devuelve 'True', se consultara la BD para actualizar
         la lista de campanas. Sino, se seguira utilizando la
@@ -335,14 +343,17 @@ class RoundRobinTracker(object):
                 " porque no hay self.trackers_campana")
             return False
 
-        flags_limite_de_canales_alcanzado = [
-            tracker.loop__flag_limite_de_canales_alcanzado
-                for tracker in self.trackers_campana.values()]
+        al_limite = [tracker.limite_alcanzado()
+            for tracker in self.trackers_campana.values()]
 
-        if True not in flags_limite_de_canales_alcanzado:
+        if True not in al_limite:
             logger.debug("necesita_refrescar_channel_status(): no actualizamos"
                 " porque no se alcanzo el limite en ninguna campaña")
             return False
+
+        if all(al_limite):
+            logger.debug("necesita_refrescar_channel_status(): todas las "
+                "campañas estan al limite")
 
         delta = datetime.now() - self._ultimo_refresco_ami_status
         # No hacemos más de 1 consulta cada 3 segundos
@@ -433,7 +444,8 @@ class RoundRobinTracker(object):
         La implementación por default banea a la campana, y la
         elimina de `self.trackers_campana`
         """
-        logger.debug("onNoMasContactosEnCampana: %s", campana.id)
+        logger.debug("onNoMasContactosEnCampana() para la campana %s.",
+            campana.id)
         self.ban_manager.banear_campana(campana)
         try:
             del self.trackers_campana[campana]
@@ -442,26 +454,36 @@ class RoundRobinTracker(object):
 
     def onLimiteDeCanalesAlcanzadoError(self, campana):
         """Ejecutado por generator() cuando se detecta
-        LimiteDeCanalesAlcanzadoError. Esto implica que la campana que se
-        estaba teniendo en cuenta debe ignorarse por esta vez, ya que
-        ya se la colmado el límite de llamadas concurrentes.
+        LimiteDeCanalesAlcanzadoError.
+
+        Esto NO deberia suceder, ya que las campañas que están
+        al limite no son procesadas.
         """
-        logger.debug("onLimiteDeCanalesAlcanzadoError: %s", campana.id)
+        logger.debug("onLimiteDeCanalesAlcanzadoError() para la campana %s",
+            campana.id)
 
     def onNoSeDevolvioContactoEnRoundActual(self):
         """Ejecutado por generator() cuando se corrió el loop, pero no se
         devolvio ningun contacto.
 
-        Las razones por las que no se proceso ningun contacto pueden ser
-        variadas: no hay campañas en ejecución, se llegó al límite
-        de canales por campaña, etc
+        Esto no deberia suceder, pero hay algunos corner cases, por ejemplo,
+        la actuacion o la campaña se vencieron justo mientras se estaban
+        por procesar.
         """
-        logger.debug("onNoSeDevolvioContactoEnRoundActual(): "
-            "No se procesaron contactos en esta iteracion.")
 
     def sleep(self, segundos):
         """Wrapper de time.sleep()."""
         time.sleep(segundos)
+
+    def _todas_las_campanas_al_limite(self):
+        """Chequea trackers y devuelve True si TODAS las campañas
+        en curso estan al limite"""
+        al_limite = [tracker.limite_alcanzado()
+            for tracker in self.trackers_campana.values()]
+
+        if al_limite and all(al_limite):
+            return True
+        return False
 
     def generator(self):
         """Devuelve los datos de contacto a contactar, de a una
@@ -470,54 +492,28 @@ class RoundRobinTracker(object):
         :returns: (campana, contacto_id, telefono)
         """
 
-        try:
-            self.refrescar_trackers()
-        except NoHayCampanaEnEjecucion:
-            self.onNoHayCampanaEnEjecucion()
-
+        iter_num = 0
         while True:
 
-            ##
-            ## Arrancamos un "round"
-            ##
+            if self.max_iterations is not None:
+                iter_num += 1
+                if iter_num >= self.max_iterations:
+                    raise Exception("Se supero la cantidad maxima de "
+                        "iteraciones: {0}".format(self.max_iterations))
 
-            loop__campanas_procesadas = 0
+            #==================================================================
+            # Actualizamos trackers de campaña
+            #==================================================================
 
-            # Trabajamos en copia, por si hace falta modificarse
-            dict_copy = dict(self.trackers_campana)
-
-            for campana, tracker in dict_copy.iteritems():
-                tracker.reset_loop_flags()
-                try:
-                    yield tracker.next()
-                    loop__campanas_procesadas += 1
-                except CampanaNoEnEjecucion:
-                    self.onCampanaNoEnEjecucion(campana)
-                except NoMasContactosEnCampana:
-                    # Esta excepcion es generada cuando la campaña esta
-                    # en curso (el estado), pero ya no tiene pendientes
-                    # FIXME: aca habria q' marcar la campana como finalizada?
-                    # El tema es que puede haber llamadas en curso, pero esto
-                    # no deberia ser problema...
-                    self.onNoMasContactosEnCampana(campana)
-                except LimiteDeCanalesAlcanzadoError:
-                    tracker.loop__flag_limite_de_canales_alcanzado = True
-                    self.onLimiteDeCanalesAlcanzadoError(campana)
-
-            ##
-            ## A esta altura ya terminamos de ejecutar el "round",
-            ##    ahora chequeamos algunas condiciones
-            ##
-
-            if loop__campanas_procesadas == 0:
-                self.onNoSeDevolvioContactoEnRoundActual()
-
-            # Actualizamos lista de trackers, si corresponde
             if self.necesita_refrescar_trackers():
                 try:
                     self.refrescar_trackers()
                 except NoHayCampanaEnEjecucion:
                     self.onNoHayCampanaEnEjecucion()
+
+            #==================================================================
+            # Si no hay campañas, espseramos y reiniciamos
+            #==================================================================
 
             if not bool(self.trackers_campana):
                 # No hay trabajo! Esperamos y hacemos `continue`
@@ -536,39 +532,74 @@ class RoundRobinTracker(object):
                 #    no hay trabajo!
                 continue
 
-            # Si llegamos aca es porque tenemos trabajo por hacer, pero
-            # si TODAS las campañas han llegado al límite, no tiene seguido
+            #==================================================================
+            # Refrescamos status de conexiones
+            #==================================================================
+
+            if self.necesita_refrescar_channel_status():
+                self.refrescar_channel_status()
+
+            # Si TODAS las campañas han llegado al límite, no tiene sentido
             # hacer un busy wait... mejor esperamos
             # +----------------------------------------------------------------
             # | Los eventos que deberian despertar este 'sleep' son:
             # | 1. se ha finalizado la llamada de cualquiera de las
             # |    campañas q' habian llegado al limite
             # +----------------------------------------------------------------
-            flags_limite_de_canales_alcanzado = [
-                tracker.loop__flag_limite_de_canales_alcanzado
-                    for tracker in self.trackers_campana.values()]
 
-            if set(flags_limite_de_canales_alcanzado) == set([True]):
+            if self._todas_las_campanas_al_limite():
                 logger.debug("Todas las campañas han llegado al límite. "
-                    "Esperamos %s segs. y luego seguioms hasta terminar "
-                    "este ROUND",
+                    "Esperamos %s segs. y reiniciamos round",
                     settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
                 self.sleep(settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
-                # *NO* hacemos `continue`! Necesitamos refrescar el status
-                #     de los canales via AMI.
-                # continue
+                continue
 
-            # Refresca status de conexiones, AL FINAL, así nos aseguramos
-            # de actualizar las instancias de trackers creadas
-            # por `necesita_refrescar_trackers()` (aunque esto no es TAN asi,
-            # ya que el refresh reusa las intancias de tracker, por lo tanto,
-            # si chequearamos el status via AMI ANTES del refresh, seria
-            # lo mismo.
+            ##
+            ## Procesamos...
+            ##
 
-            # Pero es importante refrescarla al final, así, en el proximo ROUND
-            # la información está actualizada.
-            if self.necesita_refrescar_channel_status():
-                self.refrescar_channel_status()
+            loop__campanas_procesadas = 0
+
+            # Trabajamos en copia, por si hace falta modificarse
+            dict_copy = dict(self.trackers_campana)
+
+            for campana, tracker in dict_copy.iteritems():
+                # Si la campana esta al limite, la ignoramos
+                if tracker.limite_alcanzado():
+                    logger.debug("Ignorando campana %s porque esta al limite",
+                        campana.id)
+                    continue
+
+                tracker.reset_loop_flags()
+                try:
+                    yield tracker.next()
+                    loop__campanas_procesadas += 1
+                except CampanaNoEnEjecucion:
+                    # CORNER CASE!
+                    self.onCampanaNoEnEjecucion(campana)
+                except NoMasContactosEnCampana:
+                    # Esta excepcion es generada cuando la campaña esta
+                    # en curso (el estado), pero ya no tiene pendientes
+                    # FIXME: aca habria q' marcar la campana como finalizada?
+                    # El tema es que puede haber llamadas en curso, pero esto
+                    # no deberia ser problema...
+                    self.onNoMasContactosEnCampana(campana)
+                except LimiteDeCanalesAlcanzadoError:
+                    # ESTO NO DEBERIA SUCEDER! No debio ejecutarse
+                    # tracker.next() si la campaña estaba al limite
+                    logger.exception("Se detecto "
+                        "LimiteDeCanalesAlcanzadoError al procesar la campana "
+                        "{0}, pero nunca debio intentarse obtener un contacto "
+                        "de esta campana si estaba al limite".format(
+                            campana.id))
+                    self.onLimiteDeCanalesAlcanzadoError(campana)
+
+            # CORNER CASE: solo podria pasar si justo, mientras se
+            # procesaban las campañas, cambio la hora y/o el dia
+            if loop__campanas_procesadas == 0:
+                logger.warn("No se ha devuelto ningun contacto en el "
+                    "ROUND actual")
+                self.onNoSeDevolvioContactoEnRoundActual()
 
 
 class Llamador(object):
