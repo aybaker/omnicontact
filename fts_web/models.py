@@ -1095,26 +1095,55 @@ class EventoDeContactoEstadisticasManager():
     def obtener_estadisticas_de_campana(self, campana_id):
         """Procesa estadisticas para una campana.
 
-        Devuelve dicts:
+        Devuelve 3 dicts con estadísticas:
 
-        - counter_x_estado: cuantos contactos estan en los distintos estados
-        - counter_intentos: cuantos contactos se han intentado distinta
-          cantidad de veces.
-        - counter_por_evento: cuantos eventos de cada tipo fueron producidos
-          por los contactos
+        1. counter_x_estado: cuantos contactos estan en los distintos estados
+           (definidos más abajo)
+        2. counter_intentos: cuantos contactos se han intentado distinta
+           cantidad de veces.
+        3. counter_por_evento: cuantos eventos de cada tipo fueron producidos
+           por los contactos
 
-        Ejemplos:
+        ------------------------------
+        counter_x_estado
+        ------------------------------
 
-        - counter_x_estado['finalizado_x_evento_finalizador']
-        - counter_x_estado['finalizado_x_limite_intentos']
-        - counter_x_estado['pendientes']
+        - counter_x_estado['finalizado_x_evento_finalizador']: cantidad de
+          contactos que ya están finalizados, o sea, no se intentará
+          contactarlos, porque ya posee uno de los eventos finalizadores.
+          Tomamos estos casos como contactos realizados exitosamente
+          (sin importar si escucharon todo el mensaje, o ha seleccionado
+          o no alguna opción).
+        - counter_x_estado['finalizado_x_limite_intentos']: cantidad de
+          contactos que ya están finalizados, o sea, no se intentará
+          contactarlos, porque ya se intentó contactarlos varias veces, y
+          se llegó al límite de intentos definido en la campaña.
+        - counter_x_estado['pendientes']: cuantos contactos quedan pendientes
+          por contactar.
+        - counter_x_estado['no_intentados']: para cuántos contactos no
+          existen intentos de contacto, o sea, nunca se intentó contactarlos.
+        - counter_x_estado['no_selecciono_opcion']: cuántos contactos
+          fueron contactados, pero NO seleccionaron ninguna opción.
 
-        - counter_intentos[0] -> cuantos contactos no se intentaron
-        - counter_intentos[1] -> cuantos contactos se intentaron 1 vez
-        - counter_intentos[2] -> cuantos contactos se intentaron 2 veces
+        ------------------------------
+        counter_intentos
+        ------------------------------
+
+        - counter_intentos[0]: para cuántos contactos no existen intentos
+          de contacto, o sea, nunca se intentó contactarlos.
+        - counter_intentos[1]: para cuántos contactos existen 1 intento
+          de contacto.
+        - counter_intentos[n]: para cuántos contactos existen `n` intento
+          de contacto. Este valor nunca debería ser mayor al límite de
+          contactos establecido en la campaña.
+
+        ------------------------------
+        counter_por_evento
+        ------------------------------
 
         - counter_por_evento[5] -> cuantos eventos de tipo '5' existen
         - counter_por_evento[41] -> cuantos eventos de tipo '41' existen
+        - counter_por_evento[n] -> cuantos eventos de tipo `n` existen
         """
         campana = Campana.objects.get(pk=campana_id)
         array_eventos_por_contacto = self.obtener_array_eventos_por_contacto(
