@@ -445,6 +445,8 @@ class Campana(models.Model):
         parametro en hoy_ahora es válida para la campaña actual.
         Devuelve True o False.
         """
+        assert isinstance(hoy_ahora, datetime.datetime)
+
         fecha_actual = hoy_ahora.date()
 
         if self.fecha_inicio <= fecha_actual <= self.fecha_fin:
@@ -1725,6 +1727,9 @@ class Actuacion(models.Model):
         actuación actual.
         Devuelve True o False.
         """
+
+        assert isinstance(hoy_ahora, datetime.datetime)
+
         dia_semanal = hoy_ahora.weekday()
         hora_actual = datetime.time(
             hoy_ahora.hour, hoy_ahora.minute, hoy_ahora.second)
