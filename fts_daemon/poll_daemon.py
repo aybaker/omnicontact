@@ -360,19 +360,8 @@ class RoundRobinTracker(object):
 
         En caso de error, no actualiza ningun valor.
         """
-        #======================================================================
-        # Chequeamos si realmente hace falta
-        #======================================================================
-
-        #======================================================================
-        # SI hace falta!
-        #======================================================================
-
         # Antes q' nada, actualizamos 'ultimo refresco'
         self._ultimo_refresco_ami_status = datetime.now()
-
-        # Dict con campañas trackeadas
-        campana_by_id = dict([(c.id, c) for c in self.trackers_campana])
 
         logger.info("Actualizando status via AMI HTTP")
         try:
@@ -383,12 +372,20 @@ class RoundRobinTracker(object):
                 "no seran actualizados")
             return
 
-        for campana_id, info_de_llamadas in status:
-            campana = campana_by_id.get(campana_id, None)
-            if campana:
+        #======================================================================
+        # Actualizamos estructuras...
+        #======================================================================
+
+        # Dict con campañas trackeadas, indexadas por 'ID'
+        campana_by_id = dict([(c.id, c) for c in self.trackers_campana])
+
+        for campana_id, info_de_llamadas in status.iteritems():
+            # info_de_llamadas => [contacto_id, numero, campana_id]
+            if campana_id in campana_by_id:
+                campana = campana_by_id[campana_id]
                 tracker = self.trackers_campana[campana]
                 tracker.llamadas_en_curso_aprox = len(info_de_llamadas)
-                del campana_by_id[campana]
+                del campana_by_id[campana_id]
             else:
                 logger.info("refrescar_channel_status(): "
                     "Ignorando datos de campana %s (%s llamadas en curso)",
