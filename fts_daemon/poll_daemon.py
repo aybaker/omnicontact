@@ -110,6 +110,15 @@ class CampanaTracker(object):
     def _get_random_fetch(self):
         return random.randint(self.fetch_min, self.fetch_max)
 
+    def _obtener_pendientes(self):
+        """Devuelve información de contactos pendientes de contactar"""
+        return EventoDeContacto.objects_gestion_llamadas.\
+            obtener_pendientes(self.campana.id, limit=self._get_random_fetch())
+
+    def _obtener_datos_de_contactos(self, contactos_values):
+        return EventoDeContacto.objects_gestion_llamadas.\
+            obtener_datos_de_contactos([tmp[1] for tmp in contactos_values])
+
     def _populate_cache(self):
         """Busca los pendientes en la BD, y guarda los datos a
         devolver (en las proximas llamadas a `get()`) en cache.
@@ -127,14 +136,13 @@ class CampanaTracker(object):
 #                "campana %s", self.campana.id)
 #            raise CampanaNoEnEjecucion()
 
-        contactos_values = EventoDeContacto.objects_gestion_llamadas.\
-            obtener_pendientes(self.campana.id, limit=self._get_random_fetch())
+        contactos_values = self._obtener_pendientes()
 
         if not contactos_values:
             raise NoMasContactosEnCampana()
 
-        id_contacto_y_telefono = EventoDeContacto.objects_gestion_llamadas.\
-            obtener_datos_de_contactos([tmp[1] for tmp in contactos_values])
+        id_contacto_y_telefono = self._obtener_datos_de_contactos(
+            contactos_values)
 
         self.cache = [(self.campana, contacto_id, telefono)
             for contacto_id, telefono in id_contacto_y_telefono]
@@ -270,6 +278,10 @@ class RoundRobinTracker(object):
             return True
         return False
 
+    def _obtener_campanas_en_ejecucion(self):
+        """Devuelve campañas en ejecucion. Las busca en la BD"""
+        return Campana.objects.obtener_ejecucion()
+
     def refrescar_trackers(self):
         """Refresca la lista de trackers de campañas (self.trackers_campana),
         que incluye buscar en BD las campañas en ejecucion.
@@ -285,7 +297,7 @@ class RoundRobinTracker(object):
         self._ultimo_refresco_trackers = datetime.now()
         old_trackers = dict(self.trackers_campana)
         new_trackers = {}
-        for campana in Campana.objects.obtener_ejecucion():
+        for campana in self._obtener_campanas_en_ejecucion():
 
             if self.ban_manager.esta_baneada(campana):
                 logger.debug("La campana %s esta baneada", campana.id)
