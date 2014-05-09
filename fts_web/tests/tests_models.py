@@ -473,13 +473,13 @@ class ReporteTest(FTSenderBaseTest):
 
         #Intentos.
         EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.pk, probabilidad=0.3)
+            campana.pk, probabilidad=0.2)
 
         EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
             campana.pk, probabilidad=0.3)
 
         EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.pk, probabilidad=0.3)
+            campana.pk, probabilidad=0.1)
 
         #Opciones
         EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
@@ -498,6 +498,12 @@ class ReporteTest(FTSenderBaseTest):
             EventoDeContacto.EVENTO_ASTERISK_OPCION_6)
         EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
             EventoDeContacto.EVENTO_ASTERISK_OPCION_7)
+
+        #Opciones inválidas para esta campaña.
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            EventoDeContacto.EVENTO_ASTERISK_OPCION_8)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            EventoDeContacto.EVENTO_ASTERISK_OPCION_9)
 
         #Finaliza algunos.
         EV_FINALIZADOR = EventoDeContacto.objects.\

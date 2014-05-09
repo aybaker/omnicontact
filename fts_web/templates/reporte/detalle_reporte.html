@@ -82,41 +82,6 @@
                     </tbody>
                 </table>
 
-                 <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <td colspan="2" align="center">
-                                <h4>Cantidad Contactos sin intento de llamada</h4>
-                            </td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td  width="50%">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr>
-                                            <td><h5>Cantidad Total Sin Intento</h5></td>
-                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_intentados }}</span></h5></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                            <td align="center">
-                                {% if campana.url_grafico_torta_no_intento %}
-                                    <figure>
-                                        <embed type="image/svg+xml" src="{{ campana.url_grafico_torta_no_intento }}" height="400"/>
-                                    </figure>
-                                {% else%} 
-                                    <p class="text-center text-danger">
-                                        <em>El reporte gráfico no fue generado.</em>
-                                    </p>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -167,6 +132,22 @@
                                         {% endfor %}
                                     </tbody>
                                 </table>
+                                <table class="table table-bordered table-hover">
+                                    <tbody>
+                                        {% for opcion_invalida, cantidad in campana.obtener_estadisticas.opcion_invalida_x_cantidad.items %}
+                                            <tr>
+                                                <td><h5>#{{ opcion_invalida }}</h5></td>
+                                                <td width="10%">
+                                                    <h5>
+                                                        <span class="label label-primary">
+                                                            {{ cantidad }}
+                                                        </span>
+                                                    </h5>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                     </tbody>
+                                </table>
                             </td>
                             <td align="center">
                                 {% if campana.url_grafico_torta_opciones %}
@@ -209,6 +190,84 @@
                                 {% if campana.url_grafico_barra_intentos %}
                                     <figure>
                                         <embed type="image/svg+xml" src="{{ campana.url_grafico_barra_intentos }}" height="400"/>
+                                    </figure>
+                                {% else%} 
+                                    <p class="text-center text-danger">
+                                        <em>El reporte gráfico no fue generado.</em>
+                                    </p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td colspan="2" align="center">
+                                <h4>Cantidad de contactos que seleccionaron y no seleccionaron alguna opción.</h4>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td  width="50%">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><h5>Total Seleccionaron</h5></td>
+                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_selecciono_opcion }}</span></h5></td>
+                                        </tr>
+                                        <tr>
+                                            <td><h5>Total No Seleccionaron</h5></td>
+                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_selecciono_opcion }}</span></h5></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td align="center">
+                                {% if campana.url_grafico_torta_no_seleccionaron %}
+                                    <figure>
+                                        <embed type="image/svg+xml" src="{{ campana.url_grafico_torta_no_seleccionaron }}" height="400"/>
+                                    </figure>
+                                {% else%} 
+                                    <p class="text-center text-danger">
+                                        <em>El reporte gráfico no fue generado.</em>
+                                    </p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td colspan="2" align="center">
+                                <h4>Cantidad Contactos sin intento de llamada</h4>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td  width="50%">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><h5>Cantidad Total Con Intentos</h5></td>
+                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_intentados }}</span></h5></td>
+                                        </tr>
+                                        <tr>
+                                            <td><h5>Cantidad Total Sin Intento</h5></td>
+                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_intentados }}</span></h5></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td align="center">
+                                {% if campana.url_grafico_torta_no_intento %}
+                                    <figure>
+                                        <embed type="image/svg+xml" src="{{ campana.url_grafico_torta_no_intento }}" height="400"/>
                                     </figure>
                                 {% else%} 
                                     <p class="text-center text-danger">

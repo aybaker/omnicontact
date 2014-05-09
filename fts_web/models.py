@@ -507,18 +507,6 @@ class Campana(models.Model):
             return url
         return None
 
-    def url_grafico_torta_no_intento(self):
-        """
-        Devuelve la url al gráfico svg en medias files.
-        """
-        path = '{0}/graficos/{1}-torta-no-intento.svg'.format(
-            settings.MEDIA_ROOT, self.id)
-        if os.path.exists(path):
-            url = '{0}graficos/{1}-torta-no-intento.svg'.format(
-                settings.MEDIA_URL, self.id)
-            return url
-        return None
-
     def url_grafico_torta_opciones(self):
         """
         Devuelve la url al gráfico svg en medias files.
@@ -539,6 +527,30 @@ class Campana(models.Model):
             settings.MEDIA_ROOT, self.id)
         if os.path.exists(path):
             url = '{0}graficos/{1}-barra-intentos.svg'.format(
+                settings.MEDIA_URL, self.id)
+            return url
+        return None
+
+    def url_grafico_torta_no_seleccionaron(self):
+        """
+        Devuelve la url al gráfico svg en medias files.
+        """
+        path = '{0}/graficos/{1}-torta-no-seleccionaron.svg'.format(
+            settings.MEDIA_ROOT, self.id)
+        if os.path.exists(path):
+            url = '{0}graficos/{1}-torta-no-seleccionaron.svg'.format(
+                settings.MEDIA_URL, self.id)
+            return url
+        return None
+
+    def url_grafico_torta_no_intento(self):
+        """
+        Devuelve la url al gráfico svg en medias files.
+        """
+        path = '{0}/graficos/{1}-torta-no-intento.svg'.format(
+            settings.MEDIA_ROOT, self.id)
+        if os.path.exists(path):
+            url = '{0}graficos/{1}-torta-no-intento.svg'.format(
                 settings.MEDIA_URL, self.id)
             return url
         return None
@@ -573,8 +585,22 @@ class Campana(models.Model):
         porcentaje_pendientes = float(100 * cantidad_pendientes /\
             total_contactos)
 
+        cantidad_no_selecciono_opcion = dic_estado_x_cantidad[
+            'no_selecciono_opcion']
+        porcentaje_no_selecciono_opcion = float(
+            100 * cantidad_no_selecciono_opcion / total_contactos)
+
+        cantidad_selecciono_opcion = total_contactos - dic_estado_x_cantidad[
+            'no_selecciono_opcion']
+        porcentaje_selecciono_opcion = float(
+            100 * cantidad_selecciono_opcion / total_contactos)
+
         cantidad_no_intentados = dic_intento_x_contactos[0]
         porcentaje_no_intentados = float(100 * cantidad_no_intentados /\
+            total_contactos)
+
+        cantidad_intentados = total_contactos - cantidad_no_intentados
+        porcentaje_intentados = float(100 * cantidad_intentados /\
             total_contactos)
 
         #Calcula, por cada opción, la cantidad de veces seleccionada.
@@ -584,16 +610,31 @@ class Campana(models.Model):
             opcion_x_cantidad[opcion_campana.digito] +=\
                 dic_evento_x_cantidad.get(evento, 0)
 
+        #Calcula la cantidad de opciones inválidas que se selecionaron.
+        eventos_opciones_seleccionadas = filter(lambda evento: evento in\
+            EventoDeContacto.NUMERO_OPCION_MAP.values(),
+            dic_evento_x_cantidad.keys())
+        eventos_opciones_campana = map(lambda opcion:\
+            EventoDeContacto.NUMERO_OPCION_MAP[opcion.digito],
+            self.opciones.all())
+        opcion_invalida_x_cantidad = defaultdict(lambda: 0)
+        for evento in set(eventos_opciones_seleccionadas):
+            if not evento in eventos_opciones_campana:
+                opcion_invalida = '{0} (Inválida)'.format(
+                    EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[evento])
+                opcion_invalida_x_cantidad[opcion_invalida] += 1
+
         #Calcula, por cada opción el porcentaje que representa.
-        total_opciones = sum(opcion_x_cantidad.values())
+        opcion_valida_invalida_x_cantidad = {}
+        opcion_valida_invalida_x_cantidad.update(opcion_x_cantidad)
+        opcion_valida_invalida_x_cantidad.update(opcion_invalida_x_cantidad)
+        total_opciones = sum(opcion_valida_invalida_x_cantidad.values())
         opcion_x_porcentaje = defaultdict(lambda: 0)
         if total_opciones:
-            for opcion_campana, cantidad in opcion_x_cantidad.items():
-                opcion_x_porcentaje[opcion_campana] += float(100 * cantidad /\
+            for opcion, cantidad in\
+                opcion_valida_invalida_x_cantidad.items():
+                opcion_x_porcentaje[opcion] += float(100 * cantidad /\
                 total_opciones)
-
-        #TODO: Falta calcular las opciones inválidas.
-        #import pdb; pdb.set_trace()
 
         return {
             #Estadisticas Generales.
@@ -608,6 +649,13 @@ class Campana(models.Model):
             'cantidad_pendientes': cantidad_pendientes,
             'porcentaje_pendientes': porcentaje_pendientes,
 
+            'cantidad_selecciono_opcion': cantidad_selecciono_opcion,
+            'porcentaje_selecciono_opcion': porcentaje_selecciono_opcion,
+            'cantidad_no_selecciono_opcion': cantidad_no_selecciono_opcion,
+            'porcentaje_no_selecciono_opcion': porcentaje_no_selecciono_opcion,
+
+            'cantidad_intentados': cantidad_intentados,
+            'porcentaje_intentados': porcentaje_intentados,
             'cantidad_no_intentados': cantidad_no_intentados,
             'porcentaje_no_intentados': porcentaje_no_intentados,
 
@@ -615,7 +663,9 @@ class Campana(models.Model):
 
             #Estadisticas de las llamadas Contestadas.
             'opcion_x_cantidad': dict(opcion_x_cantidad),
+            'opcion_invalida_x_cantidad': dict(opcion_invalida_x_cantidad),
             'opcion_x_porcentaje': dict(opcion_x_porcentaje),
+
         }
 
     def _genera_graficos_estadisticas(self):
@@ -632,13 +682,16 @@ class Campana(models.Model):
 
             path_torta = '{0}/graficos/{1}-torta.svg'.format(
                 settings.MEDIA_ROOT, self.id)
-            path_torta_no_intentados = '{0}/graficos/{1}-torta-no-intento.svg'\
-                .format(settings.MEDIA_ROOT, self.id)
             path_torta_opciones = '{0}/graficos/{1}-torta-opciones.svg'.format(
                 settings.MEDIA_ROOT, self.id)
             path_barra_contactos_x_intentos =\
                 '{0}/graficos/{1}-barra-intentos.svg'.format(
                 settings.MEDIA_ROOT, self.id)
+            path_torta_no_seleccionaron =\
+                '{0}/graficos/{1}-torta-no-seleccionaron.svg'\
+                .format(settings.MEDIA_ROOT, self.id)
+            path_torta_no_intentados = '{0}/graficos/{1}-torta-no-intento.svg'\
+                .format(settings.MEDIA_ROOT, self.id)
 
             graficos_dir = '{0}/graficos/'.format(settings.MEDIA_ROOT)
             if not os.path.exists(graficos_dir):
@@ -650,26 +703,17 @@ class Campana(models.Model):
 
             #Torta: porcentajes de contestados, no contestados y pendientes.
             pie_chart = pygal.Pie()  # @UndefinedVariable
-            pie_chart.title = 'Porcentajes Generales'
+            pie_chart.title = 'Porcentajes generales.'
             pie_chart.add('Contestados', estadisticas['porcentaje_contestadas'])
             pie_chart.add('No Contestados', estadisticas[
                 'porcentaje_no_contestadas'])
             pie_chart.add('Pendientes', estadisticas['porcentaje_pendientes'])
             pie_chart.render_to_file(path_torta)
 
-            #Torta: porcentajes de Contactos No llamados.
-            con_intentos = 100 - estadisticas['porcentaje_no_intentados']
-            pie_chart = pygal.Pie()  # @UndefinedVariable
-            pie_chart.title = 'Porcentaje Contactos sin intento de llamada'
-            pie_chart.add('Con Intento', con_intentos)
-            pie_chart.add('Sin Intento', estadisticas[
-                'porcentaje_no_intentados'])
-            pie_chart.render_to_file(path_torta_no_intentados)
-
             #Torta: porcentajes de opciones selecionadas.
             dic_opcion_x_porcentaje = estadisticas['opcion_x_porcentaje']
             pie_chart = pygal.Pie()  # @UndefinedVariable
-            pie_chart.title = 'Porcentajes Opciones'
+            pie_chart.title = 'Porcentajes opciones seleccionadas.'
             for opcion, porcentaje in dic_opcion_x_porcentaje.items():
                 pie_chart.add('#{0}'.format(opcion), porcentaje)
             pie_chart.render_to_file(path_torta_opciones)
@@ -679,11 +723,31 @@ class Campana(models.Model):
             intentos = [dic_intento_x_contactos[intentos] for intentos, _ in\
                 dic_intento_x_contactos.items()]
             line_chart = pygal.Bar(show_legend=False)  # @UndefinedVariable
-            line_chart.title = 'Cantidad de Contactos por Número de Intentos.'
+            line_chart.title = 'Cantidad de contactos por número de intentos.'
             line_chart.x_labels = map(str, range(0,
                 len(dic_intento_x_contactos)))
             line_chart.add('Cantidad', intentos)
             line_chart.render_to_file(path_barra_contactos_x_intentos)
+
+            #Torta: porcentajes de Contactos que seleccionaron y
+            #no seleccionaron alguna opción.
+            pie_chart = pygal.Pie()  # @UndefinedVariable
+            pie_chart.title = 'Porcentaje contactos que seleccionaron y no seleccionaron opciones.'
+            pie_chart.add('Seleccionaron', estadisticas[
+                'porcentaje_selecciono_opcion'])
+            pie_chart.add('No Seleccionaron', estadisticas[
+                'porcentaje_no_selecciono_opcion'])
+            pie_chart.render_to_file(path_torta_no_seleccionaron)
+
+            #Torta: porcentajes de Contactos Llamados y No Llamados.
+            pie_chart = pygal.Pie()  # @UndefinedVariable
+            pie_chart.title =\
+                'Porcentaje contactos con intentos y sin intento de llamdas.'
+            pie_chart.add('Con Intento', estadisticas[
+                'porcentaje_intentados'])
+            pie_chart.add('Sin Intento', estadisticas[
+                'porcentaje_no_intentados'])
+            pie_chart.render_to_file(path_torta_no_intentados)
         else:
             logger.info("Ignorando campana %s (total_contactos == 0)", self.id)
 
@@ -1187,10 +1251,11 @@ class EventoDeContactoEstadisticasManager():
                     counter_x_estado['pendientes'] += 1
 
             #Calcula la cantidad de contactos que no seleccionaron ninguna
-            #opción de la campaña.
-            opciones = EventoDeContacto.NUMERO_OPCION_MAP.values()
-            if not any(opcion in eventos for opcion in opciones):
-                counter_x_estado['no_selecciono_opcion'] += 1
+            #opción de la campaña. Siempre que el contacto haya contestado.
+            if finalizado:
+                opciones = EventoDeContacto.NUMERO_OPCION_MAP.values()
+                if not any(opcion in eventos for opcion in opciones):
+                    counter_x_estado['no_selecciono_opcion'] += 1
 
         return counter_x_estado, counter_intentos, counter_por_evento
 
@@ -1500,6 +1565,10 @@ class EventoDeContacto(models.Model):
         9: EVENTO_ASTERISK_OPCION_9,
     }
     """Mapea ENTERO (numero de opcion) a EVENTO_ASTERISK_OPCION_9"""
+
+    EVENTO_A_NUMERO_OPCION_MAP = dict([
+       (v, k) for k, v in NUMERO_OPCION_MAP.iteritems()])
+    """Mapea EVENTO_ASTERISK_OPCION_9 a ENTERO (numero de opcion)"""
 
     DIALSTATUS_MAP = {
         'ANSWER': EVENTO_ASTERISK_DIALSTATUS_ANSWER,
