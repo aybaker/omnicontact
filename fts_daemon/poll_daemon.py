@@ -400,7 +400,7 @@ class RoundRobinTracker(object):
             else:
                 logger.info("refrescar_channel_status(): "
                     "Ignorando datos de campana %s (%s llamadas en curso)",
-                    campana.id, len(info_de_llamadas))
+                    campana_id, len(info_de_llamadas))
 
         # En este punto, campana_by_id tiene las campañas cuyos datos
         #  no fueron refrescados...
