@@ -368,6 +368,9 @@ class RoundRobinTracker(object):
         # SI hace falta!
         #======================================================================
 
+        # Antes q' nada, actualizamos 'ultimo refresco'
+        self._ultimo_refresco_ami_status = datetime.now()
+
         # Dict con campañas trackeadas
         campana_by_id = dict([(c.id, c) for c in self.trackers_campana])
 
@@ -375,7 +378,6 @@ class RoundRobinTracker(object):
         try:
             status = self.ami_status_tracker.get_status_por_campana()
         except:
-            self._ultimo_refresco_ami_status = datetime.now()
             logger.exception("Error detectado al ejecutar "
                 "ami_status_tracker.get_status_por_campana(). Los statuses "
                 "no seran actualizados")
