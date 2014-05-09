@@ -451,7 +451,7 @@ class ActuacionTests(FTSenderBaseTest):
 
 @skipUnless(default_db_is_postgresql(), "Requiere PostgreSql")
 class ReporteTest(FTSenderBaseTest):
-    def test_reporte(self):
+    def _crea_campana_emula_procesamiento(self):
         cant_contactos = 100
         numeros_telefonicos = [int(random() * 10000000000)\
             for _ in range(cant_contactos)]
@@ -506,6 +506,11 @@ class ReporteTest(FTSenderBaseTest):
             evento=EV_FINALIZADOR, probabilidad=0.2)
 
         campana.finalizar()
+        return campana
+
+    def test_detalle_reporte_template(self):
+        #Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento()
 
         # Verificamos template detalle reporte campaña.
         url = reverse('detalle_campana_reporte', kwargs={"pk": campana.pk})
@@ -520,3 +525,6 @@ class ReporteTest(FTSenderBaseTest):
         self.assertContains(response, grafico_barra_contactos_x_intentos)
 
         #print response
+
+    def test_obtener_estadistica(self):
+        pass
