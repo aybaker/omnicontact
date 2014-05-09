@@ -38,6 +38,13 @@
                 </table>
 
                 <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td colspan="2" align="center">
+                                <h4>Cantidades Generales</h4>
+                            </td>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
                             <td  width="50%">
@@ -75,7 +82,49 @@
                     </tbody>
                 </table>
 
+                 <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td colspan="2" align="center">
+                                <h4>Cantidad Contactos sin intento de llamada</h4>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td  width="50%">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><h5>Cantidad Total Sin Intento</h5></td>
+                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_intentados }}</span></h5></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td align="center">
+                                {% if campana.url_grafico_torta_no_intento %}
+                                    <figure>
+                                        <embed type="image/svg+xml" src="{{ campana.url_grafico_torta_no_intento }}" height="400"/>
+                                    </figure>
+                                {% else%} 
+                                    <p class="text-center text-danger">
+                                        <em>El reporte gráfico no fue generado.</em>
+                                    </p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
                 <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td colspan="2" align="center">
+                                <h4>Cantidad de veces seleccionada cada Opción</h4>
+                            </td>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
                             <td width="50%">
@@ -135,6 +184,13 @@
                 </table>
 
                 <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td colspan="2" align="center">
+                                <h4>Cantidad de Contactos por número de Intentos</h4>
+                            </td>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
                             <td width="50%">
