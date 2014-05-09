@@ -573,8 +573,7 @@ class Campana(models.Model):
         porcentaje_pendientes = float(100 * cantidad_pendientes /\
             total_contactos)
 
-        cantidad_no_intentados = dic_estado_x_cantidad[
-            'no_intentados']
+        cantidad_no_intentados = dic_intento_x_contactos[0]
         porcentaje_no_intentados = float(100 * cantidad_no_intentados /\
             total_contactos)
 
@@ -1126,7 +1125,6 @@ class EventoDeContactoEstadisticasManager():
             'finalizado_x_evento_finalizador': 0,
             'finalizado_x_limite_intentos': 0,
             'pendientes': 0,
-            'no_intentados': 0,
             'no_selecciono_opcion': 0,
         }
 
@@ -1164,13 +1162,6 @@ class EventoDeContactoEstadisticasManager():
                     counter_x_estado['finalizado_x_limite_intentos'] += 1
                 else:
                     counter_x_estado['pendientes'] += 1
-
-            #Calcula la cantidad de contactos que no se llegó a intentar hacer
-            #la llamada. Supone que array_eventos tiene al menos el evento
-            #EVENTO_CONTACTO_PROGRAMADO.
-            if all(evento == EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO
-                for evento in array_eventos):
-                counter_x_estado['no_intentados'] += 1
 
             #Calcula la cantidad de contactos que no seleccionaron ninguna
             #opción de la campaña.
