@@ -635,11 +635,11 @@ class Llamador(object):
                 return
 
 
-def main(max_loop=0):
+def main(max_loop=0, initial_wait=0.0):
     logger.info("Iniciando loop: obteniendo campanas activas...")
     FTS_MAX_LOOPS = int(os.environ.get("FTS_MAX_LOOPS", max_loop))
-    FTS_INITIAL_WAIT = int(os.environ.get("FTS_INITIAL_WAIT", "0"))
-    if FTS_INITIAL_WAIT > 0:
+    FTS_INITIAL_WAIT = float(os.environ.get("FTS_INITIAL_WAIT", initial_wait))
+    if FTS_INITIAL_WAIT > 0.0:
         logger.info("Iniciando espera inicial de %s segs...", FTS_INITIAL_WAIT)
         time.sleep(FTS_INITIAL_WAIT)
         logger.info("Espera inicial finalizada")
