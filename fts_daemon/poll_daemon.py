@@ -49,20 +49,28 @@ class LimiteDeCanalesAlcanzadoError(Exception):
 
 
 class CampanaTracker(object):
-    """Trackea los envios pendientes de UNA campaña"""
+    """Trackea los envios pendientes de UNA campaña. La vida de las
+    instancias estan la actuación en curso.
+    """
 
     def __init__(self, campana):
 
         self.campana = campana
-        """Campaña siendo trackeada:
-        :class:`fts_web.models.Campana`
+        """Campaña siendo trackeada: :class:`fts_web.models.Campana`
         """
 
         self.cache = []
         """Cache de pendientes"""
 
-        # FIXME: usar actuacion!!!
-        # self.actuacion = None
+        self.actuacion = campana.obtener_actuacion_actual()
+        """Actuacion de la campana, para este momento.
+        :class:`fts_web.models.Actuacion`.
+
+        CORNER CASE: puede q' ya no haya actuacion actual, si justo
+        en los milisegundos anteriores se pasó la hora especificada
+        por 'hora_hasta'. En estos casos, ``self.actuacion`` podria
+        ser None, o fuera de rango (o sea, no en curso).
+        """
 
         self.fetch_min = 20
         """Cantidad minima a buscar en BD para cachear"""
@@ -125,6 +133,26 @@ class CampanaTracker(object):
         return EventoDeContacto.objects_gestion_llamadas.\
             obtener_datos_de_contactos([tmp[1] for tmp in contactos_values])
 
+    def _verifica_fecha_y_hora(self):
+        """Verifica q' fecha con datos de campaña, y hora con datos
+        de la actuacion.
+
+        :raises: CampanaNoEnEjecucion
+        """
+        hoy_ahora = datetime.now()
+        if not self.campana.verifica_fecha(hoy_ahora):
+            raise CampanaNoEnEjecucion()
+
+        if not self.actuacion:
+            logger.info("Cancelando xq no hay actuacion activa para "
+                "campana %s", self.campana.id)
+            raise CampanaNoEnEjecucion()
+
+        if not self.actuacion.verifica_actuacion(hoy_ahora):
+            logger.info("Cancelando xq no hay actuacion activa para "
+                "campana %s", self.campana.id)
+            raise CampanaNoEnEjecucion()
+
     def _populate_cache(self):
         """Busca los pendientes en la BD, y guarda los datos a
         devolver (en las proximas llamadas a `get()`) en cache.
@@ -133,14 +161,7 @@ class CampanaTracker(object):
         :raises: CampanaNoEnEjecucion: si la campaña ya no esta en ejecucion,
                  porque esta fuera del rango de fechas o de actuaciones
         """
-        if not self.campana.verifica_fecha(datetime.now()):
-            raise CampanaNoEnEjecucion()
-
-#        self.actuacion = self.campana.obtener_actuacion_actual()
-#        if not self.actuacion:
-#            logger.info("Cancelando xq no hay actuacion activa para "
-#                "campana %s", self.campana.id)
-#            raise CampanaNoEnEjecucion()
+        self._verifica_fecha_y_hora()
 
         contactos_values = self._obtener_pendientes()
 
@@ -164,15 +185,7 @@ class CampanaTracker(object):
         :raises: NoMasContactosEnCampana
         :raises: LimiteDeCanalesAlcanzadoError
         """
-
-        # Fecha actual local.
-        hoy_ahora = datetime.now()
-
-        # Esto quiza no haga falta, porque en teoria
-        # el siguiente control de actuacion detectara el
-        # cambio de dia, igual hacemos este re-control
-        if not self.campana.verifica_fecha(hoy_ahora):
-            raise CampanaNoEnEjecucion()
+        self._verifica_fecha_y_hora()
 
         if self.limite_alcanzado():
             msg = ("Hay {0} llamadas en curso (aprox), y la campana "
@@ -180,9 +193,6 @@ class CampanaTracker(object):
                     self._llamadas_en_curso_aprox,
                     self.campana.cantidad_canales)
             raise LimiteDeCanalesAlcanzadoError(msg)
-
-        #if not self.actuacion.verifica_actuacion(hoy_ahora):
-        #    raise CampanaNoEnEjecucion()
 
         # Valida que la campana esté en estado valido
         if not Campana.objects.verifica_estado_activa(self.campana.pk):
