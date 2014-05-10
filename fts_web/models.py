@@ -1256,8 +1256,11 @@ class GestionDeLlamadasManager(models.Manager):
             )
 
     def obtener_pendientes(self, campana_id, limit=100):
-        """Devuelve lista de listas. Cada elemento de la lista contiene
-        una lista, con 2 items:
+        """Devuelve lista de listas, con los datos de los contactos que
+        estan pendientes de realizar. Tiene en cuenta la cantidad maxima
+        de intentos seteada en la campana
+
+        Cada elemento de la lista contiene una lista, con 2 items:
         - item[0]: cantidad de veces intentado
         - item[1]: id_contacto
 
