@@ -15,11 +15,13 @@ from fts_daemon.poll_daemon.ban_manager import BanManager
 from fts_daemon.poll_daemon.campana_tracker import CampanaTracker, \
     NoHayCampanaEnEjecucion, CampanaNoEnEjecucion, NoMasContactosEnCampana, \
     LimiteDeCanalesAlcanzadoError
-from fts_web.models import Campana
+from fts_web.models import Campana, EventoDeContacto
 import logging as _logging
 
 
 logger = _logging.getLogger(__name__)
+
+BANEO_NO_MAS_CONTACTOS = "BANEO_NO_MAS_CONTACTOS"
 
 
 # FIXME: renombra a RoundRobinScheduler
@@ -247,7 +249,7 @@ class RoundRobinTracker(object):
         """
         logger.debug("onNoMasContactosEnCampana() para la campana %s.",
             campana.id)
-        self.ban_manager.banear_campana(campana)
+        self.ban_manager.banear_campana(campana, reason=BANEO_NO_MAS_CONTACTOS)
         try:
             del self.trackers_campana[campana]
         except KeyError:
@@ -272,9 +274,57 @@ class RoundRobinTracker(object):
         por procesar.
         """
 
-    def sleep(self, segundos):
-        """Wrapper de time.sleep()."""
-        time.sleep(segundos)
+    def finalizar_campana(self, campana_id):
+        campana = Campana.objects.get(pk=campana_id)
+
+        if campana.estado != Campana.ESTADO_ACTIVA:
+            logger.info("finalizar_campana(): No finalizaremos campana "
+                "%s porque su estado no es ESTADO_ACTIVA", campana.id)
+            try:
+                del self.trackers_campana[campana]
+            except KeyError:
+                pass
+            self.ban_manager.eliminar(campana)
+            return
+
+        # TODO: realmente vale la pena loguear esto?
+        ts_ultimo_evento = EventoDeContacto.objects_gestion_llamadas.\
+            obtener_ts_ultimo_evento_de_campana(campana.id)
+
+        # LIMITE = settings.FTS_MARGEN_FINALIZACION_CAMPANA
+        logger.info("finalizar_campana(): finalizando campana %s, cuyo "
+            "timestamp de ultimo evento es %s", campana.id, ts_ultimo_evento)
+
+        campana.finalizar()
+
+    def real_sleep(self, espera):
+        """Metodo que realiza la espera real Si ``espera`` es < 0,
+        no hace nada
+        """
+        if espera > 0:
+            time.sleep(espera)
+
+    def sleep(self, espera):
+        """Produce espera de (al menos) ``espera`` segundos. Mientras
+        espera, ejecuta ciertos procesos que no conviene ejecutar mientras
+        se procesan llamadas.
+        """
+        # TODO: usar time.clock() u alternativa
+        inicio = time.time()
+        for campana in self.ban_manager.obtener_por_razon(
+            BANEO_NO_MAS_CONTACTOS):
+
+            logger.debug("sleep(): evaluando si finalizamos la campana %s",
+                campana.id)
+            if time.time() - inicio >= espera:
+                # Si nos pasamos de `segundos`, salimos
+                logger.info("sleep(): ya superamos el tiempo de espera "
+                    "solicitado! No finalizaremos la campana %s", campana.id)
+                return
+
+            self.finalizar_campana(campana.id)
+
+        self.real_sleep(time.time() - inicio)
 
     def _todas_las_campanas_al_limite(self):
         """Chequea trackers y devuelve True si TODAS las campañas
