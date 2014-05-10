@@ -247,7 +247,7 @@ class FTSenderBaseTest(TestCase):
 
         c = Campana(
             nombre="campaña-" + ru(),
-            cantidad_canales=2,
+            cantidad_canales=kwargs.get('cantidad_canales', 2),
             cantidad_intentos=kwargs.get('cantidad_intentos', 2),
             segundos_ring=5,
             fecha_inicio=fecha_inicio,
