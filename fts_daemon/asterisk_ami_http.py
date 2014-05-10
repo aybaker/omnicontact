@@ -464,23 +464,22 @@ class AmiStatusTracker(object):
         parseados = collections.defaultdict(lambda: list())
         no_parseados = []
         for item in calls_dicts:
-            if "channel" in item or "bridgedchannel" in item:
-                # Local/28-620@FTS_local_campana
-                match_obj = AmiStatusTracker.REGEX.match(item["channel"])
-                if not match_obj:
-                    match_obj = AmiStatusTracker.REGEX.match(
-                        item["bridgedchannel"])
+            # Local/28-620@FTS_local_campana
+            match_channel = AmiStatusTracker.REGEX.match(
+                item.get("channel", ""))
+            match_bridgedchannel = AmiStatusTracker.REGEX.match(
+                item.get("bridgedchannel", ""))
+            match_obj = match_channel or match_bridgedchannel
 
-                if match_obj:
-                    contacto_id = match_obj.group(1)
-                    numero = match_obj.group(2)
-                    campana_id = match_obj.group(3)
-                    key = " ".join([contacto_id, numero, campana_id])
-                    parseados[key].append(item)
-                else:
-                    no_parseados.append(item)
+            if match_obj:
+                contacto_id = match_obj.group(1)
+                numero = match_obj.group(2)
+                campana_id = match_obj.group(3)
+                key = " ".join([contacto_id, numero, campana_id])
+                parseados[key].append(item)
             else:
                 no_parseados.append(item)
+
         return parseados, no_parseados
 
     def get_status_por_campana(self):
