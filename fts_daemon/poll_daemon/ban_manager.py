@@ -9,7 +9,8 @@ from datetime import datetime, timedelta
 
 
 class BanManager(object):
-    """Gestiona baneo de campañas"""
+    """Gestiona baneo de campañas (en realidad, sirve para cualquier
+    objeto hasheable"""
 
     def __init__(self):
         self.campanas_baneadas = {}
@@ -21,18 +22,18 @@ class BanManager(object):
         # TODO: usar time.clock() u alternativa
         return timedelta(minutes=1)
 
-    def banear_campana(self, campana):
+    def banear_campana(self, campana_u_objeto):
         """Banea una campana"""
         # TODO: usar time.clock() u alternativa
-        self.campanas_baneadas[campana] = datetime.now() + \
+        self.campanas_baneadas[campana_u_objeto] = datetime.now() + \
             self.get_timedelta_baneo()
 
-    def esta_baneada(self, campana):
-        """Devuelve booleano indicando si la campana esta baneada
+    def esta_baneada(self, campana_u_objeto):
+        """Devuelve booleano indicando si la campana esta baneada.
         """
         # TODO: usar time.clock() u alternativa
         try:
-            baneada_hasta = self.campanas_baneadas[campana]
+            baneada_hasta = self.campanas_baneadas[campana_u_objeto]
         except KeyError:
             # Campaña no existe, asi q' no esta baneada...
             return False
@@ -41,5 +42,12 @@ class BanManager(object):
         if datetime.now() < baneada_hasta:
             return True
         else:
-            del self.campanas_baneadas[campana]
+            del self.campanas_baneadas[campana_u_objeto]
+            return False
+
+    def eliminar(self, campana_u_objeto):
+        """Elimina la informacion de una campana (si existe)."""
+        try:
+            del self.campanas_baneadas[campana_u_objeto]
+        except KeyError:
             return False
