@@ -324,7 +324,8 @@ class RoundRobinTracker(object):
 
             self.finalizar_campana(campana.id)
 
-        self.real_sleep(time.time() - inicio)
+        delta = time.time() - inicio
+        self.real_sleep(espera - delta)
 
     def _todas_las_campanas_al_limite(self):
         """Chequea trackers y devuelve True si TODAS las campañas
