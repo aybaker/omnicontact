@@ -17,6 +17,7 @@ from django.db import connection
 from django.db import models
 from fts_web.utiles import upload_to, log_timing
 import pygal
+from django.db.models.aggregates import Max
 
 
 logger = logging.getLogger(__name__)
@@ -396,10 +397,10 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
 
-        try:
-            self._genera_graficos_estadisticas()
-        except:
-            logger.exception("No se pudo generar el grafico")
+        #try:
+        #    self._genera_graficos_estadisticas()
+        #except:
+        #    logger.exception("No se pudo generar el grafico")
 
     def pausar(self):
         """Setea la campaña como ESTADO_PAUSADA"""
@@ -1315,6 +1316,13 @@ class GestionDeLlamadasManager(models.Manager):
                 id__in=id_contactos).values_list('id', 'telefono'))
 
         return values
+
+    def obtener_ts_ultimo_evento_de_campana(self, id_campana):
+        """Devuelve el timestamp del ultimo evento registrado
+        para la campaña
+        """
+        value = self.filter(campana_id=id_campana).aggregate(Max('timestamp'))
+        return value['timestamp__max']
 
 
 class EventoDeContacto(models.Model):
