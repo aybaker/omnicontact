@@ -123,9 +123,15 @@ class BanManager(object):
 
         return baneo.esta_baneado()
 
-#    def eliminar(self, campana_u_objeto):
-#        """Elimina la informacion de una campana (si existe)."""
-#        try:
-#            del self._campanas_baneadas[campana_u_objeto]
-#        except KeyError:
-#            pass
+    def obtener_por_razon(self, razon):
+        """Devuelve campana_u_objetos baneados por la razon ``razon``"""
+        return [obj for obj in self._campanas_baneadas
+            if self._campanas_baneadas[obj].reason == razon]
+
+    def eliminar(self, campana_u_objeto):
+        """Elimina definitivamente la informacion de una campana
+        (si existe)."""
+        try:
+            del self._campanas_baneadas[campana_u_objeto]
+        except KeyError:
+            pass
