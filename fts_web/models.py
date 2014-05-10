@@ -557,6 +557,20 @@ class Campana(models.Model):
             return url
         return None
 
+    def render_grafico_torta_avance_campana(self):
+        #Obtiene estadística.
+        estadisticas = self.obtener_estadisticas()
+
+        #Torta: porcentajes de contestados, no contestados y pendientes.
+        pie_chart = pygal.Pie(disable_xml_declaration=True, height=350,
+            legend_font_size=20, legend_at_bottom=True)  # @UndefinedVariable
+        pie_chart.add('Contestados', estadisticas['porcentaje_contestadas'])
+        pie_chart.add('No Contestados', estadisticas[
+            'porcentaje_no_contestadas'])
+        pie_chart.add('Pendientes', estadisticas['porcentaje_pendientes'])
+
+        return pie_chart
+
     def obtener_estadisticas(self):
         """
         Este método devuelve las estadísticas de
@@ -582,6 +596,8 @@ class Campana(models.Model):
             'finalizado_x_limite_intentos']
         porcentaje_no_contestadas = float(100 * cantidad_no_contestadas /\
             total_contactos)
+
+        porcentaje_avance = porcentaje_contestadas + porcentaje_no_contestadas
 
         cantidad_pendientes = dic_estado_x_cantidad['pendientes']
         porcentaje_pendientes = float(100 * cantidad_pendientes /\
@@ -647,6 +663,8 @@ class Campana(models.Model):
 
             'cantidad_no_contestadas': cantidad_no_contestadas,
             'porcentaje_no_contestadas': porcentaje_no_contestadas,
+
+            'porcentaje_avance': porcentaje_avance,
 
             'cantidad_pendientes': cantidad_pendientes,
             'porcentaje_pendientes': porcentaje_pendientes,
