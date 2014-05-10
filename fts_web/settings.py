@@ -141,6 +141,11 @@ FTS_DAEMON_SLEEP_LIMITE_DE_CANALES = 2
 campañas llegaron al límite de uso de canales
 """
 
+FTS_MARGEN_FINALIZACION_CAMPANA = 600
+"""Cuanto tiempo debe pasar (despues del ultimo evento) para
+finalizar una campana
+"""
+
 ASTERISK = {}
 """Configuracion para interactuar con Asterisk"""
 
