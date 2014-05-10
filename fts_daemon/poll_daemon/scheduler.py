@@ -57,6 +57,10 @@ class RoundRobinTracker(object):
         """Ultima vez q' se ejecuto *ŝtatus* via AMI HTTP."""
 
         self.max_iterations = None
+        """Cantidad de interaciones maxima que debe realizar ``generator()``.
+        Si vale ``None``, no se realiza ningun control.
+        Sino, al alcanzar esa cantidad de iteraciones, generator() hace
+        return"""
 
     def necesita_refrescar_trackers(self):
         """Devuleve booleano, indicando si debe o no consultarse a
@@ -105,7 +109,8 @@ class RoundRobinTracker(object):
         for campana in self._obtener_campanas_en_ejecucion():
 
             if self.ban_manager.esta_baneada(campana):
-                logger.debug("La campana %s esta baneada", campana.id)
+                logger.debug("Ignorando campana %s xq esta baneada",
+                    campana.id)
                 continue
 
             if campana in old_trackers:
@@ -223,8 +228,7 @@ class RoundRobinTracker(object):
         CampanaNoEnEjecucion. Esto implica que la campana que se
         estaba por ejecutar, NO debio tenerse en cuenta.
 
-        La implementación por default banea a la campana, y la
-        elimina de `self.trackers_campana`
+        Banea a la campana, y la elimina de `self.trackers_campana`
         """
         self.ban_manager.banear_campana(campana)
         logger.debug("onCampanaNoEnEjecucion: %s", campana.id)
@@ -239,8 +243,7 @@ class RoundRobinTracker(object):
         estaba teniendo en cuenta en realidad no posee contactos
         a procesar
 
-        La implementación por default banea a la campana, y la
-        elimina de `self.trackers_campana`
+        Banea a la campana, y la elimina de `self.trackers_campana`
         """
         logger.debug("onNoMasContactosEnCampana() para la campana %s.",
             campana.id)
