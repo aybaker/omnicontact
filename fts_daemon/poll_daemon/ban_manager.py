@@ -18,16 +18,19 @@ class BanManager(object):
 
     def get_timedelta_baneo(self):
         """Devuelve tiempo por default de baneo"""
+        # TODO: usar time.clock() u alternativa
         return timedelta(minutes=1)
 
     def banear_campana(self, campana):
         """Banea una campana"""
+        # TODO: usar time.clock() u alternativa
         self.campanas_baneadas[campana] = datetime.now() + \
             self.get_timedelta_baneo()
 
     def esta_baneada(self, campana):
         """Devuelve booleano indicando si la campana esta baneada
         """
+        # TODO: usar time.clock() u alternativa
         try:
             baneada_hasta = self.campanas_baneadas[campana]
         except KeyError:

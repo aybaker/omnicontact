@@ -44,6 +44,7 @@ class RoundRobinTracker(object):
         """Administrador de baneos"""
 
         # Quiza esto deberia estar en `self.trackers_campana`
+        # TODO: usar time.clock() u alternativa
         self._ultimo_refresco_trackers = datetime.now() - timedelta(days=30)
         """Ultima vez q' se consulto la BD, para refrescar los
         trackers. Es usado por necesita_refrescar_trackers() y
@@ -51,6 +52,7 @@ class RoundRobinTracker(object):
         """
 
         # Quiza esto deberia estar en `self.ami_status_tracker`
+        # TODO: usar time.clock() u alternativa
         self._ultimo_refresco_ami_status = datetime.now() - timedelta(days=30)
         """Ultima vez q' se ejecuto *ŝtatus* via AMI HTTP."""
 
@@ -74,6 +76,8 @@ class RoundRobinTracker(object):
         # Quizá habria q' chequear más seguido si el server no
         # está haciendo nada, pero más espaciado si hay
         # llamadas en curso, no?
+
+        # TODO: usar time.clock() u alternativa
         delta = datetime.now() - self._ultimo_refresco_trackers
         if delta.days > 0 or delta.seconds > 10:
             return True
@@ -148,6 +152,7 @@ class RoundRobinTracker(object):
             logger.debug("necesita_refrescar_channel_status(): todas las "
                 "campañas estan al limite")
 
+        # TODO: usar time.clock() u alternativa
         delta = datetime.now() - self._ultimo_refresco_ami_status
         # No hacemos más de 1 consulta cada 3 segundos
         if delta.days == 0 and delta.seconds < 3:
