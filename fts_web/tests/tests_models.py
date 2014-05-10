@@ -464,6 +464,7 @@ class ReporteTest(FTSenderBaseTest):
             cantidad_intentos=3)
         campana.activar()
 
+        self.crea_todas_las_actuaciones(campana)
         self.crea_calificaciones(campana)
         self.crea_todas_las_opcion_posibles(campana)
 
