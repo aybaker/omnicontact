@@ -51,7 +51,7 @@
                                     <td colspan="2">
                                         <h5><small>Avance</small></h5>
                                         <div class="progress">
-                                            <div class="progress-bar progress-bar-success" style="width: {{ campana.obtener_estadisticas.porcentaje_avance|floatformat:'0' }}%">
+                                            <div class="progress-bar progress-bar-primary" style="width: {{ campana.obtener_estadisticas.porcentaje_avance|floatformat:'0' }}%">
                                                 {% if campana.obtener_estadisticas.porcentaje_avance > 0 %}
                                                     <span>{{ campana.obtener_estadisticas.porcentaje_avance }}%</span>
                                                 {% endif %} 
