@@ -45,6 +45,7 @@ ASTERISK = {
     'USERNAME': 'asterisk',
     'PASSWORD': 'asterisk',
     'HTTP_AMI_URL': 'http://127.0.0.1:1',
+    'DIAL_URL': 'IAX2/xxx/${NumberToCall}'
 }
 
 FTS_DIALPLAN_FILENAME = "/tmp/fts-extensions.conf"
