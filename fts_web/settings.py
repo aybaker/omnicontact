@@ -272,7 +272,14 @@ ASTERISK = {
     #'PRIORITY': None,
     'USERNAME': None, # Usuario para AMI
     'PASSWORD': None, # Password para usuario para AMI
-    'HTTP_AMI_URL': None, # URL para acceder a AMI
+    'HTTP_AMI_URL': None,
+        # URL usado por Daemon p/acceder a Asterisk AMI via HTTP
+        # Ej:
+        #    "http://1.2.3.4:7088"
+    'DIAL_URL': None, # URL de Dial(). Debe contener '${NumberToCall}'
+        # URL a pasar a app. Dial()
+        # Ej:
+        #    "IAX2/1.2.3.4/${NumberToCall}"
 }
 """Configuracion para interactuar con Asterisk"""
 
@@ -347,7 +354,7 @@ assert TMPL_FTS_AUDIO_CONVERSOR_EXTENSION is not None, \
 
 # ~~~~~ Check ASTERISK
 
-for key in ('USERNAME', 'PASSWORD', 'HTTP_AMI_URL'):
+for key in ('USERNAME', 'PASSWORD', 'HTTP_AMI_URL', 'DIAL_URL'):
     assert key in ASTERISK, \
         "Falta key '{0}' en configuracion de ASTERISK".format(key)
     assert ASTERISK[key] is not None, \
