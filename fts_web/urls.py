@@ -133,11 +133,34 @@ urlpatterns = patterns('',
     #==========================================================================
     # AGI
     #==========================================================================
+    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/local-channel-pre-dial/$',
+        daemon_views.local_channel_pre_dial,
+    ),
+    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/inicio/$',
+        daemon_views.inicio_campana,
+    ),
+    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/fin/$',
+        daemon_views.fin_campana,
+    ),
+    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/fin_err_t/$',
+        daemon_views.fin_err_t,
+    ),
+    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/fin_err_i/$',
+        daemon_views.fin_err_i,
+    ),
+    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/opcion/(?P<dtmf_number>\d+)/',
+        daemon_views.opcion_seleccionada,
+    ),
+    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/local-channel-post-dial/dial-status/(?P<dial_status>.+)/$',
+        daemon_views.local_channel_post_dial,
+    ),
     url(r'^_/agi-proxy/(?P<agi_network_script>.+)/$',
         daemon_views.handle_agi_proxy_request,
-        name='handle_agi_proxy_request',
     ),
 
+    #==========================================================================
+    # admin
+    #==========================================================================
     url(r'^admin/', include(admin.site.urls)),
 
 )
