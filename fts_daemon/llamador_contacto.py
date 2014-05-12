@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from fts_daemon.asterisk_ami_http import AsteriskHttpOriginateError
-from fts_web.models import EventoDeContacto
+from fts_daemon.models import EventoDeContacto
 from fts_web.utiles import get_class
 import logging as _logging
 

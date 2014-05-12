@@ -11,17 +11,22 @@ import time
 from django.conf import settings
 from fts_daemon.asterisk_ami_http import AmiStatusTracker
 from fts_daemon.llamador_contacto import procesar_contacto
+from fts_daemon.models import EventoDeContacto
 from fts_daemon.poll_daemon.ban_manager import BanManager
 from fts_daemon.poll_daemon.campana_tracker import CampanaTracker, \
     NoHayCampanaEnEjecucion, CampanaNoEnEjecucion, NoMasContactosEnCampana, \
     LimiteDeCanalesAlcanzadoError
-from fts_web.models import Campana, EventoDeContacto
+from fts_web.models import Campana
 import logging as _logging
 
 
 logger = _logging.getLogger(__name__)
 
 BANEO_NO_MAS_CONTACTOS = "BANEO_NO_MAS_CONTACTOS"
+
+
+class CantidadMaximaDeIteracionesSuperada(Exception):
+    pass
 
 
 # FIXME: renombra a RoundRobinScheduler
@@ -324,7 +329,8 @@ class RoundRobinTracker(object):
 
             self.finalizar_campana(campana.id)
 
-        self.real_sleep(time.time() - inicio)
+        delta = time.time() - inicio
+        self.real_sleep(espera - delta)
 
     def _todas_las_campanas_al_limite(self):
         """Chequea trackers y devuelve True si TODAS las campañas
@@ -349,8 +355,9 @@ class RoundRobinTracker(object):
             if self.max_iterations is not None:
                 iter_num += 1
                 if iter_num >= self.max_iterations:
-                    raise Exception("Se supero la cantidad maxima de "
-                        "iteraciones: {0}".format(self.max_iterations))
+                    raise CantidadMaximaDeIteracionesSuperada("Se supero la "
+                        "cantidad maxima de iteraciones: {0}".format(
+                            self.max_iterations))
 
             #==================================================================
             # Actualizamos trackers de campaña

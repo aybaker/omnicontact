@@ -464,23 +464,22 @@ class AmiStatusTracker(object):
         parseados = collections.defaultdict(lambda: list())
         no_parseados = []
         for item in calls_dicts:
-            if "channel" in item or "bridgedchannel" in item:
-                # Local/28-620@FTS_local_campana
-                match_obj = AmiStatusTracker.REGEX.match(item["channel"])
-                if not match_obj:
-                    match_obj = AmiStatusTracker.REGEX.match(
-                        item["bridgedchannel"])
+            # Local/28-620@FTS_local_campana
+            match_channel = AmiStatusTracker.REGEX.match(
+                item.get("channel", ""))
+            match_bridgedchannel = AmiStatusTracker.REGEX.match(
+                item.get("bridgedchannel", ""))
+            match_obj = match_channel or match_bridgedchannel
 
-                if match_obj:
-                    contacto_id = match_obj.group(1)
-                    numero = match_obj.group(2)
-                    campana_id = match_obj.group(3)
-                    key = " ".join([contacto_id, numero, campana_id])
-                    parseados[key].append(item)
-                else:
-                    no_parseados.append(item)
+            if match_obj:
+                contacto_id = match_obj.group(1)
+                numero = match_obj.group(2)
+                campana_id = match_obj.group(3)
+                key = " ".join([contacto_id, numero, campana_id])
+                parseados[key].append(item)
             else:
                 no_parseados.append(item)
+
         return parseados, no_parseados
 
     def get_status_por_campana(self):
@@ -496,10 +495,14 @@ class AmiStatusTracker(object):
         calls_dicts = client.get_status().calls_dicts
         parseados, no_parseados = self._parse(calls_dicts)
         if no_parseados:
-            logger.warn("Algunos registros no fueron parseados: %s registros",
-                len(no_parseados))
-            # info(), porque son potenciales problemas!
-            logger.info("No parseados: %s", no_parseados)
+            logger.warn("get_status_por_campana(): %s registros de %s "
+                "no fueron parseados", len(no_parseados),
+                len(no_parseados) + len(parseados))
+
+            # info(), porque son potenciales problemas... Y para quedarnos
+            # tranquilos, tambien mostramos los que SI se parsearon...
+            for item in no_parseados:
+                logger.info("NO parseado: %s", item)
 
         campanas = collections.defaultdict(lambda: list())
         for key in parseados:
@@ -507,6 +510,12 @@ class AmiStatusTracker(object):
             campanas[int(campana_id)].append([
                 int(contacto_id), numero, int(campana_id)
             ])
+
+        if no_parseados:
+            for campana_id, datos in campanas.iteritems():
+                contactos = [x[0] for x in datos]
+                logger.info("SI parseado - campana: %s - contactos: %s",
+                    campana_id, contactos)
 
         return campanas
 
