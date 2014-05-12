@@ -102,11 +102,6 @@ Ejemplo: *.wav* (con el . incluido):  el archivo `<OUTPUT_FILE>`
 tendra la extension `.wav`
 """
 
-# TODO: renombrar a FTS_ASTERISK_TEST
-ASTERISK_TEST = False
-"""Booleano que indica si hay que ejecutar tests que implican
-una interaccion con Asterisk"""
-
 FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS = True
 
 #FTS_ORIGINATE_SERVICE_CLASS = "fts_daemon.asterisk_originate."\
@@ -323,3 +318,12 @@ assert FTS_FAST_AGI_DAEMON_PROXY_URL is not None, \
 
 for customizator_func in FTS_SETTING_CUSTOMIZERS:
     customizator_func(locals())
+
+
+#==============================================================================
+# Variables de entorno usadas
+#==============================================================================
+#
+# FTS_RUN_ASTERISK_TEST: si esta definida, se ejecutaran los tests
+#    que requieren Asterisk
+#
