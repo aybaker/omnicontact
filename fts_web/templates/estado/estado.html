@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="panel panel-default">
+    <div class="panel panel-info">
         <!-- Default panel contents -->
         <div class="panel-heading">                
             <h4 class="inline">Supervición: Campañas en Ejecución</h4>
@@ -19,21 +19,10 @@
                 {% for campana in campanas_ejecucion %}
                     <div class="col-sm-6 col-md-6 col-lg-4">                             
                         <table class="table table-bordered">
-                            <!-- <thead>
-                              <tr>                                
-                                <th>Campaña</th>
-                                <th>Fecha Inicio</th>
-                                <th>Fecha Fin</th>
-                                <th>Programación</th>
-                                <th width='35%'>Progreso</th>
-                              </tr>
-                            </thead> -->
                             <tbody>                            
                                 <tr class="active">
                                     <td width="65%">                          
-                                        <!-- <a href="{% url 'campana_detalle_de_estado' campana.id %}"> -->
-                                            <h4 class="text-primary">{{ campana.nombre }}</h4>
-                                        <!-- </a> -->
+                                        <h4 class="text-primary">{{ campana.nombre }}</h4>
                                     </td>
                                     <td>
                                         <h5><small>
