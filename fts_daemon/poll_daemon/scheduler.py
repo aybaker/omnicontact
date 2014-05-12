@@ -25,6 +25,10 @@ logger = _logging.getLogger(__name__)
 BANEO_NO_MAS_CONTACTOS = "BANEO_NO_MAS_CONTACTOS"
 
 
+class CantidadMaximaDeIteracionesSuperada(Exception):
+    pass
+
+
 # FIXME: renombra a RoundRobinScheduler
 class RoundRobinTracker(object):
     """Con la ayuda de CampanaTracker, devuelve contactos a realizar
@@ -351,8 +355,9 @@ class RoundRobinTracker(object):
             if self.max_iterations is not None:
                 iter_num += 1
                 if iter_num >= self.max_iterations:
-                    raise Exception("Se supero la cantidad maxima de "
-                        "iteraciones: {0}".format(self.max_iterations))
+                    raise CantidadMaximaDeIteracionesSuperada("Se supero la "
+                        "cantidad maxima de iteraciones: {0}".format(
+                            self.max_iterations))
 
             #==================================================================
             # Actualizamos trackers de campaña
