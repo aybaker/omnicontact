@@ -10,13 +10,14 @@ from _collections import defaultdict
 import datetime
 import logging
 import os
+import pygal
+from pygal.style import Style
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.db import models
 from fts_web.utiles import upload_to, log_timing
-import pygal
 from django.db.models.aggregates import Max
 
 
@@ -319,6 +320,31 @@ class Campana(models.Model):
 
     objects = CampanaManager()
 
+    ESTILO_VERDE_ROJO_NARANJA = Style(
+        background='transparent',
+        plot_background='transparent',
+        foreground='#555',
+        foreground_light='#FFF',
+        foreground_dark='#FFF',
+        opacity='.8',
+        opacity_hover='1',
+        transition='400ms ease-in',
+        colors=('#5cb85c', '#d9534f', '#f0ad4e')
+    )
+
+    ESTILO_MULTICOLOR = Style(
+        background='transparent',
+        plot_background='transparent',
+        foreground='#555',
+        foreground_light='#FFF',
+        foreground_dark='#FFF',
+        opacity='.8',
+        opacity_hover='1',
+        transition='400ms ease-in',
+        colors=('#428bca', '#5cb85c', '#5bc0de', '#f0ad4e', '#d9534f',
+            '#a95cb8', '#5cb8b5', '#caca43', '#96ac43', '#ca43ca')
+    )
+
     ESTADO_EN_DEFINICION = 1
     """La campaña esta siendo definida en el wizard"""
 
@@ -559,17 +585,19 @@ class Campana(models.Model):
         return None
 
     def render_grafico_torta_avance_campana(self):
+
         #Obtiene estadística.
         estadisticas = self.obtener_estadisticas()
 
         #Torta: porcentajes de contestados, no contestados y pendientes.
         pie_chart = pygal.Pie(disable_xml_declaration=True, height=350,
-            legend_font_size=20, legend_at_bottom=True)  # @UndefinedVariable
+            legend_font_size=20, legend_box_size=18,
+            style=Campana.ESTILO_VERDE_ROJO_NARANJA)
+
         pie_chart.add('Contestados', estadisticas['porcentaje_contestadas'])
         pie_chart.add('No Contestados', estadisticas[
             'porcentaje_no_contestadas'])
         pie_chart.add('Pendientes', estadisticas['porcentaje_pendientes'])
-
         return pie_chart
 
     def obtener_estadisticas(self):
@@ -694,7 +722,6 @@ class Campana(models.Model):
         Genera el gráfico torta de los intentos de contacto de la
         campaña finalizada.
         """
-
         #Obtiene estadística.
         estadisticas = self.obtener_estadisticas()
 
@@ -723,7 +750,7 @@ class Campana(models.Model):
                         "graficos: %s (se ignorara el error)", graficos_dir)
 
             #Torta: porcentajes de contestados, no contestados y pendientes.
-            pie_chart = pygal.Pie()  # @UndefinedVariable
+            pie_chart = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
             pie_chart.title = 'Porcentajes generales.'
             pie_chart.add('Contestados', estadisticas['porcentaje_contestadas'])
             pie_chart.add('No Contestados', estadisticas[
@@ -733,7 +760,7 @@ class Campana(models.Model):
 
             #Torta: porcentajes de opciones selecionadas.
             dic_opcion_x_porcentaje = estadisticas['opcion_x_porcentaje']
-            pie_chart = pygal.Pie()  # @UndefinedVariable
+            pie_chart = pygal.Pie(style=Campana.ESTILO_MULTICOLOR)
             pie_chart.title = 'Porcentajes opciones seleccionadas.'
             for opcion, porcentaje in dic_opcion_x_porcentaje.items():
                 pie_chart.add('#{0}'.format(opcion), porcentaje)
@@ -743,7 +770,8 @@ class Campana(models.Model):
             dic_intento_x_contactos = estadisticas['dic_intento_x_contactos']
             intentos = [dic_intento_x_contactos[intentos] for intentos, _ in\
                 dic_intento_x_contactos.items()]
-            line_chart = pygal.Bar(show_legend=False)  # @UndefinedVariable
+            line_chart = pygal.Bar(show_legend=False,
+                style=Campana.ESTILO_MULTICOLOR)
             line_chart.title = 'Cantidad de contactos por número de intentos.'
             line_chart.x_labels = map(str, range(0,
                 len(dic_intento_x_contactos)))
@@ -752,8 +780,9 @@ class Campana(models.Model):
 
             #Torta: porcentajes de Contactos que seleccionaron y
             #no seleccionaron alguna opción.
-            pie_chart = pygal.Pie()  # @UndefinedVariable
-            pie_chart.title = 'Porcentaje contactos que seleccionaron y no seleccionaron opciones.'
+            pie_chart = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
+            pie_chart.title = 'Porcentaje contactos que seleccionaron y no'\
+                'seleccionaron opciones.'
             pie_chart.add('Seleccionaron', estadisticas[
                 'porcentaje_selecciono_opcion'])
             pie_chart.add('No Seleccionaron', estadisticas[
@@ -761,7 +790,7 @@ class Campana(models.Model):
             pie_chart.render_to_file(path_torta_no_seleccionaron)
 
             #Torta: porcentajes de Contactos Llamados y No Llamados.
-            pie_chart = pygal.Pie()  # @UndefinedVariable
+            pie_chart = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
             pie_chart.title =\
                 'Porcentaje contactos con intentos y sin intento de llamdas.'
             pie_chart.add('Con Intento', estadisticas[
