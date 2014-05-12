@@ -9,6 +9,18 @@ Para utilizar estos settings, crear ``fts_web_settings_local``
     from fts_web_settings_local_dev import *  # @UnusedWildImport
     SECRET_KEY = 'xxx' # Algun valor random
 
+    if 'USE_PG' in os.environ:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME': 'xxxxxxx',
+                'USER': 'xxxxxxx',
+                'PASSWORD': 'xxxxxxx',
+                'CONN_MAX_AGE': 300,
+                'ATOMIC_REQUESTS': True,
+            }
+        }
+
 Y luego de eso, las customizaciones.
 
 """
