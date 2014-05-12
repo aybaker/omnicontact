@@ -11,11 +11,12 @@ import time
 from django.conf import settings
 from fts_daemon.asterisk_ami_http import AmiStatusTracker
 from fts_daemon.llamador_contacto import procesar_contacto
+from fts_daemon.models import EventoDeContacto
 from fts_daemon.poll_daemon.ban_manager import BanManager
 from fts_daemon.poll_daemon.campana_tracker import CampanaTracker, \
     NoHayCampanaEnEjecucion, CampanaNoEnEjecucion, NoMasContactosEnCampana, \
     LimiteDeCanalesAlcanzadoError
-from fts_web.models import Campana, EventoDeContacto
+from fts_web.models import Campana
 import logging as _logging
 
 

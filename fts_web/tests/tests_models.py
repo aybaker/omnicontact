@@ -6,13 +6,13 @@ from __future__ import unicode_literals
 import datetime
 from random import random
 
-from django.db import IntegrityError
 from django.core.urlresolvers import reverse
+from django.db import IntegrityError
 from django.test.client import Client
 from django.utils.unittest.case import skipUnless
-
+from fts_daemon.models import EventoDeContacto
 from fts_web.models import AgenteGrupoAtencion, Campana, Opcion, \
-    Calificacion, Actuacion, EventoDeContacto
+    Calificacion, Actuacion
 from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
 
@@ -451,6 +451,7 @@ class ActuacionTests(FTSenderBaseTest):
 
 @skipUnless(default_db_is_postgresql(), "Requiere PostgreSql")
 class ReporteTest(FTSenderBaseTest):
+
     def _crea_campana_emula_procesamiento(self):
         cant_contactos = 100
         numeros_telefonicos = [int(random() * 10000000000)\

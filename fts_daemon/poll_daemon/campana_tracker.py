@@ -8,7 +8,8 @@ from __future__ import unicode_literals
 from datetime import datetime
 import random
 
-from fts_web.models import Campana, EventoDeContacto
+from fts_daemon.models import EventoDeContacto
+from fts_web.models import Campana
 import logging as _logging
 
 

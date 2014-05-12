@@ -12,6 +12,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 from fts_web import views
+from fts_daemon import views as daemon_views
 
 
 admin.autodiscover()
@@ -133,7 +134,7 @@ urlpatterns = patterns('',
     # AGI
     #==========================================================================
     url(r'^_/agi-proxy/(?P<agi_network_script>.+)/$',
-        views.handle_agi_proxy_request,
+        daemon_views.handle_agi_proxy_request,
         name='handle_agi_proxy_request',
     ),
 
