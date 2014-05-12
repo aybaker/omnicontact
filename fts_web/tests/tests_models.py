@@ -475,13 +475,7 @@ class ReporteTest(FTSenderBaseTest):
 
         #Intentos.
         EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.pk, probabilidad=0.2)
-
-        EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.pk, probabilidad=0.3)
-
-        EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.pk, probabilidad=0.1)
+            campana.pk, probabilidad=1.1)
 
         #Opciones
         EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
@@ -527,12 +521,107 @@ class ReporteTest(FTSenderBaseTest):
         self.assertEqual(response.status_code, 200)
 
         grafico_torta = 'src="/media/graficos/{0}-torta.svg"'.format(campana.pk)
-        grafico_barra_contactos_x_intentos =\
+        grafico_torta_opciones =\
+            'src="/media/graficos/{0}-torta-opciones.svg"'.format(campana.pk)
+        grafico_barra_intentos =\
             'src="/media/graficos/{0}-barra-intentos.svg"'.format(campana.pk)
+        grafico_torta_no_seleccionaron =\
+            'src="/media/graficos/{0}-torta-no-seleccionaron.svg"'.format(
+                campana.pk)
+        grafico_torta_no_intento =\
+            'src="/media/graficos/{0}-torta-no-intento.svg"'.format(campana.pk)
+
         self.assertContains(response, grafico_torta)
-        self.assertContains(response, grafico_barra_contactos_x_intentos)
+        self.assertContains(response, grafico_torta_opciones)
+        self.assertContains(response, grafico_barra_intentos)
+        self.assertContains(response, grafico_torta_no_seleccionaron)
+        self.assertContains(response, grafico_torta_no_intento)
 
         #print response
 
     def test_obtener_estadistica(self):
-        pass
+        #Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento()
+        #Obtiene las estadisticas de la campana.
+        estadisticas = campana.obtener_estadisticas()
+
+        #Testea los valores devueltos.
+        self.assertEqual(estadisticas['total_contactos'], 100)
+        self.assertEqual(estadisticas['cantidad_intentados'], 100)
+        self.assertEqual(estadisticas['porcentaje_intentados'], 100)
+        self.assertEqual(estadisticas['cantidad_no_intentados'], 0)
+        self.assertEqual(estadisticas['porcentaje_no_intentados'], 0.0)
+
+        cantidad_pendientes = estadisticas['total_contactos'] -\
+            (estadisticas['cantidad_contestadas'] +
+            estadisticas['cantidad_no_contestadas'])
+        self.assertEqual(estadisticas['cantidad_pendientes'],
+            cantidad_pendientes)
+
+        porcentaje_pendientes = float(100 * cantidad_pendientes /\
+            estadisticas['total_contactos'])
+        self.assertEqual(estadisticas['porcentaje_pendientes'],
+            porcentaje_pendientes)
+
+        cantidad_contestadas = estadisticas['total_contactos'] -\
+            (estadisticas['cantidad_pendientes'] +
+            estadisticas['cantidad_no_contestadas'])
+        self.assertEqual(estadisticas['cantidad_contestadas'],
+            cantidad_contestadas)
+        porcentaje_contestadas = float(100 * cantidad_contestadas /\
+            estadisticas['total_contactos'])
+        self.assertEqual(estadisticas['porcentaje_contestadas'],
+            porcentaje_contestadas)
+
+        cantidad_no_contestadas = estadisticas['total_contactos'] -\
+            (estadisticas['cantidad_pendientes'] +
+            estadisticas['cantidad_contestadas'])
+        self.assertEqual(estadisticas['cantidad_no_contestadas'],
+            cantidad_no_contestadas)
+        porcentaje_no_contestadas = float(100 * cantidad_no_contestadas /\
+            estadisticas['total_contactos'])
+        self.assertEqual(estadisticas['porcentaje_no_contestadas'],
+            porcentaje_no_contestadas)
+
+        porcentaje_avance = porcentaje_contestadas + porcentaje_no_contestadas
+        self.assertEqual(estadisticas['porcentaje_avance'],
+            porcentaje_avance)
+
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(estadisticas)
+
+        # {
+        #     u'cantidad_contestadas': 95, #**Testeado**
+        #     u'cantidad_intentados': 100, #**Testeado**
+        #     u'cantidad_no_contestadas': 0, #**Testeado**
+        #     u'cantidad_no_intentados': 0, #**Testeado**
+        #     u'cantidad_no_selecciono_opcion': 0,
+        #     u'cantidad_pendientes': 5, #**Testeado**
+        #     u'cantidad_selecciono_opcion': 100,
+        #     u'dic_intento_x_contactos': {   0: 0, 1: 100},
+        #     u'opcion_invalida_x_cantidad': {   u'1 (Inv\xe1lida)': 1,
+        #                                        u'8 (Inv\xe1lida)': 1,
+        #                                        u'9 (Inv\xe1lida)': 1},
+        #     u'opcion_x_cantidad': {0: 65, 2: 87, 3: 90, 4: 91, 5: 97, 6: 97,
+        #                            7: 96},
+        #     u'opcion_x_porcentaje': {   0: 10.0,
+        #                                 2: 13.0,
+        #                                 3: 14.0,
+        #                                 4: 14.0,
+        #                                 5: 15.0,
+        #                                 6: 15.0,
+        #                                 7: 15.0,
+        #                                 u'1 (Inv\xe1lida)': 0.0,
+        #                                 u'8 (Inv\xe1lida)': 0.0,
+        #                                 u'9 (Inv\xe1lida)': 0.0},
+        #     u'porcentaje_avance': 95.0,
+        #     u'porcentaje_contestadas': 95.0, #**Testeado**
+        #     u'porcentaje_intentados': 100.0, #**Testeado**
+        #     u'porcentaje_no_contestadas': 0.0, #**Testeado**
+        #     u'porcentaje_no_intentados': 0.0, #**Testeado**
+        #     u'porcentaje_no_selecciono_opcion': 0.0,
+        #     u'porcentaje_pendientes': 5.0, #**Testeado**
+        #     u'porcentaje_selecciono_opcion': 100.0,
+        #     u'total_contactos': 100, #**Testeado**
+        # }
