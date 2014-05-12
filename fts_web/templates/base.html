@@ -38,7 +38,7 @@
 
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
+                    <!-- <li class="dropdown">
                         <a href="#" class="dropdown-toggle text-info" data-toggle="dropdown">
                             {{ user.get_full_name }}
                             <b class="caret"></b>
@@ -46,23 +46,23 @@
                         <ul class="dropdown-menu">
                             <li class="divider"></li>
                         </ul>
-                    </li> 
+                    </li>  -->
                 </ul>
                 <ul class="nav navbar-nav">
+                    <li>
+                        <a href="{% url 'lista_base_datos_contacto' %}">Base Datos Contactos</a>
+                    </li>
                     <li>
                         <a href="{% url 'lista_campana' %}">Campañas</a>
                     </li>
                     <li>
-                        <a href="{% url 'lista_campana_por_estados' %}">Supervisión</a>
+                        <a href="{% url 'lista_grupo_atencion' %}">Grupos Atención</a>
                     </li>
                     <li>
                         <a href="{% url 'lista_campana_reportes' %}">Reportes</a>
                     </li>
                     <li>
-                        <a href="{% url 'lista_base_datos_contacto' %}">Base Datos Contactos</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'lista_grupo_atencion' %}">Grupos Atención</a>
+                        <a href="{% url 'lista_campana_por_estados' %}">Supervisión</a>
                     </li>
                 </ul>
             </div>
