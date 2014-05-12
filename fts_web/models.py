@@ -525,63 +525,56 @@ class Campana(models.Model):
 #        return IntentoDeContacto.objects._obtener_error_interno_de_campana(
 #            self.id)
 
+    TORTA_GENERAL = 'TORTA_GENERAL'
+    TORTA_OPCIONES = 'TORTA_OPCIONES'
+    BARRA_INTENTOS = 'BARRA_INTENTOS'
+    TORTA_NO_SELECCIONO = 'TORTA_NO_SELECCIONO'
+    TORTA_NO_INTENTO = 'TORTA_NO_INTENTO'
+    PATH_GRAFICOS = {
+        TORTA_GENERAL: '{0}/graficos/{1}-torta.svg',
+        TORTA_OPCIONES: '{0}/graficos/{1}-torta-opciones.svg',
+        BARRA_INTENTOS: '{0}/graficos/{1}-barra-intentos.svg',
+        TORTA_NO_SELECCIONO: '{0}/graficos/{1}-torta-no-seleccionaron.svg',
+        TORTA_NO_INTENTO: '{0}/graficos/{1}-torta-no-intento.svg',
+    }
+    URL_GRAFICOS = {
+        TORTA_GENERAL: '{0}graficos/{1}-torta.svg',
+        TORTA_OPCIONES: '{0}graficos/{1}-torta-opciones.svg',
+        BARRA_INTENTOS: '{0}graficos/{1}-barra-intentos.svg',
+        TORTA_NO_SELECCIONO: '{0}graficos/{1}-torta-no-seleccionaron.svg',
+        TORTA_NO_INTENTO: '{0}graficos/{1}-torta-no-intento.svg',
+    }
+
+    @property
     def url_grafico_torta(self):
-        """
-        Devuelve la url al gráfico svg en medias files.
-        """
-        path = '{0}/graficos/{1}-torta.svg'.format(settings.MEDIA_ROOT,
-            self.id)
-        if os.path.exists(path):
-            url = '{0}graficos/{1}-torta.svg'.format(settings.MEDIA_URL,
-                self.id)
-            return url
-        return None
+        return self._url_grafico(Campana.TORTA_GENERAL)
 
+    @property
     def url_grafico_torta_opciones(self):
+        return self._url_grafico(Campana.TORTA_OPCIONES)
+
+    @property
+    def url_grafico_barra_intentos(self):
+        return self._url_grafico(Campana.BARRA_INTENTOS)
+
+    @property
+    def url_grafico_torta_no_seleccionaron(self):
+        return self._url_grafico(Campana.TORTA_NO_SELECCIONO)
+
+    @property
+    def url_grafico_torta_no_intento(self):
+        return self._url_grafico(Campana.TORTA_NO_INTENTO)
+
+    def _url_grafico(self, grafico):
         """
         Devuelve la url al gráfico svg en medias files.
         """
-        path = '{0}/graficos/{1}-torta-opciones.svg'.format(settings.MEDIA_ROOT,
+
+        path = Campana.PATH_GRAFICOS[grafico].format(settings.MEDIA_ROOT,
             self.id)
         if os.path.exists(path):
-            url = '{0}graficos/{1}-torta-opciones.svg'.format(
-                settings.MEDIA_URL, self.id)
-            return url
-        return None
-
-    def url_grafico_barra_intentos(self):
-        """
-        Devuelve la url al gráfico svg en medias files.
-        """
-        path = '{0}/graficos/{1}-barra-intentos.svg'.format(
-            settings.MEDIA_ROOT, self.id)
-        if os.path.exists(path):
-            url = '{0}graficos/{1}-barra-intentos.svg'.format(
-                settings.MEDIA_URL, self.id)
-            return url
-        return None
-
-    def url_grafico_torta_no_seleccionaron(self):
-        """
-        Devuelve la url al gráfico svg en medias files.
-        """
-        path = '{0}/graficos/{1}-torta-no-seleccionaron.svg'.format(
-            settings.MEDIA_ROOT, self.id)
-        if os.path.exists(path):
-            url = '{0}graficos/{1}-torta-no-seleccionaron.svg'.format(
-                settings.MEDIA_URL, self.id)
-            return url
-        return None
-
-    def url_grafico_torta_no_intento(self):
-        """
-        Devuelve la url al gráfico svg en medias files.
-        """
-        path = '{0}/graficos/{1}-torta-no-intento.svg'.format(
-            settings.MEDIA_ROOT, self.id)
-        if os.path.exists(path):
-            url = '{0}graficos/{1}-torta-no-intento.svg'.format(
-                settings.MEDIA_URL, self.id)
+            url = Campana.URL_GRAFICOS[grafico].format(settings.MEDIA_URL,
+                self.id)
             return url
         return None
 
@@ -605,10 +598,14 @@ class Campana(models.Model):
         """
         Este método devuelve las estadísticas de
         la campaña actual.
-
-        Podría procesarse esta información directamente en EventoDeContacto.
         """
         from fts_daemon.models import EventoDeContacto
+
+        #Una campana que aún no se activo, no tendria porque devolver
+        #estadísticas.
+        assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA,
+            Campana.ESTADO_FINALIZADA)
+
         dic_estado_x_cantidad, dic_intento_x_contactos, dic_evento_x_cantidad =\
             EventoDeContacto.objects_estadisticas.\
             obtener_estadisticas_de_campana(self.id)
@@ -617,6 +614,9 @@ class Campana(models.Model):
             'finalizado_x_evento_finalizador'] + dic_estado_x_cantidad[
             'finalizado_x_limite_intentos'] + dic_estado_x_cantidad[
             'pendientes']
+
+        if not total_contactos > 0:
+            return None
 
         cantidad_contestadas = dic_estado_x_cantidad[
             'finalizado_x_evento_finalizador']
@@ -685,7 +685,7 @@ class Campana(models.Model):
                 opcion_x_porcentaje[opcion] += float(100 * cantidad /\
                 total_opciones)
 
-        return {
+        dic_estadisticas = {
             #Estadisticas Generales.
             'total_contactos': total_contactos,
 
@@ -719,6 +719,8 @@ class Campana(models.Model):
 
         }
 
+        return dic_estadisticas
+
     def _genera_graficos_estadisticas(self):
         """
         Genera el gráfico torta de los intentos de contacto de la
@@ -727,20 +729,25 @@ class Campana(models.Model):
         #Obtiene estadística.
         estadisticas = self.obtener_estadisticas()
 
-        if estadisticas['total_contactos'] > 0:
+        if estadisticas:
             logger.info("Generando grafico para campana %s", self.id)
 
-            path_torta = '{0}/graficos/{1}-torta.svg'.format(
+            path_torta = Campana.PATH_GRAFICOS[Campana.TORTA_GENERAL].format(
                 settings.MEDIA_ROOT, self.id)
-            path_torta_opciones = '{0}/graficos/{1}-torta-opciones.svg'.format(
-                settings.MEDIA_ROOT, self.id)
-            path_barra_contactos_x_intentos =\
-                '{0}/graficos/{1}-barra-intentos.svg'.format(
-                settings.MEDIA_ROOT, self.id)
-            path_torta_no_seleccionaron =\
-                '{0}/graficos/{1}-torta-no-seleccionaron.svg'\
+
+            path_torta_opciones = Campana.PATH_GRAFICOS[Campana.TORTA_OPCIONES]\
                 .format(settings.MEDIA_ROOT, self.id)
-            path_torta_no_intentados = '{0}/graficos/{1}-torta-no-intento.svg'\
+
+            path_barra_contactos_x_intentos =\
+                Campana.PATH_GRAFICOS[Campana.BARRA_INTENTOS].format(
+                settings.MEDIA_ROOT, self.id)
+
+            path_torta_no_selecciono =\
+                Campana.PATH_GRAFICOS[Campana.TORTA_NO_SELECCIONO]\
+                .format(settings.MEDIA_ROOT, self.id)
+
+            path_torta_no_intentados = \
+                Campana.PATH_GRAFICOS[Campana.TORTA_NO_INTENTO]\
                 .format(settings.MEDIA_ROOT, self.id)
 
             graficos_dir = '{0}/graficos/'.format(settings.MEDIA_ROOT)
@@ -789,7 +796,7 @@ class Campana(models.Model):
                 'porcentaje_selecciono_opcion'])
             pie_chart.add('No Seleccionaron', estadisticas[
                 'porcentaje_no_selecciono_opcion'])
-            pie_chart.render_to_file(path_torta_no_seleccionaron)
+            pie_chart.render_to_file(path_torta_no_selecciono)
 
             #Torta: porcentajes de Contactos Llamados y No Llamados.
             pie_chart = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
