@@ -35,10 +35,10 @@ poder ver el mensaje en el navegador.
 Ver `assertTrueSelenium()` para mas informacion
 """
 
-FTS_JOIN_TIMEOUT_MARGIN = 5
-"""Cuantos segundos esperar (mas alla del timeout para ORIGINATE)
-para que el proceso hijo termine
-"""
+#FTS_JOIN_TIMEOUT_MARGIN = 5
+#"""Cuantos segundos esperar (mas alla del timeout para ORIGINATE)
+#para que el proceso hijo termine
+#"""
 
 FTS_TESTING_MODE = False
 """Esta variable vale `True` cuando se estan ejecutando los test."""
