@@ -19,12 +19,15 @@ import os
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-DEBUG = False
-TEMPLATE_DEBUG = False
 
+DEBUG = False
+
+TEMPLATE_DEBUG = False
 
 #==============================================================================
 # Settings INTERNOS (NO son para customizar el deploy)
+#  Nota: estas variables NO deberian ser modificadas
+#    en `fts_web_settings_local`
 #==============================================================================
 
 FTS_ENHANCED_URLS = False
@@ -68,9 +71,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 TEST_RUNNER = "fts_web.tests.utiles.FTSenderDiscoverRunner"
 
-#==============================================================================
-# Settings de DEPLOY (para ser customizados en distintos deploys)
-#==============================================================================
+# Asterisk
+
+FTS_ASTERISK_DIALPLAN_LOCAL_CHANNEL = "Local/{contactoId}-{numberToCall}@FTS_local_campana_{campanaId}"  #@IgnorePep8
+
+FTS_ASTERISK_DIALPLAN_EXTEN = "fts{contactoId}"
+
+FTS_ASTERISK_DIALPLAN_PRIORITY = 1
 
 #FTS_JOIN_TIMEOUT_MARGIN = 5
 #"""Cuantos segundos esperar (mas alla del timeout para ORIGINATE)
@@ -78,7 +85,7 @@ TEST_RUNNER = "fts_web.tests.utiles.FTSenderDiscoverRunner"
 #"""
 
 #==============================================================================
-# DEPLOY -> Django
+# Django
 #==============================================================================
 
 ALLOWED_HOSTS = []
@@ -143,11 +150,27 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "fts_web.context_processors.testing_mode"
 )
 
+
+
+
+
+
+
+
+
+
+#==============================================================================
+# Settings de DEPLOY (para ser customizados en distintos deploys)
+#     Nota: Los settings que siguen, pueden (y algunos DEBEN) ser modificados
+#        en los distintos ambientes / deploys
+#==============================================================================
+
+
 #==============================================================================
 # DEPLOY -> Asterisk
 #==============================================================================
 
-FTS_DIALPLAN_FILENAME = None
+FTS_DIALPLAN_FILENAME = None  #@IgnorePep8
 """Path completo (absoluto) al archivo donde se debe generar el dialplan
 
 Ejemplos:
@@ -242,15 +265,14 @@ campañas llegaron al límite de uso de canales
 #==============================================================================
 
 ASTERISK = {
-    'HOST': None,
-    'PORT': None,
+    #'HOST': None,
+    #'PORT': None,
+    #'LOCAL_CHANNEL': None,
+    #'EXTEN': None,
+    #'PRIORITY': None,
     'USERNAME': None, # Usuario para AMI
     'PASSWORD': None, # Password para usuario para AMI
     'HTTP_AMI_URL': None, # URL para acceder a AMI
-    'LOCAL_CHANNEL': None,
-    'EXTEN': None,
-    'PRIORITY': None,
-    'TIMEOUT': None
 }
 """Configuracion para interactuar con Asterisk"""
 
@@ -325,16 +347,20 @@ assert TMPL_FTS_AUDIO_CONVERSOR_EXTENSION is not None, \
 
 # ~~~~~ Check ASTERISK
 
-for key in ('HOST', 'PORT', 'USERNAME', 'PASSWORD', 'HTTP_AMI_URL',
-    'LOCAL_CHANNEL', 'EXTEN', 'PRIORITY', 'TIMEOUT'):
+for key in ('USERNAME', 'PASSWORD', 'HTTP_AMI_URL'):
     assert key in ASTERISK, \
         "Falta key '{0}' en configuracion de ASTERISK".format(key)
     assert ASTERISK[key] is not None, \
         "Falta key '{0}' en configuracion de ASTERISK".format(key)
 
-for key in ('CONTEXT', 'CHANNEL_PREFIX'):
+for key in ('CONTEXT', 'CHANNEL_PREFIX', 'HOST', 'PORT', 'LOCAL_CHANNEL',
+    'EXTEN', 'PRIORITY', 'TIMEOUT'):
     assert key not in ASTERISK, \
         "ASTERISK['{0}'] ya no debe incluirse, porque no se usa".format(key)
+
+ASTERISK['LOCAL_CHANNEL'] = FTS_ASTERISK_DIALPLAN_LOCAL_CHANNEL
+ASTERISK['EXTEN'] = FTS_ASTERISK_DIALPLAN_EXTEN
+ASTERISK['PRIORITY'] = FTS_ASTERISK_DIALPLAN_PRIORITY
 
 assert FTS_FAST_AGI_DAEMON_PROXY_URL is not None, \
     "Falta definir setting para FTS_FAST_AGI_DAEMON_PROXY_URL"
