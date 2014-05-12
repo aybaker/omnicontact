@@ -241,24 +241,18 @@ campañas llegaron al límite de uso de canales
 # DEPLOY -> Varios
 #==============================================================================
 
-ASTERISK = {}
+ASTERISK = {
+    'HOST': None,
+    'PORT': None,
+    'USERNAME': None, # Usuario para AMI
+    'PASSWORD': None, # Password para usuario para AMI
+    'HTTP_AMI_URL': None, # URL para acceder a AMI
+    'LOCAL_CHANNEL': None,
+    'EXTEN': None,
+    'PRIORITY': None,
+    'TIMEOUT': None
+}
 """Configuracion para interactuar con Asterisk"""
-
-# ~~~ Ejemplo ~~~
-#ASTERISK = {
-#    'USERNAME': 'xx',
-#    'PASSWORD': 'xx',
-#    'HOST': 'xx.xx.xx.xx',
-#    'PORT': 5038,
-#    'CHANNEL_PREFIX': "IAX2/xx.xx.xx.xx/{numberToCall}",
-#    'LOCAL_CHANNEL':
-#        'Local/{contactoId}-{numberToCall}@FTS_local_campana_{campanaId}',
-#    'CONTEXT': "campania_{campanaId}",
-#    'EXTEN': "fts{contactoId}",
-#    'PRIORITY': 1,
-#    'TIMEOUT': 5,
-#    'HTTP_AMI_URL': 'http://xx.xx.xx.xx:7088',
-#}
 
 
 #==============================================================================
@@ -331,11 +325,16 @@ assert TMPL_FTS_AUDIO_CONVERSOR_EXTENSION is not None, \
 
 # ~~~~~ Check ASTERISK
 
-for key in ('USERNAME', 'PASSWORD', 'HOST', 'PORT', 'CHANNEL_PREFIX',
-    'LOCAL_CHANNEL', 'CONTEXT', 'EXTEN', 'PRIORITY', 'TIMEOUT',
-    'HTTP_AMI_URL'):
+for key in ('HOST', 'PORT', 'USERNAME', 'PASSWORD', 'HTTP_AMI_URL',
+    'LOCAL_CHANNEL', 'EXTEN', 'PRIORITY', 'TIMEOUT'):
     assert key in ASTERISK, \
         "Falta key '{0}' en configuracion de ASTERISK".format(key)
+    assert ASTERISK[key] is not None, \
+        "Falta key '{0}' en configuracion de ASTERISK".format(key)
+
+for key in ('CONTEXT', 'CHANNEL_PREFIX'):
+    assert key not in ASTERISK, \
+        "ASTERISK['{0}'] ya no debe incluirse, porque no se usa".format(key)
 
 assert FTS_FAST_AGI_DAEMON_PROXY_URL is not None, \
     "Falta definir setting para FTS_FAST_AGI_DAEMON_PROXY_URL"
