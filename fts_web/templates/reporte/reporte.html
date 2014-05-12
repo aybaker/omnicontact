@@ -2,33 +2,35 @@
 {% load static %}
 
 {% block content %}
-    <div class="panel panel-default">
+    <div class="panel panel-info">
         <!-- Default panel contents -->
         <div class="panel-heading">                
-            <h4 class="inline">Reportes</h4>
+            <h4 class="inline">Reportes: Campañas Finalizadas</h4>
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
-            <div class="col-lg-12">  
-                <h4>Campaña Finalizadas</h4>                                 
+            <div class="col-lg-12">                                  
                 <table class="table table-bordered table-hover">
                     <thead>
                       <tr>                                
-                        <th>Campaña</th>
-                        <th>Fecha Inicio</th>
-                        <th>Fecha Fin</th>
-                        <th>Base Datos</th>
+                        <th class="text-muted">Campaña</th>
+                        <th class="text-muted">Fecha Desde</th>
+                        <th class="text-muted">Fecha Hasta</th>
+                        <th class="text-muted">Base Datos</th>
                       </tr>
                     </thead>
                     <tbody>
                         {% for campana in campanas_finalizadas %}
                             <tr>
-                                <td>                          
+                                <td width="45%">                          
                                     <a href="{% url 'detalle_campana_reporte' campana.id %}">{{ campana.nombre }}</a>
                                 </td>
                                 <td>{{ campana.fecha_inicio|date:"d/m/Y" }}</td>           
                                 <td>{{ campana.fecha_fin|date:"d/m/Y" }}</td>
-                                <td>{{ campana.bd_contacto }}</td>
+                                <td>
+                                    {{ campana.bd_contacto }}
+                                    ({{ campana.obtener_estadisticas.total_contactos }} Contactos)
+                                </td>
                             </tr>
                         {% empty %}
                             <tr>

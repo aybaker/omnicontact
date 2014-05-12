@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    <div class="panel panel-default">
+    <div class="panel panel-info">
         <!-- Default panel contents -->
         <div class="panel-heading">                
             <h4 class="inline">Detalle Reporte</h4>
@@ -11,37 +11,37 @@
 
         <div class="panel-body">
             <div class="col-lg-12"> 
-                <table class="table table-condensed">
-                    <thead>
-                        <th>Campaña</th>
-                        <th>Fecha Desde</th>
-                        <th>Fecha Hasta</th>                     
-                        <th>Base Datos</th>
-                        <th>Estado</th>
-                    </thead>
+                <table class="table">
                     <tbody>
-                        <tr class="info">
-                            <td><strong>{{ campana.nombre }}</strong></td>
+                        <tr class="active">
+                            <td width="45%"> <h3 class="text-primary">{{ campana.nombre }}</h3></td>
                             <td>
-                                {{ campana.fecha_inicio|date:"d/m/Y" }}
+                                <h3><small>
+                                    <b>Desde: </b>{{ campana.fecha_inicio|date:"d/m/Y" }}
+                                </small></h3>
                             </td>
                             <td>
-                                {{ campana.fecha_fin|date:"d/m/Y" }}
+                                <h3><small>
+                                    <b>Hasta: </b>{{ campana.fecha_fin|date:"d/m/Y" }}
+                                </small></h3>
                             </td>
+                            
                             <td>
-                                {{ campana.bd_contacto }} 
-                                ({{ campana.obtener_estadisticas.total_contactos }} Contactos)
-                            </td>
-                            <td>{{ campana.get_estado_display }}</td>
+                                <h3><small>
+                                    <b>Base Datos: </b>
+                                    {{ campana.bd_contacto }} 
+                                    ({{ campana.obtener_estadisticas.total_contactos }} Contactos)
+                                </small></h3>
+                            </td>                           
                         </tr>
                     </tbody>
                 </table>
 
                 <table class="table table-bordered">
                     <thead>
-                        <tr>
-                            <td colspan="2" align="center">
-                                <h4>Cantidades Generales</h4>
+                        <tr class="active">
+                            <td colspan="2">
+                                <h4 class="text-muted">Totales generales.</h4>
                             </td>
                         </tr>
                     </thead>
@@ -52,17 +52,17 @@
                                     <tbody>
                                         <tr>
                                             <td><h5>Cantidad Total Contestadas</h5></td>
-                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_contestadas }}</span></h5></td>
+                                            <td align="right"><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_contestadas }}</span></h5></td>
                                         </tr>
 
                                         <tr>
                                             <td><h5>Cantidad Total No Contestadas</h5></td>
-                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_contestadas }}</span></h5></td>
+                                            <td align="right"><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_contestadas }}</span></h5></td>
                                         </tr>
 
                                          <tr>
                                             <td><h5>Cantidad Total Pendientes</h5></td>
-                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_pendientes }}</span></h5></td>
+                                            <td align="right"><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_pendientes }}</span></h5></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -84,9 +84,9 @@
 
                 <table class="table table-bordered">
                     <thead>
-                        <tr>
-                            <td colspan="2" align="center">
-                                <h4>Cantidad de veces seleccionada cada Opción</h4>
+                        <tr class="active">
+                            <td colspan="2">
+                                <h4 class="text-muted">Total de veces seleccionada cada opción.</h4>
                             </td>
                         </tr>
                     </thead>
@@ -109,7 +109,7 @@
                                                     Calificación: <strong>{{ opcion_campana.calificacion }}</strong>
                                                 {% endif %}
                                                 </td>
-                                                <td width="10%">
+                                                <td width="10%" align="right">
                                                     <h5>
                                                         <span class="label label-primary">
                                                             {% for opcion, cantidad in campana.obtener_estadisticas.opcion_x_cantidad.items %}
@@ -137,7 +137,7 @@
                                         {% for opcion_invalida, cantidad in campana.obtener_estadisticas.opcion_invalida_x_cantidad.items %}
                                             <tr>
                                                 <td><h5>#{{ opcion_invalida }}</h5></td>
-                                                <td width="10%">
+                                                <td width="10%" align="right">
                                                     <h5>
                                                         <span class="label label-primary">
                                                             {{ cantidad }}
@@ -166,9 +166,48 @@
 
                 <table class="table table-bordered">
                     <thead>
+                        <tr class="active">
+                            <td colspan="2">
+                                <h4 class="text-muted">Total de contactos que seleccionaron y no seleccionaron alguna opción.</h4>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <tr>
-                            <td colspan="2" align="center">
-                                <h4>Cantidad de Contactos por número de Intentos</h4>
+                            <td  width="50%">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><h5>Total Seleccionaron</h5></td>
+                                            <td align="right"><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_selecciono_opcion }}</span></h5></td>
+                                        </tr>
+                                        <tr>
+                                            <td><h5>Total No Seleccionaron</h5></td>
+                                            <td align="right"><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_selecciono_opcion }}</span></h5></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td align="center">
+                                {% if campana.url_grafico_torta_no_seleccionaron %}
+                                    <figure>
+                                        <embed type="image/svg+xml" src="{{ campana.url_grafico_torta_no_seleccionaron }}" height="400"/>
+                                    </figure>
+                                {% else%} 
+                                    <p class="text-center text-danger">
+                                        <em>El reporte gráfico no fue generado.</em>
+                                    </p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="active">
+                            <td colspan="2">
+                                <h4 class="text-muted">Total de contactos por número de intentos.</h4>
                             </td>
                         </tr>
                     </thead>
@@ -180,7 +219,7 @@
                                         {% for intentos, cantidad in campana.obtener_estadisticas.dic_intento_x_contactos.items %}
                                             <tr>
                                                 <td><h5>{{ intentos }} Intentos</h5></td>
-                                                <td width="10%"><h5><span class="label label-primary">{{ cantidad }}</span></h5></td>
+                                                <td width="10%" align="right"><h5><span class="label label-primary">{{ cantidad }}</span></h5></td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -203,48 +242,9 @@
 
                 <table class="table table-bordered">
                     <thead>
-                        <tr>
-                            <td colspan="2" align="center">
-                                <h4>Cantidad de contactos que seleccionaron y no seleccionaron alguna opción.</h4>
-                            </td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td  width="50%">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr>
-                                            <td><h5>Total Seleccionaron</h5></td>
-                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_selecciono_opcion }}</span></h5></td>
-                                        </tr>
-                                        <tr>
-                                            <td><h5>Total No Seleccionaron</h5></td>
-                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_selecciono_opcion }}</span></h5></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                            <td align="center">
-                                {% if campana.url_grafico_torta_no_seleccionaron %}
-                                    <figure>
-                                        <embed type="image/svg+xml" src="{{ campana.url_grafico_torta_no_seleccionaron }}" height="400"/>
-                                    </figure>
-                                {% else%} 
-                                    <p class="text-center text-danger">
-                                        <em>El reporte gráfico no fue generado.</em>
-                                    </p>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <td colspan="2" align="center">
-                                <h4>Cantidad Contactos sin intento de llamada</h4>
+                        <tr class="active">
+                            <td colspan="2">
+                                <h4 class="text-muted">Total de contactos con intentos y sin intentos de llamada.</h4>
                             </td>
                         </tr>
                     </thead>
@@ -255,11 +255,11 @@
                                     <tbody>
                                         <tr>
                                             <td><h5>Cantidad Total Con Intentos</h5></td>
-                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_intentados }}</span></h5></td>
+                                            <td align="right"><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_intentados }}</span></h5></td>
                                         </tr>
                                         <tr>
                                             <td><h5>Cantidad Total Sin Intento</h5></td>
-                                            <td><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_intentados }}</span></h5></td>
+                                            <td align="right"><h5><span class="label label-primary">{{ campana.obtener_estadisticas.cantidad_no_intentados }}</span></h5></td>
                                         </tr>
                                     </tbody>
                                 </table>
