@@ -3,8 +3,12 @@
 """Tests generales"""
 from __future__ import unicode_literals
 
+import os
+import shutil
 import datetime
 from random import random
+
+from django.conf import settings
 
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
@@ -451,6 +455,10 @@ class ActuacionTests(FTSenderBaseTest):
 
 @skipUnless(default_db_is_postgresql(), "Requiere PostgreSql")
 class ReporteTest(FTSenderBaseTest):
+    def setUp(self):
+        path_graficos = '{0}graficos/'.format(settings.MEDIA_ROOT)
+        if os.path.exists(path_graficos):
+            shutil.rmtree(path_graficos)
 
     def _crea_campana_emula_procesamiento(self):
         cant_contactos = 100
@@ -537,7 +545,7 @@ class ReporteTest(FTSenderBaseTest):
         self.assertContains(response, grafico_torta_no_seleccionaron)
         self.assertContains(response, grafico_torta_no_intento)
 
-        #print response
+        print response
 
     def test_obtener_estadistica(self):
         #Crea y emula procesamiento de campaña.
@@ -625,3 +633,38 @@ class ReporteTest(FTSenderBaseTest):
         #     u'porcentaje_selecciono_opcion': 100.0,
         #     u'total_contactos': 100, #**Testeado**
         # }
+
+    def test_render_grafico_torta_avance_campana(self):
+        #Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento()
+
+        #Obtento el renderizado de gráfico y lo testeo.
+        chart = campana.render_grafico_torta_avance_campana()
+        self.assertIn('<svg xmlns:xlink="http://www.w3.org/1999/xlink"',
+            chart.render())
+
+    def test__url_grafico(self):
+        #Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento()
+
+        #Obtengo la url del gráfico de torta general y lo verifico.
+        url = campana.url_grafico_torta
+        self.assertEqual(url, Campana.URL_GRAFICOS[Campana.TORTA_GENERAL]\
+            .format(settings.MEDIA_URL, campana.id))
+
+        #Obtengo el path del grafico generado y lo borro.
+        path = Campana.PATH_GRAFICOS[Campana.TORTA_GENERAL]\
+            .format(settings.MEDIA_ROOT, campana.id)
+        os.remove(path)
+        #Obtengo la url, y verifico que me haya devuelto None, ya que no
+        #existe mas el archivo.
+        url = campana.url_grafico_torta
+        self.assertEqual(url, None)
+
+    def test__genera_graficos_estadisticas(self):
+        #Creo un campana activa, si datos procesados.
+        campana = self.crear_campana_activa(cant_contactos=0)
+        campana.finalizar()
+
+        url = campana.url_grafico_torta
+        self.assertEqual(url, None)
