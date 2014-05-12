@@ -326,6 +326,7 @@ class AsteriskHttpClient(object):
 
     def __init__(self):
         self.session = requests.Session()
+        self.session.trust_env = False
 
     def _request(self, url, params, timeout=5):
         """Make requests to the Asterisk.
