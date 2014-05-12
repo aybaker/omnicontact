@@ -68,7 +68,7 @@ class EventoDeContactoManager(models.Manager):
 
     def dialplan_local_channel_post_dial(self, campana_id, contacto_id, ev):
         """Crea evento asociado a resultado de Dial() / DIALSTATUS"""
-        if not ev in EventoDeContacto.DIALSTATUS_MAP.keys():
+        if not ev in EventoDeContacto.DIALSTATUS_MAP.values():
             logger.warn("dialplan_local_channel_post_dial(): se recibio "
                 "evento que no es parte de DIALSTATUS_MAP: %s", ev)
         return self.create(campana_id=campana_id,
