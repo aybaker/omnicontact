@@ -64,15 +64,23 @@ def opcion_seleccionada(request, campana_id, contacto_id, dtmf_number):
     contacto_id = int(contacto_id)
 
     try:
-        # FIXME: que pasa si usuario presiona '*' o '#'?
+        # TODO: que pasa si usuario presiona '*' o '#'?
+        # de cualquier manera, no lo soportamos por ahora...
         dtmf_number = int(dtmf_number)
     except ValueError:
         logger.exception("Error al convertir DTMF a entero: '{0}'".format(
             dtmf_number))
         return HttpResponseServerError("ERROR,opcion_dtmf_invalido")
 
+    try:
+        evento = EventoDeContacto.NUMERO_OPCION_MAP[dtmf_number]
+    except KeyError:
+        logger.exception("No existe evento para el dtmf '{0}'".format(
+            dtmf_number))
+        return HttpResponseServerError("ERROR,opcion_dtmf_invalido")
+
     evento_id = EventoDeContacto.objects.opcion_seleccionada(
-        campana_id, contacto_id, dtmf_number).id
+        campana_id, contacto_id, evento).id
     return HttpResponse("OK,{0}".format(evento_id))
 
 

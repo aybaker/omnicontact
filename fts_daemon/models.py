@@ -110,12 +110,12 @@ class EventoDeContactoManager(models.Manager):
             evento=EventoDeContacto.\
                 EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_T)
 
-    def opcion_seleccionada(self, campana_id, contacto_id, numero):
+    def opcion_seleccionada(self, campana_id, contacto_id, evento):
         """Crea evento EventoDeContacto.EVENTO_ASTERISK_OPCION_X.
-        :param numero: el numero (del dialpad) presionado (ej:0 al 9)
-        :type numero: int
+        :param evento: el evento asociado al numero (uno entre
+                       EVENTO_ASTERISK_OPCION_0 y EVENTO_ASTERISK_OPCION_9
+        :type evento: int
         """
-        evento = EventoDeContacto.NUMERO_OPCION_MAP[int(numero)]
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=evento)
