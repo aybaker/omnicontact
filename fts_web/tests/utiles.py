@@ -257,6 +257,10 @@ class FTSenderBaseTest(TestCase):
             audio_asterisk="test/audio/for-asterisk.wav",
         )
         c.save()
+
+        c.nombre = "Campaña de PRUEBA - {0}".format(c.id)
+        c.save()
+
         return c
 
     def crear_campana_sin_audio(self, fecha_inicio=None, fecha_fin=None,

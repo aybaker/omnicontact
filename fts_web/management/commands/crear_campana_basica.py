@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config
 from fts_daemon.audio_conversor import convertir_audio_de_campana
-from fts_web.models import Campana
+from fts_web.models import Campana, BaseDatosContacto
 from fts_web.tests.utiles import FTSenderBaseTest
 
 
@@ -50,6 +50,8 @@ class Command(BaseCommand):
     )
     option_list = BaseCommand.option_list + (
         make_option('--audio', action='store', dest='audio', default=None),
+        make_option('--bd', dest='bd', default=None),
+        make_option('--canales', dest='canales', default='20'),
     )
 
     def handle(self, *args, **options):
@@ -64,11 +66,16 @@ class Command(BaseCommand):
             cantidad_intentos = os.environ.get('FTS_CANTIDAD_INTENTOS', '1')
             cantidad_intentos = int(cantidad_intentos)
 
-            bd_contactos = test.crear_base_datos_contacto(
-                numeros_telefonicos=numeros_telefonicos)
+            if options['bd'] is None:
+                bd_contactos = test.crear_base_datos_contacto(
+                    numeros_telefonicos=numeros_telefonicos)
+            else:
+                bd_contactos = BaseDatosContacto.objects.get(
+                    pk=int(options['bd']))
             campana = test.crear_campana(bd_contactos=bd_contactos,
                 fecha_inicio=date.today(), fecha_fin=date.today(),
-                cantidad_intentos=cantidad_intentos)
+                cantidad_intentos=cantidad_intentos,
+                cantidad_canales=int(options['canales']))
 
             # Crea opciones y actuaciones...
             test.crea_todas_las_opcion_posibles(campana)
