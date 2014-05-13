@@ -89,6 +89,8 @@ def crear_archivo_en_media_root(dirname_template, prefix, suffix=""):
     # Cerramos FD
     os.close(fd)
 
+    os.chmod(output_filename, 0644)
+
     _, generated_filename = os.path.split(output_filename)
     return relative_dirname, generated_filename
 
