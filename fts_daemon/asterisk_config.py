@@ -274,6 +274,7 @@ def create_dialplan_config_file(campana=None, campanas=None):
         dest_filename = settings.FTS_DIALPLAN_FILENAME.strip()
         logger.info("Copiando dialplan a %s", dest_filename)
         shutil.copy(tmp_filename, dest_filename)
+        os.chmod(dest_filename, 0644)
 
     finally:
         try:

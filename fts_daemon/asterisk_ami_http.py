@@ -428,6 +428,10 @@ class AsteriskHttpClient(object):
             logger.debug("AsteriskHttpClient.originate(): async=False - "
                 "timeout: %s - request_timeout: %s", timeout, request_timeout)
 
+        logger.info("originate(): channel: '%s' - context: '%s' "
+            "- exten: '%s' - priority: '%s' - timeout: '%s'",
+            channel, context, exten, priority, timeout)
+
         response_body, _ = self._request("/mxml", {
             'action': 'originate',
             'channel': channel,
