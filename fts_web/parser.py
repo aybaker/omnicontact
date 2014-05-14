@@ -12,8 +12,10 @@ import os
 import re
 import xlrd
 
+from django.conf import settings
+
 from fts_web.errors import (FtsParserCsvDelimiterError,
- FtsParserMinRowError, FtsParserOpenFileError)
+ FtsParserMinRowError, FtsParserMaxRowError, FtsParserOpenFileError)
 
 logger = logging.getLogger('ParserXls')
 
@@ -74,6 +76,10 @@ class ParserXls(object):
         worksheet = self._get_worksheet(file_obj)
         num_rows = worksheet.nrows - 1
         curr_row = -1
+
+        if num_rows > settings.FTS_MAX_CANTIDAD_CONTACTOS:
+            raise FtsParserMaxRowError("El archivo XLS "
+                "posee mas registros de los permitidos.")
 
         #Valida primera fila que el dato sea un número con
         #formato teléfonico.
@@ -188,6 +194,10 @@ class ParserCsv(object):
 
         value_list = []
         for i, curr_row in enumerate(workbook):
+            if len(value_list) > settings.FTS_MAX_CANTIDAD_CONTACTOS:
+                raise FtsParserMaxRowError("El archivo CSV "
+                "posee mas registros de los permitidos.")
+
             if i == 0 and not validate_number(curr_row[columna_datos]):
                 continue
 
