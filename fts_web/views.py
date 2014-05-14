@@ -12,8 +12,8 @@ from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config
 from fts_daemon.audio_conversor import convertir_audio_de_campana
 from fts_web.errors import (FtsAudioConversionError,
-    FtsParserCsvDelimiterError,
-    FtsParserMinRowError, FtsParserOpenFileError)
+    FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
+    FtsParserOpenFileError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm,
@@ -335,11 +335,21 @@ class DefineBaseDatosContactoView(UpdateView):
             parser_archivo = autodetectar_parser(
             self.object.nombre_archivo_importacion)
 
-            importacion = self.object.importa_contactos(parser_archivo)
-            if importacion:
+            try:
+                self.object.importa_contactos(parser_archivo)
                 self.object.define()
-
                 return redirect(self.get_success_url())
+            except FtsParserMaxRowError:
+                message = '<strong>Operación Errónea!</strong> \
+                El archivo que seleccionó posee mas registros de los permitidos\
+                para ser importados.'
+
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return redirect(reverse('lista_base_datos_contacto'))
         return super(DefineBaseDatosContactoView, self).post(
             request, *args, **kwargs)
 
