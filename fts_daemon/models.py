@@ -167,12 +167,15 @@ class SimuladorEventoDeContactoManager():
     y tests cases.
     """
 
-    def simular_realizacion_de_intentos(self, campana_id, intento, 
+    def simular_realizacion_de_intentos(self, campana_id, intento,
         probabilidad=0.33):
         """
         Crea eventos EVENTO_DAEMON_INICIA_INTENTO para contactos de
         una campana.
 
+        :param intento: A que intento de contaco pertenece la simulación
+        del evento.
+        :type intento: int
         :param probabilidad: Para que porcentage (aprox) de los contactos hay
                que crear intentos. Para crear intentos para TODOS, usar valor
                mayor a 1.0
@@ -187,6 +190,9 @@ class SimuladorEventoDeContactoManager():
     def simular_evento(self, campana_id, intento, evento, probabilidad=0.33):
         """
         Crea evento para contactos de una campana.
+        :param intento: A que intento de contaco pertenece la simulación
+        del evento.
+        :type intento: int
         :param probabilidad: Para que porcentage (aprox) de los contactos hay
                que crear eventos. Para crear intentos para TODOS, usar valor
                mayor a 1.0
