@@ -480,7 +480,8 @@ class GestionDeLlamadasManager(models.Manager):
                 {campana_id} as "campana_id",
                 fts_web_contacto.id as "contacto_id",
                 NOW() as "timestamp",
-                {evento} as "evento"
+                {evento} as "evento",
+                0 as "dato"
             FROM
                 fts_web_contacto
             WHERE
@@ -500,6 +501,7 @@ class GestionDeLlamadasManager(models.Manager):
                 campana_id=campana.id,
                 contacto_id=contacto.id,
                 evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
+                dato=0,
             )
 
     def obtener_pendientes(self, campana_id, limit=100):
