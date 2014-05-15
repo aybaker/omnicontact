@@ -161,10 +161,14 @@ class CampanaTracker(object):
         if not contactos_values:
             raise NoMasContactosEnCampana()
 
+        intentos_x_contacto = dict([(id_contacto, intento)
+            for intento, id_contacto in contactos_values])
+
         id_contacto_y_telefono = self._obtener_datos_de_contactos(
             contactos_values)
 
-        self.cache = [(self.campana, contacto_id, telefono)
+        self.cache = [(self.campana, contacto_id, telefono,
+            intentos_x_contacto[contacto_id])
             for contacto_id, telefono in id_contacto_y_telefono]
 
     def next(self):

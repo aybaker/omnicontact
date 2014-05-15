@@ -26,91 +26,103 @@ class EventoDeContactoManager(models.Manager):
     """Manager para EventoDeContacto"""
 
     def inicia_intento(self,
-        campana_id, contacto_id):
+        campana_id, contacto_id, intento_actual):
         """Crea evento EVENTO_DAEMON_INICIA_INTENTO"""
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
-            evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
+            evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+            dato=intento_actual)
 
     def create_evento_daemon_originate_successful(self,
-        campana_id, contacto_id):
+        campana_id, contacto_id, intento_actual):
         """Crea evento EVENTO_DAEMON_ORIGINATE_SUCCESSFUL"""
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
-                EVENTO_DAEMON_ORIGINATE_SUCCESSFUL)
+                EVENTO_DAEMON_ORIGINATE_SUCCESSFUL,
+            dato=intento_actual)
 
     def create_evento_daemon_originate_failed(self,
-        campana_id, contacto_id):
+        campana_id, contacto_id, intento_actual):
         """Crea evento EVENTO_DAEMON_ORIGINATE_FAILED"""
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
-                EVENTO_DAEMON_ORIGINATE_FAILED)
+                EVENTO_DAEMON_ORIGINATE_FAILED,
+            dato=intento_actual)
 
     def create_evento_daemon_originate_internal_error(self,
-        campana_id, contacto_id):
+        campana_id, contacto_id, intento_actual):
         """Crea evento
         EventoDeContacto.EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR"""
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
-                EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR)
+                EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR,
+            dato=intento_actual)
 
-    def dialplan_local_channel_pre_dial(self, campana_id, contacto_id):
+    def dialplan_local_channel_pre_dial(self, campana_id, contacto_id,
+        intento):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO
         """
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
-                EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO)
+                EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO,
+            dato=intento)
 
-    def dialplan_local_channel_post_dial(self, campana_id, contacto_id, ev):
+    def dialplan_local_channel_post_dial(self, campana_id, contacto_id,
+        intento, ev):
         """Crea evento asociado a resultado de Dial() / DIALSTATUS"""
         if not ev in EventoDeContacto.DIALSTATUS_MAP.values():
             logger.warn("dialplan_local_channel_post_dial(): se recibio "
                 "evento que no es parte de DIALSTATUS_MAP: %s", ev)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
-            evento=ev)
+            evento=ev,
+            dato=intento)
 
-    def dialplan_campana_iniciado(self, campana_id, contacto_id):
+    def dialplan_campana_iniciado(self, campana_id, contacto_id, intento):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO
         """
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
-            evento=EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO)
+            evento=EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO,
+            dato=intento)
 
-    def dialplan_campana_finalizado(self, campana_id, contacto_id):
+    def dialplan_campana_finalizado(self, campana_id, contacto_id, intento):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_FINALIZADO
         """
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
-                EVENTO_ASTERISK_DIALPLAN_CAMPANA_FINALIZADO)
+                EVENTO_ASTERISK_DIALPLAN_CAMPANA_FINALIZADO,
+            dato=intento)
 
-    def fin_err_i(self, campana_id, contacto_id):
+    def fin_err_i(self, campana_id, contacto_id, intento):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_I
         """
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
-                EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_I)
+                EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_I,
+            dato=intento)
 
-    def fin_err_t(self, campana_id, contacto_id):
+    def fin_err_t(self, campana_id, contacto_id, intento):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_T
         """
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
-                EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_T)
+                EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_T,
+            dato=intento)
 
-    def opcion_seleccionada(self, campana_id, contacto_id, evento):
+    def opcion_seleccionada(self, campana_id, contacto_id, intento, evento):
         """Crea evento EventoDeContacto.EVENTO_ASTERISK_OPCION_X.
         :param evento: el evento asociado al numero (uno entre
                        EVENTO_ASTERISK_OPCION_0 y EVENTO_ASTERISK_OPCION_9
@@ -118,7 +130,8 @@ class EventoDeContactoManager(models.Manager):
         """
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
-            evento=evento)
+            evento=evento,
+            dato=intento)
 
     def get_eventos_finalizadores(self):
         """Devuelve eventos que permiten marcar una llamada como
@@ -543,6 +556,8 @@ class GestionDeLlamadasManager(models.Manager):
     def obtener_datos_de_contactos(self, id_contactos):
         """Devuelve los datos necesarios para generar llamadas
         para los contactos pasados por parametros (lista de IDs).
+
+        Devuelve lista de listas, con ((id_contacto, telefono,), ...)
         """
         if len(id_contactos) > 100:
             logger.warn("obtener_datos_de_contactos(): de id_contactos "

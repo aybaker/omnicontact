@@ -39,13 +39,14 @@ TEMPLATE_DIALPLAN_START = """
 [FTS_local_campana_{fts_campana_id}]
 
 exten => _X.,1,NoOp(FTS,INICIO,llamada=${{EXTEN}},campana={fts_campana_id})
-exten => _X.,n,Set(FtsDaemonCallId=${{CUT(EXTEN,,1)}})
+exten => _X.,n,Set(ContactoId=${{CUT(EXTEN,,1)}})
 exten => _X.,n,Set(NumberToCall=${{CUT(EXTEN,,2)}})
-exten => _X.,n,NoOp(FTS,FtsDaemonCallId=${{FtsDaemonCallId}},NumberToCall=${{NumberToCall}})
-exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/local-channel-pre-dial/)
+exten => _X.,n,Set(Intento=${{CUT(EXTEN,,3)}})
+exten => _X.,n,NoOp(FTS,ContactoId=${{ContactoId}},NumberToCall=${{NumberToCall}},Intento=${{Intento}})
+exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-pre-dial/)
 exten => _X.,n,Dial({fts_dial_url},{fts_campana_dial_timeout})
 ; # TODO: *** WARN: el siguiente 'AGI()' a veces no es llamado
-exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/local-channel-post-dial/dial-status/${{DIALSTATUS}}/)
+exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-post-dial/dial-status/${{DIALSTATUS}}/)
 exten => _X.,n,Hangup()
 
 ;----------------------------------------------------------------------
@@ -56,14 +57,14 @@ exten => _X.,n,Hangup()
 
 exten => _ftsX!,1,NoOp(FTS,INICIO,llamada=${{EXTEN:3}},campana={fts_campana_id})
 exten => _ftsX!,n,Set(OriginalExten=${{EXTEN}})
-exten => _ftsX!,n,Set(FtsDaemonCallId=${{EXTEN:3}})
-exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/inicio/)
+exten => _ftsX!,n,Set(ContactoId=${{EXTEN:3}})
+exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
 exten => _ftsX!,n,Wait(1)
 exten => _ftsX!,n,Answer()
 exten => _ftsX!,n(audio),Background({fts_audio_file})
 # FIXME: alcanza 'WaitExten(10)'??? No deberia ser un poco mas q' el tiempo del WAV/GSM/MP3?
 exten => _ftsX!,n,WaitExten(10)
-exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin/)
+exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
 exten => _ftsX!,n,Hangup()
 """
 
@@ -71,8 +72,8 @@ exten => _ftsX!,n,Hangup()
 TEMPLATE_OPCION_REPETIR = """
 
 ; TEMPLATE_OPCION_REPETIR-{fts_opcion_id}
-exten => {fts_opcion_digito},1,NoOp(FTS,REPETIR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/repetir/)
+exten => {fts_opcion_digito},1,NoOp(FTS,REPETIR,llamada=${{ContactoId}},campana={fts_campana_id})
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/repetir/)
 exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
 exten => {fts_opcion_digito},n,Hangup()
 
@@ -81,8 +82,8 @@ exten => {fts_opcion_digito},n,Hangup()
 TEMPLATE_OPCION_DERIVAR = """
 
 ; TEMPLATE_OPCION_DERIVAR-{fts_opcion_id}-{fts_grup_atencion_id}-{fts_queue_name}
-exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id},queue={fts_queue_name})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivar/)
+exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR,llamada=${{ContactoId}},campana={fts_campana_id},queue={fts_queue_name})
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivar/)
 exten => {fts_opcion_digito},n,Queue({fts_queue_name})
 exten => {fts_opcion_digito},n,Hangup()
 
@@ -91,8 +92,8 @@ exten => {fts_opcion_digito},n,Hangup()
 TEMPLATE_OPCION_CALIFICAR = """
 
 ; TEMPLATE_OPCION_CALIFICAR-{fts_opcion_id}-{fts_calificacion_id}-{fts_calificacion_nombre}
-exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{FtsDaemonCallId}},campana={fts_campana_id},calificacion={fts_calificacion_id}-fts_calificacion_nombre)
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/calificar/{fts_calificacion_id}/)
+exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{ContactoId}},campana={fts_campana_id},calificacion={fts_calificacion_id}-fts_calificacion_nombre)
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/calificar/{fts_calificacion_id}/)
 exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
 exten => {fts_opcion_digito},n,Hangup()
 
@@ -101,8 +102,8 @@ exten => {fts_opcion_digito},n,Hangup()
 TEMPLATE_OPCION_VOICEMAIL = """
 
 ; TEMPLATE_OPCION_VOICEMAIL-{fts_opcion_id}
-exten => {fts_opcion_digito},1,NoOp(FTS,VOICEMAIL,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/voicemail/)
+exten => {fts_opcion_digito},1,NoOp(FTS,VOICEMAIL,llamada=${{ContactoId}},campana={fts_campana_id})
+exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/voicemail/)
 exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
 ; TODO: IMPLEMENTAR!
 exten => {fts_opcion_digito},n,Hangup()
@@ -112,12 +113,12 @@ exten => {fts_opcion_digito},n,Hangup()
 TEMPLATE_DIALPLAN_END = """
 
 ; TEMPLATE_DIALPLAN_END-{fts_campana_id}
-exten => t,1,NoOp(FTS,ERR_T,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-exten => t,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin_err_t/)
+exten => t,1,NoOp(FTS,ERR_T,llamada=${{ContactoId}},campana={fts_campana_id})
+exten => t,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin_err_t/)
 exten => t,n,Hangup()
 
-exten => i,1,NoOp(FTS,ERR_I,llamada=${{FtsDaemonCallId}},campana={fts_campana_id})
-exten => i,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{FtsDaemonCallId}}/fin_err_i/)
+exten => i,1,NoOp(FTS,ERR_I,llamada=${{ContactoId}},campana={fts_campana_id})
+exten => i,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin_err_i/)
 exten => i,n,Hangup()
 
 """

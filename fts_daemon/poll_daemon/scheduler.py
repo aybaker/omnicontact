@@ -346,7 +346,7 @@ class RoundRobinTracker(object):
         """Devuelve los datos de contacto a contactar, de a una
         campaña por vez.
 
-        :returns: (campana, contacto_id, telefono)
+        :returns: (campana, contacto_id, telefono, cant_intentos_realizados)
         """
 
         iter_num = 0
@@ -471,11 +471,12 @@ class Llamador(object):
     def run(self, max_loops=0):
         """Inicia el llamador"""
         current_loop = 1
-        for campana, id_contacto, numero in self.rr_tracker.generator():
+        for campana, id_contacto, numero, cant_intentos in \
+            self.rr_tracker.generator():
             logger.debug("Llamador.run(): campana: %s - id_contacto: %s"
                 " - numero: %s", campana, id_contacto, numero)
 
-            procesar_contacto(campana, id_contacto, numero)
+            procesar_contacto(campana, id_contacto, numero, cant_intentos)
 
             current_loop += 1
             if max_loops > 0 and current_loop > max_loops:

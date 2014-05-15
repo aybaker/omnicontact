@@ -14,54 +14,62 @@ logger = logging_.getLogger(__name__)
 # AGI
 #==============================================================================
 
-def local_channel_pre_dial(request, campana_id, contacto_id):
+def local_channel_pre_dial(request, campana_id, contacto_id, intento):
     campana_id = int(campana_id)
     contacto_id = int(contacto_id)
+    intento = int(intento)
 
     evento_id = EventoDeContacto.objects.dialplan_local_channel_pre_dial(
-        campana_id, contacto_id).id
+        campana_id, contacto_id, intento).id
     return HttpResponse("OK,{0}".format(evento_id))
 
 
-def inicio_campana(request, campana_id, contacto_id):
+def inicio_campana(request, campana_id, contacto_id, intento):
     campana_id = int(campana_id)
     contacto_id = int(contacto_id)
+    intento = int(intento)
 
     evento_id = EventoDeContacto.objects.dialplan_campana_iniciado(
-        campana_id, contacto_id).id
+        campana_id, contacto_id, intento).id
     return HttpResponse("OK,{0}".format(evento_id))
 
 
-def fin_campana(request, campana_id, contacto_id):
+def fin_campana(request, campana_id, contacto_id, intento):
     campana_id = int(campana_id)
     contacto_id = int(contacto_id)
+    intento = int(intento)
 
     evento_id = EventoDeContacto.objects.dialplan_campana_finalizado(
-        campana_id, contacto_id).id
+        campana_id, contacto_id, intento).id
     return HttpResponse("OK,{0}".format(evento_id))
 
 
-def fin_err_t(request, campana_id, contacto_id):
+def fin_err_t(request, campana_id, contacto_id, intento):
     campana_id = int(campana_id)
     contacto_id = int(contacto_id)
+    intento = int(intento)
 
     evento_id = EventoDeContacto.objects.fin_err_t(
-        campana_id, contacto_id).id
+        campana_id, contacto_id, intento).id
     return HttpResponse("OK,{0}".format(evento_id))
 
 
-def fin_err_i(request, campana_id, contacto_id):
+def fin_err_i(request, campana_id, contacto_id, intento):
     campana_id = int(campana_id)
     contacto_id = int(contacto_id)
+    intento = int(intento)
 
     evento_id = EventoDeContacto.objects.fin_err_i(
-        campana_id, contacto_id).id
+        campana_id, contacto_id, intento).id
     return HttpResponse("OK,{0}".format(evento_id))
 
 
-def opcion_seleccionada(request, campana_id, contacto_id, dtmf_number):
+def opcion_seleccionada(request, campana_id, contacto_id, intento,
+    dtmf_number):
+
     campana_id = int(campana_id)
     contacto_id = int(contacto_id)
+    intento = int(intento)
 
     try:
         # TODO: que pasa si usuario presiona '*' o '#'?
@@ -80,13 +88,16 @@ def opcion_seleccionada(request, campana_id, contacto_id, dtmf_number):
         return HttpResponseServerError("ERROR,opcion_dtmf_invalido")
 
     evento_id = EventoDeContacto.objects.opcion_seleccionada(
-        campana_id, contacto_id, evento).id
+        campana_id, contacto_id, intento, evento).id
     return HttpResponse("OK,{0}".format(evento_id))
 
 
-def local_channel_post_dial(request, campana_id, contacto_id, dial_status):
+def local_channel_post_dial(request, campana_id, contacto_id, intento,
+    dial_status):
+
     campana_id = int(campana_id)
     contacto_id = int(contacto_id)
+    intento = int(intento)
 
     try:
         mapped_ev = EventoDeContacto.DIALSTATUS_MAP[dial_status]
@@ -99,7 +110,7 @@ def local_channel_post_dial(request, campana_id, contacto_id, dial_status):
             "EVENTO_ASTERISK_DIALSTATUS_UNKNOWN", dial_status)
 
     evento_id = EventoDeContacto.objects.dialplan_local_channel_post_dial(
-        campana_id, contacto_id, mapped_ev).id
+        campana_id, contacto_id, intento, mapped_ev).id
     return HttpResponse("{0},{1}".format(response_status, evento_id))
 
 

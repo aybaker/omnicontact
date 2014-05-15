@@ -453,7 +453,8 @@ class AsteriskHttpClient(object):
 
 class AmiStatusTracker(object):
 
-    REGEX = re.compile("^Local/([0-9]+)-([0-9]+)@FTS_local_campana_([0-9]+)")
+    REGEX = re.compile("^Local/([0-9]+)-([0-9]+)-([0-9]+)@"
+        "FTS_local_campana_([0-9]+)")
 
     def __init__(self):
         pass
@@ -479,8 +480,9 @@ class AmiStatusTracker(object):
             if match_obj:
                 contacto_id = match_obj.group(1)
                 numero = match_obj.group(2)
-                campana_id = match_obj.group(3)
-                key = " ".join([contacto_id, numero, campana_id])
+                intento = match_obj.group(3)
+                campana_id = match_obj.group(4)
+                key = " ".join([contacto_id, numero, campana_id, intento])
                 parseados[key].append(item)
             else:
                 no_parseados.append(item)
@@ -511,9 +513,9 @@ class AmiStatusTracker(object):
 
         campanas = collections.defaultdict(lambda: list())
         for key in parseados:
-            contacto_id, numero, campana_id = key.split()
+            contacto_id, numero, campana_id, intentos = key.split()
             campanas[int(campana_id)].append([
-                int(contacto_id), numero, int(campana_id)
+                int(contacto_id), numero, int(campana_id), int(intentos)
             ])
 
         if no_parseados:

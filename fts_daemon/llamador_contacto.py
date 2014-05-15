@@ -17,21 +17,32 @@ import logging as _logging
 logger = _logging.getLogger(__name__)
 
 
-def procesar_contacto(campana, contacto_id, numero):
+def procesar_contacto(campana, contacto_id, numero, cant_intentos):
     """Registra realizacion de intento (usando EventoDeContacto)
     y luego realiza ORIGINATE, registrando el resultado de dicho comando.
+
+    :param campana: campaña a la que pertenece el contacto
+    :param contacto_id: id de contacto
+    :param numero: el numero al cual hay que llamar
+    :param cant_intentos: cantidad de intentos que ya fueron realizado
     """
 
     logger.info("Realizando originate - campana: %s - contacto: %s - "
-        "numero: %s", campana.id, contacto_id, numero)
+        "numero: %s - intentos: %s", campana.id, contacto_id, numero,
+        cant_intentos)
 
-    EventoDeContacto.objects.inicia_intento(campana.id, contacto_id)
+    intento_actual = cant_intentos + 1
 
-    # Local/{contactoId}-{numberToCall}@FTS_local_campana_{campanaId}
+    EventoDeContacto.objects.inicia_intento(campana.id, contacto_id,
+        intento_actual)
+
+    # ANTES Local/{contactoId}-{numberToCall}@FTS_local_campana_{campanaId}
+    # Local/{contactoId}-{numberToCall}-{intento}@FTS_local_campana_{campanaId}
     channel = settings.ASTERISK['LOCAL_CHANNEL'].format(
         contactoId=str(contacto_id),
         numberToCall=str(numero),
         campanaId=str(campana.id),
+        intento=intento_actual,
     )
     context = campana.get_nombre_contexto_para_asterisk()
     exten = settings.ASTERISK['EXTEN'].format(
@@ -47,16 +58,16 @@ def procesar_contacto(campana, contacto_id, numero):
             (campana.segundos_ring + 2) * 1000, async=True)
         EventoDeContacto.objects.\
             create_evento_daemon_originate_successful(
-                campana.id, contacto_id)
+                campana.id, contacto_id, intento_actual)
     except AsteriskHttpOriginateError:
         logger.exception("Originate failed - campana: %s - contacto: %s",
             campana.id, contacto_id)
         EventoDeContacto.objects.\
             create_evento_daemon_originate_failed(
-                campana.id, contacto_id)
+                campana.id, contacto_id, intento_actual)
     except:
         logger.exception("Originate failed - campana: %s - contacto: %s",
             campana.id, contacto_id)
         EventoDeContacto.objects.\
             create_evento_daemon_originate_internal_error(
-                campana.id, contacto_id)
+                campana.id, contacto_id, intento_actual)
