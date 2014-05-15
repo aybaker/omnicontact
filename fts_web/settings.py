@@ -66,6 +66,9 @@ a un archivo en el directorio temporal."""
 
 FTS_SETTING_CUSTOMIZERS = []
 
+FTS_MAX_CANTIDAD_CONTACTOS = 60000
+"""Límite de contactos que pueden ser importados a la base de datos."""
+
 #Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
@@ -149,13 +152,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     "fts_web.context_processors.testing_mode"
 )
-
-
-
-
-
-
-
 
 
 

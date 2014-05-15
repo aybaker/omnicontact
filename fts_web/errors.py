@@ -65,6 +65,13 @@ class FtsParserMinRowError(FtsError):
     pass
 
 
+class FtsParserMaxRowError(FtsError):
+    """
+    El archivo querido Parsear tiene mas filas de las permitidas.
+    """
+    pass
+
+
 class FtsParserOpenFileError(FtsError):
     """
     No se pudo abrir el archivo a Parsear

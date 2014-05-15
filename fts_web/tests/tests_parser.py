@@ -4,8 +4,10 @@
 
 from __future__ import unicode_literals
 
-from fts_web.errors import FtsParserMinRowError, FtsParserOpenFileError, \
-    FtsParserCsvDelimiterError
+from django.test.utils import override_settings
+
+from fts_web.errors import (FtsParserMinRowError, FtsParserMaxRowError,
+    FtsParserOpenFileError, FtsParserCsvDelimiterError)
 from fts_web.parser import ParserXls, autodetectar_parser, ParserCsv
 from fts_web.tests.utiles import FTSenderBaseTest
 
@@ -22,6 +24,19 @@ class ParserXlsTest(FTSenderBaseTest):
             ParserCsv))
         self.assertTrue(isinstance(autodetectar_parser('file.exe'),
             ParserCsv))
+
+    @override_settings(FTS_MAX_CANTIDAD_CONTACTOS=2)
+    def test_limite_max_importacion(self):
+        """Test de planilla de calculo con datos"""
+        with self.assertRaises(FtsParserMaxRowError):
+            planilla = self.get_test_resource("planilla-ejemplo-1.xls")
+            parser = autodetectar_parser(planilla)
+            parser.read_file(0, open(planilla, 'r'))
+
+        with self.assertRaises(FtsParserMaxRowError):
+            planilla = self.get_test_resource("planilla-ejemplo-0.csv")
+            parser = autodetectar_parser(planilla)
+            parser.read_file(0, open(planilla, 'r'))
 
     def test_planilla_ejemplo_0(self):
         """
