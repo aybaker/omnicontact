@@ -167,7 +167,8 @@ class SimuladorEventoDeContactoManager():
     y tests cases.
     """
 
-    def simular_realizacion_de_intentos(self, campana_id, probabilidad=0.33):
+    def simular_realizacion_de_intentos(self, campana_id, intento, 
+        probabilidad=0.33):
         """
         Crea eventos EVENTO_DAEMON_INICIA_INTENTO para contactos de
         una campana.
@@ -180,9 +181,10 @@ class SimuladorEventoDeContactoManager():
         assert settings.DEBUG or settings.FTS_TESTING_MODE
         return self.simular_evento(campana_id,
             evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+            intento=intento,
             probabilidad=probabilidad)
 
-    def simular_evento(self, campana_id, evento, probabilidad=0.33):
+    def simular_evento(self, campana_id, intento, evento, probabilidad=0.33):
         """
         Crea evento para contactos de una campana.
         :param probabilidad: Para que porcentage (aprox) de los contactos hay
@@ -203,7 +205,8 @@ class SimuladorEventoDeContactoManager():
                 {campana_id} as "campana_id",
                 contacto_id as "contacto_id",
                 NOW() as "timestamp",
-                {evento} as "evento"
+                {evento} as "evento",
+                {intento} as "dato"
             FROM
                 (
                     SELECT DISTINCT contacto_id as "contacto_id"
@@ -213,7 +216,8 @@ class SimuladorEventoDeContactoManager():
                 ) as "contacto_id"
         """.format(campana_id=campana.id,
                 evento=int(evento),
-                probabilidad=float(probabilidad))
+                probabilidad=float(probabilidad),
+                intento=intento)
 
         with log_timing(logger,
             "simular_realizacion_de_intentos() tardo %s seg"):
@@ -790,31 +794,3 @@ class EventoDeContacto(models.Model):
     def __unicode__(self):
         return "EventoDeContacto-{0}-{1}".format(
             self.campana_id, self.contacto_id)
-
-
-class AgregacionDeEventoDeContacto(models.Model):
-    """
-    Representa los contadores de EventoDeContacto para
-    *cada ronda de intentos* de llamadas de una Campana.
-    Por lo que si una Campana tiene un limite de 2 intentos
-    para cada contacto, esa campana debería tener 2 registros
-    con las cantidades, de ciertos eventos, de cada intento.
-    """
-    campana_id = models.IntegerField(db_index=True)
-    numero_intento = models.IntegerField()
-    cantidad_intentos = models.IntegerField()
-    cantidad_finalizados = models.IntegerField()
-    cantidad_opcion_0 = models.IntegerField()
-    cantidad_opcion_1 = models.IntegerField()
-    cantidad_opcion_2 = models.IntegerField()
-    cantidad_opcion_3 = models.IntegerField()
-    cantidad_opcion_4 = models.IntegerField()
-    cantidad_opcion_5 = models.IntegerField()
-    cantidad_opcion_6 = models.IntegerField()
-    cantidad_opcion_7 = models.IntegerField()
-    cantidad_opcion_8 = models.IntegerField()
-    cantidad_opcion_9 = models.IntegerField()
-
-    def __unicode__(self):
-        return "AgregacionDeEventoDeContacto-{0}-{1}".format(
-            self.campana_id, self.numero_intento)
