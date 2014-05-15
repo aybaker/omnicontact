@@ -101,6 +101,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'fts_web',
+    'fts_daemon',
     'south',
     'crispy_forms',
 )

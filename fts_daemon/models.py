@@ -197,9 +197,9 @@ class SimuladorEventoDeContactoManager():
         cursor = connection.cursor()
         # TODO: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
-        INSERT INTO fts_web_eventodecontacto
+        INSERT INTO fts_daemon_eventodecontacto
             SELECT
-                nextval('fts_web_eventodecontacto_id_seq') as "id",
+                nextval('fts_daemon_eventodecontacto_id_seq') as "id",
                 {campana_id} as "campana_id",
                 contacto_id as "contacto_id",
                 NOW() as "timestamp",
@@ -207,7 +207,7 @@ class SimuladorEventoDeContactoManager():
             FROM
                 (
                     SELECT DISTINCT contacto_id as "contacto_id"
-                        FROM fts_web_eventodecontacto
+                        FROM fts_daemon_eventodecontacto
                         WHERE campana_id = {campana_id}
                             AND random() <= {probabilidad}
                 ) as "contacto_id"
@@ -273,7 +273,7 @@ class EventoDeContactoEstadisticasManager():
         sql = """SELECT DISTINCT ev_count, count(*) FROM
             (
                 SELECT count(*) AS "ev_count"
-                FROM fts_web_eventodecontacto
+                FROM fts_daemon_eventodecontacto
                 WHERE evento = {evento} and campana_id = {campana_id}
                 GROUP BY contacto_id
             ) AS "ev_count"
@@ -300,7 +300,7 @@ class EventoDeContactoEstadisticasManager():
         # FIXME: PERFORMANCE: quitar sub-select
         # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """SELECT evento, count(*)
-            FROM fts_web_eventodecontacto
+            FROM fts_daemon_eventodecontacto
             WHERE campana_id = {0}
             GROUP BY evento
             ORDER BY 1
@@ -328,7 +328,7 @@ class EventoDeContactoEstadisticasManager():
         # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """SELECT contacto_id AS "contacto_id", array_agg(evento),
                     max(timestamp)
-            FROM fts_web_eventodecontacto
+            FROM fts_daemon_eventodecontacto
             WHERE campana_id = {campana_id}
             GROUP BY contacto_id;
         """.format(campana_id=campana.id)
@@ -474,9 +474,9 @@ class GestionDeLlamadasManager(models.Manager):
 
         # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
-        INSERT INTO fts_web_eventodecontacto
+        INSERT INTO fts_daemon_eventodecontacto
             SELECT
-                nextval('fts_web_eventodecontacto_id_seq') as "id",
+                nextval('fts_daemon_eventodecontacto_id_seq') as "id",
                 {campana_id} as "campana_id",
                 fts_web_contacto.id as "contacto_id",
                 NOW() as "timestamp",
@@ -522,13 +522,13 @@ class GestionDeLlamadasManager(models.Manager):
         # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
         SELECT count(*) AS "ev_count", contacto_id AS "contacto_id"
-        FROM fts_web_eventodecontacto
+        FROM fts_daemon_eventodecontacto
         WHERE (evento = {ev_programado} OR evento = {ev_intento})
             AND campana_id = {campana_id}
             AND contacto_id NOT IN
             (
                 SELECT DISTINCT tmp.contacto_id
-                FROM fts_web_eventodecontacto AS tmp
+                FROM fts_daemon_eventodecontacto AS tmp
                 WHERE tmp.campana_id = {campana_id} AND
                     tmp.evento IN ({lista_eventos_finalizadores})
             )
@@ -784,9 +784,6 @@ class EventoDeContacto(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     evento = models.SmallIntegerField(db_index=True)
     dato = models.SmallIntegerField(null=True)
-
-    class Meta:
-        db_table = 'fts_web_eventodecontacto'
 
     def __unicode__(self):
         return "EventoDeContacto-{0}-{1}".format(
