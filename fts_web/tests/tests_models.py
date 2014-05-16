@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.test.client import Client
 from django.utils.unittest.case import skipUnless
-from fts_daemon.models import EventoDeContacto, AgregacionDeEventoDeContacto
+from fts_daemon.models import EventoDeContacto
 from fts_web.models import AgenteGrupoAtencion, Campana, Opcion, \
     Calificacion, Actuacion
 from fts_web.tests.utiles import FTSenderBaseTest, \
