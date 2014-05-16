@@ -32,6 +32,12 @@ class FTSenderDiscoverRunner(DiscoverRunner):
     def __init__(self, *args, **kwargs):
         settings.FTS_TESTING_MODE = True
 
+        for db in settings.DATABASES.values():
+            if 'CONN_MAX_AGE' in db:
+                print "Patcheando CONN_MAX_AGE: {0} -> 0".format(
+                    db['CONN_MAX_AGE'])
+                db['CONN_MAX_AGE'] = 0
+
         for key in os.environ.keys():
             if key.find("proxy") > -1:
                 del os.environ[key]
