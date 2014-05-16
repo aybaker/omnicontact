@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 #@PydevCodeAnalysisIgnore
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
+import os
+
 from django.db import models
+from south.db import db
+from south.utils import datetime_utils as datetime
+from south.v2 import SchemaMigration
+from django.conf import settings
 
 
 class Migration(SchemaMigration):
@@ -24,7 +27,7 @@ class Migration(SchemaMigration):
             return
 
         sql = """
-        ALTER TABLE fts_web_eventodecontacto
+        ALTER TABLE fts_daemon_eventodecontacto
             ADD CONSTRAINT contacto_id_fk
                 FOREIGN KEY (contacto_id)
                     REFERENCES fts_web_contacto (id) MATCH FULL;
@@ -32,7 +35,7 @@ class Migration(SchemaMigration):
         db.execute(sql)
 
         sql = """
-        ALTER TABLE fts_web_eventodecontacto
+        ALTER TABLE fts_daemon_eventodecontacto
             ADD CONSTRAINT campana_id_fk
                 FOREIGN KEY (campana_id)
                     REFERENCES fts_web_campana (id) MATCH FULL;
