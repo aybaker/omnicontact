@@ -25,9 +25,23 @@ logger = _logging.getLogger(__name__)
 class EventoDeContactoManager(models.Manager):
     """Manager para EventoDeContacto"""
 
+    def _check_intento(self, intento):
+        if settings.DEBUG or settings.FTS_TESTING_MODE:
+            assert intento >= 1, "intento debe ser >= 1"
+        else:
+            if intento < 1 or intento > 10:
+                logger.warn("Se utilizo un valor de intento sospechoso: %s",
+                    intento)
+
     def inicia_intento(self,
         campana_id, contacto_id, intento_actual):
-        """Crea evento EVENTO_DAEMON_INICIA_INTENTO"""
+        """Crea evento EVENTO_DAEMON_INICIA_INTENTO.
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
+        """
+        self._check_intento(intento_actual)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
@@ -35,7 +49,13 @@ class EventoDeContactoManager(models.Manager):
 
     def create_evento_daemon_originate_successful(self,
         campana_id, contacto_id, intento_actual):
-        """Crea evento EVENTO_DAEMON_ORIGINATE_SUCCESSFUL"""
+        """Crea evento EVENTO_DAEMON_ORIGINATE_SUCCESSFUL
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
+        """
+        self._check_intento(intento_actual)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
@@ -44,7 +64,13 @@ class EventoDeContactoManager(models.Manager):
 
     def create_evento_daemon_originate_failed(self,
         campana_id, contacto_id, intento_actual):
-        """Crea evento EVENTO_DAEMON_ORIGINATE_FAILED"""
+        """Crea evento EVENTO_DAEMON_ORIGINATE_FAILED
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
+        """
+        self._check_intento(intento_actual)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
@@ -54,7 +80,13 @@ class EventoDeContactoManager(models.Manager):
     def create_evento_daemon_originate_internal_error(self,
         campana_id, contacto_id, intento_actual):
         """Crea evento
-        EventoDeContacto.EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR"""
+        EventoDeContacto.EVENTO_DAEMON_ORIGINATE_INTERNAL_ERROR
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
+        """
+        self._check_intento(intento_actual)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
@@ -62,76 +94,115 @@ class EventoDeContactoManager(models.Manager):
             dato=intento_actual)
 
     def dialplan_local_channel_pre_dial(self, campana_id, contacto_id,
-        intento):
+        intento_actual):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
         """
+        self._check_intento(intento_actual)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
                 EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO,
-            dato=intento)
+            dato=intento_actual)
 
     def dialplan_local_channel_post_dial(self, campana_id, contacto_id,
-        intento, ev):
-        """Crea evento asociado a resultado de Dial() / DIALSTATUS"""
+        intento_actual, ev):
+        """Crea evento asociado a resultado de Dial() / DIALSTATUS
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
+        """
+        self._check_intento(intento_actual)
         if not ev in EventoDeContacto.DIALSTATUS_MAP.values():
             logger.warn("dialplan_local_channel_post_dial(): se recibio "
                 "evento que no es parte de DIALSTATUS_MAP: %s", ev)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=ev,
-            dato=intento)
+            dato=intento_actual)
 
-    def dialplan_campana_iniciado(self, campana_id, contacto_id, intento):
+    def dialplan_campana_iniciado(self, campana_id, contacto_id,
+        intento_actual):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
         """
+        self._check_intento(intento_actual)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO,
-            dato=intento)
+            dato=intento_actual)
 
-    def dialplan_campana_finalizado(self, campana_id, contacto_id, intento):
+    def dialplan_campana_finalizado(self, campana_id, contacto_id,
+        intento_actual):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_FINALIZADO
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
         """
+        self._check_intento(intento_actual)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
                 EVENTO_ASTERISK_DIALPLAN_CAMPANA_FINALIZADO,
-            dato=intento)
+            dato=intento_actual)
 
-    def fin_err_i(self, campana_id, contacto_id, intento):
+    def fin_err_i(self, campana_id, contacto_id, intento_actual):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_I
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
         """
+        self._check_intento(intento_actual)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
                 EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_I,
-            dato=intento)
+            dato=intento_actual)
 
-    def fin_err_t(self, campana_id, contacto_id, intento):
+    def fin_err_t(self, campana_id, contacto_id, intento_actual):
         """Crea evento
         EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_T
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
         """
+        self._check_intento(intento_actual)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=EventoDeContacto.\
                 EVENTO_ASTERISK_DIALPLAN_CAMPANA_ERR_T,
-            dato=intento)
+            dato=intento_actual)
 
-    def opcion_seleccionada(self, campana_id, contacto_id, intento, evento):
+    def opcion_seleccionada(self, campana_id, contacto_id,
+        intento_actual, evento):
         """Crea evento EventoDeContacto.EVENTO_ASTERISK_OPCION_X.
+
+        :param intento_actual: número correspondiente a qué
+        intento corresponde este evento, o sea, si es el 1er intento,
+        intento valdrá 1. Debe ser >= 1
         :param evento: el evento asociado al numero (uno entre
                        EVENTO_ASTERISK_OPCION_0 y EVENTO_ASTERISK_OPCION_9
         :type evento: int
         """
+        self._check_intento(intento_actual)
         return self.create(campana_id=campana_id,
             contacto_id=contacto_id,
             evento=evento,
-            dato=intento)
+            dato=intento_actual)
 
     def get_eventos_finalizadores(self):
         """Devuelve eventos que permiten marcar una llamada como
