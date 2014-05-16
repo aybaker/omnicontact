@@ -167,11 +167,15 @@ class SimuladorEventoDeContactoManager():
     y tests cases.
     """
 
-    def simular_realizacion_de_intentos(self, campana_id, probabilidad=0.33):
+    def simular_realizacion_de_intentos(self, campana_id, intento,
+        probabilidad=0.33):
         """
         Crea eventos EVENTO_DAEMON_INICIA_INTENTO para contactos de
         una campana.
 
+        :param intento: A que intento de contaco pertenece la simulación
+        del evento.
+        :type intento: int
         :param probabilidad: Para que porcentage (aprox) de los contactos hay
                que crear intentos. Para crear intentos para TODOS, usar valor
                mayor a 1.0
@@ -180,11 +184,15 @@ class SimuladorEventoDeContactoManager():
         assert settings.DEBUG or settings.FTS_TESTING_MODE
         return self.simular_evento(campana_id,
             evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+            intento=intento,
             probabilidad=probabilidad)
 
-    def simular_evento(self, campana_id, evento, probabilidad=0.33):
+    def simular_evento(self, campana_id, intento, evento, probabilidad=0.33):
         """
         Crea evento para contactos de una campana.
+        :param intento: A que intento de contaco pertenece la simulación
+        del evento.
+        :type intento: int
         :param probabilidad: Para que porcentage (aprox) de los contactos hay
                que crear eventos. Para crear intentos para TODOS, usar valor
                mayor a 1.0
@@ -203,7 +211,8 @@ class SimuladorEventoDeContactoManager():
                 {campana_id} as "campana_id",
                 contacto_id as "contacto_id",
                 NOW() as "timestamp",
-                {evento} as "evento"
+                {evento} as "evento",
+                {intento} as "dato"
             FROM
                 (
                     SELECT DISTINCT contacto_id as "contacto_id"
@@ -213,7 +222,8 @@ class SimuladorEventoDeContactoManager():
                 ) as "contacto_id"
         """.format(campana_id=campana.id,
                 evento=int(evento),
-                probabilidad=float(probabilidad))
+                probabilidad=float(probabilidad),
+                intento=intento)
 
         with log_timing(logger,
             "simular_realizacion_de_intentos() tardo %s seg"):
@@ -480,7 +490,8 @@ class GestionDeLlamadasManager(models.Manager):
                 {campana_id} as "campana_id",
                 fts_web_contacto.id as "contacto_id",
                 NOW() as "timestamp",
-                {evento} as "evento"
+                {evento} as "evento",
+                0 as "dato"
             FROM
                 fts_web_contacto
             WHERE
@@ -500,6 +511,7 @@ class GestionDeLlamadasManager(models.Manager):
                 campana_id=campana.id,
                 contacto_id=contacto.id,
                 evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
+                dato=0,
             )
 
     def obtener_pendientes(self, campana_id, limit=100):

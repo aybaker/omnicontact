@@ -843,6 +843,40 @@ class Campana(models.Model):
                 })
 
 
+#==============================================================================
+# AgregacionDeEventoDeContacto
+#==============================================================================
+
+class AgregacionDeEventoDeContacto(models.Model):
+    """
+    Representa los contadores de EventoDeContacto para
+    *cada grupo de intentos* de llamadas de una Campana.
+    Por lo que si una Campana tiene un limite de 2 intentos
+    para cada contacto, esa campana debería tener 2 registros
+    con las cantidades, de ciertos eventos, de ese intento.
+    """
+    campana_id = models.IntegerField(db_index=True)
+    numero_intento = models.IntegerField()
+    cantidad_intentos = models.IntegerField(null=True)
+    cantidad_finalizados = models.IntegerField(null=True)
+    # cantidad_opcion_0 = models.IntegerField()
+    # cantidad_opcion_1 = models.IntegerField()
+    # cantidad_opcion_2 = models.IntegerField()
+    # cantidad_opcion_3 = models.IntegerField()
+    # cantidad_opcion_4 = models.IntegerField()
+    # cantidad_opcion_5 = models.IntegerField()
+    # cantidad_opcion_6 = models.IntegerField()
+    # cantidad_opcion_7 = models.IntegerField()
+    # cantidad_opcion_8 = models.IntegerField()
+    # cantidad_opcion_9 = models.IntegerField()
+    # timestamp_ultima_actualizacion = models.DateTimeField(auto_now_add=True)
+    # timestamp_ultimo_evento = models.DateTimeField()
+
+    def __unicode__(self):
+        return "AgregacionDeEventoDeContacto-{0}-{1}".format(
+            self.campana_id, self.numero_intento)
+
+
 ##============================================================================
 ## IntentoDeContacto
 ##============================================================================
