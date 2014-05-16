@@ -36,6 +36,7 @@ class FTSenderDiscoverRunner(DiscoverRunner):
             if db.get('CONN_MAX_AGE', 0) != 0:
                 print "Patcheando CONN_MAX_AGE: {0} -> 0".format(
                     db['CONN_MAX_AGE'])
+                db['CONN_MAX_AGE'] = 0
 
         for key in os.environ.keys():
             if key.find("proxy") > -1:
