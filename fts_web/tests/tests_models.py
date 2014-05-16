@@ -15,8 +15,8 @@ from django.db import IntegrityError
 from django.test.client import Client
 from django.utils.unittest.case import skipUnless
 from fts_daemon.models import EventoDeContacto
-from fts_web.models import AgenteGrupoAtencion, Campana, Opcion, \
-    Calificacion, Actuacion
+from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
+    Campana, Opcion, Calificacion, Actuacion)
 from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
 
@@ -677,3 +677,21 @@ class ReporteTest(FTSenderBaseTest):
 
         url = campana.url_grafico_torta
         self.assertEqual(url, None)
+
+    def test_obtener_contadores_por_intento(self):
+         #Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento()
+        EventoDeContacto.objects_estadisticas.obtener_contadores_por_intento(
+            campana.pk, campana.cantidad_intentos)
+
+    def test_establecer_agregacion(self):
+        #Crea y emula procesamiento de campaña.
+        self._crea_campana_emula_procesamiento()
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.all().count(), 2)
+
+        # import pprint
+        # from django.core import serializers
+        # pp = pprint.PrettyPrinter(indent=4)
+        # data = serializers.serialize("python",
+        #     AgregacionDeEventoDeContacto.objects.all())
+        # pp.pprint(data)

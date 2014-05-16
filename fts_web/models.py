@@ -415,8 +415,7 @@ class Campana(models.Model):
 
     def finalizar(self):
         """
-        Setea la campaña como finalizada e invoca a generarse el gráfico
-        de tortas de los resultados de los intentos de contacto.
+        Setea la campaña como finalizada.
         """
         logger.info("Seteando campana %s como ESTADO_FINALIZADA", self.id)
         # TODO: esta bien generar error si el modo actual es ESTADO_FINALIZADA?
@@ -425,9 +424,11 @@ class Campana(models.Model):
         self.save()
 
         try:
-            self._genera_graficos_estadisticas()
+            AgregacionDeEventoDeContacto.objects.establece_agregacion(self.pk,
+               self.cantidad_intentos)
+            #self._genera_graficos_estadisticas()
         except:
-            logger.exception("No se pudo generar el grafico")
+            logger.exception("No se pudo generar los datos de estadísticas.")
 
     def pausar(self):
         """Setea la campaña como ESTADO_PAUSADA"""
@@ -847,6 +848,85 @@ class Campana(models.Model):
 # AgregacionDeEventoDeContacto
 #==============================================================================
 
+class AgregacionDeEventoDeContactoManager(models.Manager):
+    def establece_agregacion(self, campana_id, cantidad_intentos):
+        """
+        Se encarga de obtener los contadores de eventos por cada intento de
+        contacto de la campaña, y es establecer los registros de ADEDC
+        para cada intento de la campaña con los datos de los contadores.
+        :param campana_id: De que campana se establece los registros de ADEDC.
+        :type campana_id: int
+        :param cantidad_intentos: El limite de intentos para la campana.
+        :type cantidad_intentos: int
+        """
+        from fts_daemon.models import EventoDeContacto
+
+        #Obtenemos los contadores por intentos.
+        #TODO: pasar último timestamp de evento cuando se implemente.
+        dic_contadores_x_intentos = EventoDeContacto.objects_estadisticas.\
+            obtener_contadores_por_intento(campana_id, cantidad_intentos)
+
+        #Ejemplo:
+        # dic_contadores_x_intentos = {
+        #     1: {   u'cantidad_finalizados': 53,
+        #            u'cantidad_intentos': 100,
+        #            u'cantidad_x_opcion': [{u'evento': 56, 'cantidad': 26},
+        #                                   {u'evento': 53, 'cantidad': 20}]},
+        #     2: {   u'cantidad_finalizados': 77,
+        #            u'cantidad_intentos': 100,
+        #            u'cantidad_x_opcion': [{u'evento': 56, 'cantidad': 29},
+        #                                   {u'evento': 53, 'cantidad': 26}]}
+        # }
+
+        #Por cada intento en el diccionario dic_contadores_x_intentos,
+        #actualizamos o generamos según exista o no el registro con las
+        #cantidades de cada intento.
+        for numero_intento, dic_contadores in dic_contadores_x_intentos.items():
+            agregacion_evento_contacto, created = self.get_or_create(
+                campana_id=campana_id, numero_intento=numero_intento)
+
+            dic_opciones = dict((opcion, 0) for opcion in range(9))
+            for dic_evento_cantidad in dic_contadores['cantidad_x_opcion']:
+                opcion = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
+                        dic_evento_cantidad['evento']]
+                dic_opciones.update({opcion: dic_evento_cantidad[
+                    'cantidad']})
+
+            if created:
+                agregacion_evento_contacto.cantidad_intentos =\
+                    dic_contadores['cantidad_intentos']
+                agregacion_evento_contacto.cantidad_finalizados =\
+                    dic_contadores['cantidad_finalizados']
+                agregacion_evento_contacto.cantidad_opcion_0 = dic_opciones[0]
+                agregacion_evento_contacto.cantidad_opcion_1 = dic_opciones[1]
+                agregacion_evento_contacto.cantidad_opcion_2 = dic_opciones[2]
+                agregacion_evento_contacto.cantidad_opcion_3 = dic_opciones[3]
+                agregacion_evento_contacto.cantidad_opcion_4 = dic_opciones[4]
+                agregacion_evento_contacto.cantidad_opcion_5 = dic_opciones[5]
+                agregacion_evento_contacto.cantidad_opcion_6 = dic_opciones[6]
+                agregacion_evento_contacto.cantidad_opcion_7 = dic_opciones[7]
+                agregacion_evento_contacto.cantidad_opcion_8 = dic_opciones[8]
+                agregacion_evento_contacto.cantidad_opcion_9 = dic_opciones[9]
+
+            else:
+                agregacion_evento_contacto.cantidad_intentos +=\
+                    dic_contadores['cantidad_intentos']
+                agregacion_evento_contacto.cantidad_finalizados +=\
+                    dic_contadores['cantidad_finalizados']
+                agregacion_evento_contacto.cantidad_opcion_0 += dic_opciones[0]
+                agregacion_evento_contacto.cantidad_opcion_1 += dic_opciones[1]
+                agregacion_evento_contacto.cantidad_opcion_2 += dic_opciones[2]
+                agregacion_evento_contacto.cantidad_opcion_3 += dic_opciones[3]
+                agregacion_evento_contacto.cantidad_opcion_4 += dic_opciones[4]
+                agregacion_evento_contacto.cantidad_opcion_5 += dic_opciones[5]
+                agregacion_evento_contacto.cantidad_opcion_6 += dic_opciones[6]
+                agregacion_evento_contacto.cantidad_opcion_7 += dic_opciones[7]
+                agregacion_evento_contacto.cantidad_opcion_8 += dic_opciones[8]
+                agregacion_evento_contacto.cantidad_opcion_9 += dic_opciones[9]
+
+            agregacion_evento_contacto.save()
+
+
 class AgregacionDeEventoDeContacto(models.Model):
     """
     Representa los contadores de EventoDeContacto para
@@ -855,22 +935,24 @@ class AgregacionDeEventoDeContacto(models.Model):
     para cada contacto, esa campana debería tener 2 registros
     con las cantidades, de ciertos eventos, de ese intento.
     """
+    objects = AgregacionDeEventoDeContactoManager()
+
     campana_id = models.IntegerField(db_index=True)
     numero_intento = models.IntegerField()
     cantidad_intentos = models.IntegerField(null=True)
     cantidad_finalizados = models.IntegerField(null=True)
-    # cantidad_opcion_0 = models.IntegerField()
-    # cantidad_opcion_1 = models.IntegerField()
-    # cantidad_opcion_2 = models.IntegerField()
-    # cantidad_opcion_3 = models.IntegerField()
-    # cantidad_opcion_4 = models.IntegerField()
-    # cantidad_opcion_5 = models.IntegerField()
-    # cantidad_opcion_6 = models.IntegerField()
-    # cantidad_opcion_7 = models.IntegerField()
-    # cantidad_opcion_8 = models.IntegerField()
-    # cantidad_opcion_9 = models.IntegerField()
-    # timestamp_ultima_actualizacion = models.DateTimeField(auto_now_add=True)
-    # timestamp_ultimo_evento = models.DateTimeField()
+    cantidad_opcion_0 = models.IntegerField(null=True)
+    cantidad_opcion_1 = models.IntegerField(null=True)
+    cantidad_opcion_2 = models.IntegerField(null=True)
+    cantidad_opcion_3 = models.IntegerField(null=True)
+    cantidad_opcion_4 = models.IntegerField(null=True)
+    cantidad_opcion_5 = models.IntegerField(null=True)
+    cantidad_opcion_6 = models.IntegerField(null=True)
+    cantidad_opcion_7 = models.IntegerField(null=True)
+    cantidad_opcion_8 = models.IntegerField(null=True)
+    cantidad_opcion_9 = models.IntegerField(null=True)
+    timestamp_ultima_actualizacion = models.DateTimeField(auto_now_add=True)
+    #timestamp_ultimo_evento = models.DateTimeField()
 
     def __unicode__(self):
         return "AgregacionDeEventoDeContacto-{0}-{1}".format(
