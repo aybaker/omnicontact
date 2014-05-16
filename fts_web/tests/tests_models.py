@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.test.client import Client
 from django.utils.unittest.case import skipUnless
-from fts_daemon.models import EventoDeContacto
+from fts_daemon.models import EventoDeContacto, AgregacionDeEventoDeContacto
 from fts_web.models import AgenteGrupoAtencion, Campana, Opcion, \
     Calificacion, Actuacion
 from fts_web.tests.utiles import FTSenderBaseTest, \
@@ -481,39 +481,50 @@ class ReporteTest(FTSenderBaseTest):
         EventoDeContacto.objects_gestion_llamadas.programar_campana(
             campana.pk)
 
-        #Intentos.
-        EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.pk, probabilidad=1.1)
+        for numero_interno in range(1, campana.cantidad_intentos):
+            #Intentos.
+            EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
+                campana.pk, numero_interno, probabilidad=1.1)
 
-        #Opciones
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            EventoDeContacto.EVENTO_ASTERISK_OPCION_0)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            EventoDeContacto.EVENTO_ASTERISK_OPCION_1)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            EventoDeContacto.EVENTO_ASTERISK_OPCION_2)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            EventoDeContacto.EVENTO_ASTERISK_OPCION_3)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            EventoDeContacto.EVENTO_ASTERISK_OPCION_4)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            EventoDeContacto.EVENTO_ASTERISK_OPCION_5)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            EventoDeContacto.EVENTO_ASTERISK_OPCION_6)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            EventoDeContacto.EVENTO_ASTERISK_OPCION_7)
+            #Opciones
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_0,
+                probabilidad=0.03)
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_1,
+                probabilidad=0.02)
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_2,
+                probabilidad=0.01)
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_3,
+                probabilidad=0.05)
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_4,
+                probabilidad=0.25)
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_5,
+                probabilidad=0.15)
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_6,
+                probabilidad=0.05)
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_7,
+                probabilidad=0.05)
 
-        #Opciones inválidas para esta campaña.
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            EventoDeContacto.EVENTO_ASTERISK_OPCION_8)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            EventoDeContacto.EVENTO_ASTERISK_OPCION_9)
+            #Opciones inválidas para esta campaña.
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_8,
+                probabilidad=0.02)
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_9,
+                probabilidad=0.02)
 
-        #Finaliza algunos.
-        EV_FINALIZADOR = EventoDeContacto.objects.\
-        get_eventos_finalizadores()[0]
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            evento=EV_FINALIZADOR, probabilidad=0.2)
+            #Finaliza algunos.
+            EV_FINALIZADOR = EventoDeContacto.objects.\
+            get_eventos_finalizadores()[0]
+            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+                numero_interno, evento=EV_FINALIZADOR, probabilidad=0.15)
 
         campana.finalizar()
         return campana
@@ -544,8 +555,6 @@ class ReporteTest(FTSenderBaseTest):
         self.assertContains(response, grafico_barra_intentos)
         self.assertContains(response, grafico_torta_no_seleccionaron)
         self.assertContains(response, grafico_torta_no_intento)
-
-        print response
 
     def test_obtener_estadistica(self):
         #Crea y emula procesamiento de campaña.
