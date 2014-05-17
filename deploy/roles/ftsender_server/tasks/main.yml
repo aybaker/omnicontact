@@ -1,0 +1,33 @@
+---
+
+- name: Check - RPM de EPEL 6 
+  command: test -f /etc/yum.repos.d/epel.repo
+  register: epel_installed
+  ignore_errors: True
+
+- name: Check - RPM de PostgreSql 9.3 
+  command: test -f /etc/yum.repos.d/pgdg-93-centos.repo
+  register: repo_pg_installed
+  ignore_errors: True
+
+- name: Instala RPM de EPEL 6
+  when: epel_installed|failed
+  sudo: yes
+  yum: name=http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm state=present
+
+- name: Instala RPM de PostgreSql 9.3
+  when: repo_pg_installed|failed
+  sudo: yes
+  yum: name=http://yum.postgresql.org/9.3/redhat/rhel-6-i386/pgdg-centos93-9.3-1.noarch.rpm state=present
+
+- name: Instala paquetes requeridos para FTSender
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - postgresql93
+    - postgresql93-contrib
+    - postgresql93-server
+    - python-devel
+    - nginx
+    - munin
+    - redis
