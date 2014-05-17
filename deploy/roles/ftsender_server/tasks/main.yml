@@ -33,6 +33,7 @@
     - redis
     - libselinux-python
     - python-psycopg2
+    - python-virtualenv
 
 - name: Initiate database
   sudo: yes
@@ -59,3 +60,9 @@
   postgresql_db: name=ftsender owner=ftsender
   sudo: yes
   sudo_user: postgres
+
+- name: Build the artifact
+  copy: src=../../../../build/ftsender.tar.gz dest=/home/ftsender
+
+# - name: Setup virtualenv
+#   pip: requirements=XXXXXXXXX virtualenv=/my_app/venv virtualenv_site_packages=no

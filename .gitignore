@@ -9,3 +9,4 @@ settings_local.py
 /pydev_manage.py
 /.coverage
 /docs/_build
+/build
