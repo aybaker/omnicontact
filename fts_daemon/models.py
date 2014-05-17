@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """
+Modelos usados por el Daemon y el proxy AGI.
+
+
 """
 
 from __future__ import unicode_literals
