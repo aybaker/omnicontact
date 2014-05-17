@@ -31,3 +31,15 @@
     - nginx
     - munin
     - redis
+
+- name: Initiate database
+  sudo: yes
+  command: service postgresql-9.3 initdb creates=/var/lib/pgsql/9.3/data/postgresql.conf
+
+- name: Start PostgreSQL and enable at boot
+  sudo: yes
+  service: name=postgresql-9.3 enabled=yes state=started
+
+- name: Start Nginx and enable at boot
+  sudo: yes
+  service: name=nginx enabled=yes state=started
