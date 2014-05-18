@@ -109,6 +109,7 @@
     - /home/ftsender/deploy/media_root
     - /home/ftsender/deploy/static_root
     - /home/ftsender/deploy/log
+    - /home/ftsender/deploy/run
   tags:
     - quick_deploy
 
@@ -169,3 +170,9 @@
     PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
   tags:
     - quick_deploy
+
+- name: Upload ftsender_uwsgi.ini
+  template: src=ftsender_uwsgi.ini dest=/home/ftsender/deploy/local
+  tags:
+    - quick_deploy
+    - uwsgi
