@@ -133,6 +133,15 @@
   tags:
     - virtualenv
 
+- name: Check - StarPy instalado 
+  command: test -f /home/ftsender/deploy/virtualenv/lib/python2.6/stat.py
+  register: starpy_installed
+  ignore_errors: True
+  tags:
+    - virtualenv
+
 - name: Install starpy
   pip: name='git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba#egg=starpy' virtualenv=/home/ftsender/deploy/virtualenv
+  when: starpy_installed|failed
+  tags:
     - virtualenv
