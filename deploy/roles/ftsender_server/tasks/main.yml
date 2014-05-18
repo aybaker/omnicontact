@@ -1,5 +1,18 @@
 ---
 
+#
+# Deploy de la app
+#
+# Tags mas utiles:
+#  - virtualenv: setup de virtualenv & requirements
+#  - deploy: deploy de la APP, scripts de inicio, settings, etc.
+#
+#
+
+##
+## Setup general, SO, packages, etc
+##
+
 - name: Check - RPM de EPEL 6 
   command: test -f /etc/yum.repos.d/epel.repo
   register: epel_installed
@@ -61,6 +74,21 @@
   tags:
     - yum
 
+- name: Start Nginx and enable at boot
+  sudo: yes
+  service: name=nginx enabled=yes state=started
+  tags:
+    - nginx
+
+- name: Setup pip
+  ini_file: dest=/home/ftsender/.pip/pip.conf section=install option='download-cache' value='/home/ftsender/.pip/cache'
+  tags:
+    - virtualenv
+
+##
+## BD
+##
+
 - name: Initiate database
   sudo: yes
   command: service postgresql-9.3 initdb creates=/var/lib/pgsql/9.3/data/postgresql.conf
@@ -72,12 +100,6 @@
   service: name=postgresql-9.3 enabled=yes state=started
   tags:
     - db
-
-- name: Start Nginx and enable at boot
-  sudo: yes
-  service: name=nginx enabled=yes state=started
-  tags:
-    - nginx
 
 - name: Copy pg_hba.conf
   sudo: yes
@@ -99,11 +121,16 @@
   tags:
     - db
 
+##
+## Deploy
+##
+
 - name: Create the required directories
   file: path={{item}} state=directory owner=ftsender mode=0755
   sudo: yes
   with_items:
     - /etc/ftsender/asterisk
+    - /home/ftsender/deploy
     - /home/ftsender/deploy/bin
     - /home/ftsender/deploy/app
     - /home/ftsender/deploy/local
@@ -112,23 +139,13 @@
     - /home/ftsender/deploy/log
     - /home/ftsender/deploy/run
   tags:
-    - quick_deploy
+    - deploy
 
 - name: Upload built (rsync to /app)
   # Copies xxx/app to /home/ftsender/deploy/app (/app on dest is implicit)
   synchronize: src={{BUILD_DIR}} dest=/home/ftsender/deploy delete=yes checksum=yes times=no
   tags:
-    - quick_deploy
-
-- name: Upload fts_web_settings_local.py
-  template: src=fts_web_settings_local.py dest=/home/ftsender/deploy/local
-  tags:
-    - quick_deploy
-
-- name: Setup pip
-  ini_file: dest=/home/ftsender/.pip/pip.conf section=install option='download-cache' value='/home/ftsender/.pip/cache'
-  tags:
-    - virtualenv
+    - deploy
 
 - name: Setup virtualenv
   pip: requirements=/home/ftsender/deploy/app/requirements.txt virtualenv=/home/ftsender/deploy/virtualenv virtualenv_site_packages=no
@@ -150,6 +167,11 @@
   tags:
     - virtualenv
 
+- name: Upload fts_web_settings_local.py
+  template: src=fts_web_settings_local.py dest=/home/ftsender/deploy/local
+  tags:
+    - deploy
+
 - name: Run Django syncdb
   django_manage: >
       command=syncdb
@@ -159,7 +181,7 @@
   environment:
     PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
   tags:
-    - quick_deploy
+    - deploy
 
 - name: Run Django migrations
   django_manage: >
@@ -170,24 +192,24 @@
   environment:
     PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
   tags:
-    - quick_deploy
+    - deploy
 
 - name: Upload ftsender_uwsgi.ini
   template: src=ftsender_uwsgi.ini dest=/home/ftsender/deploy/local
   tags:
-    - quick_deploy
+    - deploy
 
 - name: Upload init script
   template: src=etc/init.d/ftsender-daemon dest=/etc/init.d/ftsender-daemon owner=root group=root mode=0755
   sudo: yes
   tags:
-    - quick_deploy
+    - deploy
 
 - name: Register FTSenser service
   service: name=ftsender-daemon enabled=yes
   sudo: yes
   tags:
-    - quick_deploy
+    - deploy
 
 - name: Upload scripts to deploy/bin
   template: src={{item}} dest=/home/ftsender/deploy/bin  mode=0755
@@ -195,4 +217,4 @@
     - run_uwsgi.sh
     - manage.sh
   tags:
-    - quick_deploy
+    - deploy
