@@ -5,7 +5,7 @@
 #
 # Tags mas utiles:
 #  - virtualenv: setup de virtualenv & requirements
-#  - deploy: deploy de la APP, scripts de inicio, settings, etc.
+#  - deploy: deploy de la APP (EXCEPTUANDO cambios en Nginx, virtualenv)
 #
 #
 
@@ -192,6 +192,17 @@
 - name: Run Django migrations
   django_manage: >
       command=migrate
+      app_path=/home/ftsender/deploy/app
+      settings=fts_web.settings
+      virtualenv=/home/ftsender/deploy/virtualenv
+  environment:
+    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+  tags:
+    - deploy
+
+- name: Run Django collectstatic
+  django_manage: >
+      command=collectstatic
       app_path=/home/ftsender/deploy/app
       settings=fts_web.settings
       virtualenv=/home/ftsender/deploy/virtualenv
