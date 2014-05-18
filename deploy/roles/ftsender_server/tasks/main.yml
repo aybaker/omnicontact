@@ -148,9 +148,20 @@
   tags:
     - virtualenv
 
-- name: Run syncdb
+- name: Run Django syncdb
   django_manage: >
       command=syncdb
+      app_path=/home/ftsender/deploy/app
+      settings=fts_web.settings
+      virtualenv=/home/ftsender/deploy/virtualenv
+  environment:
+    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+  tags:
+    - quick_deploy
+
+- name: Run Django migrations
+  django_manage: >
+      command=migrate
       app_path=/home/ftsender/deploy/app
       settings=fts_web.settings
       virtualenv=/home/ftsender/deploy/virtualenv
