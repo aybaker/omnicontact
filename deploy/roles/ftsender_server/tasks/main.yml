@@ -145,3 +145,14 @@
   when: starpy_installed|failed
   tags:
     - virtualenv
+
+- name: Run syncdb
+  django_manage: >
+      command=syncdb
+      app_path=/home/ftsender/deploy/app
+      settings=fts_web.settings
+      virtualenv=/home/ftsender/deploy/virtualenv
+  environment:
+    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+  tags:
+    - django
