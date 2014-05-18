@@ -12,6 +12,10 @@ USER=ftsender
 GROUP=ftsender
 CMD=/home/ftsender/deploy/virtualenv/bin/uwsgi
 
+export PYTHONPATH=/home/ftsender/deploy/app:/home/ftsender/deploy/local
+
+. /home/ftsender/deploy/virtualenv/bin/activate
+
 # See how we were called.
 case "$1" in
   start)
