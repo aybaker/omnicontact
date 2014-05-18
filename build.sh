@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$VIRTUAL_ENV" = "" ] ; then
+        echo "ERROR: virtualenv (o alguno de la flia.) no encontrado"
+        exit 1
+fi
+
 set -e
 
 cd $(dirname $0)

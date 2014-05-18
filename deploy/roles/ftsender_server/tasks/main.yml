@@ -177,7 +177,7 @@
     - quick_deploy
 
 - name: Upload init script
-  template: src=etc/ftsender-daemon dest=/etc/init.d/ftsender-daemon owner=root group=root mode=0755
+  template: src=etc/init.d/ftsender-daemon dest=/etc/init.d/ftsender-daemon owner=root group=root mode=0755
   sudo: yes
   tags:
     - quick_deploy
