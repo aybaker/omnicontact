@@ -528,6 +528,47 @@ class EventoDeContactoEstadisticasManager():
 
         return counter_x_estado, counter_intentos, counter_por_evento
 
+    def obtener_contadores_por_intento(self, campana_id, cantidad_intentos):
+        """
+        Se encarga de obtener los contadores de ciertos eventos, por cada
+        intento de contacto de la campana.
+
+        :param campana_id: De que campana se contabilizan los eventos.
+        :type campana_id: int
+        :param cantidad_intentos: El limite de intentos para la  campana.
+        :type cantidad_intentos: int
+        """
+        #TODO: filtrar los EVC desde ese timestamp_desde hasta hoy y ahora.
+        EDC = EventoDeContacto.objects.all()
+
+        dic_contadores = {}
+        for numero_intento in range(1, cantidad_intentos):
+            cantidad_intentos = EDC.filter(
+                campana_id=campana_id,
+                dato=numero_intento,
+                evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+            ).count()
+
+            cantidad_finalizados = EDC.filter(
+                campana_id=campana_id,
+                dato=numero_intento,
+                evento__in=EventoDeContacto.objects.get_eventos_finalizadores(),
+            ).count()
+
+            from django.db.models import Count
+
+            cantidad_x_opcion = EDC.filter(
+                campana_id=campana_id,
+                dato=numero_intento,
+                evento__in=EventoDeContacto.NUMERO_OPCION_MAP.values(),
+            ).values('evento').annotate(cantidad=Count('evento'))
+
+            dic_contadores.update({numero_intento:
+                {'cantidad_intentos': cantidad_intentos,
+                'cantidad_finalizados': cantidad_finalizados,
+                'cantidad_x_opcion': cantidad_x_opcion}})
+        return dic_contadores
+
 
 class GestionDeLlamadasManager(models.Manager):
     """Manager para EventoDeContacto, con la funcionalidad
