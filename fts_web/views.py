@@ -925,3 +925,11 @@ class CampanaReporteDetailView(DetailView):
     template_name = 'reporte/detalle_reporte.html'
     context_object_name = 'campana'
     model = Campana
+
+
+#==============================================================================
+# Test
+#==============================================================================
+
+def test_view_exception(request):
+    raise Exception("ERROR FICTICIO")
