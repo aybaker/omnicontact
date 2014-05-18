@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#@PydevCodeAnalysisIgnore
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
