@@ -166,7 +166,7 @@
     - virtualenv
 
 - name: Check - StarPy instalado 
-  command: test -f /home/ftsender/deploy/virtualenv/lib/python2.6/stat.py
+  shell: find /home/ftsender/deploy/virtualenv -name starpy | grep -q starpy
   register: starpy_installed
   ignore_errors: True
   tags:
