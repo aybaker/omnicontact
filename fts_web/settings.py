@@ -113,6 +113,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'fts_web.middleware.ReportErrorMiddleware',
 )
 
 ROOT_URLCONF = 'fts_web.urls'
