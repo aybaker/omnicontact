@@ -16,6 +16,7 @@ from pygal.style import Style
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Sum
 
 from fts_web.utiles import upload_to, log_timing
 from django.db.models.aggregates import Max
@@ -885,7 +886,9 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
             agregacion_evento_contacto, created = self.get_or_create(
                 campana_id=campana_id, numero_intento=numero_intento)
 
-            dic_opciones = dict((opcion, 0) for opcion in range(10))
+            dic_opciones = dict((opcion, 0) for opcion in range(10
+
+                ))
             for dic_evento_cantidad in dic_contadores['cantidad_x_opcion']:
                 opcion = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
                         dic_evento_cantidad['evento']]
@@ -925,6 +928,59 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
                 agregacion_evento_contacto.cantidad_opcion_9 += dic_opciones[9]
 
             agregacion_evento_contacto.save()
+
+    def procesa_agregacion(self, campana_id):
+        """
+        Sumariza los contadores de cada intento de contacto de la campana.
+        :param campana_id: De que campana que se sumarizaran los contadores.
+        :type campana_id: int
+        """
+        dic_totales = self.filter(campana_id=campana_id).aggregate(
+            total_intentados=Sum('cantidad_intentos'),
+            total_atentidos=Sum('cantidad_finalizados'),
+            total_opcion_0=Sum('cantidad_opcion_0'),
+            total_opcion_1=Sum('cantidad_opcion_1'),
+            total_opcion_2=Sum('cantidad_opcion_2'),
+            total_opcion_3=Sum('cantidad_opcion_3'),
+            total_opcion_4=Sum('cantidad_opcion_4'),
+            total_opcion_5=Sum('cantidad_opcion_5'),
+            total_opcion_6=Sum('cantidad_opcion_6'),
+            total_opcion_7=Sum('cantidad_opcion_7'),
+            total_opcion_8=Sum('cantidad_opcion_8'),
+            total_opcion_9=Sum('cantidad_opcion_9'))
+
+        """
+        Variables Conocidas:
+            Limite Intentos (LI)
+            Total Contactos (TC)
+            Total Intentos (TI)
+            Total Atendidos (TA)
+
+        Variables Calculadas:
+            Total No Llamados (TNL) = Si (TC - TI) > 0, SiNo 0
+            Total No Atendidos (TNA) = TC - (TNL + TA)
+            Total Intentos Pendientes (TIP) = (TC * LI) - TI
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        limite_intentos = campana.cantidad_intentos
+        total_contactos = campana.bd_contacto.contactos.count()
+
+        total_no_llamados = total_contactos - dic_totales['total_intentados']
+        if total_no_llamados < 0:
+            total_no_llamados = 0
+
+        total_no_atendidos = total_contactos - (total_no_llamados + dic_totales[
+            'total_atentidos'])
+        total_intentos_pendientes = (total_contactos * limite_intentos) -\
+            dic_totales['total_intentados']
+
+        dic_totales.update({
+            'limite_intentos': limite_intentos,
+            'total_contactos': total_contactos,
+            'total_no_llamados': total_no_llamados,
+            'total_no_atendidos': total_no_atendidos,
+            'total_intentos_pendientes': total_intentos_pendientes})
+        return dic_totales
 
 
 class AgregacionDeEventoDeContacto(models.Model):
