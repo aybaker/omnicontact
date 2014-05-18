@@ -4,8 +4,17 @@ set -e
 
 cd $(dirname $0)
 
+TMP=/tmp/ftsender-build
+
+if [ -e $TMP ] ; then
+	rm -rf $TMP
+fi
+
+mkdir -p $TMP/app
+echo "Directorio temporal: $TMP/app"
+
 echo "Creando archivo de version..."
-cat > build/ftsender_version.py <<EOF
+cat > $TMP/app/ftsender_version.py <<EOF
 
 #
 # Archivo autogenerado
@@ -22,8 +31,17 @@ if __name__ == '__main__':
 EOF
 
 echo "Creando bundle..."
-git archive --format=tar --prefix=ftsender/ $(git rev-parse HEAD) | gzip > build/ftsender.tar.gz
+git archive --format=tar $(git rev-parse HEAD) | tar x -f - -C $TMP/app
+
+echo "Eliminando archivos innecesarios..."
+rm -rf $TMP/app/fts_tests
+rm -rf $TMP/app/test
+rm -rf $TMP/app/docs
+rm -rf $TMP/app/deploy
+rm -rf $TMP/app/build
+rm -rf $TMP/app/run_coverage*
+rm -rf $TMP/app/run_sphinx.sh
 
 echo "Ejecutando Ansible"
-ansible-playbook deploy/playbook.yml $*
+ansible-playbook deploy/playbook.yml --extra-vars "BUILD_DIR=$TMP/app" $*
 

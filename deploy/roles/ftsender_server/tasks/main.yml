@@ -34,6 +34,7 @@
     - libselinux-python
     - python-psycopg2
     - python-virtualenv
+    - rsync
 
 - name: Initiate database
   sudo: yes
@@ -52,7 +53,7 @@
   copy: src=pg_hba.conf dest=/var/lib/pgsql/9.3/data/
 
 - name: Create PostgreSql user
-  postgresql_user: name=ftsender password=md593cc796300dd9b4ea389a172a79bda48 encrypted=true
+  postgresql_user: name=ftsender password={{db_password}}
   sudo: yes
   sudo_user: postgres
 
@@ -61,8 +62,24 @@
   sudo: yes
   sudo_user: postgres
 
-- name: Build the artifact
-  copy: src=../../../../build/ftsender.tar.gz dest=/home/ftsender
+#- name: Remove temporary files from remote
+#  file: path=/home/ftsender/build state=absent
+
+- name: Create the required directories
+  file: path={{item}} state=directory
+  with_items:
+    - /home/ftsender/deploy/app
+    - /home/ftsender/deploy/local
+    - /home/ftsender/deploy/media_root
+    - /home/ftsender/deploy/static_root
+    - /home/ftsender/deploy/log
+
+- name: Upload built (rsync to /app)
+  # Copies xxx/app to /home/ftsender/deploy/app (/app on dest is implicit)
+  synchronize: src={{BUILD_DIR}} dest=/home/ftsender/deploy checksum=yes times=no
+
+- name: Upload fts_web_settings_local.py
+  template: src=fts_web_settings_local.py dest=/home/ftsender/deploy/local
 
 # - name: Setup virtualenv
 #   pip: requirements=XXXXXXXXX virtualenv=/my_app/venv virtualenv_site_packages=no
