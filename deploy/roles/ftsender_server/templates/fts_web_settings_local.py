@@ -11,11 +11,11 @@ ALLOWED_HOSTS = [
     "*",
 ]
 
-SECRET_KEY = 'aewemwobFat7ShobEsUj5BibIpAfus5'
+SECRET_KEY = '{{dj_sett_SECRET_KEY}}'
 
 MANAGERS = ADMINS
 
-MEDIA_ROOT = '/home/ftsender/deploy/media_root'
+MEDIA_ROOT = '/home/ftsender/deploy/media_root/'
 
 STATIC_ROOT = "/home/ftsender/deploy/static_root/"
 
@@ -41,44 +41,24 @@ INTERNAL_IPS = (
 )
 
 ASTERISK = {
-    'USERNAME': 'astermind',
-    'PASSWORD': 'astermindXdd',
-    'HTTP_AMI_URL': 'http://192.168.122.27:7088',
-    'DIAL_URL': "IAX2/192.168.122.24/${NumberToCall}",
+    'USERNAME': '{{dj_sett_ASTERISK_USERNAME}}',
+    'PASSWORD': '{{dj_sett_ASTERISK_PASSWORD}}',
+    'HTTP_AMI_URL': '{{dj_sett_ASTERISK_HTTP_AMI_URL}}',
+    'DIAL_URL': "{{dj_sett_ASTERISK_DIAL_URL}}",
 }
 
 # Server donde realizar request desde AGI PROXY => NGINX
-FTS_FAST_AGI_DAEMON_PROXY_URL = "http://vm.centos-6-fts:8088"
+FTS_FAST_AGI_DAEMON_PROXY_URL = '{{dj_sett_FTS_FAST_AGI_DAEMON_PROXY_URL}}'
 
-FTS_DIALPLAN_FILENAME = "/opt/data-tsunami/asterisk-11-d/etc/" +\
-    "asterisk/fts/extensions.conf"
+FTS_DIALPLAN_FILENAME = '{{dj_sett_FTS_DIALPLAN_FILENAME}}'
 
-FTS_QUEUE_FILENAME = "/opt/data-tsunami/asterisk-11-d/etc/" +\
-    "asterisk/fts/queues_fts.conf"
+FTS_QUEUE_FILENAME = '{{dj_sett_FTS_QUEUE_FILENAME}}'
 
-FTS_RELOAD_CMD = ["sudo", "-u", "asterisk",
-    "/opt/data-tsunami/asterisk-11-d/sbin/asterisk",
-    "-x", "dialplan reload"]
+FTS_RELOAD_CMD = {{dj_sett_FTS_RELOAD_CMD}}
 
-# CentOS
-#TMPL_FTS_AUDIO_CONVERSOR = ["sox",
-#    "-t", "wav", "<INPUT_FILE>",
-#    "-t", "gsm", "-r", "8000", "-c", "1", "-b", "<OUTPUT_FILE>"
-#]
+TMPL_FTS_AUDIO_CONVERSOR = {{dj_sett_TMPL_FTS_AUDIO_CONVERSOR}}
 
-#TMPL_FTS_AUDIO_CONVERSOR = ["sox",
-#    "-t", "wav", "<INPUT_FILE>",
-#    "-t", "gsm", "-r", "8000", "-c", "1", "<OUTPUT_FILE>"
-#]
-#
-#TMPL_FTS_AUDIO_CONVERSOR_EXTENSION = ".gsm"
-
-# Probamos con wav-wav
-TMPL_FTS_AUDIO_CONVERSOR = ["sox", "-t", "wav", "<INPUT_FILE>",
-    "-r", "8k", "-c", "1", "-e", "signed-integer",
-    "-t", "wav", "<OUTPUT_FILE>"]
-
-TMPL_FTS_AUDIO_CONVERSOR_EXTENSION = ".wav"
+TMPL_FTS_AUDIO_CONVERSOR_EXTENSION = '{{dj_sett_TMPL_FTS_AUDIO_CONVERSOR_EXTENSION}}'
 
 LOGGING = {
     'version': 1,
@@ -104,7 +84,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': '/home/ftsender/deploy/log/django.log',
+            'filename': '{{dj_sett_DJANGO_LOG_FILE}}',
             'formatter': 'verbose'
         },
     },

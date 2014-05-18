@@ -100,8 +100,10 @@
     - db
 
 - name: Create the required directories
-  file: path={{item}} state=directory
+  file: path={{item}} state=directory owner=ftsender mode=0755
+  sudo: yes
   with_items:
+    - /etc/ftsender/asterisk
     - /home/ftsender/deploy/app
     - /home/ftsender/deploy/local
     - /home/ftsender/deploy/media_root
@@ -155,4 +157,4 @@
   environment:
     PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
   tags:
-    - django
+    - quick_deploy
