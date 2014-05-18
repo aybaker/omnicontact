@@ -13,13 +13,14 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 from __future__ import unicode_literals
 
-from django.contrib import messages
 import os
+import subprocess
+
+from django.contrib import messages
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
 DEBUG = False
 
 TEMPLATE_DEBUG = False
@@ -344,6 +345,16 @@ assert "<INPUT_FILE>" in TMPL_FTS_AUDIO_CONVERSOR, \
 
 assert "<OUTPUT_FILE>" in TMPL_FTS_AUDIO_CONVERSOR, \
     "Falta definir <OUTPUT_FILE> en TMPL_FTS_AUDIO_CONVERSOR"
+
+# 3 elementos como minimo: (1) comando (2/3) INPUT/OUTPUT
+assert len(TMPL_FTS_AUDIO_CONVERSOR) >= 3, \
+    "TMPL_FTS_AUDIO_CONVERSOR debe tener al menos 3 elementos"
+
+ret = subprocess.call('which {0} > /dev/null 2> /dev/null'.format(
+    TMPL_FTS_AUDIO_CONVERSOR[0]), shell=True)
+
+assert ret == 0, "No se ha encontrado el ejecutable configurado " +\
+    "en TMPL_FTS_AUDIO_CONVERSOR: '{0}'".format(TMPL_FTS_AUDIO_CONVERSOR[0])
 
 # ~~~~~ Check TMPL_FTS_AUDIO_CONVERSOR
 
