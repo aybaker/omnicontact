@@ -175,4 +175,15 @@
   template: src=ftsender_uwsgi.ini dest=/home/ftsender/deploy/local
   tags:
     - quick_deploy
-    - uwsgi
+
+- name: Upload init script
+  template: src=etc/ftsender-daemon dest=/etc/init.d/ftsender-daemon owner=root group=root mode=0755
+  sudo: yes
+  tags:
+    - quick_deploy
+
+- name: Register FTSenser service
+  service: name=ftsender-daemon enabled=yes
+  sudo: yes
+  tags:
+    - quick_deploy
