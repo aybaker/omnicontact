@@ -885,7 +885,7 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
             agregacion_evento_contacto, created = self.get_or_create(
                 campana_id=campana_id, numero_intento=numero_intento)
 
-            dic_opciones = dict((opcion, 0) for opcion in range(9))
+            dic_opciones = dict((opcion, 0) for opcion in range(10))
             for dic_evento_cantidad in dic_contadores['cantidad_x_opcion']:
                 opcion = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
                         dic_evento_cantidad['evento']]
