@@ -10,3 +10,4 @@ settings_local.py
 /.coverage
 /docs/_build
 /build
+/deploy/hosts-virtual-pruebas

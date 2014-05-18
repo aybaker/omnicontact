@@ -80,6 +80,12 @@
   tags:
     - nginx
 
+- name: Configure Nginx
+  sudo: yes
+  template: src=etc/nginx/conf.d/ftsender.conf dest=/etc/nginx/conf.d/ftsender.conf owner=root group=root mode=0644
+  tags:
+    - nginx
+
 - name: Setup pip
   ini_file: dest=/home/ftsender/.pip/pip.conf section=install option='download-cache' value='/home/ftsender/.pip/cache'
   tags:
