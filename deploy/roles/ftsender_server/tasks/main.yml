@@ -4,66 +4,100 @@
   command: test -f /etc/yum.repos.d/epel.repo
   register: epel_installed
   ignore_errors: True
+  tags:
+    - yum
 
 - name: Check - RPM de PostgreSql 9.3 
   command: test -f /etc/yum.repos.d/pgdg-93-centos.repo
   register: repo_pg_installed
   ignore_errors: True
+  tags:
+    - yum
 
 - name: Instala RPM de EPEL 6
   when: epel_installed|failed
   sudo: yes
   yum: name=http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm state=present
+  tags:
+    - yum
 
 - name: Instala RPM de PostgreSql 9.3
   when: repo_pg_installed|failed
   sudo: yes
   yum: name=http://yum.postgresql.org/9.3/redhat/rhel-6-i386/pgdg-centos93-9.3-1.noarch.rpm state=present
+  tags:
+    - yum
 
-- name: Instala paquetes requeridos para FTSender
+- name: Install Development tools
+  sudo: yes
+  yum: name="@Development tools" state=present
+  tags:
+    - yum
+
+- name: Install basic packages
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - libselinux-python
+    - python-psycopg2
+    - python-virtualenv
+    - rsync
+    - libxslt-devel
+    - python-devel
+  tags:
+    - yum
+
+- name: Instala servicios requeridos para FTSender
   sudo: yes
   yum: name={{item}} state=installed
   with_items:
     - postgresql93
     - postgresql93-contrib
     - postgresql93-server
-    - python-devel
+    - postgresql93-devel
     - nginx
     - munin
     - redis
-    - libselinux-python
-    - python-psycopg2
-    - python-virtualenv
-    - rsync
+  tags:
+    - yum
 
 - name: Initiate database
   sudo: yes
   command: service postgresql-9.3 initdb creates=/var/lib/pgsql/9.3/data/postgresql.conf
+  tags:
+    - db
 
 - name: Start PostgreSQL and enable at boot
   sudo: yes
   service: name=postgresql-9.3 enabled=yes state=started
+  tags:
+    - db
 
 - name: Start Nginx and enable at boot
   sudo: yes
   service: name=nginx enabled=yes state=started
+  tags:
+    - nginx
 
 - name: Copy pg_hba.conf
   sudo: yes
   copy: src=pg_hba.conf dest=/var/lib/pgsql/9.3/data/
+  tags:
+    - db
 
 - name: Create PostgreSql user
   postgresql_user: name=ftsender password={{db_password}}
   sudo: yes
   sudo_user: postgres
+  tags:
+    - db
 
 - name: Create PostgreSql database
   postgresql_db: name=ftsender owner=ftsender
   sudo: yes
   sudo_user: postgres
-
-#- name: Remove temporary files from remote
-#  file: path=/home/ftsender/build state=absent
+  tags:
+    - db
 
 - name: Create the required directories
   file: path={{item}} state=directory
@@ -73,13 +107,32 @@
     - /home/ftsender/deploy/media_root
     - /home/ftsender/deploy/static_root
     - /home/ftsender/deploy/log
+  tags:
+    - quick_deploy
 
 - name: Upload built (rsync to /app)
   # Copies xxx/app to /home/ftsender/deploy/app (/app on dest is implicit)
-  synchronize: src={{BUILD_DIR}} dest=/home/ftsender/deploy checksum=yes times=no
+  synchronize: src={{BUILD_DIR}} dest=/home/ftsender/deploy delete=yes checksum=yes times=no
+  tags:
+    - quick_deploy
 
 - name: Upload fts_web_settings_local.py
   template: src=fts_web_settings_local.py dest=/home/ftsender/deploy/local
+  tags:
+    - quick_deploy
 
-# - name: Setup virtualenv
-#   pip: requirements=XXXXXXXXX virtualenv=/my_app/venv virtualenv_site_packages=no
+- name: Setup pip
+  ini_file: dest=/home/ftsender/.pip/pip.conf section=install option='download-cache' value='/home/ftsender/.pip/cache'
+  tags:
+    - virtualenv
+
+- name: Setup virtualenv
+  pip: requirements=/home/ftsender/deploy/app/requirements.txt virtualenv=/home/ftsender/deploy/virtualenv virtualenv_site_packages=no
+  environment:
+    PATH: /usr/pgsql-9.3/bin:{{ lookup('env', 'PATH') }}
+  tags:
+    - virtualenv
+
+- name: Install starpy
+  pip: name='git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba#egg=starpy' virtualenv=/home/ftsender/deploy/virtualenv
+    - virtualenv
