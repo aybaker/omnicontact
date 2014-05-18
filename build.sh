@@ -13,8 +13,20 @@ fi
 mkdir -p $TMP/app
 echo "Directorio temporal: $TMP/app"
 
+echo "Creando bundle..."
+git archive --format=tar $(git rev-parse HEAD) | tar x -f - -C $TMP/app
+
+echo "Eliminando archivos innecesarios..."
+rm -rf $TMP/app/fts_tests
+rm -rf $TMP/app/test
+rm -rf $TMP/app/docs
+rm -rf $TMP/app/deploy
+rm -rf $TMP/app/build
+rm -rf $TMP/app/run_coverage*
+rm -rf $TMP/app/run_sphinx.sh
+
 echo "Creando archivo de version..."
-cat > $TMP/app/ftsender_version.py <<EOF
+cat > $TMP/app/fts_web/version.py <<EOF
 
 #
 # Archivo autogenerado
@@ -29,18 +41,6 @@ if __name__ == '__main__':
 
 
 EOF
-
-echo "Creando bundle..."
-git archive --format=tar $(git rev-parse HEAD) | tar x -f - -C $TMP/app
-
-echo "Eliminando archivos innecesarios..."
-rm -rf $TMP/app/fts_tests
-rm -rf $TMP/app/test
-rm -rf $TMP/app/docs
-rm -rf $TMP/app/deploy
-rm -rf $TMP/app/build
-rm -rf $TMP/app/run_coverage*
-rm -rf $TMP/app/run_sphinx.sh
 
 echo "Ejecutando Ansible"
 ansible-playbook deploy/playbook.yml --extra-vars "BUILD_DIR=$TMP/app" $*
