@@ -104,6 +104,7 @@
   sudo: yes
   with_items:
     - /etc/ftsender/asterisk
+    - /home/ftsender/deploy/bin
     - /home/ftsender/deploy/app
     - /home/ftsender/deploy/local
     - /home/ftsender/deploy/media_root
@@ -185,5 +186,13 @@
 - name: Register FTSenser service
   service: name=ftsender-daemon enabled=yes
   sudo: yes
+  tags:
+    - quick_deploy
+
+- name: Upload scripts to deploy/bin
+  template: src={{item}} dest=/home/ftsender/deploy/bin  mode=0755
+  with_items:
+    - run_uwsgi.sh
+    - manage.sh
   tags:
     - quick_deploy
