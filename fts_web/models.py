@@ -595,7 +595,7 @@ class Campana(models.Model):
         torta_general.add('No Atendidos', estadisticas[
             'porcentaje_no_atendidos'])
         torta_general.add('No Llamados', estadisticas['porcentaje_no_llamados'])
-        return torta_genera
+        return torta_general
 
     def obtener_estadisticas(self):
         """
