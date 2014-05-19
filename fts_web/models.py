@@ -883,18 +883,16 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         #actualizamos o generamos según exista o no el registro con las
         #cantidades de cada intento.
         for numero_intento, dic_contadores in dic_contadores_x_intentos.items():
-            agregacion_evento_contacto, created = self.get_or_create(
-                campana_id=campana_id, numero_intento=numero_intento)
 
-            dic_opciones = dict((opcion, 0) for opcion in range(10
-
-                ))
+            dic_opciones = dict((opcion, 0) for opcion in range(10))
             for dic_evento_cantidad in dic_contadores['cantidad_x_opcion']:
                 opcion = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
                         dic_evento_cantidad['evento']]
                 dic_opciones.update({opcion: dic_evento_cantidad[
                     'cantidad']})
 
+            agregacion_evento_contacto, created = self.get_or_create(
+                campana_id=campana_id, numero_intento=numero_intento)
             if created:
                 agregacion_evento_contacto.cantidad_intentos =\
                     dic_contadores['cantidad_intentos']
@@ -974,13 +972,18 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         total_intentos_pendientes = (total_contactos * limite_intentos) -\
             dic_totales['total_intentados']
 
+        total_opciones = 0
+        for opcion in range(10):
+            total_opciones += dic_totales['total_opcion_{0}'.format(opcion)]
+
         dic_totales.update({
             'limite_intentos': limite_intentos,
             'total_contactos': total_contactos,
             'total_no_llamados': total_no_llamados,
             'total_no_atendidos': total_no_atendidos,
-            'total_intentos_pendientes': total_intentos_pendientes})
-        return dic_totales
+            'total_intentos_pendientes': total_intentos_pendientes,
+            'total_opciones': total_opciones})
+        return dic_totale
 
 
 class AgregacionDeEventoDeContacto(models.Model):
