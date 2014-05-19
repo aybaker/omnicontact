@@ -77,6 +77,19 @@
   tags:
     - yum
 
+- name: Check timezone
+  command: diff -q /etc/localtime /usr/share/zoneinfo/America/Argentina/Cordoba
+  register: clock_synchronized
+  ignore_errors: True
+  tags:
+    - ntp
+
+- name: Report timezone errors
+  fail: msg="The server has an invalid TIMEZONE"
+  when: clock_synchronized|failed
+  tags:
+    - ntp
+
 - name: Start ntp and enable at boot
   sudo: yes
   service: name=ntpd enabled=yes state=started
