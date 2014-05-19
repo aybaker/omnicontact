@@ -602,124 +602,96 @@ class Campana(models.Model):
         Este método devuelve las estadísticas de
         la campaña actual.
         """
-        from fts_daemon.models import EventoDeContacto
 
         #Una campana que aún no se activo, no tendria porque devolver
         #estadísticas.
         assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA,
             Campana.ESTADO_FINALIZADA)
 
-        dic_estado_x_cantidad, dic_intento_x_contactos, dic_evento_x_cantidad =\
-            EventoDeContacto.objects_estadisticas.\
-            obtener_estadisticas_de_campana(self.id)
+        dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
+            self.pk)
 
-        total_contactos = dic_estado_x_cantidad[
-            'finalizado_x_evento_finalizador'] + dic_estado_x_cantidad[
-            'finalizado_x_limite_intentos'] + dic_estado_x_cantidad[
-            'pendientes']
-
+        total_contactos = dic_totales['total_contactos']
         if not total_contactos > 0:
             return None
 
-        cantidad_contestadas = dic_estado_x_cantidad[
-            'finalizado_x_evento_finalizador']
-        porcentaje_contestadas = float(100 * cantidad_contestadas /\
+        #Generales
+        total_atentidos = dic_totales['total_atentidos']
+        porcentaje_atendidos = float(100 * total_atentidos / total_contactos)
+
+        total_no_atendidos = dic_totales['total_no_atendidos']
+        porcentaje_no_atendidos = float(100 * total_no_atendidos /\
             total_contactos)
 
-        cantidad_no_contestadas = dic_estado_x_cantidad[
-            'finalizado_x_limite_intentos']
-        porcentaje_no_contestadas = float(100 * cantidad_no_contestadas /\
+        total_no_llamados = dic_totales['total_no_llamados']
+        porcentaje_no_llamados = float(100 * total_no_llamados /\
             total_contactos)
 
-        porcentaje_avance = porcentaje_contestadas + porcentaje_no_contestadas
+        #Intentos
+        total_intentos = total_contactos * dic_totales['limite_intentos']
 
-        cantidad_pendientes = dic_estado_x_cantidad['pendientes']
-        porcentaje_pendientes = float(100 * cantidad_pendientes /\
-            total_contactos)
+        total_intentados = dic_totales['total_intentados']
+        porcentaje_intentados = float(100 * total_intentados / total_intentos)
+        total_intentos_pendientes = dic_totales['total_intentos_pendientes']
+        porcentaje_intentos_pendientes = float(100 * total_intentos_pendientes\
+            / total_intentos)
 
-        cantidad_no_selecciono_opcion = dic_estado_x_cantidad[
-            'no_selecciono_opcion']
-        porcentaje_no_selecciono_opcion = float(
-            100 * cantidad_no_selecciono_opcion / total_contactos)
+        # cantidad_no_selecciono_opcion = dic_estado_x_cantidad[
+        #     'no_selecciono_opcion']
+        # porcentaje_no_selecciono_opcion = float(
+        #     100 * cantidad_no_selecciono_opcion / total_contactos)
 
-        cantidad_selecciono_opcion = total_contactos - dic_estado_x_cantidad[
-            'no_selecciono_opcion']
-        porcentaje_selecciono_opcion = float(
-            100 * cantidad_selecciono_opcion / total_contactos)
+        # cantidad_selecciono_opcion = total_contactos - dic_estado_x_cantidad[
+        #     'no_selecciono_opcion']
+        # porcentaje_selecciono_opcion = float(
+        #     100 * cantidad_selecciono_opcion / total_contactos)
 
-        cantidad_no_intentados = dic_intento_x_contactos[0]
-        porcentaje_no_intentados = float(100 * cantidad_no_intentados /\
-            total_contactos)
-
-        cantidad_intentados = total_contactos - cantidad_no_intentados
-        porcentaje_intentados = float(100 * cantidad_intentados /\
-            total_contactos)
-
-        #Calcula, por cada opción, la cantidad de veces seleccionada.
         opcion_x_cantidad = defaultdict(lambda: 0)
-        for opcion_campana in self.opciones.all():
-            evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion_campana.digito]
-            opcion_x_cantidad[opcion_campana.digito] +=\
-                dic_evento_x_cantidad.get(evento, 0)
-
-        #Calcula la cantidad de opciones inválidas que se selecionaron.
-        eventos_opciones_seleccionadas = filter(lambda evento: evento in\
-            EventoDeContacto.NUMERO_OPCION_MAP.values(),
-            dic_evento_x_cantidad.keys())
-        eventos_opciones_campana = map(lambda opcion:\
-            EventoDeContacto.NUMERO_OPCION_MAP[opcion.digito],
-            self.opciones.all())
         opcion_invalida_x_cantidad = defaultdict(lambda: 0)
-        for evento in set(eventos_opciones_seleccionadas):
-            if not evento in eventos_opciones_campana:
-                opcion_invalida = '{0} (Inválida)'.format(
-                    EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[evento])
-                opcion_invalida_x_cantidad[opcion_invalida] += 1
-
-        #Calcula, por cada opción el porcentaje que representa.
-        opcion_valida_invalida_x_cantidad = {}
-        opcion_valida_invalida_x_cantidad.update(opcion_x_cantidad)
-        opcion_valida_invalida_x_cantidad.update(opcion_invalida_x_cantidad)
-        total_opciones = sum(opcion_valida_invalida_x_cantidad.values())
         opcion_x_porcentaje = defaultdict(lambda: 0)
-        if total_opciones:
-            for opcion, cantidad in\
-                opcion_valida_invalida_x_cantidad.items():
-                opcion_x_porcentaje[opcion] += float(100 * cantidad /\
-                total_opciones)
+        if dic_totales['total_opciones'] > 0:
+            opciones_campana = [opcion.digito for opcion in self.opciones.all()]
+            for opcion in range(10):
+                cantidad_opcion = dic_totales['total_opcion_{0}'.format(opcion)]
+                opcion_x_cantidad[opcion] = cantidad_opcion
+                opcion_x_porcentaje[opcion] = float(100 * cantidad_opcion /\
+                    dic_totales['total_opciones'])
+                if not opcion in opciones_campana:
+                    opcion_invalida_x_cantidad[opcion] = cantidad_opcion
 
         dic_estadisticas = {
             #Estadisticas Generales.
             'total_contactos': total_contactos,
 
-            'cantidad_contestadas': cantidad_contestadas,
-            'porcentaje_contestadas': porcentaje_contestadas,
+            'total_atentidos': total_atentidos,
+            'porcentaje_atendidos': porcentaje_atendidos,
+            'total_no_atentidos': total_no_atendidos,
+            'porcentaje_no_atendidos': porcentaje_no_atendidos,
+            'total_no_llamados': total_no_llamados,
+            'porcentaje_no_llamados': porcentaje_no_llamados,
 
-            'cantidad_no_contestadas': cantidad_no_contestadas,
-            'porcentaje_no_contestadas': porcentaje_no_contestadas,
+            'total_intentos': total_intentos,
 
-            'porcentaje_avance': porcentaje_avance,
-
-            'cantidad_pendientes': cantidad_pendientes,
-            'porcentaje_pendientes': porcentaje_pendientes,
-
-            'cantidad_selecciono_opcion': cantidad_selecciono_opcion,
-            'porcentaje_selecciono_opcion': porcentaje_selecciono_opcion,
-            'cantidad_no_selecciono_opcion': cantidad_no_selecciono_opcion,
-            'porcentaje_no_selecciono_opcion': porcentaje_no_selecciono_opcion,
-
-            'cantidad_intentados': cantidad_intentados,
+            'total_intentados': total_intentados,
             'porcentaje_intentados': porcentaje_intentados,
-            'cantidad_no_intentados': cantidad_no_intentados,
-            'porcentaje_no_intentados': porcentaje_no_intentados,
+            'total_intentos_pendientes': total_intentos_pendientes,
+            'porcentaje_intentos_pendientes': porcentaje_intentos_pendientes,
 
-            'dic_intento_x_contactos': dict(dic_intento_x_contactos),
+
+        #     'porcentaje_avance': porcentaje_avance,
+
+        #     'cantidad_selecciono_opcion': cantidad_selecciono_opcion,
+        #     'porcentaje_selecciono_opcion': porcentaje_selecciono_opcion,
+        #     'cantidad_no_selecciono_opcion': cantidad_no_selecciono_opcion,
+        #     'porcentaje_no_selecciono_opcion': porcentaje_no_selecciono_opcion,
+
+
+        #     'dic_intento_x_contactos': dict(dic_intento_x_contactos),
 
             #Estadisticas de las llamadas Contestadas.
             'opcion_x_cantidad': dict(opcion_x_cantidad),
             'opcion_invalida_x_cantidad': dict(opcion_invalida_x_cantidad),
             'opcion_x_porcentaje': dict(opcion_x_porcentaje),
-
         }
 
         return dic_estadisticas
