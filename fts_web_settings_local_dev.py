@@ -137,3 +137,5 @@ if 'FTS_SIMULADOR_DAEMON' in os.environ:
     FTS_TESTING_MODE = True
     FTS_DAEMON_SLEEP_SIN_TRABAJO = 0.1
     FTS_DAEMON_SLEEP_LIMITE_DE_CANALES = 0.1
+    import logging
+    logging.warn("*** Iniciando en modo SIMULADOR ***")
