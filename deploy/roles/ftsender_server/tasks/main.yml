@@ -57,6 +57,8 @@
     - rsync
     - libxslt-devel
     - python-devel
+    - ntp
+    - ntpdate
   tags:
     - yum
 
@@ -74,6 +76,18 @@
     - sox
   tags:
     - yum
+
+- name: Start ntp and enable at boot
+  sudo: yes
+  service: name=ntpd enabled=yes state=started
+  tags:
+    - ntp
+
+- name: Enable ntpdate
+  sudo: yes
+  service: name=ntpdate enabled=yes
+  tags:
+    - ntp
 
 - name: Start Nginx and enable at boot
   sudo: yes
