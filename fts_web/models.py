@@ -956,7 +956,7 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
             'total_no_atendidos': total_no_atendidos,
             'total_intentos_pendientes': total_intentos_pendientes,
             'total_opciones': total_opciones})
-        return dic_totale
+        return dic_totales
 
 
 class AgregacionDeEventoDeContacto(models.Model):

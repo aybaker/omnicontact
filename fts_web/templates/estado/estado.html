@@ -40,10 +40,10 @@
                                     <td colspan="2">
                                         <h5><small>Avance</small></h5>
                                         <div class="progress">
-                                            <div class="progress-bar progress-bar-primary" style="width: {{ campana.obtener_estadisticas.porcentaje_avance|floatformat:'0' }}%">
-                                                {% if campana.obtener_estadisticas.porcentaje_avance > 0 %}
-                                                    <span>{{ campana.obtener_estadisticas.porcentaje_avance }}%</span>
-                                                {% endif %} 
+                                            <div class="progress-bar progress-bar-primary" style="width: {# campana.obtener_estadisticas.porcentaje_avance|floatformat:'0' #}%">
+                                                {# if campana.obtener_estadisticas.porcentaje_avance > 0 #}
+                                                    <span>{# campana.obtener_estadisticas.porcentaje_avance #}%</span>
+                                                {# endif #} 
                                             </div>
                                         </div>
                                         <!-- <span class="label label-success">Contestadas</span> <span class="label label-warning">No Contestadas</span> -->
@@ -51,6 +51,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="2">
+                                        {{ campana.render_grafico_torta_avance_campana }}
                                     <h5><small>Gráfico</small></h5>
                                     <div class="graficos-avances">
                                         <figure>
