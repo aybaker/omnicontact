@@ -583,19 +583,15 @@ class Campana(models.Model):
     def render_grafico_torta_avance_campana(self):
         #Obtiene estadística.
         estadisticas = self.obtener_estadisticas()
-
         #Torta: porcentajes de contestados, no contestados y pendientes.
-        torta_general = pygal.Pie(disable_xml_declaration=True, height=350,
+        pie_chart = pygal.Pie(disable_xml_declaration=True, height=350,
             legend_font_size=20, legend_box_size=18,
             style=Campana.ESTILO_VERDE_ROJO_NARANJA)
-
-        torta_general.title = 'Porcentajes Generales de {0} contactos.'.format(
-            estadisticas['total_contactos'])
-        torta_general.add('Atendidos', estadisticas['porcentaje_atendidos'])
-        torta_general.add('No Atendidos', estadisticas[
-            'porcentaje_no_atendidos'])
-        torta_general.add('No Llamados', estadisticas['porcentaje_no_llamados'])
-        return torta_general
+        pie_chart.add('Contestados', estadisticas['porcentaje_contestadas'])
+        pie_chart.add('No Contestados', estadisticas[
+            'porcentaje_no_contestadas'])
+        pie_chart.add('Pendientes', estadisticas['porcentaje_pendientes'])
+        return pie_chart
 
     def render_graficos_reporte(self):
         estadisticas = self.calcular_estadisticas()
@@ -748,6 +744,106 @@ class Campana(models.Model):
         }
 
         return dic_estadisticas
+
+    def obtener_estadisticas(self):
+        """
+        Este método devuelve las estadísticas de
+        la campaña actual.
+        Podría procesarse esta información directamente en EventoDeContacto.
+        """
+
+        from fts_daemon.models import EventoDeContacto
+
+        dic_estado_x_cantidad, dic_intento_x_contactos, dic_evento_x_cantidad =\
+            EventoDeContacto.objects_estadisticas.\
+            obtener_estadisticas_de_campana(self.id)
+
+        total_contactos = dic_estado_x_cantidad[
+            'finalizado_x_evento_finalizador'] + dic_estado_x_cantidad[
+            'finalizado_x_limite_intentos'] + dic_estado_x_cantidad[
+            'pendientes']
+        cantidad_contestadas = dic_estado_x_cantidad[
+            'finalizado_x_evento_finalizador']
+        porcentaje_contestadas = float(100 * cantidad_contestadas /\
+            total_contactos)
+        cantidad_no_contestadas = dic_estado_x_cantidad[
+            'finalizado_x_limite_intentos']
+        porcentaje_no_contestadas = float(100 * cantidad_no_contestadas /\
+            total_contactos)
+        porcentaje_avance = porcentaje_contestadas + porcentaje_no_contestadas
+        cantidad_pendientes = dic_estado_x_cantidad['pendientes']
+        porcentaje_pendientes = float(100 * cantidad_pendientes /\
+            total_contactos)
+        cantidad_no_selecciono_opcion = dic_estado_x_cantidad[
+            'no_selecciono_opcion']
+        porcentaje_no_selecciono_opcion = float(
+            100 * cantidad_no_selecciono_opcion / total_contactos)
+        cantidad_selecciono_opcion = total_contactos - dic_estado_x_cantidad[
+            'no_selecciono_opcion']
+        porcentaje_selecciono_opcion = float(
+            100 * cantidad_selecciono_opcion / total_contactos)
+        cantidad_no_intentados = dic_intento_x_contactos[0]
+        porcentaje_no_intentados = float(100 * cantidad_no_intentados /\
+            total_contactos)
+        cantidad_intentados = total_contactos - cantidad_no_intentados
+        porcentaje_intentados = float(100 * cantidad_intentados /\
+            total_contactos)
+        #Calcula, por cada opción, la cantidad de veces seleccionada.
+        opcion_x_cantidad = defaultdict(lambda: 0)
+
+        for opcion_campana in self.opciones.all():
+            evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion_campana.digito]
+            opcion_x_cantidad[opcion_campana.digito] +=\
+                dic_evento_x_cantidad.get(evento, 0)
+        #Calcula la cantidad de opciones inválidas que se selecionaron.
+        eventos_opciones_seleccionadas = filter(lambda evento: evento in\
+            EventoDeContacto.NUMERO_OPCION_MAP.values(),
+            dic_evento_x_cantidad.keys())
+        eventos_opciones_campana = map(lambda opcion:\
+            EventoDeContacto.NUMERO_OPCION_MAP[opcion.digito],
+            self.opciones.all())
+        opcion_invalida_x_cantidad = defaultdict(lambda: 0)
+        for evento in set(eventos_opciones_seleccionadas):
+            if not evento in eventos_opciones_campana:
+                opcion_invalida = '{0} (Inválida)'.format(
+                    EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[evento])
+                opcion_invalida_x_cantidad[opcion_invalida] += 1
+        #Calcula, por cada opción el porcentaje que representa.
+        opcion_valida_invalida_x_cantidad = {}
+        opcion_valida_invalida_x_cantidad.update(opcion_x_cantidad)
+        opcion_valida_invalida_x_cantidad.update(opcion_invalida_x_cantidad)
+        total_opciones = sum(opcion_valida_invalida_x_cantidad.values())
+        opcion_x_porcentaje = defaultdict(lambda: 0)
+        if total_opciones:
+            for opcion, cantidad in\
+                opcion_valida_invalida_x_cantidad.items():
+                opcion_x_porcentaje[opcion] += float(100 * cantidad /\
+                total_opciones)
+        return {
+
+            #Estadisticas Generales.
+            'total_contactos': total_contactos,
+            'cantidad_contestadas': cantidad_contestadas,
+            'porcentaje_contestadas': porcentaje_contestadas,
+            'cantidad_no_contestadas': cantidad_no_contestadas,
+            'porcentaje_no_contestadas': porcentaje_no_contestadas,
+            'porcentaje_avance': porcentaje_avance,
+            'cantidad_pendientes': cantidad_pendientes,
+            'porcentaje_pendientes': porcentaje_pendientes,
+            'cantidad_selecciono_opcion': cantidad_selecciono_opcion,
+            'porcentaje_selecciono_opcion': porcentaje_selecciono_opcion,
+            'cantidad_no_selecciono_opcion': cantidad_no_selecciono_opcion,
+            'porcentaje_no_selecciono_opcion': porcentaje_no_selecciono_opcion,
+            'cantidad_intentados': cantidad_intentados,
+            'porcentaje_intentados': porcentaje_intentados,
+            'cantidad_no_intentados': cantidad_no_intentados,
+            'porcentaje_no_intentados': porcentaje_no_intentados,
+            'dic_intento_x_contactos': dict(dic_intento_x_contactos),
+            #Estadisticas de las llamadas Contestadas.
+            'opcion_x_cantidad': dict(opcion_x_cantidad),
+            'opcion_invalida_x_cantidad': dict(opcion_invalida_x_cantidad),
+            'opcion_x_porcentaje': dict(opcion_x_porcentaje),
+        }
 
     def _genera_graficos_estadisticas(self):
         """
