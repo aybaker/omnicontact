@@ -551,11 +551,28 @@ class EventoDeContactoEstadisticasManager():
                 evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
             ).count()
 
-            cantidad_finalizados = EDC.filter(
+            finalizados = EDC.filter(
                 campana_id=campana_id,
                 dato=numero_intento,
                 evento__in=EventoDeContacto.objects.get_eventos_finalizadores(),
-            ).count()
+            )
+            cantidad_finalizados = finalizados.count()
+
+            ##Comento la obtención de la cantidad que no seleccionaron
+            # una opción, porque por ahora involucra hacer una consulta
+            # sobre toda la tabla.
+
+            # cantidad_seleccionaron_opcion = 0
+            # cantidad_no_seleccionaron_opcion = 0
+            # for finalizado in finalizados:
+            #     opciones_seleccionadas = EventoDeContacto.objects.filter(
+            #         contacto_id=finalizado.contacto_id,
+            #         evento__in=EventoDeContacto.NUMERO_OPCION_MAP.values(),
+            #     )
+            #     if not opciones_seleccionadas:
+            #         cantidad_no_seleccionaron_opcion += 1
+            #     else:
+            #         cantidad_seleccionaron_opcion += 1
 
             cantidad_x_opcion = EDC.filter(
                 campana_id=campana_id,
@@ -566,7 +583,12 @@ class EventoDeContactoEstadisticasManager():
             dic_contadores.update({numero_intento:
                 {'cantidad_intentos': cantidad_intentos,
                 'cantidad_finalizados': cantidad_finalizados,
-                'cantidad_x_opcion': cantidad_x_opcion}})
+                'cantidad_x_opcion': cantidad_x_opcion,
+                #'cantidad_seleccionaron_opcion': cantidad_seleccionaron_opcion,
+                #'cantidad_no_seleccionaron_opcion':\
+                #    cantidad_no_seleccionaron_opcion,
+                }
+            })
         return dic_contadores
 
 
