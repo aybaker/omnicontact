@@ -542,7 +542,7 @@ class EventoDeContactoEstadisticasManager():
         EDC = EventoDeContacto.objects.all()
 
         dic_contadores = {}
-        for numero_intento in range(1, cantidad_intentos):
+        for numero_intento in range(1, cantidad_intentos + 1):
             cantidad_intentos = EDC.filter(
                 campana_id=campana_id,
                 dato=numero_intento,
