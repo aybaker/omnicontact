@@ -598,7 +598,7 @@ class Campana(models.Model):
         return torta_general
 
     def render_graficos_reporte(self):
-        estadisticas = self.obtener_estadisticas()
+        estadisticas = self.calcular_estadisticas()
 
         if estadisticas:
             logger.info("Generando grafico para campana %s", self.id)
@@ -648,7 +648,7 @@ class Campana(models.Model):
             'barra_atendidos_intentos': barra_atendidos_intentos,
         }
 
-    def obtener_estadisticas(self):
+    def calcular_estadisticas(self):
         """
         Este método devuelve las estadísticas de
         la campaña actual.
