@@ -12,7 +12,9 @@ from collections import defaultdict
 from django.conf import settings
 from django.db import connection
 from django.db import models
+from django.db.models import Count
 from django.db.models.aggregates import Max
+
 from fts_web.models import Campana, BaseDatosContacto, Contacto
 from fts_web.utiles import log_timing
 import logging as _logging
@@ -554,8 +556,6 @@ class EventoDeContactoEstadisticasManager():
                 dato=numero_intento,
                 evento__in=EventoDeContacto.objects.get_eventos_finalizadores(),
             ).count()
-
-            from django.db.models import Count
 
             cantidad_x_opcion = EDC.filter(
                 campana_id=campana_id,
