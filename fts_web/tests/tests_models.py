@@ -460,7 +460,7 @@ class ReporteTest(FTSenderBaseTest):
         if os.path.exists(path_graficos):
             shutil.rmtree(path_graficos)
 
-    def _crea_campana_emula_procesamiento(self):
+    def _crea_campana_emula_procesamiento(self, finaliza=True):
         cant_contactos = 100
         numeros_telefonicos = [int(random() * 10000000000)\
             for _ in range(cant_contactos)]
@@ -527,35 +527,19 @@ class ReporteTest(FTSenderBaseTest):
         EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
             numero_interno, evento=EV_FINALIZADOR, probabilidad=0.15)
 
-        campana.finalizar()
+        if finaliza:
+            campana.finalizar()
         return campana
 
-    # def test_detalle_reporte_template(self):
-    #     #Crea y emula procesamiento de campaña.
-    #     campana = self._crea_campana_emula_procesamiento()
+    def test_detalle_reporte_template(self):
+        #Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento()
 
-    #     # Verificamos template detalle reporte campaña.
-    #     url = reverse('detalle_campana_reporte', kwargs={"pk": campana.pk})
-    #     c = Client()
-    #     response = c.get(url)
-    #     self.assertEqual(response.status_code, 200)
-
-    #     grafico_torta = 'src="/media/graficos/{0}-torta.svg"'.format(campana.pk)
-    #     grafico_torta_opciones =\
-    #         'src="/media/graficos/{0}-torta-opciones.svg"'.format(campana.pk)
-    #     grafico_barra_intentos =\
-    #         'src="/media/graficos/{0}-barra-intentos.svg"'.format(campana.pk)
-    #     grafico_torta_no_seleccionaron =\
-    #         'src="/media/graficos/{0}-torta-no-seleccionaron.svg"'.format(
-    #             campana.pk)
-    #     grafico_torta_no_intento =\
-    #         'src="/media/graficos/{0}-torta-no-intento.svg"'.format(campana.pk)
-
-    #     self.assertContains(response, grafico_torta)
-    #     self.assertContains(response, grafico_torta_opciones)
-    #     self.assertContains(response, grafico_barra_intentos)
-    #     self.assertContains(response, grafico_torta_no_seleccionaron)
-    #     self.assertContains(response, grafico_torta_no_intento)
+        # Verificamos template detalle reporte campaña.
+        url = reverse('detalle_campana_reporte', kwargs={"pk": campana.pk})
+        c = Client()
+        response = c.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def test_obtener_estadistica(self):
         #Crea y emula procesamiento de campaña.
@@ -563,51 +547,47 @@ class ReporteTest(FTSenderBaseTest):
         #Obtiene las estadisticas de la campana.
         estadisticas = campana.obtener_estadisticas()
 
-        # #Testea los valores devueltos.
-        # self.assertEqual(estadisticas['total_contactos'], 100)
-        # self.assertEqual(estadisticas['cantidad_intentados'], 100)
-        # self.assertEqual(estadisticas['porcentaje_intentados'], 100)
-        # self.assertEqual(estadisticas['cantidad_no_intentados'], 0)
-        # self.assertEqual(estadisticas['porcentaje_no_intentados'], 0.0)
+        #Testea los valores devueltos.
+        self.assertEqual(estadisticas['total_contactos'], 100)
+        self.assertEqual(estadisticas['cantidad_intentados'], 100)
+        self.assertEqual(estadisticas['porcentaje_intentados'], 100)
+        self.assertEqual(estadisticas['cantidad_no_intentados'], 0)
+        self.assertEqual(estadisticas['porcentaje_no_intentados'], 0.0)
 
-        # cantidad_pendientes = estadisticas['total_contactos'] -\
-        #     (estadisticas['cantidad_contestadas'] +
-        #     estadisticas['cantidad_no_contestadas'])
-        # self.assertEqual(estadisticas['cantidad_pendientes'],
-        #     cantidad_pendientes)
+        cantidad_pendientes = estadisticas['total_contactos'] -\
+            (estadisticas['cantidad_contestadas'] +
+            estadisticas['cantidad_no_contestadas'])
+        self.assertEqual(estadisticas['cantidad_pendientes'],
+            cantidad_pendientes)
 
-        # porcentaje_pendientes = float(100 * cantidad_pendientes /\
-        #     estadisticas['total_contactos'])
-        # self.assertEqual(estadisticas['porcentaje_pendientes'],
-        #     porcentaje_pendientes)
+        porcentaje_pendientes = float(100 * cantidad_pendientes /\
+            estadisticas['total_contactos'])
+        self.assertEqual(estadisticas['porcentaje_pendientes'],
+            porcentaje_pendientes)
 
-        # cantidad_contestadas = estadisticas['total_contactos'] -\
-        #     (estadisticas['cantidad_pendientes'] +
-        #     estadisticas['cantidad_no_contestadas'])
-        # self.assertEqual(estadisticas['cantidad_contestadas'],
-        #     cantidad_contestadas)
-        # porcentaje_contestadas = float(100 * cantidad_contestadas /\
-        #     estadisticas['total_contactos'])
-        # self.assertEqual(estadisticas['porcentaje_contestadas'],
-        #     porcentaje_contestadas)
+        cantidad_contestadas = estadisticas['total_contactos'] -\
+            (estadisticas['cantidad_pendientes'] +
+            estadisticas['cantidad_no_contestadas'])
+        self.assertEqual(estadisticas['cantidad_contestadas'],
+            cantidad_contestadas)
+        porcentaje_contestadas = float(100 * cantidad_contestadas /\
+            estadisticas['total_contactos'])
+        self.assertEqual(estadisticas['porcentaje_contestadas'],
+            porcentaje_contestadas)
 
-        # cantidad_no_contestadas = estadisticas['total_contactos'] -\
-        #     (estadisticas['cantidad_pendientes'] +
-        #     estadisticas['cantidad_contestadas'])
-        # self.assertEqual(estadisticas['cantidad_no_contestadas'],
-        #     cantidad_no_contestadas)
-        # porcentaje_no_contestadas = float(100 * cantidad_no_contestadas /\
-        #     estadisticas['total_contactos'])
-        # self.assertEqual(estadisticas['porcentaje_no_contestadas'],
-        #     porcentaje_no_contestadas)
+        cantidad_no_contestadas = estadisticas['total_contactos'] -\
+            (estadisticas['cantidad_pendientes'] +
+            estadisticas['cantidad_contestadas'])
+        self.assertEqual(estadisticas['cantidad_no_contestadas'],
+            cantidad_no_contestadas)
+        porcentaje_no_contestadas = float(100 * cantidad_no_contestadas /\
+            estadisticas['total_contactos'])
+        self.assertEqual(estadisticas['porcentaje_no_contestadas'],
+            porcentaje_no_contestadas)
 
-        # porcentaje_avance = porcentaje_contestadas + porcentaje_no_contestadas
-        # self.assertEqual(estadisticas['porcentaje_avance'],
-        #     porcentaje_avance)
-        print "# campana.obtener_estadisticas() #"
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(estadisticas)
+        porcentaje_avance = porcentaje_contestadas + porcentaje_no_contestadas
+        self.assertEqual(estadisticas['porcentaje_avance'],
+            porcentaje_avance)
 
     def test_render_grafico_torta_avance_campana(self):
         #Crea y emula procesamiento de campaña.
@@ -644,60 +624,55 @@ class ReporteTest(FTSenderBaseTest):
     #     url = campana.url_grafico_torta
     #     self.assertEqual(url, None)
 
-    # def test_render_graficos_reporte(self):
-    #     #Crea y emula procesamiento de campaña.
-    #     campana = self._crea_campana_emula_procesamiento()
-    #     graficos = campana.render_graficos_reporte()
-    #     for grafico in graficos:
-    #         #print grafico.render()
-    #         self.assertIn('<svg xmlns:xlink="http://www.w3.org/1999/xlink"',
-    #             grafico.render())
+    def test_render_graficos_reporte(self):
+        #Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento()
+        graficos = campana.render_graficos_reporte()
+
+        self.assertTrue(graficos['torta_general'].render())
+        self.assertTrue(graficos['torta_opcion_x_porcentaje'].render())
+        self.assertTrue(graficos['torta_intentos'].render())
+        self.assertTrue(graficos['barra_atendidos_intentos'].render())
 
     def test_obtener_contadores_por_intento(self):
         #Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
-        contadores = EventoDeContacto.objects_estadisticas.obtener_contadores_por_intento(
-            campana.pk, campana.cantidad_intentos)
+        contadores = EventoDeContacto.objects_estadisticas.\
+            obtener_contadores_por_intento(campana.pk,
+                campana.cantidad_intentos)
 
-        print "# obtener_contadores_por_intento() #"
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(contadores)
+        self.assertEqual(len(contadores), 3)
+        self.assertEqual(contadores[1]['cantidad_intentos'], 100)
 
     def test_establecer_agregacion(self):
         #Crea y emula procesamiento de campaña.
-        campana = self._crea_campana_emula_procesamiento()
-        self.assertEqual(AgregacionDeEventoDeContacto.objects.all().count(), 2)
-
-        print "# establecer_agregacion() #"
-        print "# 1° Intento: "
-        import pprint
-        from django.core import serializers
-        pp = pprint.PrettyPrinter(indent=4)
-        data = serializers.serialize("python",
-            AgregacionDeEventoDeContacto.objects.all())
-        pp.pprint(data)
+        campana = self._crea_campana_emula_procesamiento(finaliza=False)
+        AgregacionDeEventoDeContacto.objects.establece_agregacion(campana.pk,
+            campana.cantidad_intentos)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.count(), 3)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            pk=1).cantidad_intentos, 100)
 
         #Segundo intento de Agregacion, para verifica que sumarice y no que
         #genere nuevos registros.
         AgregacionDeEventoDeContacto.objects.establece_agregacion(campana.pk,
             campana.cantidad_intentos)
-        self.assertEqual(AgregacionDeEventoDeContacto.objects.all().count(), 2)
-
-        print "# 2° Intento: "
-        pp = pprint.PrettyPrinter(indent=4)
-        data = serializers.serialize("python",
-            AgregacionDeEventoDeContacto.objects.all())
-        pp.pprint(data)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.all().count(), 3)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            pk=1).cantidad_intentos, 200)
 
     def test_procesa_agregacion(self):
         #Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
-        self.assertEqual(AgregacionDeEventoDeContacto.objects.all().count(), 2)
-
-        print "# procesa_agregacion() #"
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        data = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
+        dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
             campana.pk)
-        pp.pprint(data)
+        self.assertEqual(dic_totales['total_intentados'], 100)
+        self.assertEqual(dic_totales['limite_intentos'], 3)
+        self.assertEqual(dic_totales['total_contactos'], 100)
+
+        # print "# procesa_agregacion() #"
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # data = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
+        #     campana.pk)
+        # pp.pprint(data)
