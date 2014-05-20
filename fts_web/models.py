@@ -1056,7 +1056,6 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         :type campana_id: int
         """
         agregaciones_campana = self.filter(campana_id=campana_id)
-        print agregaciones_campana.count()
 
         dic_totales = agregaciones_campana.aggregate(
             total_intentados=Sum('cantidad_intentos'),
