@@ -273,6 +273,7 @@
     delete=yes checksum=yes times=no
   tags:
     - deploy
+    - quick_deploy
 
 - name: Setup virtualenv
   pip: >
