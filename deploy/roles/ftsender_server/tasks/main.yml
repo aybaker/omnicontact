@@ -373,3 +373,15 @@
   tags:
     - deploy
     - quick_deploy
+
+- name: Run ftsdaemon_checks
+  django_manage: >
+      command=ftsdaemon_checks
+      app_path=/home/ftsender/deploy/app
+      settings=fts_web.settings
+      virtualenv=/home/ftsender/deploy/virtualenv
+  environment:
+    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+  tags:
+    - deploy
+    - quick_deploy
