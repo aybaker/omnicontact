@@ -657,6 +657,8 @@ class ReporteTest(FTSenderBaseTest):
             numero_intento=1).cantidad_intentos, 100)
         self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
             numero_intento=1).timestamp_ultimo_evento, timestamp_ultimo_evento)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).tipo_agregacion, tipo_agregacion)
 
         #Segundo intento de Agregacion, para verifica que sumarice y no que
         #genere nuevos registros.
@@ -667,6 +669,9 @@ class ReporteTest(FTSenderBaseTest):
             numero_intento=1).cantidad_intentos, 200)
         self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
             numero_intento=1).timestamp_ultimo_evento, timestamp_ultimo_evento)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).tipo_agregacion, tipo_agregacion)
+
 
     def test_procesa_agregacion(self):
         #Crea y emula procesamiento de campaña.
