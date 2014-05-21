@@ -1118,6 +1118,10 @@ class AgregacionDeEventoDeContacto(models.Model):
     para cada contacto, esa campana debería tener 2 registros
     con las cantidades, de ciertos eventos, de ese intento.
     """
+    TIPO_AGREGACION_SUPERVISION = 1
+    TIPO_AGREGACION_REPORTE = 2
+    TIPO_AGREGACION_DEPURACION = 3
+
     objects = AgregacionDeEventoDeContactoManager()
 
     campana_id = models.IntegerField(db_index=True)
@@ -1136,6 +1140,7 @@ class AgregacionDeEventoDeContacto(models.Model):
     cantidad_opcion_9 = models.IntegerField(null=True)
     timestamp_ultima_actualizacion = models.DateTimeField(auto_now_add=True)
     timestamp_ultimo_evento = models.DateTimeField(null=True)
+    tipo_agregacion = models.IntegerField()
 
     def __unicode__(self):
         return "AgregacionDeEventoDeContacto-{0}-{1}".format(
