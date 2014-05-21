@@ -19,7 +19,7 @@ set -e
 
 cd $(dirname $0)
 
-TMP=/tmp/ftsender-build
+TMP=/dev/shm/ftsender-build
 
 if [ -e $TMP ] ; then
 	rm -rf $TMP
@@ -56,6 +56,8 @@ if __name__ == '__main__':
 
 
 EOF
+
+export DO_CHECKS="${DO_CHECKS:-no}"
 
 echo "Ejecutando Ansible"
 ansible-playbook deploy/playbook.yml --extra-vars "BUILD_DIR=$TMP/app" $*

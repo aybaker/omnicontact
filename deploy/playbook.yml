@@ -1,6 +1,6 @@
 ---
 - hosts: ftsender
-  gather_facts: yes
+  gather_facts: '{{ lookup("env","DO_CHECKS") }}'
   roles:
     - ftsender_server
   remote_user: ftsender

@@ -15,7 +15,10 @@
 
 - name: Check target server
   fail: msg="Target server isn't supported"
-  when: ansible_distribution != "CentOS" or ansible_distribution_major_version|int != 6
+  when: >
+    lookup("env","DO_CHECKS") != "no" and (
+    ansible_distribution != "CentOS" or
+    ansible_distribution_major_version|int != 6 )
   tags:
     - checks
 
@@ -100,6 +103,7 @@
     - libuuid-devel
   tags:
     - asterisk
+    - yum
 
 - name: Check timezone
   command: diff -q /etc/localtime {{os_timezone}}
