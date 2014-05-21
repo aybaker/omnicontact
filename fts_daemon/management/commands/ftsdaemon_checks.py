@@ -8,10 +8,10 @@ import subprocess
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from fts_daemon.asterisk_config import create_queue_config_file, \
-    create_dialplan_config_file
+    create_dialplan_config_file, reload_config
 from fts_daemon.audio_conversor import convertir_audio
-from fts_web.models import Campana
 from fts_web import version
+from fts_web.models import Campana
 
 
 AUDIO_FILE = "test/wavs/8k16bitpcm.wav"
@@ -45,12 +45,12 @@ class Command(BaseCommand):
         Campana.objects.exists()
         self.stdout.write(' + OK')
 
-        # Reload queues de Asterisk
+        # Generacion de queues de Asterisk
         self.stdout.write('Chequeando create_queue_config_file()...')
         create_queue_config_file()
         self.stdout.write(' + OK')
 
-        # Reload dialplan de Asterisk
+        # Generacion de dialplan de Asterisk
         self.stdout.write('Chequeando create_dialplan_config_file()...')
         create_dialplan_config_file()
         self.stdout.write(' + OK')
@@ -71,3 +71,8 @@ class Command(BaseCommand):
             self.stdout.write(' + OK')
         else:
             self.stdout.write(' + ERROR: no se encontro archivo de salida')
+
+        # Reload de config de Asterisk
+        self.stdout.write('Chequeando reload_config() de Asterisk...')
+        reload_config()
+        self.stdout.write(' + OK')
