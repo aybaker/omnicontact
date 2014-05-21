@@ -11,6 +11,7 @@ from fts_daemon.asterisk_config import create_queue_config_file, \
     create_dialplan_config_file
 from fts_daemon.audio_conversor import convertir_audio
 from fts_web.models import Campana
+from fts_web import version
 
 
 AUDIO_FILE = "test/wavs/8k16bitpcm.wav"
@@ -24,6 +25,9 @@ class Command(BaseCommand):
 
         logger = logging.getLogger()
         [logger.removeHandler(x) for x in logger.handlers]
+
+        self.stdout.write('Iniciando chequeos - Version: {0} - {1}'.format(
+            version.FTSENDER_COMMIT, version.FTSENDER_AUTHOR))
 
         # NTP
         self.stdout.write('Chequeando NTP...')
