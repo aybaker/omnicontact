@@ -1,0 +1,6 @@
+---
+
+RPM_REPO_EPEL: 'http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm'
+RPM_REPO_POSTGRESQL: 'http://yum.postgresql.org/9.3/redhat/rhel-6-i386/pgdg-centos93-9.3-1.noarch.rpm'
+
+STARPY_PIP_URL: 'git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba#egg=starpy'
