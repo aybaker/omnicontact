@@ -1035,6 +1035,9 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
                 agregacion_evento_contacto.cantidad_opcion_8 += dic_opciones[8]
                 agregacion_evento_contacto.cantidad_opcion_9 += dic_opciones[9]
 
+            agregacion_evento_contacto.timestamp_ultimo_evento = dic_contadores[
+                'timestamp_ultimo_evento']
+
             agregacion_evento_contacto.save()
 
     def procesa_agregacion(self, campana_id, cantidad_intentos):
