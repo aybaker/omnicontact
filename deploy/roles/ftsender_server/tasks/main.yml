@@ -78,17 +78,19 @@
     - yum
 
 - name: Check timezone
-  command: diff -q /etc/localtime /usr/share/zoneinfo/America/Argentina/Cordoba
+  command: diff -q /etc/localtime {{os_timezone}}
   register: clock_synchronized
   ignore_errors: True
   tags:
     - ntp
+    - ntp_check
 
 - name: Report timezone errors
-  fail: msg="The server has an invalid TIMEZONE"
+  fail: msg="The server has an invalid TIMEZONE - Check {{os_timezone}}"
   when: clock_synchronized|failed
   tags:
     - ntp
+    - ntp_check
 
 - name: Start ntp and enable at boot
   sudo: yes
@@ -114,11 +116,6 @@
   tags:
     - nginx
 
-- name: Setup pip
-  ini_file: dest=/home/ftsender/.pip/pip.conf section=install option='download-cache' value='/home/ftsender/.pip/cache'
-  tags:
-    - virtualenv
-
 ##
 ## BD
 ##
@@ -137,7 +134,15 @@
 
 - name: Copy pg_hba.conf
   sudo: yes
+  register: pg_hba_updated
   copy: src=pg_hba.conf dest=/var/lib/pgsql/9.3/data/
+  tags:
+    - db
+
+- name: Reload PostgreSql
+  sudo: yes
+  service: name=postgresql-9.3 state=reloaded
+  when: pg_hba_updated.changed
   tags:
     - db
 
@@ -169,6 +174,7 @@
   with_items:
     - /etc/ftsender/asterisk
     - /home/ftsender
+    - /home/ftsender/.pip
     - /home/ftsender/deploy
     - /home/ftsender/deploy/bin
     - /home/ftsender/deploy/app
@@ -179,6 +185,11 @@
     - /home/ftsender/deploy/run
   tags:
     - deploy
+
+- name: Setup pip
+  ini_file: dest=/home/ftsender/.pip/pip.conf section=install option='download-cache' value='/home/ftsender/.pip/cache'
+  tags:
+    - virtualenv
 
 - name: Upload built (rsync to /app)
   # Copies xxx/app to /home/ftsender/deploy/app (/app on dest is implicit)
