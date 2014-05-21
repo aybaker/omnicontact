@@ -26,8 +26,9 @@ class Command(BaseCommand):
         logger = logging.getLogger()
         [logger.removeHandler(x) for x in logger.handlers]
 
-        self.stdout.write('Iniciando chequeos - Version: {0} - {1}'.format(
-            version.FTSENDER_COMMIT, version.FTSENDER_AUTHOR))
+        self.stdout.write('Iniciando chequeos - Ver.: {0} - {1} - {2}'.format(
+            version.FTSENDER_COMMIT, version.FTSENDER_AUTHOR,
+            version.FTSENDER_BUILD_DATE))
 
         # NTP
         self.stdout.write('Chequeando NTP...')
