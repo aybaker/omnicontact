@@ -185,6 +185,18 @@
   tags:
     - asterisk
 
+- name: Modify Asterisk extensions.conf
+  lineinfile: >
+    state=present
+    dest=/opt/asterisk-11/etc/asterisk/extensions.conf
+    regexp="^#include\s+{{dj_sett_FTS_DIALPLAN_FILENAME}}\s*"
+    insertafter=EOF
+    line="#include {{dj_sett_FTS_DIALPLAN_FILENAME}}"
+  when: asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+
 - name: Start Asterisk (only if installed)
   sudo: yes
   when: asterisk_installed|success
