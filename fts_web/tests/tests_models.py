@@ -647,31 +647,44 @@ class ReporteTest(FTSenderBaseTest):
     def test_establecer_agregacion(self):
         #Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
+        timestamp_ultimo_evento = EventoDeContacto.objects.filter(
+            campana_id=campana.id).latest('timestamp').timestamp
+        tipo_agregacion = AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE
         AgregacionDeEventoDeContacto.objects.establece_agregacion(campana.pk,
-            campana.cantidad_intentos)
+            campana.cantidad_intentos, tipo_agregacion)
         self.assertEqual(AgregacionDeEventoDeContacto.objects.count(), 3)
         self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
             numero_intento=1).cantidad_intentos, 100)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).timestamp_ultimo_evento, timestamp_ultimo_evento)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).tipo_agregacion, tipo_agregacion)
 
         #Segundo intento de Agregacion, para verifica que sumarice y no que
         #genere nuevos registros.
         AgregacionDeEventoDeContacto.objects.establece_agregacion(campana.pk,
-            campana.cantidad_intentos)
+            campana.cantidad_intentos, tipo_agregacion)
         self.assertEqual(AgregacionDeEventoDeContacto.objects.all().count(), 3)
         self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
             numero_intento=1).cantidad_intentos, 200)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).timestamp_ultimo_evento, timestamp_ultimo_evento)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).tipo_agregacion, tipo_agregacion)
+
 
     def test_procesa_agregacion(self):
         #Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
+        tipo_agregacion = AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE
         dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
-            campana.pk, campana.cantidad_intentos)
+            campana.pk, campana.cantidad_intentos, tipo_agregacion)
         self.assertEqual(dic_totales['total_intentados'], 100)
         self.assertEqual(dic_totales['limite_intentos'], 3)
         self.assertEqual(dic_totales['total_contactos'], 100)
 
         dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
-            campana.pk, campana.cantidad_intentos)
+            campana.pk, campana.cantidad_intentos, tipo_agregacion)
         self.assertEqual(dic_totales['total_intentados'], 100)
         self.assertEqual(dic_totales['limite_intentos'], 3)
         self.assertEqual(dic_totales['total_contactos'], 100)

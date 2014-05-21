@@ -576,6 +576,7 @@ class Campana(models.Model):
     def render_grafico_torta_avance_campana(self):
         #Obtiene estadística.
         estadisticas = self.obtener_estadisticas()
+
         #Torta: porcentajes de contestados, no contestados y pendientes.
         pie_chart = pygal.Pie(disable_xml_declaration=True, height=350,
             legend_font_size=20, legend_box_size=18,
@@ -587,7 +588,8 @@ class Campana(models.Model):
         return pie_chart
 
     def obtener_estadisticas_render_graficos(self):
-        estadisticas = self.calcular_estadisticas()
+        estadisticas = self.calcular_estadisticas(
+            AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE)
 
         if estadisticas:
             logger.info("Generando grafico para campana %s", self.id)
@@ -643,7 +645,7 @@ class Campana(models.Model):
         else:
             logger.info("Campana %s NO obtuvo estadísticas.", self.id)
 
-    def calcular_estadisticas(self):
+    def calcular_estadisticas(self, tipo_agregacion):
         """
         Este método devuelve las estadísticas de
         la campaña actual.
@@ -655,7 +657,7 @@ class Campana(models.Model):
             Campana.ESTADO_FINALIZADA)
 
         dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
-            self.pk, self.cantidad_intentos)
+            self.pk, self.cantidad_intentos, tipo_agregacion)
 
         total_contactos = dic_totales['total_contactos']
         if not total_contactos > 0:
@@ -971,7 +973,8 @@ class Campana(models.Model):
 #==============================================================================
 
 class AgregacionDeEventoDeContactoManager(models.Manager):
-    def establece_agregacion(self, campana_id, cantidad_intentos):
+    def establece_agregacion(self, campana_id, cantidad_intentos,
+        tipo_agregacion):
         """
         Se encarga de obtener los contadores de eventos por cada intento de
         contacto de la campaña, y es establecer los registros de ADEDC
@@ -988,18 +991,6 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         dic_contadores_x_intentos = EventoDeContacto.objects_estadisticas.\
             obtener_contadores_por_intento(campana_id, cantidad_intentos)
 
-        #Ejemplo:
-        # dic_contadores_x_intentos = {
-        #     1: {   u'cantidad_finalizados': 53,
-        #            u'cantidad_intentos': 100,
-        #            u'cantidad_x_opcion': [{u'evento': 56, 'cantidad': 26},
-        #                                   {u'evento': 53, 'cantidad': 20}]},
-        #     2: {   u'cantidad_finalizados': 77,
-        #            u'cantidad_intentos': 100,
-        #            u'cantidad_x_opcion': [{u'evento': 56, 'cantidad': 29},
-        #                                   {u'evento': 53, 'cantidad': 26}]}
-        # }
-
         #Por cada intento en el diccionario dic_contadores_x_intentos,
         #actualizamos o generamos según exista o no el registro con las
         #cantidades de cada intento.
@@ -1014,6 +1005,7 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
 
             agregacion_evento_contacto, created = self.get_or_create(
                 campana_id=campana_id, numero_intento=numero_intento)
+
             if created:
                 agregacion_evento_contacto.cantidad_intentos =\
                     dic_contadores['cantidad_intentos']
@@ -1046,17 +1038,26 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
                 agregacion_evento_contacto.cantidad_opcion_8 += dic_opciones[8]
                 agregacion_evento_contacto.cantidad_opcion_9 += dic_opciones[9]
 
+            agregacion_evento_contacto.tipo_agregacion = tipo_agregacion
+            agregacion_evento_contacto.timestamp_ultimo_evento = dic_contadores[
+                'timestamp_ultimo_evento']
+
             agregacion_evento_contacto.save()
 
-    def procesa_agregacion(self, campana_id, cantidad_intentos):
+    def procesa_agregacion(self, campana_id, cantidad_intentos,
+        tipo_agregacion):
         """
         Sumariza los contadores de cada intento de contacto de la campana.
         :param campana_id: De que campana que se sumarizaran los contadores.
         :type campana_id: int
         """
         agregaciones_campana = self.filter(campana_id=campana_id)
+
+        #Por ahora verifico si existen agregaciones, ya que por ahora viene
+        #solo de reporte, cuando se implemente supervisión cambia.
         if not agregaciones_campana:
-            self.establece_agregacion(campana_id, cantidad_intentos)
+            self.establece_agregacion(campana_id, cantidad_intentos,
+                tipo_agregacion)
             agregaciones_campana = self.filter(campana_id=campana_id)
 
         dic_totales = agregaciones_campana.aggregate(
@@ -1126,6 +1127,10 @@ class AgregacionDeEventoDeContacto(models.Model):
     para cada contacto, esa campana debería tener 2 registros
     con las cantidades, de ciertos eventos, de ese intento.
     """
+    TIPO_AGREGACION_SUPERVISION = 1
+    TIPO_AGREGACION_REPORTE = 2
+    TIPO_AGREGACION_DEPURACION = 3
+
     objects = AgregacionDeEventoDeContactoManager()
 
     campana_id = models.IntegerField(db_index=True)
@@ -1143,7 +1148,8 @@ class AgregacionDeEventoDeContacto(models.Model):
     cantidad_opcion_8 = models.IntegerField(null=True)
     cantidad_opcion_9 = models.IntegerField(null=True)
     timestamp_ultima_actualizacion = models.DateTimeField(auto_now_add=True)
-    #timestamp_ultimo_evento = models.DateTimeField()
+    timestamp_ultimo_evento = models.DateTimeField(null=True)
+    tipo_agregacion = models.IntegerField(null=True)
 
     def __unicode__(self):
         return "AgregacionDeEventoDeContacto-{0}-{1}".format(
