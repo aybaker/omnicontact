@@ -974,7 +974,7 @@ class Campana(models.Model):
 
 class AgregacionDeEventoDeContactoManager(models.Manager):
     def establece_agregacion(self, campana_id, cantidad_intentos,
-        tipo_agregacion):
+        tipo_agregacion, timestamp_ultimo_evento=None):
         """
         Se encarga de obtener los contadores de eventos por cada intento de
         contacto de la campaña, y es establecer los registros de ADEDC
@@ -987,9 +987,12 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         from fts_daemon.models import EventoDeContacto
 
         #Obtenemos los contadores por intentos.
-        #TODO: pasar último timestamp de evento cuando se implemente.
         dic_contadores_x_intentos = EventoDeContacto.objects_estadisticas.\
-            obtener_contadores_por_intento(campana_id, cantidad_intentos)
+            obtener_contadores_por_intento(campana_id, cantidad_intentos,
+                timestamp_ultimo_evento)
+
+        if not dic_contadores_x_intentos:
+            return None
 
         #Por cada intento en el diccionario dic_contadores_x_intentos,
         #actualizamos o generamos según exista o no el registro con las
@@ -1052,13 +1055,31 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         :type campana_id: int
         """
         agregaciones_campana = self.filter(campana_id=campana_id)
+        if agregaciones_campana:
+            #Si agregaciones_campana es True quiere decir que ya se generaron
+            #los registros de agégacion para la campana y hay que actualizarlos
+            #desde el último evento hasta hoy y ahora.
 
-        #Por ahora verifico si existen agregaciones, ya que por ahora viene
-        #solo de reporte, cuando se implemente supervisión cambia.
-        if not agregaciones_campana:
+            #Toma y valida que todos los timestamp_ultimo_evento sean iguales
+            #para la campana, no deberían ser diferentes.
+            timestamp_ultimo_evento =\
+                agregaciones_campana[0].timestamp_ultimo_evento
+            assert all(agregacion.timestamp_ultimo_evento ==
+                timestamp_ultimo_evento for agregacion in agregaciones_campana)
+
+            self.establece_agregacion(campana_id, cantidad_intentos,
+                tipo_agregacion, timestamp_ultimo_evento)
+        else:
+            #Si agregaciones_campana es False quiere decir que es la primera
+            #vez que se quiere ver el Reporte o la Supervisión y no está
+            #generados los registros de agregacion para la campana. Se generan
+            #los registros sin tener en cuenta un timestamp, toma todos los
+            #eventos de EventoDeContacto para la campana.
+
             self.establece_agregacion(campana_id, cantidad_intentos,
                 tipo_agregacion)
-            agregaciones_campana = self.filter(campana_id=campana_id)
+
+        agregaciones_campana = self.filter(campana_id=campana_id)
 
         dic_totales = agregaciones_campana.aggregate(
             total_intentados=Sum('cantidad_intentos'),

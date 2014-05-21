@@ -530,7 +530,8 @@ class EventoDeContactoEstadisticasManager():
 
         return counter_x_estado, counter_intentos, counter_por_evento
 
-    def obtener_contadores_por_intento(self, campana_id, cantidad_intentos):
+    def obtener_contadores_por_intento(self, campana_id, cantidad_intentos,
+        timestamp_ultimo_evento):
         """
         Se encarga de obtener los contadores de ciertos eventos, por cada
         intento de contacto de la campana.
@@ -539,14 +540,32 @@ class EventoDeContactoEstadisticasManager():
         :type campana_id: int
         :param cantidad_intentos: El limite de intentos para la  campana.
         :type cantidad_intentos: int
+        :param timestamp_ultimo_evento: Desde que timestamp hasta hoy ahora se
+        tienen que filtrar los eventos para la campana pasada.
+        :type timestamp_ultimo_evento: datetime
         """
-        #TODO: filtrar los EVC desde ese timestamp_desde hasta hoy y ahora.
-        EDC = EventoDeContacto.objects.filter(campana_id=campana_id)
+
+        if timestamp_ultimo_evento:
+            #Si viene el timestamp_ultimo_evento, se filtran los eventos de la
+            #campana_id desde ese momento hasta hoy y ahora.
+            EDC = EventoDeContacto.objects.filter(campana_id=campana_id,
+                timestamp__gt=timestamp_ultimo_evento)
+        else:
+            #Si no viene el timestamp_ultimo_evento, se filtran todos los
+            #eventos de la campana_id.
+            EDC = EventoDeContacto.objects.filter(campana_id=campana_id)
+
+        #En el caso que no se encuentren eventos para la campana, esto ocurre
+        #cuando desde el último evento que se tomo (timestamp_ultimo_evento)
+        #hasta hoy y ahora no hay eventos registrados.
         if not EDC.count():
             return None
 
+        #Obtiene el timestamp del último evento filtrado para la campana_id.
         timestamp_ultimo_evento = EDC.latest('timestamp').timestamp
 
+        #Por cada intento de la campana_id, cuenta lo diferentes eventos y los
+        #va agregando a un diccionario, que es lo que devuelve el método.
         dic_contadores = {}
         for numero_intento in range(1, cantidad_intentos + 1):
             cantidad_intentos = EDC.filter(
