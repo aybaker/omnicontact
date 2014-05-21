@@ -5,8 +5,9 @@
 #
 # Tags mas utiles:
 #  - virtualenv: setup de virtualenv & requirements
-#  - deploy: deploy de la APP (EXCEPTUANDO cambios en Nginx, virtualenv)
-#
+#  - deploy: deploy de la APP (EXCEPTUANDO cambios en otros compoenentes,
+#       como Nginx)
+#  - quick_deploy: deploy rapido de la APP
 #
 
 ##
@@ -81,6 +82,7 @@
     - postgresql93-devel
     - nginx
     - munin
+    - munin-node
     - redis
     - sox
   tags:
@@ -178,6 +180,7 @@
   sudo: yes
   when: asterisk_installed|success
   service: name=asterisk-11-ftsender state=started
+  ignore_errors: True
   tags:
     - asterisk
 
@@ -298,6 +301,7 @@
   template: src=fts_web_settings_local.py dest=/home/ftsender/deploy/local
   tags:
     - deploy
+    - quick_deploy
 
 - name: Run Django syncdb
   django_manage: >
@@ -320,6 +324,7 @@
     PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
   tags:
     - deploy
+    - quick_deploy
 
 - name: Run Django collectstatic
   django_manage: >
@@ -331,6 +336,7 @@
     PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
   tags:
     - deploy
+    - quick_deploy
 
 - name: Upload ftsender_uwsgi.ini
   template: src=ftsender_uwsgi.ini dest=/home/ftsender/deploy/local
@@ -359,3 +365,10 @@
     - manage.sh
   tags:
     - deploy
+
+- name: Reload FTSenser service
+  service: name=ftsender-daemon state=reloaded
+  sudo: yes
+  tags:
+    - deploy
+    - quick_deploy
