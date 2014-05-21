@@ -12,6 +12,7 @@ from fts_daemon.asterisk_config import create_queue_config_file, \
 from fts_daemon.audio_conversor import convertir_audio
 from fts_web import version
 from fts_web.models import Campana
+import sys
 
 
 AUDIO_FILE = "test/wavs/8k16bitpcm.wav"
@@ -26,6 +27,8 @@ class Command(BaseCommand):
         logger = logging.getLogger()
         [logger.removeHandler(x) for x in logger.handlers]
 
+        ok = True
+
         self.stdout.write('Iniciando chequeos - Ver.: {0} - {1} - {2}'.format(
             version.FTSENDER_COMMIT, version.FTSENDER_AUTHOR,
             version.FTSENDER_BUILD_DATE))
@@ -37,6 +40,7 @@ class Command(BaseCommand):
         if retcode == 0:
             self.stdout.write(' + OK')
         else:
+            ok = False
             self.stdout.write(' + ERROR: ntpstat ha devuelto {0}'.format(
                 retcode))
 
@@ -70,9 +74,18 @@ class Command(BaseCommand):
         if os.path.exists(output):
             self.stdout.write(' + OK')
         else:
+            ok = False
             self.stdout.write(' + ERROR: no se encontro archivo de salida')
 
         # Reload de config de Asterisk
         self.stdout.write('Chequeando reload_config() de Asterisk...')
-        reload_config()
-        self.stdout.write(' + OK')
+        retcode = reload_config()
+        if retcode == 0:
+            self.stdout.write(' + OK')
+        else:
+            ok = False
+            self.stdout.write(' + ERROR: reload_config() {0}'.format(
+                retcode))
+
+        if not ok:
+            sys.exit(1)
