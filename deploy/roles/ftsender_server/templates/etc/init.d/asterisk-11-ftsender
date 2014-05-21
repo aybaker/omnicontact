@@ -46,6 +46,30 @@ case "$1" in
         fi
         echo
         ;;
+  reload)
+        echo -n "Reloading asterisk-11... "
+        su -l -s /bin/bash -c "$CMD -x 'core restart gracefully'" $USER
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]
+        then
+                echo_success
+        else
+                echo_failure
+        fi
+        echo
+        ;;
+  status)
+        echo -n "Asterisk 11 - Llamadas en curso:"
+        su -l -s /bin/bash -c "$CMD -x 'core show calls'" $USER
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]
+        then
+                echo_success
+        else
+                echo_failure
+        fi
+        echo
+        ;;
   *)
         echo "Usage: $0 start|stop"
         exit 1

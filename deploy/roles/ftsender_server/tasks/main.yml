@@ -197,10 +197,75 @@
   tags:
     - asterisk
 
+
+- name: Modify Asterisk manager.conf - general/enabled/yes
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    section=general
+    option=enabled
+    value=yes
+  when: asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+
+- name: Modify Asterisk manager.conf - general/webenabled/yes
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    section=general
+    option=webenabled
+    value=yes
+  when: asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+
+- name: Modify Asterisk manager.conf - manager user / secret
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    section={{ dj_sett_ASTERISK_USERNAME }}
+    option=secret
+    value={{ dj_sett_ASTERISK_PASSWORD }}
+  when: asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+
+- name: Modify Asterisk manager.conf - manager user / read
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    section={{ dj_sett_ASTERISK_USERNAME }}
+    option=read
+    value=system,call,log,verbose,command,agent,user,originate
+  when: asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+
+- name: Modify Asterisk manager.conf - manager user / write
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    section={{ dj_sett_ASTERISK_USERNAME }}
+    option=write
+    value=system,call,log,verbose,command,agent,user,originate
+  when: asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+
 - name: Start Asterisk (only if installed)
   sudo: yes
   when: asterisk_installed|success
   service: name=asterisk-11-ftsender state=started
+  ignore_errors: True
+  register: asterisk_started
+  tags:
+    - asterisk
+
+- name: Reload Asterisk (only if 'start' failed)
+  sudo: yes
+  when: asterisk_started|failed
+  service: name=asterisk-11-ftsender state=reloaded
   ignore_errors: True
   tags:
     - asterisk
