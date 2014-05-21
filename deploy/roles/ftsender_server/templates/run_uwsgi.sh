@@ -7,7 +7,8 @@
     --processes=5 \
     --enable-threads \
     --home=/home/ftsender/deploy/virtualenv \
-    --http=0.0.0.0:8080 \
+    --http=0.0.0.0:{{ UWSGI_HTTP_PORT }} \
+    --uwsgi-socket=0.0.0.0:{{ UWSGI_UWSGI_PORT }} \
     --python-path=/home/ftsender/deploy/app \
     --python-path=/home/ftsender/deploy/local \
     --static-map /static=${BASEDIR_WEB}/fts_web/static \
