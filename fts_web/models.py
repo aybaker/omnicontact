@@ -575,8 +575,7 @@ class Campana(models.Model):
 
     def render_grafico_torta_avance_campana(self):
         #Obtiene estadística.
-        estadisticas = self.calcular_estadisticas(
-            AgregacionDeEventoDeContacto.TIPO_AGREGACION_SUPERVISION)
+        estadisticas = self.obtener_estadisticas()
 
         #Torta: porcentajes de contestados, no contestados y pendientes.
         pie_chart = pygal.Pie(disable_xml_declaration=True, height=350,
