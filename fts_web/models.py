@@ -424,13 +424,6 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
 
-        try:
-            AgregacionDeEventoDeContacto.objects.establece_agregacion(self.pk,
-               self.cantidad_intentos)
-            #self._genera_graficos_estadisticas()
-        except:
-            logger.exception("No se pudo generar los datos de estadísticas.")
-
     def pausar(self):
         """Setea la campaña como ESTADO_PAUSADA"""
         logger.info("Seteando campana %s como ESTADO_PAUSADA", self.id)
