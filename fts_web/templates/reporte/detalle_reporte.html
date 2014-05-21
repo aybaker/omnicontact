@@ -10,7 +10,7 @@
         </div>
 
 
-        {% with estadisticas=campana.calcular_estadisticas %}
+        {% with graficos_estadisticas=campana.obtener_estadisticas_render_graficos %}
             <div class="panel-body">
                 <div class="col-lg-12"> 
                     <table class="table">
@@ -32,7 +32,7 @@
                                     <h3><small>
                                         <b>Base Datos: </b>
                                         {{ campana.bd_contacto }} 
-                                        ({{ estadisticas.total_contactos }} Contactos)
+                                        ({{ graficos_estadisticas.estadisticas.total_contactos }} Contactos)
                                     </small></h3>
                                 </td>                           
                             </tr>
@@ -54,17 +54,17 @@
                                         <tbody>
                                             <tr>
                                                 <td><h5>Cantidad Total Atendidos</h5></td>
-                                                <td align="right"><h5><span class="label label-primary">{{ estadisticas.total_atentidos }}</span></h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_atentidos }}</span></h5></td>
                                             </tr>
 
                                             <tr>
                                                 <td><h5>Cantidad Total No Atendidos</h5></td>
-                                                <td align="right"><h5><span class="label label-primary">{{ estadisticas.total_no_atentidos }}</span></h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_no_atentidos }}</span></h5></td>
                                             </tr>
 
                                              <tr>
                                                 <td><h5>Cantidad Total Sin Llamar</h5></td>
-                                                <td align="right"><h5><span class="label label-primary">{{ estadisticas.total_no_llamados }}</span></h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_no_llamados }}</span></h5></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -72,7 +72,7 @@
                                 <td align="center">
                                     <div class="graficos-avances">
                                         <figure>
-                                            {{ campana.render_graficos_reporte.torta_general.render|safe }}
+                                            {{ graficos_estadisticas.torta_general.render|safe }}
                                         </figure> 
                                     </div>
                                 </td>
@@ -110,7 +110,7 @@
                                                     <td width="10%" align="right">
                                                         <h5>
                                                             <span class="label label-primary">
-                                                                {% for opcion, cantidad in estadisticas.opcion_x_cantidad.items %}
+                                                                {% for opcion, cantidad in graficos_estadisticas.estadisticas.opcion_x_cantidad.items %}
                                                                     {% if opcion == opcion_campana.digito %}
                                                                         {{ cantidad }}
                                                                     {% endif %}
@@ -132,7 +132,7 @@
                                     </table>
                                     <table class="table table-bordered table-hover">
                                         <tbody>
-                                            {% for opcion_invalida, cantidad in estadisticas.opcion_invalida_x_cantidad.items %}
+                                            {% for opcion_invalida, cantidad in graficos_estadisticas.estadisticas.opcion_invalida_x_cantidad.items %}
                                                 <tr>
                                                     <td><h5>#{{ opcion_invalida }} (Inválida)</h5></td>
                                                     <td width="10%" align="right">
@@ -150,7 +150,7 @@
                                 <td align="center">
                                     <div class="graficos-avances">
                                         <figure>
-                                            {{ campana.render_graficos_reporte.torta_opcion_x_porcentaje.render|safe }}
+                                            {{ graficos_estadisticas.torta_opcion_x_porcentaje.render|safe }}
                                         </figure> 
                                     </div>
                                 </td>
@@ -162,7 +162,7 @@
                         <thead>
                             <tr class="active">
                                 <td colspan="2">
-                                    <h4 class="text-muted">Porcentaje de intentos utilizados. De {{ estadisticas.total_contactos }} contactos por {{ campana.cantidad_intentos }} intentos. Total de {{ estadisticas.total_intentos }} Intentos.</h4>
+                                    <h4 class="text-muted">Porcentaje de intentos utilizados. De {{ graficos_estadisticas.estadisticas.total_contactos }} contactos por {{ campana.cantidad_intentos }} intentos. Total de {{ graficos_estadisticas.estadisticas.total_intentos }} Intentos.</h4>
                                 </td>
                             </tr>
                         </thead>
@@ -173,11 +173,11 @@
                                         <tbody>
                                             <tr>
                                                 <td><h5>Intentos Utilizados</h5></td>
-                                                <td align="right"><h5><span class="label label-primary">{{ estadisticas.total_intentados }}</span></h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_intentados }}</span></h5></td>
                                             </tr>
                                             <tr>
                                                 <td><h5>Intentos Sobrantes</h5></td>
-                                                <td align="right"><h5><span class="label label-primary">{{ estadisticas.total_intentos_pendientes }}</span></h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_intentos_pendientes }}</span></h5></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -185,7 +185,7 @@
                                 <td align="center">
                                     <div class="graficos-avances">
                                         <figure>
-                                            {{ campana.render_graficos_reporte.torta_intentos.render|safe }}
+                                            {{ graficos_estadisticas.torta_intentos.render|safe }}
                                         </figure> 
                                     </div>
                                 </td>
@@ -206,7 +206,7 @@
                                 <td width="50%">
                                     <table class="table table-bordered">
                                         <tbody>
-                                            {% for intentos, cantidad in estadisticas.total_atendidos_intentos.items %}
+                                            {% for intentos, cantidad in graficos_estadisticas.estadisticas.total_atendidos_intentos.items %}
                                                 <tr>
                                                     <td><h5>{{ intentos }} Intentos</h5></td>
                                                     <td width="10%" align="right"><h5><span class="label label-primary">{{ cantidad }}</span></h5></td>
@@ -218,7 +218,7 @@
                                 <td align="center">
                                     <div class="graficos-avances">
                                         <figure>
-                                            {{ campana.render_graficos_reporte.barra_atendidos_intentos.render|safe }}
+                                            {{ graficos_estadisticas.barra_atendidos_intentos.render|safe }}
                                         </figure> 
                                     </div>
                                 </td>
