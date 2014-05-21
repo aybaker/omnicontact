@@ -460,7 +460,7 @@ class ReporteTest(FTSenderBaseTest):
         if os.path.exists(path_graficos):
             shutil.rmtree(path_graficos)
 
-    def _crea_campana_emula_procesamiento(self):
+    def _crea_campana_emula_procesamiento(self, finaliza=True):
         cant_contactos = 100
         numeros_telefonicos = [int(random() * 10000000000)\
             for _ in range(cant_contactos)]
@@ -481,52 +481,54 @@ class ReporteTest(FTSenderBaseTest):
         EventoDeContacto.objects_gestion_llamadas.programar_campana(
             campana.pk)
 
-        for numero_interno in range(1, campana.cantidad_intentos):
-            #Intentos.
-            EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-                campana.pk, numero_interno, probabilidad=1.1)
+        numero_interno = 1
+        #for numero_interno in range(1, campana.cantidad_intentos):
+        #Intentos.
+        EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
+            campana.pk, numero_interno, probabilidad=1.1)
 
-            #Opciones
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_0,
-                probabilidad=0.03)
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_1,
-                probabilidad=0.02)
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_2,
-                probabilidad=0.01)
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_3,
-                probabilidad=0.05)
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_4,
-                probabilidad=0.25)
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_5,
-                probabilidad=0.15)
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_6,
-                probabilidad=0.05)
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_7,
-                probabilidad=0.05)
+        #Opciones
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_0,
+            probabilidad=0.03)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_1,
+            probabilidad=0.02)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_2,
+            probabilidad=0.01)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_3,
+            probabilidad=0.05)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_4,
+            probabilidad=0.25)
+        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_5,
+        #     probabilidad=0.15)
+        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_6,
+        #     probabilidad=0.05)
+        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_7,
+        #     probabilidad=0.05)
 
-            #Opciones inválidas para esta campaña.
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_8,
-                probabilidad=0.02)
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_9,
-                probabilidad=0.02)
+        #Opciones inválidas para esta campaña.
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_8,
+            probabilidad=0.02)
+        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_9,
+        #     probabilidad=0.02)
 
-            #Finaliza algunos.
-            EV_FINALIZADOR = EventoDeContacto.objects.\
-            get_eventos_finalizadores()[0]
-            EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-                numero_interno, evento=EV_FINALIZADOR, probabilidad=0.15)
+        #Finaliza algunos.
+        EV_FINALIZADOR = EventoDeContacto.objects.\
+        get_eventos_finalizadores()[0]
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, evento=EV_FINALIZADOR, probabilidad=0.15)
 
-        campana.finalizar()
+        if finaliza:
+            campana.finalizar()
         return campana
 
     def test_detalle_reporte_template(self):
@@ -538,23 +540,6 @@ class ReporteTest(FTSenderBaseTest):
         c = Client()
         response = c.get(url)
         self.assertEqual(response.status_code, 200)
-
-        grafico_torta = 'src="/media/graficos/{0}-torta.svg"'.format(campana.pk)
-        grafico_torta_opciones =\
-            'src="/media/graficos/{0}-torta-opciones.svg"'.format(campana.pk)
-        grafico_barra_intentos =\
-            'src="/media/graficos/{0}-barra-intentos.svg"'.format(campana.pk)
-        grafico_torta_no_seleccionaron =\
-            'src="/media/graficos/{0}-torta-no-seleccionaron.svg"'.format(
-                campana.pk)
-        grafico_torta_no_intento =\
-            'src="/media/graficos/{0}-torta-no-intento.svg"'.format(campana.pk)
-
-        self.assertContains(response, grafico_torta)
-        self.assertContains(response, grafico_torta_opciones)
-        self.assertContains(response, grafico_barra_intentos)
-        self.assertContains(response, grafico_torta_no_seleccionaron)
-        self.assertContains(response, grafico_torta_no_intento)
 
     def test_obtener_estadistica(self):
         #Crea y emula procesamiento de campaña.
@@ -604,45 +589,6 @@ class ReporteTest(FTSenderBaseTest):
         self.assertEqual(estadisticas['porcentaje_avance'],
             porcentaje_avance)
 
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(estadisticas)
-
-        # {
-        #     u'cantidad_contestadas': 95, #**Testeado**
-        #     u'cantidad_intentados': 100, #**Testeado**
-        #     u'cantidad_no_contestadas': 0, #**Testeado**
-        #     u'cantidad_no_intentados': 0, #**Testeado**
-        #     u'cantidad_no_selecciono_opcion': 0,
-        #     u'cantidad_pendientes': 5, #**Testeado**
-        #     u'cantidad_selecciono_opcion': 100,
-        #     u'dic_intento_x_contactos': {   0: 0, 1: 100},
-        #     u'opcion_invalida_x_cantidad': {   u'1 (Inv\xe1lida)': 1,
-        #                                        u'8 (Inv\xe1lida)': 1,
-        #                                        u'9 (Inv\xe1lida)': 1},
-        #     u'opcion_x_cantidad': {0: 65, 2: 87, 3: 90, 4: 91, 5: 97, 6: 97,
-        #                            7: 96},
-        #     u'opcion_x_porcentaje': {   0: 10.0,
-        #                                 2: 13.0,
-        #                                 3: 14.0,
-        #                                 4: 14.0,
-        #                                 5: 15.0,
-        #                                 6: 15.0,
-        #                                 7: 15.0,
-        #                                 u'1 (Inv\xe1lida)': 0.0,
-        #                                 u'8 (Inv\xe1lida)': 0.0,
-        #                                 u'9 (Inv\xe1lida)': 0.0},
-        #     u'porcentaje_avance': 95.0,
-        #     u'porcentaje_contestadas': 95.0, #**Testeado**
-        #     u'porcentaje_intentados': 100.0, #**Testeado**
-        #     u'porcentaje_no_contestadas': 0.0, #**Testeado**
-        #     u'porcentaje_no_intentados': 0.0, #**Testeado**
-        #     u'porcentaje_no_selecciono_opcion': 0.0,
-        #     u'porcentaje_pendientes': 5.0, #**Testeado**
-        #     u'porcentaje_selecciono_opcion': 100.0,
-        #     u'total_contactos': 100, #**Testeado**
-        # }
-
     def test_render_grafico_torta_avance_campana(self):
         #Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
@@ -652,46 +598,101 @@ class ReporteTest(FTSenderBaseTest):
         self.assertIn('<svg xmlns:xlink="http://www.w3.org/1999/xlink"',
             chart.render())
 
-    def test__url_grafico(self):
+    # def test__url_grafico(self):
+    #     #Crea y emula procesamiento de campaña.
+    #     campana = self._crea_campana_emula_procesamiento()
+
+    #     #Obtengo la url del gráfico de torta general y lo verifico.
+    #     url = campana.url_grafico_torta
+    #     self.assertEqual(url, Campana.URL_GRAFICOS[Campana.TORTA_GENERAL]\
+    #         .format(settings.MEDIA_URL, campana.id))
+
+    #     #Obtengo el path del grafico generado y lo borro.
+    #     path = Campana.PATH_GRAFICOS[Campana.TORTA_GENERAL]\
+    #         .format(settings.MEDIA_ROOT, campana.id)
+    #     os.remove(path)
+    #     #Obtengo la url, y verifico que me haya devuelto None, ya que no
+    #     #existe mas el archivo.
+    #     url = campana.url_grafico_torta
+    #     self.assertEqual(url, None)
+
+    # def test__genera_graficos_estadisticas(self):
+    #     #Creo un campana activa, si datos procesados.
+    #     campana = self.crear_campana_activa(cant_contactos=0)
+    #     campana.finalizar()
+
+    #     url = campana.url_grafico_torta
+    #     self.assertEqual(url, None)
+
+    def test_render_graficos_reporte(self):
         #Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
+        graficos = campana.obtener_estadisticas_render_graficos()
 
-        #Obtengo la url del gráfico de torta general y lo verifico.
-        url = campana.url_grafico_torta
-        self.assertEqual(url, Campana.URL_GRAFICOS[Campana.TORTA_GENERAL]\
-            .format(settings.MEDIA_URL, campana.id))
-
-        #Obtengo el path del grafico generado y lo borro.
-        path = Campana.PATH_GRAFICOS[Campana.TORTA_GENERAL]\
-            .format(settings.MEDIA_ROOT, campana.id)
-        os.remove(path)
-        #Obtengo la url, y verifico que me haya devuelto None, ya que no
-        #existe mas el archivo.
-        url = campana.url_grafico_torta
-        self.assertEqual(url, None)
-
-    def test__genera_graficos_estadisticas(self):
-        #Creo un campana activa, si datos procesados.
-        campana = self.crear_campana_activa(cant_contactos=0)
-        campana.finalizar()
-
-        url = campana.url_grafico_torta
-        self.assertEqual(url, None)
+        self.assertTrue(graficos['torta_general'].render())
+        self.assertTrue(graficos['torta_opcion_x_porcentaje'].render())
+        self.assertTrue(graficos['torta_intentos'].render())
+        self.assertTrue(graficos['barra_atendidos_intentos'].render())
 
     def test_obtener_contadores_por_intento(self):
-         #Crea y emula procesamiento de campaña.
+        #Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
-        EventoDeContacto.objects_estadisticas.obtener_contadores_por_intento(
-            campana.pk, campana.cantidad_intentos)
+        contadores = EventoDeContacto.objects_estadisticas.\
+            obtener_contadores_por_intento(campana.pk,
+                campana.cantidad_intentos)
+
+        self.assertEqual(len(contadores), 3)
+        self.assertEqual(contadores[1]['cantidad_intentos'], 100)
 
     def test_establecer_agregacion(self):
         #Crea y emula procesamiento de campaña.
-        self._crea_campana_emula_procesamiento()
-        self.assertEqual(AgregacionDeEventoDeContacto.objects.all().count(), 2)
+        campana = self._crea_campana_emula_procesamiento()
+        timestamp_ultimo_evento = EventoDeContacto.objects.filter(
+            campana_id=campana.id).latest('timestamp').timestamp
+        tipo_agregacion = AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE
+        AgregacionDeEventoDeContacto.objects.establece_agregacion(campana.pk,
+            campana.cantidad_intentos, tipo_agregacion)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.count(), 3)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).cantidad_intentos, 100)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).timestamp_ultimo_evento, timestamp_ultimo_evento)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).tipo_agregacion, tipo_agregacion)
 
+        #Segundo intento de Agregacion, para verifica que sumarice y no que
+        #genere nuevos registros.
+        AgregacionDeEventoDeContacto.objects.establece_agregacion(campana.pk,
+            campana.cantidad_intentos, tipo_agregacion)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.all().count(), 3)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).cantidad_intentos, 200)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).timestamp_ultimo_evento, timestamp_ultimo_evento)
+        self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
+            numero_intento=1).tipo_agregacion, tipo_agregacion)
+
+
+    def test_procesa_agregacion(self):
+        #Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento()
+        tipo_agregacion = AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE
+        dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
+            campana.pk, campana.cantidad_intentos, tipo_agregacion)
+        self.assertEqual(dic_totales['total_intentados'], 100)
+        self.assertEqual(dic_totales['limite_intentos'], 3)
+        self.assertEqual(dic_totales['total_contactos'], 100)
+
+        dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
+            campana.pk, campana.cantidad_intentos, tipo_agregacion)
+        self.assertEqual(dic_totales['total_intentados'], 100)
+        self.assertEqual(dic_totales['limite_intentos'], 3)
+        self.assertEqual(dic_totales['total_contactos'], 100)
+
+
+        # print "# procesa_agregacion() #"
         # import pprint
-        # from django.core import serializers
         # pp = pprint.PrettyPrinter(indent=4)
-        # data = serializers.serialize("python",
-        #     AgregacionDeEventoDeContacto.objects.all())
+        # data = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
+        #     campana.pk)
         # pp.pprint(data)

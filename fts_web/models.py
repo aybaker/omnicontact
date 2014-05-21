@@ -16,6 +16,7 @@ from pygal.style import Style
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Sum
 
 from fts_web.utiles import upload_to, log_timing
 from django.db.models.aggregates import Max
@@ -423,13 +424,6 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
 
-        try:
-            AgregacionDeEventoDeContacto.objects.establece_agregacion(self.pk,
-               self.cantidad_intentos)
-            #self._genera_graficos_estadisticas()
-        except:
-            logger.exception("No se pudo generar los datos de estadísticas.")
-
     def pausar(self):
         """Setea la campaña como ESTADO_PAUSADA"""
         logger.info("Seteando campana %s como ESTADO_PAUSADA", self.id)
@@ -580,7 +574,6 @@ class Campana(models.Model):
         return None
 
     def render_grafico_torta_avance_campana(self):
-
         #Obtiene estadística.
         estadisticas = self.obtener_estadisticas()
 
@@ -588,24 +581,179 @@ class Campana(models.Model):
         pie_chart = pygal.Pie(disable_xml_declaration=True, height=350,
             legend_font_size=20, legend_box_size=18,
             style=Campana.ESTILO_VERDE_ROJO_NARANJA)
-
         pie_chart.add('Contestados', estadisticas['porcentaje_contestadas'])
         pie_chart.add('No Contestados', estadisticas[
             'porcentaje_no_contestadas'])
         pie_chart.add('Pendientes', estadisticas['porcentaje_pendientes'])
         return pie_chart
 
-    def obtener_estadisticas(self):
+    def obtener_estadisticas_render_graficos(self):
+        estadisticas = self.calcular_estadisticas(
+            AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE)
+
+        if estadisticas:
+            logger.info("Generando grafico para campana %s", self.id)
+
+            #Torta: porcentajes de contestados, no contestados y no llamados.
+            torta_general = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
+            torta_general.title = 'Porcentajes Generales de {0} contactos.'.\
+                format(estadisticas['total_contactos'])
+            torta_general.add('Atendidos', estadisticas[
+                'porcentaje_atendidos'])
+
+            torta_general.add('No Atendidos', estadisticas[
+                'porcentaje_no_atendidos'])
+            torta_general.add('Sin Llamar', estadisticas[
+                'porcentaje_no_llamados'])
+
+            #Torta: porcentajes de opciones selecionadas.
+            dic_opcion_x_porcentaje = estadisticas['opcion_x_porcentaje']
+            torta_opcion_x_porcentaje = pygal.Pie(
+                style=Campana.ESTILO_MULTICOLOR)
+            torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
+            for opcion, porcentaje in dic_opcion_x_porcentaje.items():
+                torta_opcion_x_porcentaje.add('#{0}'.format(opcion), porcentaje)
+
+            #Torta: porcentajes de intentados y de intentos pendientes.
+            torta_intentos = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
+            torta_intentos.title = 'Porcentajes Intentados de {0} intentos.'.\
+                format(estadisticas['total_intentos'])
+            torta_intentos.add('Intentados', estadisticas[
+                'porcentaje_intentados'])
+            torta_intentos.add('No Intentados', estadisticas[
+                'porcentaje_intentos_pendientes'])
+
+            #Barra: Total de llamados atendidos en cada intento.
+            total_atendidos_intentos = estadisticas['total_atendidos_intentos']
+            intentos = [total_atendidos_intentos[intentos] for intentos, _ in\
+                total_atendidos_intentos.items()]
+            barra_atendidos_intentos = pygal.Bar(show_legend=False,
+                style=Campana.ESTILO_MULTICOLOR)
+            barra_atendidos_intentos.title = 'Cantidad de llamadas atendidas en\
+                cada intento.'
+            barra_atendidos_intentos.x_labels = map(str, range(1,
+                len(total_atendidos_intentos) + 1))
+            barra_atendidos_intentos.add('Cantidad', intentos)
+
+            return {
+                'estadisticas': estadisticas,
+                'torta_general': torta_general,
+                'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
+                'torta_intentos': torta_intentos,
+                'barra_atendidos_intentos': barra_atendidos_intentos,
+            }
+        else:
+            logger.info("Campana %s NO obtuvo estadísticas.", self.id)
+
+    def calcular_estadisticas(self, tipo_agregacion):
         """
         Este método devuelve las estadísticas de
         la campaña actual.
         """
-        from fts_daemon.models import EventoDeContacto
 
         #Una campana que aún no se activo, no tendria porque devolver
         #estadísticas.
         assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA,
             Campana.ESTADO_FINALIZADA)
+
+        dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
+            self.pk, self.cantidad_intentos, tipo_agregacion)
+
+        total_contactos = dic_totales['total_contactos']
+        if not total_contactos > 0:
+            return None
+
+        #Generales
+        total_atentidos = dic_totales['total_atentidos']
+        porcentaje_atendidos = float(100 * total_atentidos / total_contactos)
+
+        total_no_atendidos = dic_totales['total_no_atendidos']
+        porcentaje_no_atendidos = float(100 * total_no_atendidos /\
+            total_contactos)
+
+        total_no_llamados = dic_totales['total_no_llamados']
+        porcentaje_no_llamados = float(100 * total_no_llamados /\
+            total_contactos)
+
+        #Intentos
+        total_intentos = total_contactos * dic_totales['limite_intentos']
+
+        total_intentados = dic_totales['total_intentados']
+        porcentaje_intentados = float(100 * total_intentados / total_intentos)
+        total_intentos_pendientes = dic_totales['total_intentos_pendientes']
+        porcentaje_intentos_pendientes = float(100 * total_intentos_pendientes\
+            / total_intentos)
+
+        # cantidad_no_selecciono_opcion = dic_estado_x_cantidad[
+        #     'no_selecciono_opcion']
+        # porcentaje_no_selecciono_opcion = float(
+        #     100 * cantidad_no_selecciono_opcion / total_contactos)
+
+        # cantidad_selecciono_opcion = total_contactos - dic_estado_x_cantidad[
+        #     'no_selecciono_opcion']
+        # porcentaje_selecciono_opcion = float(
+        #     100 * cantidad_selecciono_opcion / total_contactos)
+
+        total_atendidos_intentos = dic_totales['total_atendidos_intentos']
+
+        opcion_x_cantidad = defaultdict(lambda: 0)
+        opcion_invalida_x_cantidad = defaultdict(lambda: 0)
+        opcion_x_porcentaje = defaultdict(lambda: 0)
+        if dic_totales['total_opciones'] > 0:
+            opciones_campana = [opcion.digito for opcion in self.opciones.all()]
+            for opcion in range(10):
+                cantidad_opcion = dic_totales['total_opcion_{0}'.format(opcion)]
+                opcion_x_cantidad[opcion] = cantidad_opcion
+                opcion_x_porcentaje[opcion] = float(100 * cantidad_opcion /\
+                    dic_totales['total_opciones'])
+                if not opcion in opciones_campana:
+                    opcion_invalida_x_cantidad[opcion] = cantidad_opcion
+
+        dic_estadisticas = {
+            #Estadisticas Generales.
+            'total_contactos': total_contactos,
+
+            'total_atentidos': total_atentidos,
+            'porcentaje_atendidos': porcentaje_atendidos,
+            'total_no_atentidos': total_no_atendidos,
+            'porcentaje_no_atendidos': porcentaje_no_atendidos,
+            'total_no_llamados': total_no_llamados,
+            'porcentaje_no_llamados': porcentaje_no_llamados,
+
+            'total_intentos': total_intentos,
+
+            'total_intentados': total_intentados,
+            'porcentaje_intentados': porcentaje_intentados,
+            'total_intentos_pendientes': total_intentos_pendientes,
+            'porcentaje_intentos_pendientes': porcentaje_intentos_pendientes,
+
+
+        #     'porcentaje_avance': porcentaje_avance,
+
+        #     'cantidad_selecciono_opcion': cantidad_selecciono_opcion,
+        #     'porcentaje_selecciono_opcion': porcentaje_selecciono_opcion,
+        #     'cantidad_no_selecciono_opcion': cantidad_no_selecciono_opcion,
+        #     'porcentaje_no_selecciono_opcion': porcentaje_no_selecciono_opcion,
+
+
+            'total_atendidos_intentos': total_atendidos_intentos,
+
+            #Estadisticas de las llamadas Contestadas.
+            'opcion_x_cantidad': dict(opcion_x_cantidad),
+            'opcion_invalida_x_cantidad': dict(opcion_invalida_x_cantidad),
+            'opcion_x_porcentaje': dict(opcion_x_porcentaje),
+        }
+
+        return dic_estadisticas
+
+    def obtener_estadisticas(self):
+        """
+        Este método devuelve las estadísticas de
+        la campaña actual.
+        Podría procesarse esta información directamente en EventoDeContacto.
+        """
+
+        from fts_daemon.models import EventoDeContacto
 
         dic_estado_x_cantidad, dic_intento_x_contactos, dic_evento_x_cantidad =\
             EventoDeContacto.objects_estadisticas.\
@@ -615,51 +763,39 @@ class Campana(models.Model):
             'finalizado_x_evento_finalizador'] + dic_estado_x_cantidad[
             'finalizado_x_limite_intentos'] + dic_estado_x_cantidad[
             'pendientes']
-
-        if not total_contactos > 0:
-            return None
-
         cantidad_contestadas = dic_estado_x_cantidad[
             'finalizado_x_evento_finalizador']
         porcentaje_contestadas = float(100 * cantidad_contestadas /\
             total_contactos)
-
         cantidad_no_contestadas = dic_estado_x_cantidad[
             'finalizado_x_limite_intentos']
         porcentaje_no_contestadas = float(100 * cantidad_no_contestadas /\
             total_contactos)
-
         porcentaje_avance = porcentaje_contestadas + porcentaje_no_contestadas
-
         cantidad_pendientes = dic_estado_x_cantidad['pendientes']
         porcentaje_pendientes = float(100 * cantidad_pendientes /\
             total_contactos)
-
         cantidad_no_selecciono_opcion = dic_estado_x_cantidad[
             'no_selecciono_opcion']
         porcentaje_no_selecciono_opcion = float(
             100 * cantidad_no_selecciono_opcion / total_contactos)
-
         cantidad_selecciono_opcion = total_contactos - dic_estado_x_cantidad[
             'no_selecciono_opcion']
         porcentaje_selecciono_opcion = float(
             100 * cantidad_selecciono_opcion / total_contactos)
-
         cantidad_no_intentados = dic_intento_x_contactos[0]
         porcentaje_no_intentados = float(100 * cantidad_no_intentados /\
             total_contactos)
-
         cantidad_intentados = total_contactos - cantidad_no_intentados
         porcentaje_intentados = float(100 * cantidad_intentados /\
             total_contactos)
-
         #Calcula, por cada opción, la cantidad de veces seleccionada.
         opcion_x_cantidad = defaultdict(lambda: 0)
+
         for opcion_campana in self.opciones.all():
             evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion_campana.digito]
             opcion_x_cantidad[opcion_campana.digito] +=\
                 dic_evento_x_cantidad.get(evento, 0)
-
         #Calcula la cantidad de opciones inválidas que se selecionaron.
         eventos_opciones_seleccionadas = filter(lambda evento: evento in\
             EventoDeContacto.NUMERO_OPCION_MAP.values(),
@@ -673,7 +809,6 @@ class Campana(models.Model):
                 opcion_invalida = '{0} (Inválida)'.format(
                     EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[evento])
                 opcion_invalida_x_cantidad[opcion_invalida] += 1
-
         #Calcula, por cada opción el porcentaje que representa.
         opcion_valida_invalida_x_cantidad = {}
         opcion_valida_invalida_x_cantidad.update(opcion_x_cantidad)
@@ -685,42 +820,31 @@ class Campana(models.Model):
                 opcion_valida_invalida_x_cantidad.items():
                 opcion_x_porcentaje[opcion] += float(100 * cantidad /\
                 total_opciones)
+        return {
 
-        dic_estadisticas = {
             #Estadisticas Generales.
             'total_contactos': total_contactos,
-
             'cantidad_contestadas': cantidad_contestadas,
             'porcentaje_contestadas': porcentaje_contestadas,
-
             'cantidad_no_contestadas': cantidad_no_contestadas,
             'porcentaje_no_contestadas': porcentaje_no_contestadas,
-
             'porcentaje_avance': porcentaje_avance,
-
             'cantidad_pendientes': cantidad_pendientes,
             'porcentaje_pendientes': porcentaje_pendientes,
-
             'cantidad_selecciono_opcion': cantidad_selecciono_opcion,
             'porcentaje_selecciono_opcion': porcentaje_selecciono_opcion,
             'cantidad_no_selecciono_opcion': cantidad_no_selecciono_opcion,
             'porcentaje_no_selecciono_opcion': porcentaje_no_selecciono_opcion,
-
             'cantidad_intentados': cantidad_intentados,
             'porcentaje_intentados': porcentaje_intentados,
             'cantidad_no_intentados': cantidad_no_intentados,
             'porcentaje_no_intentados': porcentaje_no_intentados,
-
             'dic_intento_x_contactos': dict(dic_intento_x_contactos),
-
             #Estadisticas de las llamadas Contestadas.
             'opcion_x_cantidad': dict(opcion_x_cantidad),
             'opcion_invalida_x_cantidad': dict(opcion_invalida_x_cantidad),
             'opcion_x_porcentaje': dict(opcion_x_porcentaje),
-
         }
-
-        return dic_estadisticas
 
     def _genera_graficos_estadisticas(self):
         """
@@ -849,7 +973,8 @@ class Campana(models.Model):
 #==============================================================================
 
 class AgregacionDeEventoDeContactoManager(models.Manager):
-    def establece_agregacion(self, campana_id, cantidad_intentos):
+    def establece_agregacion(self, campana_id, cantidad_intentos,
+        tipo_agregacion):
         """
         Se encarga de obtener los contadores de eventos por cada intento de
         contacto de la campaña, y es establecer los registros de ADEDC
@@ -866,31 +991,20 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         dic_contadores_x_intentos = EventoDeContacto.objects_estadisticas.\
             obtener_contadores_por_intento(campana_id, cantidad_intentos)
 
-        #Ejemplo:
-        # dic_contadores_x_intentos = {
-        #     1: {   u'cantidad_finalizados': 53,
-        #            u'cantidad_intentos': 100,
-        #            u'cantidad_x_opcion': [{u'evento': 56, 'cantidad': 26},
-        #                                   {u'evento': 53, 'cantidad': 20}]},
-        #     2: {   u'cantidad_finalizados': 77,
-        #            u'cantidad_intentos': 100,
-        #            u'cantidad_x_opcion': [{u'evento': 56, 'cantidad': 29},
-        #                                   {u'evento': 53, 'cantidad': 26}]}
-        # }
-
         #Por cada intento en el diccionario dic_contadores_x_intentos,
         #actualizamos o generamos según exista o no el registro con las
         #cantidades de cada intento.
         for numero_intento, dic_contadores in dic_contadores_x_intentos.items():
-            agregacion_evento_contacto, created = self.get_or_create(
-                campana_id=campana_id, numero_intento=numero_intento)
 
-            dic_opciones = dict((opcion, 0) for opcion in range(9))
+            dic_opciones = dict((opcion, 0) for opcion in range(10))
             for dic_evento_cantidad in dic_contadores['cantidad_x_opcion']:
                 opcion = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
                         dic_evento_cantidad['evento']]
                 dic_opciones.update({opcion: dic_evento_cantidad[
                     'cantidad']})
+
+            agregacion_evento_contacto, created = self.get_or_create(
+                campana_id=campana_id, numero_intento=numero_intento)
 
             if created:
                 agregacion_evento_contacto.cantidad_intentos =\
@@ -924,7 +1038,85 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
                 agregacion_evento_contacto.cantidad_opcion_8 += dic_opciones[8]
                 agregacion_evento_contacto.cantidad_opcion_9 += dic_opciones[9]
 
+            agregacion_evento_contacto.tipo_agregacion = tipo_agregacion
+            agregacion_evento_contacto.timestamp_ultimo_evento = dic_contadores[
+                'timestamp_ultimo_evento']
+
             agregacion_evento_contacto.save()
+
+    def procesa_agregacion(self, campana_id, cantidad_intentos,
+        tipo_agregacion):
+        """
+        Sumariza los contadores de cada intento de contacto de la campana.
+        :param campana_id: De que campana que se sumarizaran los contadores.
+        :type campana_id: int
+        """
+        agregaciones_campana = self.filter(campana_id=campana_id)
+
+        #Por ahora verifico si existen agregaciones, ya que por ahora viene
+        #solo de reporte, cuando se implemente supervisión cambia.
+        if not agregaciones_campana:
+            self.establece_agregacion(campana_id, cantidad_intentos,
+                tipo_agregacion)
+            agregaciones_campana = self.filter(campana_id=campana_id)
+
+        dic_totales = agregaciones_campana.aggregate(
+            total_intentados=Sum('cantidad_intentos'),
+            total_atentidos=Sum('cantidad_finalizados'),
+            total_opcion_0=Sum('cantidad_opcion_0'),
+            total_opcion_1=Sum('cantidad_opcion_1'),
+            total_opcion_2=Sum('cantidad_opcion_2'),
+            total_opcion_3=Sum('cantidad_opcion_3'),
+            total_opcion_4=Sum('cantidad_opcion_4'),
+            total_opcion_5=Sum('cantidad_opcion_5'),
+            total_opcion_6=Sum('cantidad_opcion_6'),
+            total_opcion_7=Sum('cantidad_opcion_7'),
+            total_opcion_8=Sum('cantidad_opcion_8'),
+            total_opcion_9=Sum('cantidad_opcion_9'))
+
+        """
+        Variables Conocidas:
+            Limite Intentos (LI)
+            Total Contactos (TC)
+            Total Intentos (TI)
+            Total Atendidos (TA)
+
+        Variables Calculadas:
+            Total No Llamados (TNL) = Si (TC - TI) > 0, SiNo 0
+            Total No Atendidos (TNA) = TC - (TNL + TA)
+            Total Intentos Pendientes (TIP) = (TC * LI) - TI
+            Tota Opciones (TO) = Sum(total_opcion_X)
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        limite_intentos = campana.cantidad_intentos
+        total_contactos = campana.bd_contacto.contactos.count()
+
+        total_no_llamados = total_contactos - dic_totales['total_intentados']
+        if total_no_llamados < 0:
+            total_no_llamados = 0
+
+        total_no_atendidos = total_contactos - (total_no_llamados + dic_totales[
+            'total_atentidos'])
+        total_intentos_pendientes = (total_contactos * limite_intentos) -\
+            dic_totales['total_intentados']
+
+        total_opciones = 0
+        for opcion in range(10):
+            total_opciones += dic_totales['total_opcion_{0}'.format(opcion)]
+
+        total_atendidos_intentos = dict((agregacion_campana.numero_intento,
+            agregacion_campana.cantidad_finalizados)
+            for agregacion_campana in agregaciones_campana)
+
+        dic_totales.update({
+            'limite_intentos': limite_intentos,
+            'total_contactos': total_contactos,
+            'total_no_llamados': total_no_llamados,
+            'total_no_atendidos': total_no_atendidos,
+            'total_intentos_pendientes': total_intentos_pendientes,
+            'total_opciones': total_opciones,
+            'total_atendidos_intentos': total_atendidos_intentos})
+        return dic_totales
 
 
 class AgregacionDeEventoDeContacto(models.Model):
@@ -935,6 +1127,10 @@ class AgregacionDeEventoDeContacto(models.Model):
     para cada contacto, esa campana debería tener 2 registros
     con las cantidades, de ciertos eventos, de ese intento.
     """
+    TIPO_AGREGACION_SUPERVISION = 1
+    TIPO_AGREGACION_REPORTE = 2
+    TIPO_AGREGACION_DEPURACION = 3
+
     objects = AgregacionDeEventoDeContactoManager()
 
     campana_id = models.IntegerField(db_index=True)
@@ -952,7 +1148,8 @@ class AgregacionDeEventoDeContacto(models.Model):
     cantidad_opcion_8 = models.IntegerField(null=True)
     cantidad_opcion_9 = models.IntegerField(null=True)
     timestamp_ultima_actualizacion = models.DateTimeField(auto_now_add=True)
-    #timestamp_ultimo_evento = models.DateTimeField()
+    timestamp_ultimo_evento = models.DateTimeField(null=True)
+    tipo_agregacion = models.IntegerField(null=True)
 
     def __unicode__(self):
         return "AgregacionDeEventoDeContacto-{0}-{1}".format(
