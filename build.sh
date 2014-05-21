@@ -1,5 +1,15 @@
 #!/bin/bash
 
+#
+# Script de build y deploy para FTSender
+# Autor: Horacio G. de Oro <hgdeoro@gmail.com>
+# Requiere: virtualenv activado
+#
+# Otros comandos interesantes:
+#  $ ansible -m setup hostname
+#      Para visualizar facts
+#
+
 if [ "$VIRTUAL_ENV" = "" ] ; then
         echo "ERROR: virtualenv (o alguno de la flia.) no encontrado"
         exit 1

@@ -13,6 +13,12 @@
 ## Setup general, SO, packages, etc
 ##
 
+- name: Check target server
+  fail: msg="Target server isn't supported"
+  when: ansible_distribution != "CentOS" or ansible_distribution_major_version|int != 6
+  tags:
+    - checks
+
 - name: Check - RPM de EPEL 6 
   command: test -f /etc/yum.repos.d/epel.repo
   register: epel_installed

@@ -1,6 +1,6 @@
 ---
 - hosts: ftsender
-  gather_facts: no
+  gather_facts: yes
   roles:
     - ftsender_server
   remote_user: ftsender
