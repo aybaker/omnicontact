@@ -1143,7 +1143,7 @@ class AgregacionDeEventoDeContacto(models.Model):
     cantidad_opcion_8 = models.IntegerField(null=True)
     cantidad_opcion_9 = models.IntegerField(null=True)
     timestamp_ultima_actualizacion = models.DateTimeField(auto_now_add=True)
-    #timestamp_ultimo_evento = models.DateTimeField()
+    timestamp_ultimo_evento = models.DateTimeField()
 
     def __unicode__(self):
         return "AgregacionDeEventoDeContacto-{0}-{1}".format(
