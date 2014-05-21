@@ -627,7 +627,7 @@ class ReporteTest(FTSenderBaseTest):
     def test_render_graficos_reporte(self):
         #Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
-        graficos = campana.render_graficos_reporte()
+        graficos = campana.obtener_estadisticas_render_graficos()
 
         self.assertTrue(graficos['torta_general'].render())
         self.assertTrue(graficos['torta_opcion_x_porcentaje'].render())

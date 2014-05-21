@@ -593,7 +593,7 @@ class Campana(models.Model):
         pie_chart.add('Pendientes', estadisticas['porcentaje_pendientes'])
         return pie_chart
 
-    def render_graficos_reporte(self):
+    def obtener_estadisticas_render_graficos(self):
         estadisticas = self.calcular_estadisticas()
 
         if estadisticas:
