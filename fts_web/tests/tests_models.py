@@ -646,7 +646,7 @@ class ReporteTest(FTSenderBaseTest):
 
     def test_establecer_agregacion(self):
         #Crea y emula procesamiento de campaña.
-        campana = self._crea_campana_emula_procesamiento(finaliza=False)
+        campana = self._crea_campana_emula_procesamiento()
         AgregacionDeEventoDeContacto.objects.establece_agregacion(campana.pk,
             campana.cantidad_intentos)
         self.assertEqual(AgregacionDeEventoDeContacto.objects.count(), 3)
@@ -665,10 +665,17 @@ class ReporteTest(FTSenderBaseTest):
         #Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
         dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
-            campana.pk)
+            campana.pk, campana.cantidad_intentos)
         self.assertEqual(dic_totales['total_intentados'], 100)
         self.assertEqual(dic_totales['limite_intentos'], 3)
         self.assertEqual(dic_totales['total_contactos'], 100)
+
+        dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
+            campana.pk, campana.cantidad_intentos)
+        self.assertEqual(dic_totales['total_intentados'], 100)
+        self.assertEqual(dic_totales['limite_intentos'], 3)
+        self.assertEqual(dic_totales['total_contactos'], 100)
+
 
         # print "# procesa_agregacion() #"
         # import pprint
