@@ -148,6 +148,40 @@
     - nginx
 
 ##
+## Asterisk
+##
+
+- name: Check if Asterisk is installed 
+  command: test -f /opt/asterisk-11/sbin/asterisk
+  register: asterisk_installed
+  ignore_errors: True
+  tags:
+    - asterisk
+
+- name: Upload Asterisk init script
+  template: >
+    src=etc/init.d/asterisk-11-ftsender
+    dest=/etc/init.d/asterisk-11-ftsender
+    owner=root group=root mode=0755
+  sudo: yes
+  tags:
+    - asterisk
+
+- name: Register Asterisk service
+  service: name=asterisk-11-ftsender enabled=yes
+  when: asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+
+- name: Start Asterisk (only if installed)
+  sudo: yes
+  when: asterisk_installed|success
+  service: name=asterisk-11-ftsender state=started
+  tags:
+    - asterisk
+
+##
 ## BD
 ##
 
@@ -303,7 +337,7 @@
   tags:
     - deploy
 
-- name: Upload init script
+- name: Upload FTSender init script
   template: >
     src=etc/init.d/ftsender-daemon
     dest=/etc/init.d/ftsender-daemon

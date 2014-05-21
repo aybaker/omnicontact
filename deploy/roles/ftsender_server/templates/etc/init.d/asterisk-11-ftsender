@@ -1,0 +1,54 @@
+#! /bin/sh
+#
+# asterisk
+#
+# chkconfig: - 90 10
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+USER=asterisk
+GROUP=asterisk
+CMD=/opt/asterisk-11/sbin/asterisk
+
+# $ wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-11-current.tar.gz
+# $ tar xzf asterisk-11-current.tar.gz 
+# $ cd asterisk-11.9.0/
+# $ ./configure --prefix=/opt/asterisk-11
+# $ make -j2
+# $ make install
+# $ make samples
+
+# See how we were called.
+case "$1" in
+  start)
+        echo -n "Starting asterisk-11... "
+        $CMD -U $USER -G $GROUP
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]
+        then
+                echo_success
+        else
+                echo_failure
+        fi
+        echo
+        ;;
+  stop)
+        echo -n "Stopping asterisk-11... "
+        su -l -s /bin/bash -c "$CMD -x 'core stop now'" $USER
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]
+        then
+                echo_success
+        else
+                echo_failure
+        fi
+        echo
+        ;;
+  *)
+        echo "Usage: $0 start|stop"
+        exit 1
+esac
+
+exit $RETVAL
