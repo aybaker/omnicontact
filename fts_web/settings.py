@@ -224,7 +224,7 @@ Para transformar WAV (cualquier formato) -> WAV (compatible con Asterisk):
 TMPL_FTS_AUDIO_CONVERSOR_EXTENSION = None
 """Extension a usar para archivo generado por `TMPL_FTS_AUDIO_CONVERSOR`
 
-Ejemplo: *.wav* (con el . incluido):  el archivo `<OUTPUT_FILE>`
+Ejemplo: `.wav` (con el . incluido):  el archivo `<OUTPUT_FILE>`
 tendra la extension `.wav`
 """
 
