@@ -312,6 +312,7 @@
   tags:
     - deploy
     - quick_deploy
+    - update_settings
 
 - name: Run Django syncdb
   django_manage: >
@@ -382,18 +383,15 @@
   tags:
     - deploy
     - quick_deploy
+    - update_settings
 
 - name: Run ftsdaemon_checks
-  #django_manage: >
-  #    command=ftsdaemon_checks
-  #    app_path=/home/ftsender/deploy/app
-  #    settings=fts_web.settings
-  #    virtualenv=/home/ftsender/deploy/virtualenv
   command: /home/ftsender/deploy/bin/manage.sh ftsdaemon_checks
   register: ftsdaemon_checks_output
   tags:
     - deploy
     - quick_deploy
+    - update_settings
   ignore_errors: True
 
 - name: Print output of ftsdaemon_checks
@@ -402,3 +400,4 @@
   tags:
     - deploy
     - quick_deploy
+    - update_settings
