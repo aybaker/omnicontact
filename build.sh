@@ -33,7 +33,6 @@ git archive --format=tar $(git rev-parse HEAD) | tar x -f - -C $TMP/app
 
 echo "Eliminando archivos innecesarios..."
 rm -rf $TMP/app/fts_tests
-rm -rf $TMP/app/test
 rm -rf $TMP/app/docs
 rm -rf $TMP/app/deploy
 rm -rf $TMP/app/build
