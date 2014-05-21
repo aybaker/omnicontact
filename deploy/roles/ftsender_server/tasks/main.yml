@@ -77,6 +77,24 @@
   tags:
     - yum
 
+- name: Install packages for buliding Asterisk
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - make
+    - wget
+    - openssl-devel
+    - ncurses-devel
+    - newt-devel
+    - libxml2-devel
+    - kernel-devel
+    - gcc
+    - gcc-c++
+    - sqlite-devel
+    - libuuid-devel
+  tags:
+    - asterisk
+
 - name: Check timezone
   command: diff -q /etc/localtime {{os_timezone}}
   register: clock_synchronized
