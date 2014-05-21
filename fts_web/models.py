@@ -638,6 +638,7 @@ class Campana(models.Model):
         barra_atendidos_intentos.add('Cantidad', intentos)
 
         return {
+            'estadisticas': estadisticas,
             'torta_general': torta_general,
             'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
             'torta_intentos': torta_intentos,
@@ -1056,7 +1057,6 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         :type campana_id: int
         """
         agregaciones_campana = self.filter(campana_id=campana_id)
-
         dic_totales = agregaciones_campana.aggregate(
             total_intentados=Sum('cantidad_intentos'),
             total_atentidos=Sum('cantidad_finalizados'),
