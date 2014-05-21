@@ -541,18 +541,20 @@ class EventoDeContactoEstadisticasManager():
         :type cantidad_intentos: int
         """
         #TODO: filtrar los EVC desde ese timestamp_desde hasta hoy y ahora.
-        EDC = EventoDeContacto.objects.all()
+        EDC = EventoDeContacto.objects.filter(campana_id=campana_id)
+        if not EDC.count():
+            return None
+
+        timestamp_ultimo_evento = EDC.latest('timestamp').timestamp
 
         dic_contadores = {}
         for numero_intento in range(1, cantidad_intentos + 1):
             cantidad_intentos = EDC.filter(
-                campana_id=campana_id,
                 dato=numero_intento,
                 evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
             ).count()
 
             finalizados = EDC.filter(
-                campana_id=campana_id,
                 dato=numero_intento,
                 evento__in=EventoDeContacto.objects.get_eventos_finalizadores(),
             )
@@ -587,6 +589,7 @@ class EventoDeContactoEstadisticasManager():
                 #'cantidad_seleccionaron_opcion': cantidad_seleccionaron_opcion,
                 #'cantidad_no_seleccionaron_opcion':\
                 #    cantidad_no_seleccionaron_opcion,
+                'timestamp_ultimo_evento': timestamp_ultimo_evento,
                 }
             })
         return dic_contadores
