@@ -599,51 +599,56 @@ class Campana(models.Model):
         if estadisticas:
             logger.info("Generando grafico para campana %s", self.id)
 
-        #Torta: porcentajes de contestados, no contestados y no llamados.
-        torta_general = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
-        torta_general.title = 'Porcentajes Generales de {0} contactos.'.format(
-            estadisticas['total_contactos'])
-        torta_general.add('Atendidos', estadisticas[
-            'porcentaje_atendidos'])
+            #Torta: porcentajes de contestados, no contestados y no llamados.
+            torta_general = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
+            torta_general.title = 'Porcentajes Generales de {0} contactos.'.\
+                format(estadisticas['total_contactos'])
+            torta_general.add('Atendidos', estadisticas[
+                'porcentaje_atendidos'])
 
-        torta_general.add('No Atendidos', estadisticas[
-            'porcentaje_no_atendidos'])
-        torta_general.add('Sin Llamar', estadisticas['porcentaje_no_llamados'])
+            torta_general.add('No Atendidos', estadisticas[
+                'porcentaje_no_atendidos'])
+            torta_general.add('Sin Llamar', estadisticas[
+                'porcentaje_no_llamados'])
 
-        #Torta: porcentajes de opciones selecionadas.
-        dic_opcion_x_porcentaje = estadisticas['opcion_x_porcentaje']
-        torta_opcion_x_porcentaje = pygal.Pie(style=Campana.ESTILO_MULTICOLOR)
-        torta_opcion_x_porcentaje.title = 'Porcentajes opciones seleccionadas.'
-        for opcion, porcentaje in dic_opcion_x_porcentaje.items():
-            torta_opcion_x_porcentaje.add('#{0}'.format(opcion), porcentaje)
+            #Torta: porcentajes de opciones selecionadas.
+            dic_opcion_x_porcentaje = estadisticas['opcion_x_porcentaje']
+            torta_opcion_x_porcentaje = pygal.Pie(
+                style=Campana.ESTILO_MULTICOLOR)
+            torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
+            for opcion, porcentaje in dic_opcion_x_porcentaje.items():
+                torta_opcion_x_porcentaje.add('#{0}'.format(opcion), porcentaje)
 
-        #Torta: porcentajes de intentados y de intentos pendientes.
-        torta_intentos = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
-        torta_intentos.title = 'Porcentajes Intentados de {0} intentos.'.format(
-            estadisticas['total_intentos'])
-        torta_intentos.add('Intentados', estadisticas['porcentaje_intentados'])
-        torta_intentos.add('No Intentados', estadisticas[
-            'porcentaje_intentos_pendientes'])
+            #Torta: porcentajes de intentados y de intentos pendientes.
+            torta_intentos = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
+            torta_intentos.title = 'Porcentajes Intentados de {0} intentos.'.\
+                format(estadisticas['total_intentos'])
+            torta_intentos.add('Intentados', estadisticas[
+                'porcentaje_intentados'])
+            torta_intentos.add('No Intentados', estadisticas[
+                'porcentaje_intentos_pendientes'])
 
-        #Barra: Total de llamados atendidos en cada intento.
-        total_atendidos_intentos = estadisticas['total_atendidos_intentos']
-        intentos = [total_atendidos_intentos[intentos] for intentos, _ in\
-            total_atendidos_intentos.items()]
-        barra_atendidos_intentos = pygal.Bar(show_legend=False,
-            style=Campana.ESTILO_MULTICOLOR)
-        barra_atendidos_intentos.title = 'Cantidad de llamadas atendidas en\
-            cada intento.'
-        barra_atendidos_intentos.x_labels = map(str, range(1,
-            len(total_atendidos_intentos) + 1))
-        barra_atendidos_intentos.add('Cantidad', intentos)
+            #Barra: Total de llamados atendidos en cada intento.
+            total_atendidos_intentos = estadisticas['total_atendidos_intentos']
+            intentos = [total_atendidos_intentos[intentos] for intentos, _ in\
+                total_atendidos_intentos.items()]
+            barra_atendidos_intentos = pygal.Bar(show_legend=False,
+                style=Campana.ESTILO_MULTICOLOR)
+            barra_atendidos_intentos.title = 'Cantidad de llamadas atendidas en\
+                cada intento.'
+            barra_atendidos_intentos.x_labels = map(str, range(1,
+                len(total_atendidos_intentos) + 1))
+            barra_atendidos_intentos.add('Cantidad', intentos)
 
-        return {
-            'estadisticas': estadisticas,
-            'torta_general': torta_general,
-            'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
-            'torta_intentos': torta_intentos,
-            'barra_atendidos_intentos': barra_atendidos_intentos,
-        }
+            return {
+                'estadisticas': estadisticas,
+                'torta_general': torta_general,
+                'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
+                'torta_intentos': torta_intentos,
+                'barra_atendidos_intentos': barra_atendidos_intentos,
+            }
+        else:
+            logger.info("Campana %s NO obtuvo estadísticas.", self.id)
 
     def calcular_estadisticas(self):
         """
@@ -657,7 +662,7 @@ class Campana(models.Model):
             Campana.ESTADO_FINALIZADA)
 
         dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
-            self.pk)
+            self.pk, self.cantidad_intentos)
 
         total_contactos = dic_totales['total_contactos']
         if not total_contactos > 0:
@@ -1050,13 +1055,17 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
 
             agregacion_evento_contacto.save()
 
-    def procesa_agregacion(self, campana_id):
+    def procesa_agregacion(self, campana_id, cantidad_intentos):
         """
         Sumariza los contadores de cada intento de contacto de la campana.
         :param campana_id: De que campana que se sumarizaran los contadores.
         :type campana_id: int
         """
         agregaciones_campana = self.filter(campana_id=campana_id)
+        if not agregaciones_campana:
+            self.establece_agregacion(campana_id, cantidad_intentos)
+            agregaciones_campana = self.filter(campana_id=campana_id)
+
         dic_totales = agregaciones_campana.aggregate(
             total_intentados=Sum('cantidad_intentos'),
             total_atentidos=Sum('cantidad_finalizados'),
