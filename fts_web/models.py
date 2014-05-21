@@ -988,18 +988,6 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         dic_contadores_x_intentos = EventoDeContacto.objects_estadisticas.\
             obtener_contadores_por_intento(campana_id, cantidad_intentos)
 
-        #Ejemplo:
-        # dic_contadores_x_intentos = {
-        #     1: {   u'cantidad_finalizados': 53,
-        #            u'cantidad_intentos': 100,
-        #            u'cantidad_x_opcion': [{u'evento': 56, 'cantidad': 26},
-        #                                   {u'evento': 53, 'cantidad': 20}]},
-        #     2: {   u'cantidad_finalizados': 77,
-        #            u'cantidad_intentos': 100,
-        #            u'cantidad_x_opcion': [{u'evento': 56, 'cantidad': 29},
-        #                                   {u'evento': 53, 'cantidad': 26}]}
-        # }
-
         #Por cada intento en el diccionario dic_contadores_x_intentos,
         #actualizamos o generamos según exista o no el registro con las
         #cantidades de cada intento.
@@ -1014,6 +1002,7 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
 
             agregacion_evento_contacto, created = self.get_or_create(
                 campana_id=campana_id, numero_intento=numero_intento)
+
             if created:
                 agregacion_evento_contacto.cantidad_intentos =\
                     dic_contadores['cantidad_intentos']
@@ -1143,7 +1132,7 @@ class AgregacionDeEventoDeContacto(models.Model):
     cantidad_opcion_8 = models.IntegerField(null=True)
     cantidad_opcion_9 = models.IntegerField(null=True)
     timestamp_ultima_actualizacion = models.DateTimeField(auto_now_add=True)
-    timestamp_ultimo_evento = models.DateTimeField()
+    timestamp_ultimo_evento = models.DateTimeField(null=True)
 
     def __unicode__(self):
         return "AgregacionDeEventoDeContacto-{0}-{1}".format(
