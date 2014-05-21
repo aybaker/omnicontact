@@ -23,6 +23,15 @@
   tags:
     - checks
 
+- name: Setup sudoers.d/ftsender 
+  template: >
+    src=etc/sudoers.d/ftsender
+    dest=/etc/sudoers.d/ftsender
+    owner=root group=root mode=0440
+  sudo: yes
+  tags:
+    - sudo
+
 - name: Check - RPM de EPEL 6 
   command: test -f /etc/yum.repos.d/epel.repo
   register: epel_installed
@@ -375,13 +384,21 @@
     - quick_deploy
 
 - name: Run ftsdaemon_checks
-  django_manage: >
-      command=ftsdaemon_checks
-      app_path=/home/ftsender/deploy/app
-      settings=fts_web.settings
-      virtualenv=/home/ftsender/deploy/virtualenv
-  environment:
-    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+  #django_manage: >
+  #    command=ftsdaemon_checks
+  #    app_path=/home/ftsender/deploy/app
+  #    settings=fts_web.settings
+  #    virtualenv=/home/ftsender/deploy/virtualenv
+  command: /home/ftsender/deploy/bin/manage.sh ftsdaemon_checks
+  register: ftsdaemon_checks_output
+  tags:
+    - deploy
+    - quick_deploy
+  ignore_errors: True
+
+- name: Print output of ftsdaemon_checks
+  debug: msg="{{ ftsdaemon_checks_output.stdout }}"
+  when: ftsdaemon_checks_output|failed
   tags:
     - deploy
     - quick_deploy
