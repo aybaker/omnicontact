@@ -1403,27 +1403,27 @@ class Actuacion(models.Model):
         no exista ya una actuación en el rango horario
         especificado y en el día semanal seleccionado.
         """
+        if self.hora_desde and self.hora_hasta:
+            if self.hora_desde >= self.hora_hasta:
+                raise ValidationError({
+                    'hora_desde': ["La hora desde debe ser\
+                        menor o igual a la hora hasta."],
+                    'hora_hasta': ["La hora hasta debe ser\
+                        mayor a la hora desde."],
+                })
 
-        if self.hora_desde >= self.hora_hasta:
-            raise ValidationError({
-                'hora_desde': ["La hora desde debe ser\
-                    menor o igual a la hora hasta."],
-                'hora_hasta': ["La hora hasta debe ser\
-                    mayor a la hora desde."],
-            })
-
-        conflicto = self.campana.actuaciones.filter(
-            dia_semanal=self.dia_semanal,
-            hora_desde__lte=self.hora_hasta,
-            hora_hasta__gte=self.hora_desde,
-        )
-        if any(conflicto):
-            raise ValidationError({
-                'hora_desde': ["Ya esta cubierto el rango horario\
-                    en ese día semanal."],
-                'hora_hasta': ["Ya esta cubierto el rango horario\
-                    en ese día semanal."],
-            })
+            conflicto = self.campana.actuaciones.filter(
+                dia_semanal=self.dia_semanal,
+                hora_desde__lte=self.hora_hasta,
+                hora_hasta__gte=self.hora_desde,
+            )
+            if any(conflicto):
+                raise ValidationError({
+                    'hora_desde': ["Ya esta cubierto el rango horario\
+                        en ese día semanal."],
+                    'hora_hasta': ["Ya esta cubierto el rango horario\
+                        en ese día semanal."],
+                })
 
 
 #==============================================================================
