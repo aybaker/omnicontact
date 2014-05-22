@@ -11,6 +11,7 @@
 #
 # TODO:
 #
+# - ajustar configuracion de postgresql
 # - hacer rsync a temporal, y hacer chequeos antes de copiar a productivo
 # - al hacer copia, hacerla con comando remoto, para minimizar
 #     probabilidades de inconsistencias si hay corte
