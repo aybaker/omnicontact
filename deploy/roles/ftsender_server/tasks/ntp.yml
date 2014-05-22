@@ -1,0 +1,28 @@
+---
+
+- name: Check timezone
+  command: diff -q /etc/localtime {{os_timezone}}
+  register: clock_synchronized
+  ignore_errors: True
+  tags:
+    - ntp
+    - ntp_check
+
+- name: Report timezone errors
+  fail: msg="The server has an invalid TIMEZONE - Check {{os_timezone}}"
+  when: clock_synchronized|failed
+  tags:
+    - ntp
+    - ntp_check
+
+- name: Start ntp and enable at boot
+  sudo: yes
+  service: name=ntpd enabled=yes state=started
+  tags:
+    - ntp
+
+- name: Enable ntpdate
+  sudo: yes
+  service: name=ntpdate enabled=yes
+  tags:
+    - ntp

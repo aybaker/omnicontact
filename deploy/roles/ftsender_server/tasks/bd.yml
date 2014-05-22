@@ -1,0 +1,47 @@
+---
+
+#----------------------------------------------------------------------
+# BD
+#----------------------------------------------------------------------
+
+- name: Initiate database
+  sudo: yes
+  command: >
+    service postgresql-9.3 initdb
+    creates=/var/lib/pgsql/9.3/data/postgresql.conf
+  tags:
+    - db
+
+- name: Start PostgreSQL and enable at boot
+  sudo: yes
+  service: name=postgresql-9.3 enabled=yes state=started
+  tags:
+    - db
+
+- name: Copy pg_hba.conf
+  sudo: yes
+  register: pg_hba_updated
+  copy: src=pg_hba.conf dest=/var/lib/pgsql/9.3/data/
+  tags:
+    - db
+
+- name: Reload PostgreSql
+  sudo: yes
+  service: name=postgresql-9.3 state=reloaded
+  when: pg_hba_updated.changed
+  tags:
+    - db
+
+- name: Create PostgreSql user
+  postgresql_user: name=ftsender password={{db_password}}
+  sudo: yes
+  sudo_user: postgres
+  tags:
+    - db
+
+- name: Create PostgreSql database
+  postgresql_db: name=ftsender owner=ftsender
+  sudo: yes
+  sudo_user: postgres
+  tags:
+    - db

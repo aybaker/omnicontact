@@ -1,0 +1,85 @@
+---
+
+- name: Check - RPM de EPEL 6 
+  command: test -f /etc/yum.repos.d/epel.repo
+  register: epel_installed
+  ignore_errors: True
+  tags:
+    - yum
+
+- name: Check - RPM de PostgreSql 9.3 
+  command: test -f /etc/yum.repos.d/pgdg-93-centos.repo
+  register: repo_pg_installed
+  ignore_errors: True
+  tags:
+    - yum
+
+- name: Instala RPM de EPEL 6
+  when: epel_installed|failed
+  sudo: yes
+  yum: name={{ RPM_REPO_EPEL }} state=present
+  tags:
+    - yum
+
+- name: Instala RPM de PostgreSql 9.3
+  when: repo_pg_installed|failed
+  sudo: yes
+  yum: name={{ RPM_REPO_POSTGRESQL }} state=present
+  tags:
+    - yum
+
+- name: Install Development tools
+  sudo: yes
+  yum: name="@Development tools" state=present
+  tags:
+    - yum
+
+- name: Install basic packages
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - libselinux-python
+    - python-psycopg2
+    - python-virtualenv
+    - rsync
+    - libxslt-devel
+    - python-devel
+    - ntp
+    - ntpdate
+  tags:
+    - yum
+
+- name: Install packages for required services
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - postgresql93
+    - postgresql93-contrib
+    - postgresql93-server
+    - postgresql93-devel
+    - nginx
+    - munin
+    - munin-node
+    - redis
+    - sox
+  tags:
+    - yum
+
+- name: Install packages for buliding Asterisk
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - make
+    - wget
+    - openssl-devel
+    - ncurses-devel
+    - newt-devel
+    - libxml2-devel
+    - kernel-devel
+    - gcc
+    - gcc-c++
+    - sqlite-devel
+    - libuuid-devel
+  tags:
+    - asterisk
+    - yum

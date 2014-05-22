@@ -1,49 +1,7 @@
 ---
 
 #----------------------------------------------------------------------
-# Deploy de la app
-#
-# Tags mas utiles:
-#  - virtualenv: setup de virtualenv & requirements
-#  - deploy: deploy de la APP (EXCEPTUANDO cambios en otros
-#       compoenentes, como Nginx)
-#  - quick_deploy: deploy rapido de la APP (se saltea varios pasos)
-#----------------------------------------------------------------------
-
-#----------------------------------------------------------------------
-# Setup general, SO, packages, nginx, NTP, etc
-#----------------------------------------------------------------------
-
-- name: Check target server
-  fail: msg="Target server isn't supported"
-  when: >
-    lookup("env","DO_CHECKS") != "no" and (
-    ansible_distribution != "CentOS" or
-    ansible_distribution_major_version|int != 6 )
-  tags:
-    - checks
-
-- name: Setup sudoers.d/ftsender 
-  template: >
-    src=etc/sudoers.d/ftsender
-    dest=/etc/sudoers.d/ftsender
-    owner=root group=root mode=0440
-  sudo: yes
-  tags:
-    - sudo
-
-- include: packages.yml
-
-- include: ntp.yml
-
-- include: nginx.yml
-
-- include: asterisk.yml
-
-- include: bd.yml
-
-#----------------------------------------------------------------------
-# Deploy
+# Directorios básicos
 #----------------------------------------------------------------------
 
 - name: Create the required directories
@@ -67,6 +25,10 @@
     - /home/ftsender/deploy/run
   tags:
     - deploy
+
+#----------------------------------------------------------------------
+# pip / virtualenv
+#----------------------------------------------------------------------
 
 - name: Setup pip
   ini_file: >
@@ -109,6 +71,10 @@
   when: starpy_installed|failed
   tags:
     - virtualenv
+
+#----------------------------------------------------------------------
+# Deploy
+#----------------------------------------------------------------------
 
 - name: Upload fts_web_settings_local.py
   template: src=fts_web_settings_local.py dest=/home/ftsender/deploy/local
@@ -187,6 +153,10 @@
     - deploy
     - quick_deploy
     - update_settings
+
+#----------------------------------------------------------------------
+# Checks
+#----------------------------------------------------------------------
 
 - name: Run ftsdaemon_checks
   command: /home/ftsender/deploy/bin/manage.sh ftsdaemon_checks
