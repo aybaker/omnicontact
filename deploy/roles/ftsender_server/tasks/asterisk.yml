@@ -28,7 +28,7 @@
   sudo_user: asterisk
   get_url: >
     url={{ DOWNLOAD_ASTERISK_URL }}
-    dest=/home/asterisk
+    dest=/home/asterisk/{{ DOWNLOAD_ASTERISK_FILENAME }}
     sha256sum={{ DOWNLOAD_ASTERISK_TARGZ_SHA256 }}
   tags:
     - asterisk
