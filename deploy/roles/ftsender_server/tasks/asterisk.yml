@@ -1,8 +1,37 @@
 ---
 
-#----------------------------------------------------------------------
-# Asterisk
-#----------------------------------------------------------------------
+- name: Create asterisk group
+  sudo: yes
+  group: name=asterisk state=present system=yes
+  tags:
+    - asterisk
+
+- name: Create asterisk user 
+  sudo: yes
+  user: >
+    name=asterisk
+    group=asterisk
+    home=/home/asterisk
+    state=present
+    system=yes
+  tags:
+    - asterisk
+
+- name: Create Asterisk directory (to install Asterisk)
+  sudo: yes
+  file: path=/opt/asterisk-11 state=directory owner=asterisk mode=0755
+  tags:
+    - asterisk
+
+- name: Download Asterisk sources
+  sudo: yes
+  sudo_user: asterisk
+  get_url: >
+    url={{ DOWNLOAD_ASTERISK_URL }}
+    dest=/home/asterisk
+    sha256sum={{ DOWNLOAD_ASTERISK_TARGZ_SHA256 }}
+  tags:
+    - asterisk
 
 - name: Check if Asterisk is installed 
   command: test -f /opt/asterisk-11/sbin/asterisk
@@ -27,9 +56,9 @@
   tags:
     - asterisk
 
-#
-# Modifica archivos de Asterisk
-#
+#----------------------------------------------------------------------
+# extensions.conf
+#----------------------------------------------------------------------
 
 - name: Modify Asterisk extensions.conf
   lineinfile: >
@@ -42,6 +71,10 @@
   sudo: yes
   tags:
     - asterisk
+
+#----------------------------------------------------------------------
+# manager.conf
+#----------------------------------------------------------------------
 
 - name: Modify Asterisk manager.conf - general/enabled/yes
   ini_file: >
@@ -98,6 +131,10 @@
   tags:
     - asterisk
 
+#----------------------------------------------------------------------
+# http.conf
+#----------------------------------------------------------------------
+
 - name: Modify Asterisk http.conf - general/enabled/yes
   ini_file: >
     dest=/opt/asterisk-11/etc/asterisk/http.conf
@@ -131,9 +168,9 @@
   tags:
     - asterisk
 
-#
+#----------------------------------------------------------------------
 # Start / reload
-#
+#----------------------------------------------------------------------
 
 - name: Start Asterisk (only if installed)
   sudo: yes

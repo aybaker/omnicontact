@@ -1,8 +1,17 @@
 ---
 
+# RPM that register EPEL
 RPM_REPO_EPEL: 'http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm'
+
+# RPM that register PostgreSql repo
 RPM_REPO_POSTGRESQL: 'http://yum.postgresql.org/9.3/redhat/rhel-6-i386/pgdg-centos93-9.3-1.noarch.rpm'
 
+# URL to download Asterisk sources
+# DOWNLOAD_ASTERISK_URL: 'http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-11-current.tar.gz'
+DOWNLOAD_ASTERISK_URL: 'http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-11.9.0.tar.gz'
+DOWNLOAD_ASTERISK_TARGZ_SHA256: '1627c9d48db2dab2763c65feb7b6e576b03d09e38b6b05c36d300de7d0eca1d6'
+
+# URL to install StarPy
 STARPY_PIP_URL: 'git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba#egg=starpy'
 
 # Nginx port
