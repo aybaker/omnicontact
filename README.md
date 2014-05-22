@@ -56,17 +56,24 @@ Para bajar el sistema (toda la aplicación: web y daemon), basta con ejecutar:
 Asterisk
 --------
 
-El sistema por default utiliza la instalación de Asterisk ubicada en /opt/asterisk-11. El script de deploy modifica los archivos allí encontrados
-para crear un usuario para el manager, activar la interfaz web, e incluir los 2 archivos de configuración generados por el sistema (dialplan y queues).
+El sistema por default utiliza la instalación de Asterisk ubicada en /opt/asterisk-11.
+El *script de deploy* modifica los archivos allí encontrados para crear un usuario
+para el manager, activar la interfaz web, e incluir los 2 archivos de configuración
+generados por el sistema (dialplan y queues).
 
-Estos archivos son generados en el directorio `/etc/ftsender/asterisk/`:
+Los archivos de configuración *generados por el sistema* son
+guardados en el directorio `/etc/ftsender/asterisk/`:
 
     [ftsender@prueba-deploy-fts deploy]$ ls -lh /etc/ftsender/asterisk/
     total 4.0K
     -rw-r--r--. 1 ftsender ftsender 2.5K May 21 22:17 extensions.conf
     -rw-------. 1 ftsender ftsender    0 May 21 22:17 queues_fts.conf
 
+Para acceder al CLI de Asterisk:
 
+    $ sudo -u asterisk /opt/asterisk-11/sbin/asterisk -rvvvv
 
+Lo mismo para ejecutar comandos desde el shell:
 
+    $ sudo -u asterisk /opt/asterisk-11/sbin/asterisk -x 'core show calls'
 
