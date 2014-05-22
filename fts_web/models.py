@@ -574,18 +574,28 @@ class Campana(models.Model):
         return None
 
     def render_grafico_torta_avance_campana(self):
-        #Obtiene estadística.
-        estadisticas = self.obtener_estadisticas()
+        estadisticas = self.calcular_estadisticas(
+            AgregacionDeEventoDeContacto.TIPO_AGREGACION_SUPERVISION)
 
-        #Torta: porcentajes de contestados, no contestados y pendientes.
-        pie_chart = pygal.Pie(disable_xml_declaration=True, height=350,
-            legend_font_size=20, legend_box_size=18,
-            style=Campana.ESTILO_VERDE_ROJO_NARANJA)
-        pie_chart.add('Contestados', estadisticas['porcentaje_contestadas'])
-        pie_chart.add('No Contestados', estadisticas[
-            'porcentaje_no_contestadas'])
-        pie_chart.add('Pendientes', estadisticas['porcentaje_pendientes'])
-        return pie_chart
+        #Torta: porcentajes de contestados, no contestados y no llamados.
+        torta_general = pygal.Pie(disable_xml_declaration=True, height=350,
+             legend_font_size=20, legend_box_size=18,
+             style=Campana.ESTILO_VERDE_ROJO_NARANJA)
+
+        torta_general.title = 'Porcentajes Generales de {0} contactos.'.\
+            format(estadisticas['total_contactos'])
+        torta_general.add('Atendidos', estadisticas[
+            'porcentaje_atendidos'])
+
+        torta_general.add('No Atendidos', estadisticas[
+            'porcentaje_no_atendidos'])
+        torta_general.add('Sin Llamar', estadisticas[
+            'porcentaje_no_llamados'])
+
+        return {
+                'estadisticas': estadisticas,
+                'torta_general': torta_general,
+        }
 
     def obtener_estadisticas_render_graficos(self):
         estadisticas = self.calcular_estadisticas(
