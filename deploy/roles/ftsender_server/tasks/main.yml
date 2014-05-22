@@ -1,18 +1,18 @@
 ---
 
-#
+#----------------------------------------------------------------------
 # Deploy de la app
 #
 # Tags mas utiles:
 #  - virtualenv: setup de virtualenv & requirements
-#  - deploy: deploy de la APP (EXCEPTUANDO cambios en otros compoenentes,
-#       como Nginx)
-#  - quick_deploy: deploy rapido de la APP
-#
+#  - deploy: deploy de la APP (EXCEPTUANDO cambios en otros
+#       compoenentes, como Nginx)
+#  - quick_deploy: deploy rapido de la APP (se saltea varios pasos)
+#----------------------------------------------------------------------
 
-##
-## Setup general, SO, packages, etc
-##
+#----------------------------------------------------------------------
+# Setup general, SO, packages, nginx, NTP, etc
+#----------------------------------------------------------------------
 
 - name: Check target server
   fail: msg="Target server isn't supported"
@@ -158,9 +158,9 @@
   tags:
     - nginx
 
-##
-## Asterisk
-##
+#----------------------------------------------------------------------
+# Asterisk
+#----------------------------------------------------------------------
 
 - name: Check if Asterisk is installed 
   command: test -f /opt/asterisk-11/sbin/asterisk
@@ -185,6 +185,10 @@
   tags:
     - asterisk
 
+#
+# Modifica archivos de Asterisk
+#
+
 - name: Modify Asterisk extensions.conf
   lineinfile: >
     state=present
@@ -196,7 +200,6 @@
   sudo: yes
   tags:
     - asterisk
-
 
 - name: Modify Asterisk manager.conf - general/enabled/yes
   ini_file: >
@@ -253,6 +256,10 @@
   tags:
     - asterisk
 
+#
+# Start / reload
+#
+
 - name: Start Asterisk (only if installed)
   sudo: yes
   when: asterisk_installed|success
@@ -270,9 +277,9 @@
   tags:
     - asterisk
 
-##
-## BD
-##
+#----------------------------------------------------------------------
+# BD
+#----------------------------------------------------------------------
 
 - name: Initiate database
   sudo: yes
@@ -316,9 +323,9 @@
   tags:
     - db
 
-##
-## Deploy
-##
+#----------------------------------------------------------------------
+# Deploy
+#----------------------------------------------------------------------
 
 - name: Create the required directories
   file: path={{item}} state=directory owner=ftsender mode=0755
