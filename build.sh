@@ -39,16 +39,25 @@ rm -rf $TMP/app/build
 rm -rf $TMP/app/run_coverage*
 rm -rf $TMP/app/run_sphinx.sh
 
-echo "Creando archivo de version..."
+branch_name=$(git symbolic-ref -q HEAD)
+branch_name=${branch_name##refs/heads/}
+branch_name=${branch_name:-HEAD}
+
+commit="$(git rev-parse HEAD)"
+
+author="$(id -un)@$(hostname -f)"
+
+echo "Creando archivo de version | Branch: $branch_name | Commit: $commit | Autor: $author"
 cat > $TMP/app/fts_web/version.py <<EOF
 
 #
 # Archivo autogenerado
 #
 
-FTSENDER_COMMIT="$(git rev-parse HEAD)"
+FTSENDER_BRANCH="${branch_name}"
+FTSENDER_COMMIT="${commit}"
 FTSENDER_BUILD_DATE="$(date)"
-FTSENDER_AUTHOR="$(id -un)@$(hostname -f)"
+FTSENDER_AUTHOR="${author}"
 
 if __name__ == '__main__':
     print FTSENDER_COMMIT

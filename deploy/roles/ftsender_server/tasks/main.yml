@@ -8,6 +8,21 @@
 #  - deploy: deploy de la APP (EXCEPTUANDO cambios en otros
 #       compoenentes, como Nginx)
 #  - quick_deploy: deploy rapido de la APP (se saltea varios pasos)
+#
+# TODO:
+#
+# - hacer rsync a temporal, y hacer chequeos antes de copiar a productivo
+# - al hacer copia, hacerla con comando remoto, para minimizar
+#     probabilidades de inconsistencias si hay corte
+# - crear ambiente de 'acceptance'
+# - copiar BD e intentar migraciones en copia
+# - reportar version instalada en remoto
+#
+# NO TIENE SOPORTE PARA:
+#
+# - resolver problemas con migraciones
+# - actualizar requirements.txt (solo se instalaran los nuevos)
+#
 #----------------------------------------------------------------------
 
 #----------------------------------------------------------------------
