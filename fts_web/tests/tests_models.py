@@ -594,7 +594,8 @@ class ReporteTest(FTSenderBaseTest):
         campana = self._crea_campana_emula_procesamiento()
 
         #Obtento el renderizado de gráfico y lo testeo.
-        graficos_estadisticas = campana.render_grafico_torta_avance_campana()
+        graficos_estadisticas = \
+            campana.obtener_estadisticas_render_graficos_supervision()
         self.assertIn('<svg xmlns:xlink="http://www.w3.org/1999/xlink"',
             graficos_estadisticas['torta_general'].render())
         self.assertEqual(graficos_estadisticas['estadisticas']

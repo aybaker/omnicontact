@@ -17,7 +17,7 @@
             <div>  
                
                 {% for campana in campanas_ejecucion %}
-                    {% with graficos_estadisticas=campana.render_grafico_torta_avance_campana %}
+                    {% with graficos_estadisticas=campana.obtener_estadisticas_render_graficos_supervision %}
                         <div class="col-sm-6 col-md-6 col-lg-4">
                             <table class="table table-bordered">
                                 <tbody>                            

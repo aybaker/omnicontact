@@ -573,7 +573,7 @@ class Campana(models.Model):
             return url
         return None
 
-    def render_grafico_torta_avance_campana(self):
+    def obtener_estadisticas_render_graficos_supervision(self):
         estadisticas = self.calcular_estadisticas(
             AgregacionDeEventoDeContacto.TIPO_AGREGACION_SUPERVISION)
 
