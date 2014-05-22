@@ -21,15 +21,16 @@
                     </thead>
                     <tbody>
                         {% for campana in campanas_finalizadas %}
-                            <tr>
+                            <tr class="curson-link" onclick="location.href='{% url 'detalle_campana_reporte' campana.id %}'">
                                 <td width="45%">                          
-                                    <a href="{% url 'detalle_campana_reporte' campana.id %}">{{ campana.nombre }}</a>
+                                    <span class="text-primary">{{ campana.nombre }}</span>
                                 </td>
-                                <td>{{ campana.fecha_inicio|date:"d/m/Y" }}</td>           
+                                <td>
+                                    {{ campana.fecha_inicio|date:"d/m/Y" }}           
+                                </td>
                                 <td>{{ campana.fecha_fin|date:"d/m/Y" }}</td>
                                 <td>
                                     {{ campana.bd_contacto }}
-                                    ({# campana.obtener_estadisticas.total_contactos #} Contactos)
                                 </td>
                             </tr>
                         {% empty %}
@@ -43,8 +44,6 @@
                         {% endfor %}
                     </tbody>
                 </table>
-
-                
             </div>
         </div>
     </div>

@@ -287,6 +287,22 @@ if 'SKIP_SELENIUM' not in os.environ:
             url = reverse('confirma_campana', kwargs={"pk": campana.id})
             self.render_y_chequear(url)
 
+        def test_render_campana_detalle(self):
+
+            hora_desde = datetime.time(9, 00)
+            hora_hasta = datetime.time(18, 00)
+
+            campana = self.crear_campana()
+            [self.crea_campana_opcion(digito, campana)
+                for digito in range(0, 5)]
+            [self.crea_campana_actuacion(
+                dia_semanal, hora_desde, hora_hasta, campana)
+                for dia_semanal in range(0, 4)]
+
+            # Renderizamos pagina de detalle
+            url = reverse('detalle_campana', kwargs={"pk": campana.id})
+            self.render_y_chequear(url)
+
         def test_render_estados(self):
             #Crea 4 campañas activas, con fecha de inicio actual.
             campanas = [self.crear_campana_activa() for _ in range(0, 4)]

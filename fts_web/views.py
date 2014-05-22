@@ -837,6 +837,15 @@ class ActivaCampanaView(UpdateView):
         return reverse('lista_campana_por_estados')
 
 
+class DetalleCampanView(DetailView):
+    """
+    Muestra el detalle de la campaña.
+    """
+    template_name = 'campana/detalle_campana.html'
+    context_object_name = 'campana'
+    model = Campana
+
+
 # class CampanaUpdateView(UpdateView):
 #     """
 #     Esta vista actualiza un objeto Campana.

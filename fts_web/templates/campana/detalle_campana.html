@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+    <div class="panel panel-info">
+        <!-- Default panel contents -->
+        <div class="panel-heading">                
+            <h4 class="inline">Detalle Campaña</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-6">
+                <form role="form" method="post" >
+                    <h4>Datos Básicos</h4>
+                    <dl class="dl-horizontal">
+                        <dt>Nombre</dt>
+                        <dd>{{ campana.nombre }}</dd>
+
+                        <dt>Fecha Inicio</dt>
+                        <dd>{{ campana.fecha_inicio|date:"d/m/Y" }}</dd>
+
+                        <dt>Fecha Fin</dt>
+                        <dd>{{ campana.fecha_fin|date:"d/m/Y"}}</dd>
+
+                        <dt>Cantidad Canales</dt>
+                        <dd><span class="badge">{{ campana.cantidad_canales }}</span></dd>
+
+                        <dt>Cantidad Intentos</dt>
+                        <dd><span class="badge">{{ campana.cantidad_intentos }}</span></dd>
+
+                        <dt>Segundos Ring</dt>
+                        <dd><span class="badge">{{ campana.segundos_ring }}</span></dd>
+                    </dl>
+
+                    <hr>              
+
+                    {% if campana.audio_original %}
+                        <div>
+                            <h4>Audio de la Campaña</h4>
+                            <audio src="{{ campana.audio_original.url }}" controls></audio>
+                        </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <h4>Base Datos</h4>
+                    <dl class="dl-horizontal">
+                        <dt>Nombre</dt>
+                        <dd>{{ campana.bd_contacto }}</dd>
+                        <dt>Cantidad Contactos</dt>
+                        <dd><span class="badge">{{ campana.bd_contacto.contactos.count }}</span></dd>
+                    <dl>
+
+                    <hr>
+
+                    <h4>Calificaciones</h4>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <th>Nombre</th>
+                        </thead>
+                        <tbody>
+                            {% for calificacion in campana.calificaciones.all %}
+                                <tr>
+                                    <td>{{ calificacion.nombre }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <hr>
+
+                    <h4>Opciones</h4>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <th>Dígito</th>
+                            <th>Acción</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {% for opcion in campana.opciones.all %}
+                                <tr>
+                                    <td>{{ opcion.digito }}</td>
+                                    <td>{{ opcion.get_accion_display }}</td>
+                                    {% if opcion.grupo_atencion %}
+                                        <td> Grupo Atención: <strong>{{ opcion.grupo_atencion }}</strong></td>
+                                    {% endif %}
+
+                                    {% if opcion.calificacion %}
+                                        <td>Calificación: <strong>{{ opcion.calificacion }}</strong></td>
+                                    {% endif %}
+                                    
+                                </tr>
+                             {% empty %}
+                                <tr>
+                                    <td colspan="3">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Opciones creadas.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <hr>
+
+                    <h4>Actuaciones</h4>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <th>Día</th>
+                            <th>Hora Desde</th>
+                            <th>Hora Hasta</th>
+                        </thead>
+                        <tbody>
+                            {% for actuacion in campana.actuaciones.all %}
+                                <tr>
+                                    <td>{{ actuacion.get_dia_semanal_display }}</td>
+                                    <td>{{ actuacion.hora_desde }} Hs.</td>
+                                    <td>{{ actuacion.hora_hasta }} Hs.</td>       
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br>
+                </form>           
+            </div>
+        </div>
+    </div>
+{% endblock %}

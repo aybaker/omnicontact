@@ -11,6 +11,9 @@
 .clear-fix {
     clear: both;
 }
+.curson-link {
+    cursor: pointer;
+}
 
 /* Mensajito de Ayuda*/
 .bs-callout {
