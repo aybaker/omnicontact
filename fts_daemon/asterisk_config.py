@@ -62,7 +62,7 @@ exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${
 exten => _ftsX!,n,Wait(1)
 exten => _ftsX!,n,Answer()
 exten => _ftsX!,n(audio),Background({fts_audio_file})
-# FIXME: alcanza 'WaitExten(10)'??? No deberia ser un poco mas q' el tiempo del WAV/GSM/MP3?
+; # FIXME: alcanza 'WaitExten(10)'??? No deberia ser un poco mas q' el tiempo del WAV/GSM/MP3?
 exten => _ftsX!,n,WaitExten(10)
 exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
 exten => _ftsX!,n,Hangup()
@@ -94,7 +94,7 @@ TEMPLATE_OPCION_CALIFICAR = """
 ; TEMPLATE_OPCION_CALIFICAR-{fts_opcion_id}-{fts_calificacion_id}-{fts_calificacion_nombre}
 exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{ContactoId}},campana={fts_campana_id},calificacion={fts_calificacion_id}-fts_calificacion_nombre)
 exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/calificar/{fts_calificacion_id}/)
-exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
+exten => {fts_opcion_digito},n,Playback(demo-thanks)
 exten => {fts_opcion_digito},n,Hangup()
 
 """
