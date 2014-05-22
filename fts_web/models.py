@@ -597,7 +597,7 @@ class Campana(models.Model):
                 'torta_general': torta_general,
         }
 
-    def obtener_estadisticas_render_graficos(self):
+    def obtener_estadisticas_render_graficos_reportes(self):
         estadisticas = self.calcular_estadisticas(
             AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE)
 
