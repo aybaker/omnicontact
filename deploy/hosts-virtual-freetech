@@ -14,6 +14,7 @@ db_password=OcPownokyig0roothGi1Rec
 dj_sett_SECRET_KEY='6graHovyIpsezyitgen38quirWouRecOfWir8AvOpAvWeek9'
 dj_sett_ASTERISK_USERNAME=asterisk_ftsender
 dj_sett_ASTERISK_PASSWORD=asterftspass123
+# TODO: usar 'ASTERISK_AMI_HTTP_PORT' en vez de 7088
 dj_sett_ASTERISK_HTTP_AMI_URL=http://127.0.0.1:7088
 dj_sett_ASTERISK_DIAL_URL="${{OPEN_BR}}{{OPEN_BR}}TECH{{CLOSE_BR}}{{CLOSE_BR}}/${{OPEN_BR}}{{OPEN_BR}}OBJETO{{CLOSE_BR}}{{CLOSE_BR}}/${NumberToCall}"
 

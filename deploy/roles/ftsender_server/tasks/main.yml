@@ -223,7 +223,7 @@
   tags:
     - asterisk
 
-- name: Modify Asterisk manager.conf - manager user / secret
+- name: Modify Asterisk manager.conf - manager/user/secret
   ini_file: >
     dest=/opt/asterisk-11/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
@@ -234,7 +234,7 @@
   tags:
     - asterisk
 
-- name: Modify Asterisk manager.conf - manager user / read
+- name: Modify Asterisk manager.conf - manager/user/read
   ini_file: >
     dest=/opt/asterisk-11/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
@@ -245,12 +245,45 @@
   tags:
     - asterisk
 
-- name: Modify Asterisk manager.conf - manager user / write
+- name: Modify Asterisk manager.conf - manager/user/write
   ini_file: >
     dest=/opt/asterisk-11/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
     option=write
     value=system,call,log,verbose,command,agent,user,originate
+  when: asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+
+- name: Modify Asterisk http.conf - general/enabled/yes
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/http.conf
+    section=general
+    option=enabled
+    value=yes
+  when: asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+
+- name: Modify Asterisk http.conf - general/bindaddr/ASTERISK_AMI_HTTP_BIND
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/http.conf
+    section=general
+    option=bindaddr
+    value={{ ASTERISK_AMI_HTTP_BIND }}
+  when: asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+
+- name: Modify Asterisk http.conf - general/bindport/ASTERISK_AMI_HTTP_PORT
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/http.conf
+    section=general
+    option=bindport
+    value={{ ASTERISK_AMI_HTTP_PORT }}
   when: asterisk_installed|success
   sudo: yes
   tags:
