@@ -594,9 +594,13 @@ class ReporteTest(FTSenderBaseTest):
         campana = self._crea_campana_emula_procesamiento()
 
         #Obtento el renderizado de gráfico y lo testeo.
-        chart = campana.render_grafico_torta_avance_campana()
+        graficos_estadisticas = campana.render_grafico_torta_avance_campana()
         self.assertIn('<svg xmlns:xlink="http://www.w3.org/1999/xlink"',
-            chart.render())
+            graficos_estadisticas['torta_general'].render())
+        self.assertEqual(graficos_estadisticas['estadisticas']
+            ['total_intentados'], 100)
+        self.assertEqual(graficos_estadisticas['estadisticas']
+            ['total_contactos'], 100)
 
     # def test__url_grafico(self):
     #     #Crea y emula procesamiento de campaña.
@@ -639,7 +643,7 @@ class ReporteTest(FTSenderBaseTest):
         campana = self._crea_campana_emula_procesamiento()
         contadores = EventoDeContacto.objects_estadisticas.\
             obtener_contadores_por_intento(campana.pk,
-                campana.cantidad_intentos)
+                campana.cantidad_intentos, None)
 
         self.assertEqual(len(contadores), 3)
         self.assertEqual(contadores[1]['cantidad_intentos'], 100)
@@ -671,7 +675,6 @@ class ReporteTest(FTSenderBaseTest):
             numero_intento=1).timestamp_ultimo_evento, timestamp_ultimo_evento)
         self.assertEqual(AgregacionDeEventoDeContacto.objects.get(
             numero_intento=1).tipo_agregacion, tipo_agregacion)
-
 
     def test_procesa_agregacion(self):
         #Crea y emula procesamiento de campaña.
