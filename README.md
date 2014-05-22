@@ -6,6 +6,11 @@ Para instalar sterpy:
     $ pip install git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba
 
 
+Arquitectura
+------------
+
+https://bitbucket.org/hgdeoro/ftsenderweb/src/master/docs/arquitectura.png?at=master
+
 Acceso al sistema
 -----------------
 
