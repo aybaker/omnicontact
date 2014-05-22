@@ -1,11 +1,3 @@
-Dependencias
-------------
-
-Para instalar sterpy:
-
-    $ pip install git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba
-
-
 Arquitectura
 ------------
 
@@ -82,3 +74,14 @@ Lo mismo para ejecutar comandos desde el shell:
 
     $ sudo -u asterisk /opt/asterisk-11/sbin/asterisk -x 'core show calls'
 
+
+
+
+
+
+Dependencias
+------------
+
+Para instalar starpy:
+
+    $ pip install git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba
