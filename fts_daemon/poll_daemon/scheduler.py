@@ -346,7 +346,7 @@ class RoundRobinTracker(object):
         la actuacion o la campaña se vencieron justo mientras se estaban
         por procesar.
         """
-        logger.debug("onLimiteDeOriginatePorSegundosError(): hará falta "
+        logger.info("onLimiteDeOriginatePorSegundosError(): hará falta "
             "esperar %s seg. para no superar el limite "
             "de ORIGINATEs por segundo", to_sleep)
 
