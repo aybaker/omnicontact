@@ -25,6 +25,7 @@ def procesar_contacto(campana, contacto_id, numero, cant_intentos):
     :param contacto_id: id de contacto
     :param numero: el numero al cual hay que llamar
     :param cant_intentos: cantidad de intentos que ya fueron realizado
+    :returns: bool - Si el originate fue exitoso (True), sino False
     """
 
     logger.info("Realizando originate - campana: %s - contacto: %s - "
@@ -59,15 +60,18 @@ def procesar_contacto(campana, contacto_id, numero, cant_intentos):
         EventoDeContacto.objects.\
             create_evento_daemon_originate_successful(
                 campana.id, contacto_id, intento_actual)
+        return True
     except AsteriskHttpOriginateError:
         logger.exception("Originate failed - campana: %s - contacto: %s",
             campana.id, contacto_id)
         EventoDeContacto.objects.\
             create_evento_daemon_originate_failed(
                 campana.id, contacto_id, intento_actual)
+        return False
     except:
         logger.exception("Originate failed - campana: %s - contacto: %s",
             campana.id, contacto_id)
         EventoDeContacto.objects.\
             create_evento_daemon_originate_internal_error(
                 campana.id, contacto_id, intento_actual)
+        return False

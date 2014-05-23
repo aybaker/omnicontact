@@ -29,6 +29,64 @@ class CantidadMaximaDeIteracionesSuperada(Exception):
     pass
 
 
+class OriginateLimit(object):
+    """Keeps the status of ORIGINATEs and the limits of
+    allowed ORIGINATEs per seconds
+    """
+
+    def __init__(self):
+        # self._originate_ok = datetime.now() - timedelta(days=30)
+        self._originate_ok = None
+        if settings.FTS_DAEMON_ORIGINATES_PER_SECOND > 0.0:
+            self._orig_per_sec = settings.FTS_DAEMON_ORIGINATES_PER_SECOND
+            self._max_wait = 1.0 / self._orig_per_sec
+        else:
+            logger.info("OriginateLimit: limite desactivado")
+            self._orig_per_sec = None
+            self._max_wait = None
+
+    def set_originate(self, ok):
+        """Set that originate was succesfull or not"""
+        if ok:
+            self._originate_ok = datetime.now()
+        else:
+            self._originate_ok = None
+
+    def time_to_sleep(self):
+        """How many seconds to wait, to not exceed the limit
+        `FTS_DAEMON_ORIGINATES_PER_SECOND`
+        """
+        if self._originate_ok == None or self._orig_per_sec is None:
+            # Primera vez q' se usa, o no hay limite configurado
+            return 0.0
+
+        # Calculamos timedelta
+        td = datetime.now() - self._originate_ok
+        if td.days < 0 or td.days > 0:
+            # paso algo raro... esperamos `self._max_wait`
+            logger.warn("OriginateLimit.time_to_sleep(): valor sospechoso "
+                "de td.days: %s", td.days)
+            return self._max_wait
+
+        # td.days == 0, ahora calculamos `delta` en segundos
+        delta = float(td.seconds) + float(td.microseconds) / 1000000.0
+
+        # Si el delta es < 0, paso algo raro!
+        if delta < 0.0:
+            # paso algo raro... esperamos `self._max_wait`
+            logger.warn("OriginateLimit.time_to_sleep(): valor sospechoso "
+                "de delta: %s", delta)
+            return self._max_wait
+
+        # Si el delta es > a espera maxima, no esperamos mas
+        if delta >= self._max_wait:
+            return 0.0
+
+        # Calculamos cuanto tiempo hay que esperar
+        to_sleep = self._max_wait - delta
+        return to_sleep
+
+
 # FIXME: renombra a RoundRobinScheduler
 class RoundRobinTracker(object):
     """Con la ayuda de CampanaTracker, devuelve contactos a realizar
@@ -342,14 +400,19 @@ class RoundRobinTracker(object):
             return True
         return False
 
-    def generator(self):
+    def generator(self, originate_status=None):
         """Devuelve los datos de contacto a contactar, de a una
         campaña por vez.
+
+        :param originate_status: Tracks the status of the last originate.
 
         :returns: (campana, contacto_id, telefono, cant_intentos_realizados)
         """
 
         iter_num = 0
+        if originate_status is None:
+            originate_status = OriginateLimit()
+
         while True:
 
             if self.max_iterations is not None:
@@ -412,6 +475,10 @@ class RoundRobinTracker(object):
                 self.sleep(settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
                 continue
 
+            #==================================================================
+            # Chequeamos limite de llamadas por segundo
+            #==================================================================
+
             ##
             ## Procesamos...
             ##
@@ -467,16 +534,19 @@ class Llamador(object):
 
     def __init__(self):
         self.rr_tracker = RoundRobinTracker()
+        self.originate_limit = OriginateLimit()
 
     def run(self, max_loops=0):
         """Inicia el llamador"""
         current_loop = 1
         for campana, id_contacto, numero, cant_intentos in \
-            self.rr_tracker.generator():
+            self.rr_tracker.generator(self.originate_limit):
             logger.debug("Llamador.run(): campana: %s - id_contacto: %s"
                 " - numero: %s", campana, id_contacto, numero)
 
-            procesar_contacto(campana, id_contacto, numero, cant_intentos)
+            originate_ok = procesar_contacto(campana, id_contacto, numero,
+                cant_intentos)
+            self.originate_limit.set_originate(originate_ok)
 
             current_loop += 1
             if max_loops > 0 and current_loop > max_loops:

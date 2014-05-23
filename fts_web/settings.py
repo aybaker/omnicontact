@@ -254,6 +254,11 @@ FTS_DAEMON_SLEEP_LIMITE_DE_CANALES = 2
 campañas llegaron al límite de uso de canales
 """
 
+FTS_DAEMON_ORIGINATES_PER_SECOND = 1.0 / 3.0
+"""Cuantos originates se pueden realizar por segundos. Soporta valores < 1.0.
+Debe ser float, y >= 0.0. Si vale 0.0, implica que no hay limite.
+"""
+
 #FTS_MARGEN_FINALIZACION_CAMPANA = 600
 #"""Cuanto tiempo debe pasar (despues del ultimo evento) para
 #finalizar una campana
@@ -381,6 +386,14 @@ ASTERISK['PRIORITY'] = FTS_ASTERISK_DIALPLAN_PRIORITY
 assert FTS_FAST_AGI_DAEMON_PROXY_URL is not None, \
     "Falta definir setting para FTS_FAST_AGI_DAEMON_PROXY_URL"
 
+
+# ~~~~~ Check FTS_DAEMON_ORIGINATES_PER_SECOND
+
+assert type(FTS_DAEMON_ORIGINATES_PER_SECOND) == float, \
+    "FTS_DAEMON_ORIGINATES_PER_SECOND debe ser float"
+
+assert type(FTS_DAEMON_ORIGINATES_PER_SECOND) >= 0.0, \
+    "FTS_DAEMON_ORIGINATES_PER_SECOND debe >= 0.0"
 
 # ~~~~~ Customizators
 
