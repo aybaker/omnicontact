@@ -123,6 +123,63 @@ if 'SKIP_SELENIUM' not in os.environ:
             #     self.assertTrueSelenium(self.selenium.page_source.find(
             #        campana.nombre) >= 0)
 
+        def test_render_campana_activa(self):
+            #Creamos campana.
+            campana = self.crear_campana_activa()
+
+            #Pausamos la campana.
+            url = reverse('estado_pausa_campana',
+                kwargs={"pk": campana.pk})
+            self.render_y_chequear(url)
+            campana = Campana.objects.get(pk=campana.pk)
+
+            #Activamos la campana.
+            url = reverse('estado_activa_campana',
+                kwargs={"pk": campana.pk})
+            self.render_y_chequear(url)
+            campana = Campana.objects.get(pk=campana.pk)
+
+            self.assertEqual(campana.estado, Campana.ESTADO_ACTIVA)
+
+        def test_render_campana_pausa(self):
+            #Creamos campana.
+            campana = self.crear_campana_activa()
+
+            #Pausamos la campana.
+            url = reverse('estado_pausa_campana',
+                kwargs={"pk": campana.pk})
+            self.render_y_chequear(url)
+            campana = Campana.objects.get(pk=campana.pk)
+
+            self.assertEqual(campana.estado, Campana.ESTADO_PAUSADA)
+
+        def test_render_campana_finalizar(self):
+            #Creamos campana y opciones.
+            campana = self.crear_campana_activa()
+
+            #Finalizamos la campana.
+            url = reverse('estado_finaliza_campana',
+                kwargs={"pk": campana.pk})
+            self.render_y_chequear(url)
+            campana = Campana.objects.get(pk=campana.pk)
+
+            #Chequeamos que no se haya finalizado la campana activa
+            self.assertEqual(campana.estado, Campana.ESTADO_ACTIVA)
+
+            #Pausamos la campana.
+            url = reverse('estado_pausa_campana',
+                kwargs={"pk": campana.pk})
+            self.render_y_chequear(url)
+
+            #Finalizamos la campana.
+            url = reverse('estado_finaliza_campana',
+                kwargs={"pk": campana.pk})
+            self.render_y_chequear(url)
+            campana = Campana.objects.get(pk=campana.pk)
+
+            #Chequeamos que se haya finalizado la campana pausada.
+            self.assertEqual(campana.estado, Campana.ESTADO_FINALIZADA)
+
         def test_render_submit_campana_audio(self):
             #Testea el paso de audio en el proceso de creación de Campañas.
 
