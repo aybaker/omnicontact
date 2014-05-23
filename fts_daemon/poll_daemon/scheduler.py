@@ -337,6 +337,19 @@ class RoundRobinTracker(object):
         por procesar.
         """
 
+    def onLimiteDeOriginatePorSegundosError(self, to_sleep):
+        """Ejecutado por generator() cuando detecta que hay que realizar
+        una espera, debido a que se alcanzo el limite de ORIGINATEs por
+        segundos.
+
+        Esto no deberia suceder, pero hay algunos corner cases, por ejemplo,
+        la actuacion o la campaña se vencieron justo mientras se estaban
+        por procesar.
+        """
+        logger.debug("onLimiteDeOriginatePorSegundosError(): hará falta "
+            "esperar %s seg. para no superar el limite "
+            "de ORIGINATEs por segundo", to_sleep)
+
     def finalizar_campana(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
 
@@ -411,6 +424,7 @@ class RoundRobinTracker(object):
 
         iter_num = 0
         if originate_status is None:
+            # FIXME: migrar tests y quitar este hack
             originate_status = OriginateLimit()
 
         while True:
@@ -475,10 +489,6 @@ class RoundRobinTracker(object):
                 self.sleep(settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
                 continue
 
-            #==================================================================
-            # Chequeamos limite de llamadas por segundo
-            #==================================================================
-
             ##
             ## Procesamos...
             ##
@@ -494,6 +504,29 @@ class RoundRobinTracker(object):
                     logger.debug("Ignorando campana %s porque esta al limite",
                         campana.id)
                     continue
+
+                #==============================================================
+                # Chequeamos limite de llamadas por segundo
+                #==============================================================
+                time_to_sleep = originate_status.time_to_sleep()
+                if time_to_sleep > 0.0:
+                    self.onLimiteDeOriginatePorSegundosError(time_to_sleep)
+                    self.real_sleep(time_to_sleep)
+
+                    # TODO: convendria actualizar el status
+                    #  para aprovechar este tiempo de espera.
+                    #  El tema es que se actualizarían
+                    #  los trackers, y todo este algoritmo en
+                    #  `for campana, tracker ...` se hizo suponiendo que
+                    #  la actualizacion de trackers se hizo ANTES de arrancar,
+                    #  por lo tanto, habria que revisar cuidadosamente todo
+                    #  este `for ...` antes de implementar la llamada
+                    #  a `self.refrescar_channel_status()`
+                    #
+                    #if time_to_sleep > 1.0 and \
+                    #    self.necesita_refrescar_channel_status():
+                    #    self.refrescar_channel_status()
+                    #
 
                 tracker.reset_loop_flags()
                 try:
