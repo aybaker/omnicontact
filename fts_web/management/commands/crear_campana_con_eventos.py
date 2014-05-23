@@ -68,7 +68,7 @@ class Command(BaseCommand):
         # Inserta eventos "finalizadores". No es TAN inteligente, ya que
         # puede insertar eventos "finalizadores" para contactos que nunca
         # fueron procesados, pero bueno... «todavía sirve, todavía sirve»
-        EventoDeContacto.objects_simulacion.simular_evento(campana.id,
+        EventoDeContacto.objects_simulacion.simular_evento(campana.id, 3,
             EventoDeContacto.objects.get_eventos_finalizadores()[0],
             0.1)
         print("INSERTs ok")
