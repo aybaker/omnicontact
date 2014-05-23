@@ -57,7 +57,7 @@ class Command(BaseCommand):
         print("----- Iniciando INSERT de eventos para "
             "campana {0} -----".format(campana.id))
         EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.id)
+            campana.id, intento=1)
         print("INSERT ok")
 
         # Count por evento

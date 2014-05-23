@@ -43,7 +43,8 @@ class Command(BaseCommand):
         print("----- Creando campana...")
         campana = test.crear_campana(
             bd_contactos=BaseDatosContacto.objects.get(pk=id_bd),
-            fecha_inicio=date.today(), fecha_fin=date.today())
+            fecha_inicio=date.today(), fecha_fin=date.today(),
+            cantidad_intentos=3)
 
         # Crea opciones y actuaciones...
         test.crea_todas_las_opcion_posibles(campana)
@@ -54,13 +55,13 @@ class Command(BaseCommand):
 
         print("----- Simula intentos de contactos")
         EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.id)
+            campana.id, intento=1)
         print("-- Mas...")
         EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.id)
+            campana.id, intento=2)
         print("-- Mas...")
         EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.id)
+            campana.id, intento=3)
         print("INSERTs ok")
 
         print("----- Simula eventos finalizadores")
