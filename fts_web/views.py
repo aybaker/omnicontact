@@ -779,6 +779,45 @@ class ConfirmaCampanaView(UpdateView):
         return reverse('lista_campana')
 
 
+class FinalizaCampanaView(UpdateView):
+    """
+    Esta vista actualiza la campañana fibnalizándola.
+    """
+
+    model = Campana
+    context_object_name = 'campana'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if self.object.estado == Campana.ESTADO_PAUSADA:
+            self.object.finalizar()
+            message = '<strong>Operación Exitosa!</strong>\
+            Se llevó a cabo con éxito la finalización de\
+            la Campaña.'
+
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                message,
+            )
+        else:
+            message = '<strong>Operación Errónea!</strong>\
+            No se pudo finalizar la Campaña. Verifique que este pausada\
+            para poder finalizarla.'
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('lista_campana_por_estados')
+
+
 class PausaCampanaView(UpdateView):
     """
     Esta vista actualiza la campañana pausándola.
