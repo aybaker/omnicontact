@@ -724,6 +724,74 @@ class GestionDeLlamadasManager(models.Manager):
         values = [(row[0] - 1, row[1],) for row in values]
         return values
 
+    def obtener_pendientes_no_en_curso(self, campana_id, contacto_ids_en_curso,
+        limit=100):
+        """Devuelve lista de listas, con los datos de los contactos que
+        estan pendientes de realizar. Tiene en cuenta la cantidad maxima
+        de intentos seteada en la campana, y filtra los contactos para
+        excluir los contactos especificados en `contacto_ids_en_curso`.
+
+        Cada elemento de la lista contiene una lista, con 2 items:
+        - item[0]: cantidad de veces intentado
+        - item[1]: id_contacto
+
+        Cuando todos los pendientes han sido finalizados, devuelve
+        una lista vacia.
+
+        :param contacto_ids_en_curso: lista de ids de contactos. NO PUEDE
+                                      estar vacia. Si no hay contactos
+                                      en curso, utilizar obtener_pendientes()
+        """
+
+        assert len(contacto_ids_en_curso) > 0
+
+        campana = Campana.objects.get(pk=campana_id)
+
+        finalizadores = ",".join([str(int(x))
+            for x in EventoDeContacto.objects.get_eventos_finalizadores()])
+
+        contacto_ids_en_curso_sql = ','.join([
+            str(id_cont) for id_cont in contacto_ids_en_curso])
+
+        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
+        sql = """
+        SELECT count(*) AS "ev_count", contacto_id AS "contacto_id"
+        FROM fts_daemon_eventodecontacto
+        WHERE (evento = {ev_programado} OR evento = {ev_intento})
+            AND campana_id = {campana_id}
+            AND contacto_id NOT IN
+            (
+                {contacto_ids_en_curso}
+            )
+            AND contacto_id NOT IN
+            (
+                SELECT DISTINCT tmp.contacto_id
+                FROM fts_daemon_eventodecontacto AS tmp
+                WHERE tmp.campana_id = {campana_id} AND
+                    tmp.evento IN ({lista_eventos_finalizadores})
+            )
+        GROUP BY contacto_id
+        HAVING count(*) < {max_intentos} + 1
+        ORDER BY 1
+        LIMIT {limit}
+        """.format(campana_id=campana.id,
+            max_intentos=campana.cantidad_intentos,
+            ev_programado=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
+            ev_intento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+            limit=int(limit),
+            lista_eventos_finalizadores=finalizadores,
+            contacto_ids_en_curso=contacto_ids_en_curso_sql
+        )
+
+        cursor = connection.cursor()
+        with log_timing(logger,
+            "obtener_pendientes_no_en_curso() tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+
+        values = [(row[0] - 1, row[1],) for row in values]
+        return values
+
     def obtener_datos_de_contactos(self, id_contactos):
         """Devuelve los datos necesarios para generar llamadas
         para los contactos pasados por parametros (lista de IDs).
