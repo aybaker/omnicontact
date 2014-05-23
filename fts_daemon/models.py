@@ -250,11 +250,11 @@ class SimuladorEventoDeContactoManager():
         una campana.
 
         :param intento: A que intento de contaco pertenece la simulación
-        del evento.
+                        del evento. Intento == 1 es el 1er intento.
         :type intento: int
         :param probabilidad: Para que porcentage (aprox) de los contactos hay
-               que crear intentos. Para crear intentos para TODOS, usar valor
-               mayor a 1.0
+                             que crear intentos. Para crear intentos para
+                             TODOS, usar valor mayor a 1.0
         :type probabilidad: float
         """
         assert settings.DEBUG or settings.FTS_TESTING_MODE
@@ -267,11 +267,11 @@ class SimuladorEventoDeContactoManager():
         """
         Crea evento para contactos de una campana.
         :param intento: A que intento de contaco pertenece la simulación
-        del evento.
+                        del evento. Intento == 1 es el 1er intento.
         :type intento: int
         :param probabilidad: Para que porcentage (aprox) de los contactos hay
-               que crear eventos. Para crear intentos para TODOS, usar valor
-               mayor a 1.0
+                             que crear eventos. Para crear intentos para TODOS,
+                             usar valor mayor a 1.0
         :type probabilidad: float
         :param evento Evento a insertar
         :type evento: int
@@ -955,6 +955,14 @@ class EventoDeContacto(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     evento = models.SmallIntegerField(db_index=True)
     dato = models.SmallIntegerField(db_index=True)
+    """Aunque se llama `dato`, aqui guardamos el nro de intento
+    al que corresponde este evento.
+
+    Para el evento EVENTO_CONTACTO_PROGRAMADO, utilizamos `dato == 0`.
+
+    Por lo tanto, cuando `dato == 1`, implica que se trata de un evento
+    asociado al 1er intento.
+    """
 
     def __unicode__(self):
         return "EventoDeContacto-{0}-{1}".format(
