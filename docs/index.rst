@@ -20,7 +20,7 @@ El sistema puede ser accedido utilizando la URL http://ip-del-servidor:8088
 Usuarios
 --------
 
-El sistema funciona bajo el usuario `ftsender`. La aplicacion se encuentra en el directorio ~/deploy:
+El sistema funciona bajo el usuario ``ftsender``. La aplicacion se encuentra en el directorio ``~/deploy``:
 
 .. code::
 
@@ -35,7 +35,7 @@ El sistema funciona bajo el usuario `ftsender`. La aplicacion se encuentra en el
     drwxr-xr-x. 5 ftsender root     4.0K May 18 19:04 static_root
     drwxrwxr-x. 6 ftsender ftsender 4.0K May 18 19:36 virtualenv
 
-En el directorio ~/deploy/log se encuentran 2 archivos de log:
+En el directorio ``~/deploy/log`` se encuentran 2 archivos de log:
 
 .. code::
 
@@ -44,7 +44,7 @@ En el directorio ~/deploy/log se encuentran 2 archivos de log:
     -rw-rw-r--. 1 ftsender ftsender  17K May 21 22:44 django.log
     -rw-r-----. 1 ftsender ftsender 565K May 21 22:44 uwsgi.log
 
-En `uwsgi.log` se encuentran los logs de Nginx. En `django.log` los logs de la aplicación.
+En ``uwsgi.log`` se encuentran los logs de Nginx. En ``django.log`` los logs de la aplicación.
 
 Servicios
 ---------
@@ -66,13 +66,15 @@ Para bajar el sistema (toda la aplicación: web y daemon), basta con ejecutar:
 Asterisk
 --------
 
-El sistema por default utiliza la instalación de Asterisk ubicada en /opt/asterisk-11.
-El *script de deploy* modifica los archivos allí encontrados para crear un usuario
-para el manager, activar la interfaz web, e incluir los 2 archivos de configuración
-generados por el sistema (dialplan y queues).
+El sistema por default utiliza la instalación de Asterisk ubicada en ``/opt/asterisk-11``.
+El script de deploy **modifica** los archivos allí encontrados para:
 
-Los archivos de configuración *generados por el sistema* son
-guardados en el directorio `/etc/ftsender/asterisk/`:
+ * crear un usuario para el manager
+ * activar la interfaz web
+ * incluir los 2 archivos de configuración generados por el sistema (dialplan y queues).
+
+Los archivos de configuración **generados por el sistema** son
+guardados en el directorio ``/etc/ftsender/asterisk/``:
 
 .. code::
 
