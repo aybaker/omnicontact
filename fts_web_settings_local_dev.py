@@ -75,7 +75,7 @@ TMPL_FTS_AUDIO_CONVERSOR_EXTENSION = ".wav"
 
 FTS_FAST_AGI_DAEMON_PROXY_URL = "http://localhost:8080"
 
-FTS_DAEMON_ORIGINATES_PER_SECOND = 5.0
+FTS_DAEMON_ORIGINATES_PER_SECOND = 100.0
 
 LOGGING = {
     'version': 1,
@@ -105,6 +105,10 @@ LOGGING = {
             'level': 'INFO',
         },
         'south': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'django.db.backends': {
             'handlers': ['console'],
             'level': 'INFO',
         },

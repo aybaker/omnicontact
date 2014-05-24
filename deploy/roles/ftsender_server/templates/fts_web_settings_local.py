@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 #@PydevCodeAnalysisIgnore
 
+"""
+Template para generar ftsw_web_settings_local para deploys.
+"""
+
+
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
