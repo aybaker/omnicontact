@@ -103,6 +103,7 @@ class CampanaTracker(object):
         if self.fetch_max < 100:
             self.fetch_max = 100
 
+    # TODO: renombrar a "limite_de_canales_alcanzado" o algo asi
     def limite_alcanzado(self):
         """Devuelve booleano si se ha alcanzado (o superado) el limite de
         canales para la campaña siendo trackeada.
