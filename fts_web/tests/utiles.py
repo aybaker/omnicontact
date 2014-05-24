@@ -25,6 +25,10 @@ from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
 from fts_daemon.models import EventoDeContacto
 
 
+EV_FINALIZADOR = EventoDeContacto.objects.\
+    get_eventos_finalizadores()[0]
+
+
 class FTSenderDiscoverRunner(DiscoverRunner):
     """
     Test runner para FTSender
@@ -425,6 +429,13 @@ class FTSenderBaseTest(TestCase):
         """Genera evento asociado a intento de contactacion"""
         EventoDeContacto.objects.inicia_intento(campana_id, contacto_id,
             intento)
+
+    def registra_evento_de_finalizacion(self, campana_id, contacto_id,
+        intento):
+        """Genera evento asociado a finalizacion de contacto"""
+        EventoDeContacto.objects.create(campana_id=campana_id,
+            contacto_id=contacto_id, evento=EV_FINALIZADOR,
+            dato=intento)
 
 
 def default_db_is_postgresql():
