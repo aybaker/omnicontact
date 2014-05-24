@@ -82,22 +82,20 @@ class CampanaTracker(object):
         """Cantidad maxima a buscar en BD para cachear"""
 
         self._contactos_en_curso = []
-        """Lista con id de contactos con llamadas en curso"""
+        """Lista con id de contactos con llamadas en curso.
 
-        #self._llamadas_en_curso_aprox = 0
-        #"""Lleva un contador de las llamadas en curso aproximadas
-        #para esta campaña. Este valor es refrescado cada tanto con los
-        #datos devueltos por AsteriskHttpClient() (es ese momento no será
-        #aproximado, sino que será el valor cierto). Luego, con cada originate,
-        #incrementamos el contador en 1... lo que lo hace aproximado es que
-        #registramos las llamadas nuevas iniciadas, pero NO descontamos
-        #las llamadas finalizadas.
-        #
-        #ORIGINATE ASYNC: AsteriskHttpClient() devuelve informacion de las
-        #llamadas que todavia no fueron contestadas (en estado RINGING), por
-        #lo tanto, por lo tanto, nos da una visión bastante cierta de la
-        #cantidad de canales ocupados.
-        #"""
+        Este valor es refrescado cada tanto con los
+        datos devueltos por AsteriskHttpClient() (es ese momento no será
+        aproximado, sino que será el valor cierto). Luego, con cada originate,
+        agregamos el contacto devuelto. Lo que lo hace aproximado es que
+        registramos las llamadas nuevas iniciadas, pero NO eliminamos
+        las llamadas finalizadas.
+
+        ORIGINATE ASYNC: AsteriskHttpClient() devuelve informacion de las
+        llamadas que todavia no fueron contestadas (en estado RINGING), por
+        lo tanto, nos da una visión bastante cierta de la cantidad de
+        canales ocupados.
+        """
 
         if self.fetch_min < 20:
             self.fetch_min = 20
@@ -126,18 +124,15 @@ class CampanaTracker(object):
         """Cantidad aproximada de llamadas en curso"""
         return len(self._contactos_en_curso)
 
+    # TODO: eliminar este setter
     @llamadas_en_curso_aprox.setter
     def llamadas_en_curso_aprox(self, value):
-        raise Exception("INVALIDO - Usar: llamadas_en_curso()")
-        #logger.debug("Actualizando llamadas_en_curso_aprox, de %s a %s",
-        #    self._llamadas_en_curso_aprox, value)
-        #assert type(value) == int
-        #self._llamadas_en_curso_aprox = value
+        raise Exception("DEPRECADO - Usar: llamadas_en_curso()")
 
     @property
     def contactos_en_curso(self):
         """Contactos con llamadas en curso en este momento"""
-        return self._contactos_en_curso
+        return list(self._contactos_en_curso)
 
     @contactos_en_curso.setter
     def contactos_en_curso(self, lista_contactos_en_curso):
@@ -285,6 +280,7 @@ class CampanaTracker(object):
         :raises: CampanaNoEnEjecucion
         :raises: NoMasContactosEnCampana
         :raises: LimiteDeCanalesAlcanzadoError
+        :raises: TodosLosContactosPendientesEstanEnCursoError
         """
         self._verifica_fecha_y_hora()
 
@@ -300,7 +296,9 @@ class CampanaTracker(object):
             raise CampanaNoEnEjecucion()
 
         if not self.cache:
-            self._populate_cache()  # -> NoMasContactosEnCampana
+            self._populate_cache()
+            #         \-> NoMasContactosEnCampana
+            #         \-> TodosLosContactosPendientesEstanEnCursoError
 
         ret_campana, ret_contacto_id, ret_telefono, ret_intentos = \
             self.cache.pop(0)
