@@ -79,7 +79,7 @@ TEST_RUNNER = "fts_web.tests.utiles.FTSenderDiscoverRunner"
 
 FTS_ASTERISK_DIALPLAN_LOCAL_CHANNEL = "Local/{contactoId}-{numberToCall}-{intento}@FTS_local_campana_{campanaId}"  #@IgnorePep8
 
-FTS_ASTERISK_DIALPLAN_EXTEN = "fts{contactoId}"
+FTS_ASTERISK_DIALPLAN_EXTEN = "fts-{contactoId}-{numberToCall}-{intento}"
 
 FTS_ASTERISK_DIALPLAN_PRIORITY = 1
 

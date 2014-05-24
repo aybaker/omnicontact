@@ -37,17 +37,26 @@ def procesar_contacto(campana, contacto_id, numero, cant_intentos):
     EventoDeContacto.objects.inicia_intento(campana.id, contacto_id,
         intento_actual)
 
-    # ANTES Local/{contactoId}-{numberToCall}@FTS_local_campana_{campanaId}
-    # Local/{contactoId}-{numberToCall}-{intento}@FTS_local_campana_{campanaId}
-    channel = settings.ASTERISK['LOCAL_CHANNEL'].format(
+    # ANTES:
+    #  * Local/{contactoId}-{numberToCall}@FTS_local_campana_{campanaId}
+    # AHORA:
+    #  * Local/{contactoId}-{numberToCall}-{intento}@
+    #                                        FTS_local_campana_{campanaId}
+    channel = settings.FTS_ASTERISK_DIALPLAN_LOCAL_CHANNEL.format(
         contactoId=str(contacto_id),
         numberToCall=str(numero),
         campanaId=str(campana.id),
         intento=intento_actual,
     )
     context = campana.get_nombre_contexto_para_asterisk()
-    exten = settings.ASTERISK['EXTEN'].format(
+    # ANTES:
+    #  * fts{contactoId}
+    # AHORA:
+    #  * fts-{contactoId}-{numberToCall}-{intento}
+    exten = settings.FTS_ASTERISK_DIALPLAN_EXTEN.format(
         contactoId=str(contacto_id),
+        numberToCall=str(numero),
+        intento=intento_actual,
     )
 
     http_client_clazz = get_class(settings.FTS_ASTERISK_HTTP_CLIENT)

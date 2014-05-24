@@ -55,17 +55,19 @@ exten => _X.,n,Hangup()
 
 [campania_{fts_campana_id}]
 
-exten => _ftsX!,1,NoOp(FTS,INICIO,llamada=${{EXTEN:3}},campana={fts_campana_id})
-exten => _ftsX!,n,Set(OriginalExten=${{EXTEN}})
-exten => _ftsX!,n,Set(ContactoId=${{EXTEN:3}})
-exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
-exten => _ftsX!,n,Wait(1)
-exten => _ftsX!,n,Answer()
-exten => _ftsX!,n(audio),Background({fts_audio_file})
-; # FIXME: alcanza 'WaitExten(10)'??? No deberia ser un poco mas q' el tiempo del WAV/GSM/MP3?
-exten => _ftsX!,n,WaitExten(10)
-exten => _ftsX!,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
-exten => _ftsX!,n,Hangup()
+exten => _ftsX.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
+exten => _ftsX.,n,Set(OriginalExten=${{EXTEN}})
+exten => _ftsX.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
+exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
+exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
+exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
+exten => _ftsX.,n,Wait(1)
+exten => _ftsX.,n,Answer()
+exten => _ftsX.,n(audio),Background({fts_audio_file})
+; TODO: alcanza 'WaitExten(10)'?
+exten => _ftsX.,n,WaitExten(10)
+exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
+exten => _ftsX.,n,Hangup()
 """
 
 
