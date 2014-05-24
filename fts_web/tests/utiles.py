@@ -22,6 +22,7 @@ from django.test.runner import DiscoverRunner
 from django.test.testcases import LiveServerTestCase
 from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
     Contacto, BaseDatosContacto, Campana, Opcion, Actuacion
+from fts_daemon.models import EventoDeContacto
 
 
 class FTSenderDiscoverRunner(DiscoverRunner):
@@ -244,8 +245,17 @@ class FTSenderBaseTest(TestCase):
             utiliza una por default.
         """
 
-        bd_contactos = bd_contactos or self.crear_base_datos_contacto(
-            cant_contactos=cant_contactos)
+        cantidad_canales = kwargs.get('cantidad_canales', 2)
+        cantidad_intentos = kwargs.get('cantidad_intentos', 2)
+
+        if bd_contactos:
+            assert bd_contactos.get_cantidad_contactos() > cantidad_canales, \
+                "La cant. de contactos en BD debe ser mayor a cant. canales"
+        else:
+            assert cant_contactos > cantidad_canales, \
+                "La cant. de contactos en BD debe ser mayor a cant. canales"
+            bd_contactos = self.crear_base_datos_contacto(
+                cant_contactos=cant_contactos)
 
         if not fecha_inicio or not fecha_fin:
             fecha_inicio = datetime.date.today()
@@ -253,8 +263,8 @@ class FTSenderBaseTest(TestCase):
 
         c = Campana(
             nombre="campaña-" + ru(),
-            cantidad_canales=kwargs.get('cantidad_canales', 2),
-            cantidad_intentos=kwargs.get('cantidad_intentos', 2),
+            cantidad_canales=cantidad_canales,
+            cantidad_intentos=cantidad_intentos,
             segundos_ring=5,
             fecha_inicio=fecha_inicio,
             fecha_fin=fecha_fin,
@@ -304,8 +314,7 @@ class FTSenderBaseTest(TestCase):
 
     def crear_campana_activa(self, cant_contactos=None, bd_contactos=None,
             *args, **kwargs):
-        """Crea campañas y la pasa a ESTADO_ACTIVA.
-        """
+        """Crea campañas y la pasa a ESTADO_ACTIVA."""
         c = self.crear_campana(cant_contactos=cant_contactos,
             bd_contactos=bd_contactos, *args, **kwargs)
         c.activar()
@@ -411,6 +420,11 @@ class FTSenderBaseTest(TestCase):
         for weekday in range(0, 7):
             self.crea_campana_actuacion(weekday,
                 datetime.time(0, 00), datetime.time(23, 59), campana)
+
+    def registra_evento_de_intento(self, campana_id, contacto_id, intento):
+        """Genera evento asociado a intento de contactacion"""
+        EventoDeContacto.objects.inicia_intento(campana_id, contacto_id,
+            intento)
 
 
 def default_db_is_postgresql():
