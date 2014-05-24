@@ -113,21 +113,10 @@ class CampanaTracker(object):
         """
         return len(self._contactos_en_curso) >= self.campana.cantidad_canales
 
-    def reset_loop_flags(self):
-        """Resetea todas las variables y banderas de ROUND, o sea, las
-        variables y banderas que son reseteadas antes de iniciar el ROUND
-        """
-        pass  # nada por ahora
-
     @property
     def llamadas_en_curso_aprox(self):
         """Cantidad aproximada de llamadas en curso"""
         return len(self._contactos_en_curso)
-
-    # TODO: eliminar este setter
-    @llamadas_en_curso_aprox.setter
-    def llamadas_en_curso_aprox(self, value):
-        raise Exception("DEPRECADO - Usar: llamadas_en_curso()")
 
     @property
     def contactos_en_curso(self):
