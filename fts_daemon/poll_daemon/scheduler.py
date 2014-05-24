@@ -29,7 +29,8 @@ class CantidadMaximaDeIteracionesSuperada(Exception):
     pass
 
 
-class OriginateLimit(object):
+# TODO: renombrar OriginateThrottler a OriginateThrottler
+class OriginateThrottler(object):
     """Keeps the status of ORIGINATEs and the limits of
     allowed ORIGINATEs per seconds
     """
@@ -41,7 +42,7 @@ class OriginateLimit(object):
             self._orig_per_sec = settings.FTS_DAEMON_ORIGINATES_PER_SECOND
             self._max_wait = 1.0 / self._orig_per_sec
         else:
-            logger.info("OriginateLimit: limite desactivado")
+            logger.info("OriginateThrottler: limite desactivado")
             self._orig_per_sec = None
             self._max_wait = None
 
@@ -65,7 +66,7 @@ class OriginateLimit(object):
         td = datetime.now() - self._originate_ok
         if td.days < 0 or td.days > 0:
             # paso algo raro... esperamos `self._max_wait`
-            logger.warn("OriginateLimit.time_to_sleep(): valor sospechoso "
+            logger.warn("OriginateThrottler.time_to_sleep(): valor sospechoso "
                 "de td.days: %s", td.days)
             return self._max_wait
 
@@ -75,7 +76,7 @@ class OriginateLimit(object):
         # Si el delta es < 0, paso algo raro!
         if delta < 0.0:
             # paso algo raro... esperamos `self._max_wait`
-            logger.warn("OriginateLimit.time_to_sleep(): valor sospechoso "
+            logger.warn("OriginateThrottler.time_to_sleep(): valor sospechoso "
                 "de delta: %s", delta)
             return self._max_wait
 
@@ -109,6 +110,9 @@ class RoundRobinTracker(object):
         self.ban_manager = BanManager()
         """Administrador de baneos"""
 
+        self._originate_throttler = OriginateThrottler()
+        """Administrador de limites de originates por segundo"""
+
         # Quiza esto deberia estar en `self.trackers_campana`
         # TODO: usar time.clock() u alternativa
         self._ultimo_refresco_trackers = datetime.now() - timedelta(days=30)
@@ -127,6 +131,16 @@ class RoundRobinTracker(object):
         Si vale ``None``, no se realiza ningun control.
         Sino, al alcanzar esa cantidad de iteraciones, generator() hace
         return"""
+
+    @property
+    def originate_throttler(self):
+        return self._originate_throttler
+
+    @originate_throttler.setter
+    def originate_throttler(self, new_value):
+        assert settings.FTS_TESTING_MODE, "No esta permitido cambiar " \
+            "'originate_throttler' cuando no se esta en FTS_TESTING_MODE"
+        self._originate_throttler = new_value
 
     def necesita_refrescar_trackers(self):
         """Devuleve booleano, indicando si debe o no consultarse a
@@ -453,7 +467,7 @@ class RoundRobinTracker(object):
             return True
         return False
 
-    def generator(self, originate_status=None):
+    def generator(self):
         """Devuelve los datos de contacto a contactar, de a una
         campaña por vez.
 
@@ -463,9 +477,6 @@ class RoundRobinTracker(object):
         """
 
         iter_num = 0
-        if originate_status is None:
-            # FIXME: migrar tests y quitar este hack
-            originate_status = OriginateLimit()
 
         while True:
 
@@ -549,7 +560,7 @@ class RoundRobinTracker(object):
                 #==============================================================
                 # Chequeamos limite de llamadas por segundo
                 #==============================================================
-                time_to_sleep = originate_status.time_to_sleep()
+                time_to_sleep = self._originate_throttler.time_to_sleep()
                 if time_to_sleep > 0.0:
                     self.onLimiteDeOriginatePorSegundosError(time_to_sleep)
                     self.real_sleep(time_to_sleep)
@@ -617,19 +628,18 @@ class Llamador(object):
 
     def __init__(self):
         self.rr_tracker = RoundRobinTracker()
-        self.originate_limit = OriginateLimit()
 
     def run(self, max_loops=0):
         """Inicia el llamador"""
         current_loop = 1
         for campana, id_contacto, numero, cant_intentos in \
-            self.rr_tracker.generator(self.originate_limit):
+            self.rr_tracker.generator():
             logger.debug("Llamador.run(): campana: %s - id_contacto: %s"
                 " - numero: %s", campana, id_contacto, numero)
 
             originate_ok = procesar_contacto(campana, id_contacto, numero,
                 cant_intentos)
-            self.originate_limit.set_originate(originate_ok)
+            self.rr_tracker.originate_throttler.set_originate(originate_ok)
 
             current_loop += 1
             if max_loops > 0 and current_loop > max_loops:
