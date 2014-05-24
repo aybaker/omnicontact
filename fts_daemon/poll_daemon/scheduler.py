@@ -234,8 +234,7 @@ class RoundRobinTracker(object):
         return True
 
     def refrescar_channel_status(self):
-        """Refresca `llamadas_en_curso_aprox` de `self.trackers_campana`,
-        en caso que sea necesario y conveniente.
+        """Refresca `contactos_en_curso` de `self.trackers_campana`.
 
         En caso de error, no actualiza ningun valor.
         """
@@ -244,7 +243,7 @@ class RoundRobinTracker(object):
 
         logger.info("Actualizando status via AMI HTTP")
         try:
-            status = self.ami_status_tracker.get_status_por_campana()
+            new_status = self.ami_status_tracker.get_status_por_campana()
         except:
             logger.exception("Error detectado al ejecutar "
                 "ami_status_tracker.get_status_por_campana(). Los statuses "
@@ -255,24 +254,31 @@ class RoundRobinTracker(object):
         # Actualizamos estructuras...
         #======================================================================
 
-        # Dict con campañas trackeadas, indexadas por 'ID'
-        campana_by_id = dict([(c.id, c) for c in self.trackers_campana])
+        # Dict con campañas trackeadas:
+        #   campanas_trackeadas_by_id[id_campana] -> Campana
+        campanas_trackeadas_by_id = dict([(c.id, c)
+            for c in self.trackers_campana])
 
-        for campana_id, info_de_llamadas in status.iteritems():
+        # Iteramos status recién obtenido
+        for campana_id, info_de_llamadas in new_status.iteritems():
             # info_de_llamadas => [contacto_id, numero, campana_id]
-            if campana_id in campana_by_id:
-                campana = campana_by_id[campana_id]
+
+            # Actualizamos self.trackers_campana[*]
+            if campana_id in campanas_trackeadas_by_id:
+                campana = campanas_trackeadas_by_id[campana_id]
                 tracker = self.trackers_campana[campana]
-                tracker.llamadas_en_curso_aprox = len(info_de_llamadas)
-                del campana_by_id[campana_id]
+                # tracker.llamadas_en_curso_aprox = len(info_de_llamadas)
+                tracker.contactos_en_curso = [item[0]
+                    for item in info_de_llamadas]
+                del campanas_trackeadas_by_id[campana_id]
             else:
                 logger.info("refrescar_channel_status(): "
                     "Ignorando datos de campana %s (%s llamadas en curso)",
                     campana_id, len(info_de_llamadas))
 
-        # En este punto, campana_by_id tiene las campañas cuyos datos
-        #  no fueron refrescados...
-        for campana in campana_by_id.values():
+        # En este punto, campanas_trackeadas_by_id tiene las campañas cuyos
+        # datos no fueron refrescados...
+        for campana in campanas_trackeadas_by_id.values():
             # FIXME: esto que hacemos aca, no es algo peligroso? Y si habia
             # en ejecucion!? Quizá deberiamos, además de este control, llevar
             # control de la cantidad de llamadas generadas por minuto
@@ -280,7 +286,8 @@ class RoundRobinTracker(object):
                 "datos para la campana %s... Suponemos que no hay "
                 "llamadas en curso para dicha campana", campana.id)
             tracker = self.trackers_campana[campana]
-            tracker.llamadas_en_curso_aprox = 0
+            # tracker.llamadas_en_curso_aprox = 0
+            tracker.contactos_en_curso = []
 
     def onNoHayCampanaEnEjecucion(self):
         """Ejecutado por generator() cuando se detecta
@@ -528,7 +535,6 @@ class RoundRobinTracker(object):
                     #    self.refrescar_channel_status()
                     #
 
-                tracker.reset_loop_flags()
                 try:
                     yield tracker.next()
                     loop__campanas_procesadas += 1
