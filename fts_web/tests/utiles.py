@@ -256,8 +256,9 @@ class FTSenderBaseTest(TestCase):
             assert bd_contactos.get_cantidad_contactos() > cantidad_canales, \
                 "La cant. de contactos en BD debe ser mayor a cant. canales"
         else:
-            assert cant_contactos > cantidad_canales, \
-                "La cant. de contactos en BD debe ser mayor a cant. canales"
+            if cant_contactos is not None:
+                assert cant_contactos > cantidad_canales, \
+                    "La cant. de contactos en BD debe ser mayor a los canales"
             bd_contactos = self.crear_base_datos_contacto(
                 cant_contactos=cant_contactos)
 
