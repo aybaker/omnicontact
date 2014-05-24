@@ -177,7 +177,7 @@ class RoundRobinTracker(object):
 
         Se crean instancias de CampanaTracker SOLO para las nuevas campañas.
         Las instancias de CampanaTracker para campañas que ya están siendo
-        traqueadas con mantenidas. Las instancias de CampanaTracker de campañas
+        traqueadas son mantenidas. Las instancias de CampanaTracker de campañas
         que ya no son más trackeadas, son eliminadas.
 
         :raises: NoHayCampanaEnEjecucion
@@ -312,8 +312,13 @@ class RoundRobinTracker(object):
 
     def onCampanaNoEnEjecucion(self, campana):
         """Ejecutado por generator() cuando se detecta
-        CampanaNoEnEjecucion. Esto implica que la campana que se
-        estaba por ejecutar, NO debio tenerse en cuenta.
+        CampanaNoEnEjecucion. Esto implica algunas de las siguientes
+        situaciones:
+        1. la campana que se estaba por ejecutar, NO debio tenerse en cuenta
+           (posible bug?)
+        2. justo se ha vencido (por fecha de fin de la campaña,
+           u hora de actuacion)
+        3. simplemente alguien ha pausado la campaña
 
         Banea a la campana, y la elimina de `self.trackers_campana`
         """
@@ -588,7 +593,6 @@ class RoundRobinTracker(object):
                         campana)
                     loop__TLCPEECE_detectado = True
                 except CampanaNoEnEjecucion:
-                    # CORNER CASE!
                     self.onCampanaNoEnEjecucion(campana)
                 except NoMasContactosEnCampana:
                     # Esta excepcion es generada cuando la campaña esta
@@ -607,10 +611,10 @@ class RoundRobinTracker(object):
                             campana.id))
                     self.onLimiteDeCanalesAlcanzadoError(campana)
 
-            # ----- ANTES -----
+            # ----- ANTES, la situacion era:
             # CORNER CASE: solo podria pasar si justo, mientras se
             # procesaban las campañas, cambio la hora y/o el dia
-            # ----- AHORA -----
+            # ----- AHORA es distinta:
             # Si se detecta 'TodosLosContactosPendientesEstanEnCursoError',
             # y hay una sola campaña en ejecucion, entonces puede
             # suceder q' no se haya procesado ningun contacto
