@@ -370,13 +370,8 @@ class RoundRobinTracker(object):
             self.ban_manager.eliminar(campana)
             return
 
-        # TODO: realmente vale la pena loguear esto?
-        ts_ultimo_evento = EventoDeContacto.objects_gestion_llamadas.\
-            obtener_ts_ultimo_evento_de_campana(campana.id)
-
         # LIMITE = settings.FTS_MARGEN_FINALIZACION_CAMPANA
-        logger.info("finalizar_campana(): finalizando campana %s, cuyo "
-            "timestamp de ultimo evento es %s", campana.id, ts_ultimo_evento)
+        logger.info("finalizar_campana(): finalizando campana %s", campana.id)
 
         campana.finalizar()
 
