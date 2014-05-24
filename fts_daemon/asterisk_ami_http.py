@@ -456,6 +456,11 @@ class AmiStatusTracker(object):
     REGEX = re.compile("^Local/([0-9]+)-([0-9]+)-([0-9]+)@"
         "FTS_local_campana_([0-9]+)")
 
+    REGEX_NO_LOCAL_CHANNEL_CONTEXT = re.compile("^campania_([0-9]+)$")
+
+    REGEX_NO_LOCAL_CHANNEL_EXTEN = re.compile(
+        "^fts-([0-9]+)-([0-9]+)-([0-9]+)$")
+
     def __init__(self):
         pass
 
@@ -470,12 +475,22 @@ class AmiStatusTracker(object):
         parseados = collections.defaultdict(lambda: list())
         no_parseados = []
         for item in calls_dicts:
-            # Local/28-620@FTS_local_campana
-            match_channel = AmiStatusTracker.REGEX.match(
+
+            #
+            # Chequeamos si 'channel' matchea
+            #
+
+            # Local/83723-03514761123-2@FTS_local_campana
+            match_obj = AmiStatusTracker.REGEX.match(
                 item.get("channel", ""))
-            match_bridgedchannel = AmiStatusTracker.REGEX.match(
-                item.get("bridgedchannel", ""))
-            match_obj = match_channel or match_bridgedchannel
+
+            #
+            # Si no matcheo, chequeamos 'bridgedchannel'
+            #
+
+            if not match_obj:
+                match_obj = AmiStatusTracker.REGEX.match(
+                    item.get("bridgedchannel", ""))
 
             if match_obj:
                 contacto_id = match_obj.group(1)
@@ -484,8 +499,50 @@ class AmiStatusTracker(object):
                 campana_id = match_obj.group(4)
                 key = " ".join([contacto_id, numero, campana_id, intento])
                 parseados[key].append(item)
-            else:
+                continue
+
+            #
+            # Si llegamos aca, es porque ni 'channel' ni 'bridgedchannel'
+            #  tienen informacion. Por lo tanto, ahora chequeamos
+            #
+            # Ej:
+            # {
+            #    'context': 'campania_157',
+            #    'extension': 'fts-2933998-1000000001-1',
+            #    'calleridnum': '2933998-1000000001-1',
+            #    'channel': 'IAX2/asterisk-a-1897',
+            #    'channelstatedesc': 'Up'
+            #    (...)
+            # }
+
+            # Primero intentamos con `campana_id`
+            match_obj = AmiStatusTracker.REGEX_NO_LOCAL_CHANNEL_CONTEXT.\
+                match(item.get("context", ""))
+
+            if not match_obj:
                 no_parseados.append(item)
+                continue
+
+            # Matcheo!
+            campana_id = match_obj.group(1)
+
+            # Ahora buscamos los demoas datos en `extension`
+            match_obj = AmiStatusTracker.REGEX_NO_LOCAL_CHANNEL_EXTEN.\
+                match(item.get("extension", ""))
+
+            if not match_obj:
+                no_parseados.append(item)
+                continue
+
+            # Matcheo!
+            contacto_id = match_obj.group(1)
+            numero = match_obj.group(2)
+            intento = match_obj.group(3)
+
+            # Tenemos todos los datos :-D
+            key = " ".join([contacto_id, numero, campana_id, intento])
+            parseados[key].append(item)
+            continue
 
         return parseados, no_parseados
 
