@@ -56,6 +56,7 @@ class Command(BaseCommand):
         make_option('--audio', action='store', dest='audio', default=None),
         make_option('--bd', dest='bd', default=None),
         make_option('--canales', dest='canales', default='20'),
+        make_option('--intentos', dest='intentos', default='1'),
     )
 
     def handle(self, *args, **options):
@@ -67,19 +68,18 @@ class Command(BaseCommand):
             else:
                 numeros_telefonicos = [str(x) for x in range(101, 109)]
 
-            cantidad_intentos = os.environ.get('FTS_CANTIDAD_INTENTOS', '1')
-            cantidad_intentos = int(cantidad_intentos)
-
             if options['bd'] is None:
                 bd_contactos = test.crear_base_datos_contacto(
                     numeros_telefonicos=numeros_telefonicos)
             else:
                 bd_contactos = BaseDatosContacto.objects.get(
                     pk=int(options['bd']))
+
             campana = test.crear_campana(bd_contactos=bd_contactos,
                 fecha_inicio=date.today(), fecha_fin=date.today(),
-                cantidad_intentos=cantidad_intentos,
-                cantidad_canales=int(options['canales']))
+                cantidad_intentos=int(options['intentos']),
+                cantidad_canales=int(options['canales']),
+            )
 
             # Crea opciones y actuaciones...
             test.crea_todas_las_opcion_posibles(campana)
