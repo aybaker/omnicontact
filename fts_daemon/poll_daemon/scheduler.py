@@ -533,7 +533,8 @@ class RoundRobinTracker(object):
             ## Procesamos...
             ##
 
-            loop__campanas_procesadas = 0
+            loop__contactos_procesados = 0
+            loop__TLCPEECE_detectado = False
 
             # Trabajamos en copia, por si hace falta modificarse
             dict_copy = dict(self.trackers_campana)
@@ -570,10 +571,11 @@ class RoundRobinTracker(object):
 
                 try:
                     yield tracker.next()
-                    loop__campanas_procesadas += 1
+                    loop__contactos_procesados += 1
                 except TodosLosContactosPendientesEstanEnCursoError:
                     self.onTodosLosContactosPendientesEstanEnCursoError(
                         campana)
+                    loop__TLCPEECE_detectado = True
                 except CampanaNoEnEjecucion:
                     # CORNER CASE!
                     self.onCampanaNoEnEjecucion(campana)
@@ -594,12 +596,18 @@ class RoundRobinTracker(object):
                             campana.id))
                     self.onLimiteDeCanalesAlcanzadoError(campana)
 
+            # ----- ANTES -----
             # CORNER CASE: solo podria pasar si justo, mientras se
             # procesaban las campañas, cambio la hora y/o el dia
-            if loop__campanas_procesadas == 0:
-                logger.warn("No se ha devuelto ningun contacto en el "
-                    "ROUND actual")
-                self.onNoSeDevolvioContactoEnRoundActual()
+            # ----- AHORA -----
+            # Si se detecta 'TodosLosContactosPendientesEstanEnCursoError',
+            # y hay una sola campaña en ejecucion, entonces puede
+            # suceder q' no se haya procesado ningun contacto
+            if loop__contactos_procesados == 0:
+                if not loop__TLCPEECE_detectado:
+                    logger.warn("No se ha devuelto ningun contacto en el "
+                        "ROUND actual")
+                    self.onNoSeDevolvioContactoEnRoundActual()
 
 
 class Llamador(object):
