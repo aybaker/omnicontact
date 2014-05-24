@@ -11,11 +11,10 @@ import time
 from django.conf import settings
 from fts_daemon.asterisk_ami_http import AmiStatusTracker
 from fts_daemon.llamador_contacto import procesar_contacto
-from fts_daemon.models import EventoDeContacto
 from fts_daemon.poll_daemon.ban_manager import BanManager
 from fts_daemon.poll_daemon.campana_tracker import CampanaTracker, \
     NoHayCampanaEnEjecucion, CampanaNoEnEjecucion, NoMasContactosEnCampana, \
-    LimiteDeCanalesAlcanzadoError
+    LimiteDeCanalesAlcanzadoError, TodosLosContactosPendientesEstanEnCursoError
 from fts_web.models import Campana
 import logging as _logging
 
@@ -23,6 +22,7 @@ import logging as _logging
 logger = _logging.getLogger(__name__)
 
 BANEO_NO_MAS_CONTACTOS = "BANEO_NO_MAS_CONTACTOS"
+BANEO_TODOS_LOS_PENDIENTES_EN_CURSO = "BANEO_TODOS_LOS_PENDIENTES_EN_CURSO"
 
 
 class CantidadMaximaDeIteracionesSuperada(Exception):
@@ -45,6 +45,7 @@ class OriginateLimit(object):
             self._orig_per_sec = None
             self._max_wait = None
 
+    # TODO: renombrar a "set_originate_succesfull" o "originate_succesfull"
     def set_originate(self, ok):
         """Set that originate was succesfull or not"""
         if ok:
@@ -357,6 +358,43 @@ class RoundRobinTracker(object):
             "esperar %s seg. para no superar el limite "
             "de ORIGINATEs por segundo", to_sleep)
 
+    def onTodosLosContactosPendientesEstanEnCursoError(self, campana):
+        """Ejecutado por generator() cuando detecta que, aunque hay contactos
+        pendientes, éstos ya están con llamadas en curso actualmente, y por
+        lo tanto, no podemos volver a intentarlos.
+        """
+        logger.info("onTodosLosContactosPendientesEstanEnCursoError(): "
+            "todos los contactos pendientes de la campana %s poseen "
+            "llamadas en curso. Se baneara la campana.", campana.id)
+
+        self.ban_manager.banear_campana(campana,
+            reason=BANEO_TODOS_LOS_PENDIENTES_EN_CURSO)
+
+        #
+        # ----- Versión corta
+        #
+        #  - ESTO ESTA MAL! No deberiamos eliminar la campaña, y
+        #    deberiamos refactorizar el manejo del baneo
+        #
+        # ----- Versión larga
+        #
+        # En vez eliminar campaña del tracker, el control de baneo
+        # debería moverse al loop() de `generator()`, así las campañas baneadas
+        # no son ignoradas por los otros metodos (^1), y permitimos que
+        # se actualice el 'status' de estas campañas.
+        #
+        # (^1) sobre todo, ahora necesitamos que refrescar_channel_status()
+        #      NO ignore las campañas baneadas por
+        #      BANEO_TODOS_LOS_PENDIENTES_EN_CURSO, todo lo contrario!
+        #      Necesitamos que lo antes posible se actualice el status
+        #      para intentar los contactos pendientes.
+        #
+
+        try:
+            del self.trackers_campana[campana]
+        except KeyError:
+            pass
+
     def finalizar_campana(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
 
@@ -533,6 +571,9 @@ class RoundRobinTracker(object):
                 try:
                     yield tracker.next()
                     loop__campanas_procesadas += 1
+                except TodosLosContactosPendientesEstanEnCursoError:
+                    self.onTodosLosContactosPendientesEstanEnCursoError(
+                        campana)
                 except CampanaNoEnEjecucion:
                     # CORNER CASE!
                     self.onCampanaNoEnEjecucion(campana)
