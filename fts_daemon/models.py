@@ -759,51 +759,69 @@ class GestionDeLlamadasManager(models.Manager):
                                       estar vacia. Si no hay contactos
                                       en curso, utilizar obtener_pendientes()
         """
-
         assert len(contacto_ids_en_curso) > 0
 
         campana = Campana.objects.get(pk=campana_id)
 
-        finalizadores = ",".join([str(int(x))
-            for x in EventoDeContacto.objects.get_eventos_finalizadores()])
+        #
+        # SANITIZAMOS DATOS: CONVERTIMOS EN INTs, y luego concatenamos
+        #  > hace falta xq cursor.execute() no entiende arrays para
+        #    ejecutar 'INs'
+        #
+        eventos_finalizadores = EventoDeContacto.objects.\
+            get_eventos_finalizadores()
+        finalizadores_SAFE = [int(x) for x in eventos_finalizadores]
+        finalizadores_SQL_SAFE = ",".join([str(x) for x in finalizadores_SAFE])
 
-        contacto_ids_en_curso_sql = ','.join([
-            str(id_cont) for id_cont in contacto_ids_en_curso])
+        #
+        # SANITIZAMOS DATOS: CONVERTIMOS EN INTs, y luego concatenamos
+        #  > hace falta xq cursor.execute() no entiende arrays para
+        #    ejecutar 'INs'
+        #
+        contacto_ids_en_curso_SAFE = [int(x) for x in contacto_ids_en_curso]
+        contacto_ids_en_curso_sql_SAFE = ','.join([
+            str(x) for x in contacto_ids_en_curso_SAFE])
 
-        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
         SELECT count(*) AS "ev_count", contacto_id AS "contacto_id"
         FROM fts_daemon_eventodecontacto
-        WHERE (evento = {ev_programado} OR evento = {ev_intento})
-            AND campana_id = {campana_id}
+        WHERE (evento = %s OR evento = %s)
+            AND campana_id = %s
             AND contacto_id NOT IN
             (
-                {contacto_ids_en_curso}
+                {contacto_ids_en_curso_sql_SAFE}
             )
             AND contacto_id NOT IN
             (
                 SELECT DISTINCT tmp.contacto_id
                 FROM fts_daemon_eventodecontacto AS tmp
-                WHERE tmp.campana_id = {campana_id} AND
-                    tmp.evento IN ({lista_eventos_finalizadores})
+                WHERE tmp.campana_id = %s AND
+                    tmp.evento IN (
+                        {finalizadores_SQL_SAFE}
+                    )
             )
         GROUP BY contacto_id
-        HAVING count(*) < {max_intentos} + 1
+        HAVING count(*) < %s + 1
         ORDER BY 1
-        LIMIT {limit}
-        """.format(campana_id=campana.id,
-            max_intentos=campana.cantidad_intentos,
-            ev_programado=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
-            ev_intento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
-            limit=int(limit),
-            lista_eventos_finalizadores=finalizadores,
-            contacto_ids_en_curso=contacto_ids_en_curso_sql
+        LIMIT %s
+        """.format(
+            contacto_ids_en_curso_sql_SAFE=contacto_ids_en_curso_sql_SAFE,
+            finalizadores_SQL_SAFE=finalizadores_SQL_SAFE,
         )
+
+        params = [
+            EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
+            EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+            campana.id,
+            campana.id,
+            campana.cantidad_intentos,
+            int(limit),
+        ]
 
         cursor = connection.cursor()
         with log_timing(logger,
             "obtener_pendientes_no_en_curso() tardo %s seg"):
-            cursor.execute(sql)
+            cursor.execute(sql, params)
             values = cursor.fetchall()
 
         values = [(row[0] - 1, row[1],) for row in values]
