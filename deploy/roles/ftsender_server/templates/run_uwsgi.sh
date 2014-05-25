@@ -14,6 +14,7 @@
     --static-map /static=${BASEDIR_WEB}/fts_web/static \
     --mule=/home/ftsender/deploy/app/fts_daemon/poll_daemon/main.py \
     --mule=/home/ftsender/deploy/app/fts_daemon/fastagi_daemon.py \
+    --mule=/home/ftsender/deploy/app/fts_daemon/finalizador_vencidas_daemon/main.py \
     --pidfile /home/ftsender/deploy/run/fts-uwsgi.pid \
     --die-on-term \
     --master-fifo /home/ftsender/deploy/run/.uwsgi-fifo \
