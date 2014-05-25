@@ -318,21 +318,25 @@ class SimuladorEventoDeContactoManager():
         )
 
         cursor = connection.cursor()
-        # TODO: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
             INSERT INTO fts_web_contacto
                 SELECT
                     nextval('fts_web_contacto_id_seq') as "id",
                     (random()*1000000000000)::bigint::text as "telefono",
                     '' as "datos",
-                    {0} as "bd_contacto_id"
+                    %s as "bd_contacto_id"
                 FROM
-                    generate_series(1, {1})
-        """.format(bd_contactos.id, cantidad)
+                    generate_series(1, %s)
+        """
+
+        params = [
+            bd_contactos.id,
+            cantidad
+        ]
 
         with log_timing(logger,
             "crear_bd_contactos_con_datos_random() tardo %s seg"):
-            cursor.execute(sql)
+            cursor.execute(sql, params)
         return bd_contactos
 
 
