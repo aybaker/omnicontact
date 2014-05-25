@@ -843,14 +843,6 @@ class GestionDeLlamadasManager(models.Manager):
 
         return values
 
-    # TODO: eliminar! ya no se usa
-    #def obtener_ts_ultimo_evento_de_campana(self, id_campana):
-    #    """Devuelve el timestamp del ultimo evento registrado
-    #    para la campaña
-    #    """
-    #    value = self.filter(campana_id=id_campana).aggregate(Max('timestamp'))
-    #    return value['timestamp__max']
-
 
 class EventoDeContacto(models.Model):
     """
