@@ -23,4 +23,5 @@ uwsgi \
     $STATIC_MAP \
     --mule=${BASEDIR}/fts_daemon/poll_daemon/main.py \
     --mule=${BASEDIR}/fts_daemon/fastagi_daemon.py \
+    --mule=${BASEDIR}/fts_daemon/finalizador_vencidas_daemon/main.py \
     $*

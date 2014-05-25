@@ -83,6 +83,23 @@ FTS_ASTERISK_DIALPLAN_EXTEN = "fts-{contactoId}-{numberToCall}-{intento}"
 
 FTS_ASTERISK_DIALPLAN_PRIORITY = 1
 
+FTS_FDCD_LOOP_SLEEP = 60 * 10
+"""Finalizador De Campanas Daemon - Espera entre reejecucion de loop.
+Default: 10 minutos
+"""
+
+FTS_FDCD_MAX_LOOP_COUNT = 0
+"""Finalizador De Campanas Daemon - Cantidad máxima de loops a ejecutar.
+
+Default: 0 (ejecuta loop indefinidamente)
+"""
+
+FTS_FDCD_INITIAL_WAIT = 20.0
+"""Finalizador De Campanas Daemon - Espera inicial, antes iniciar el loop
+
+Default: 20.0 (inicia ejecucion del loop despues de 20 segundos)
+"""
+
 #FTS_JOIN_TIMEOUT_MARGIN = 5
 #"""Cuantos segundos esperar (mas alla del timeout para ORIGINATE)
 #para que el proceso hijo termine
