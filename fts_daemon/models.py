@@ -393,7 +393,6 @@ class EventoDeContactoEstadisticasManager():
         """
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
-        # FIXME: PERFORMANCE: quitar sub-select
         sql = """SELECT evento, count(*)
             FROM fts_daemon_eventodecontacto
             WHERE campana_id = %s
@@ -422,19 +421,20 @@ class EventoDeContactoEstadisticasManager():
         """
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
-        # FIXME: PERFORMANCE: quitar sub-select
-        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """SELECT contacto_id AS "contacto_id", array_agg(evento),
                     max(timestamp)
             FROM fts_daemon_eventodecontacto
-            WHERE campana_id = {campana_id}
+            WHERE campana_id = %s
             GROUP BY contacto_id;
-        """.format(campana_id=campana.id)
+        """
 
-        cursor.execute(sql)
+        params = [
+            campana.id
+        ]
+
         with log_timing(logger,
             "obtener_array_eventos_por_contacto() tardo %s seg"):
-            cursor.execute(sql)
+            cursor.execute(sql, params)
             values = cursor.fetchall()
         return values
 
