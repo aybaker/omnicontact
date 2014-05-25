@@ -13,7 +13,6 @@ from django.conf import settings
 from django.db import connection
 from django.db import models
 from django.db.models import Count
-from django.db.models.aggregates import Max
 
 from fts_web.models import Campana, BaseDatosContacto, Contacto
 from fts_web.utiles import log_timing
@@ -279,31 +278,33 @@ class SimuladorEventoDeContactoManager():
         assert settings.DEBUG or settings.FTS_TESTING_MODE
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
-        # TODO: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
         INSERT INTO fts_daemon_eventodecontacto
             SELECT
                 nextval('fts_daemon_eventodecontacto_id_seq') as "id",
-                {campana_id} as "campana_id",
+                %s as "campana_id",
                 contacto_id as "contacto_id",
                 NOW() as "timestamp",
-                {evento} as "evento",
-                {intento} as "dato"
+                %s as "evento",
+                %s as "dato"
             FROM
                 (
                     SELECT DISTINCT contacto_id as "contacto_id"
                         FROM fts_daemon_eventodecontacto
-                        WHERE campana_id = {campana_id}
-                            AND random() <= {probabilidad}
+                        WHERE campana_id = %s
+                            AND random() <= %s
                 ) as "contacto_id"
-        """.format(campana_id=campana.id,
-                evento=int(evento),
-                probabilidad=float(probabilidad),
-                intento=intento)
-
+        """
+        params = [
+            campana.id,
+            int(evento),
+            intento,
+            campana.id,
+            float(probabilidad),
+        ]
         with log_timing(logger,
             "simular_realizacion_de_intentos() tardo %s seg"):
-            cursor.execute(sql)
+            cursor.execute(sql, params)
 
     def crear_bd_contactos_con_datos_random(self, cantidad):
         """Crea BD con muchos contactos"""
