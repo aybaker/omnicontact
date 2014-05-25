@@ -452,17 +452,33 @@ class ActuacionTests(FTSenderBaseTest):
         #esta en rango de actuación.
         self.assertFalse(actuacion1.verifica_actuacion(hoy_ahora))
 
-    def test_verifica_actuacion_solo_dia_funciona(self):
+    def test_dia_concuerda(self):
         lunes = datetime.date(2001, 1, 1)
         martes = datetime.date(2001, 1, 2)
         actuacion = Actuacion(dia_semanal=Actuacion.LUNES,
             hora_desde=datetime.time(0, 0),
             hora_hasta=datetime.time(1, 0),
         )
-        self.assertTrue(actuacion.verifica_actuacion_solo_dia(lunes))
-        self.assertFalse(actuacion.verifica_actuacion_solo_dia(martes))
+        self.assertTrue(actuacion.dia_concuerda(lunes))
+        self.assertFalse(actuacion.dia_concuerda(martes))
         with self.assertRaises(AssertionError):
-            actuacion.verifica_actuacion_solo_dia(datetime.datetime.now())
+            actuacion.dia_concuerda(datetime.datetime.now())
+
+    def test_es_anterior_a(self):
+        hora_anterior = datetime.datetime(2001, 1, 1, 15, 47, 59)
+        hora_en_rango = datetime.datetime(2001, 1, 1, 16, 47, 59)
+        hora_posterior = datetime.datetime(2001, 1, 1, 17, 47, 59)
+        actuacion = Actuacion(dia_semanal=Actuacion.LUNES,
+            hora_desde=datetime.time(16, 0),
+            hora_hasta=datetime.time(17, 0),
+        )
+        self.assertTrue(actuacion.es_anterior_a(hora_posterior.time()))
+        self.assertFalse(actuacion.es_anterior_a(hora_en_rango.time()))
+        self.assertFalse(actuacion.es_anterior_a(hora_anterior.time()))
+        with self.assertRaises(AssertionError):
+            actuacion.es_anterior_a(datetime.datetime.now())
+        with self.assertRaises(AssertionError):
+            actuacion.es_anterior_a(datetime.datetime.now().date())
 
 
 @skipUnless(default_db_is_postgresql(), "Requiere PostgreSql")

@@ -1398,10 +1398,9 @@ class Actuacion(models.Model):
 
         return True
 
-    def verifica_actuacion_solo_dia(self, fecha_a_chequear):
-        """Este método evalua si la actuacion actual `self`
-        representa una actuación para el mismo dia de la semana que
-        el día de la semana correspondiente a la fecha pasada por parametro.
+    def dia_concuerda(self, fecha_a_chequear):
+        """Este método evalua si el dia de la actuacion actual `self`
+        concuerda con el dia de la semana de la fecha pasada por parametro.
 
         :param fecha_a_chequear: fecha a chequear
         :type fecha_a_chequear: `datetime.date`
@@ -1413,8 +1412,27 @@ class Actuacion(models.Model):
         #  por eso no uso `isinstance()`.
         assert type(fecha_a_chequear) == datetime.date
 
-        dia_semanal = fecha_a_chequear.weekday()
-        return self.dia_semanal == dia_semanal
+        return self.dia_semanal == fecha_a_chequear.weekday()
+
+    def es_anterior_a(self, time_a_chequear):
+        """Este método evalua si el rango de tiempo de la actuacion
+        actual `self` es anterior a la hora pasada por parametro.
+        Verifica que sea 'estrictamente' anterior, o sea, ambas horas
+        de la Actuacion deben ser anteriores a la hora a chequear
+        para que devuelva True.
+
+        :param time_a_chequear: hora a chequear
+        :type time_a_chequear: `datetime.time`
+        :returns: bool - True si ambas horas de la actuacion son anteriores
+                  a la hora pasada por parametro `time_a_chequear`.
+        """
+        # NO quiero que funcione con ninguna subclase, más que
+        #  específicamente `datetime.time`, por eso no uso `isinstance()`.
+        assert type(time_a_chequear) == datetime.time
+
+        # Es algo redundante chequear ambos, pero bueno...
+        return self.hora_desde < time_a_chequear and \
+            self.hora_hasta < time_a_chequear
 
     def clean(self):
         """
