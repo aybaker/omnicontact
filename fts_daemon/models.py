@@ -701,8 +701,15 @@ class GestionDeLlamadasManager(models.Manager):
         """
         campana = Campana.objects.get(pk=campana_id)
 
-        finalizadores = ",".join([str(int(x))
-            for x in EventoDeContacto.objects.get_eventos_finalizadores()])
+        #
+        # SANITIZAMOS DATOS: CONVERTIMOS EN INTs, y luego concatenamos
+        #  > hace falta xq cursor.execute() no entiende arrays para
+        #    ejecutar 'INs'
+        #
+        eventos_finalizadores = EventoDeContacto.objects.\
+            get_eventos_finalizadores()
+        finalizadores_SAFE = [int(x) for x in eventos_finalizadores]
+        finalizadores_SQL_SAFE = ",".join([str(x) for x in finalizadores_SAFE])
 
         sql = """
         SELECT count(*) AS "ev_count", contacto_id AS "contacto_id"
@@ -714,20 +721,24 @@ class GestionDeLlamadasManager(models.Manager):
                 SELECT DISTINCT tmp.contacto_id
                 FROM fts_daemon_eventodecontacto AS tmp
                 WHERE tmp.campana_id = %s AND
-                    tmp.evento IN (%s)
+                    tmp.evento IN
+                    (
+                        {finalizadores_SQL_SAFE}
+                    )
             )
         GROUP BY contacto_id
         HAVING count(*) < %s + 1
         ORDER BY 1
         LIMIT %s
-        """
+        """.format(
+            finalizadores_SQL_SAFE=finalizadores_SQL_SAFE,
+        )
 
         params = [
             EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
             EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
             campana.id,
             campana.id,
-            finalizadores,
             campana.cantidad_intentos,
             int(limit)
         ]
