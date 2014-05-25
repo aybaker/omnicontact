@@ -704,35 +704,38 @@ class GestionDeLlamadasManager(models.Manager):
         finalizadores = ",".join([str(int(x))
             for x in EventoDeContacto.objects.get_eventos_finalizadores()])
 
-        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
         SELECT count(*) AS "ev_count", contacto_id AS "contacto_id"
         FROM fts_daemon_eventodecontacto
-        WHERE (evento = {ev_programado} OR evento = {ev_intento})
-            AND campana_id = {campana_id}
+        WHERE (evento = %s OR evento = %s)
+            AND campana_id = %s
             AND contacto_id NOT IN
             (
                 SELECT DISTINCT tmp.contacto_id
                 FROM fts_daemon_eventodecontacto AS tmp
-                WHERE tmp.campana_id = {campana_id} AND
-                    tmp.evento IN ({lista_eventos_finalizadores})
+                WHERE tmp.campana_id = %s AND
+                    tmp.evento IN (%s)
             )
         GROUP BY contacto_id
-        HAVING count(*) < {max_intentos} + 1
+        HAVING count(*) < %s + 1
         ORDER BY 1
-        LIMIT {limit}
-        """.format(campana_id=campana.id,
-            max_intentos=campana.cantidad_intentos,
-            ev_programado=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
-            ev_intento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
-            limit=int(limit),
-            lista_eventos_finalizadores=finalizadores
-        )
+        LIMIT %s
+        """
+
+        params = [
+            EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
+            EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+            campana.id,
+            campana.id,
+            finalizadores,
+            campana.cantidad_intentos,
+            int(limit)
+        ]
 
         cursor = connection.cursor()
         with log_timing(logger,
             "_obtener_pendientes() tardo %s seg"):
-            cursor.execute(sql)
+            cursor.execute(sql, params)
             values = cursor.fetchall()
 
         values = [(row[0] - 1, row[1],) for row in values]
