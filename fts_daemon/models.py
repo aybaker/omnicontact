@@ -653,27 +653,29 @@ class GestionDeLlamadasManager(models.Manager):
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
 
-        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """
         INSERT INTO fts_daemon_eventodecontacto
             SELECT
                 nextval('fts_daemon_eventodecontacto_id_seq') as "id",
-                {campana_id} as "campana_id",
+                %s as "campana_id",
                 fts_web_contacto.id as "contacto_id",
                 NOW() as "timestamp",
-                {evento} as "evento",
+                %s as "evento",
                 0 as "dato"
             FROM
                 fts_web_contacto
             WHERE
-                bd_contacto_id = {bd_contacto_id}
-        """.format(campana_id=campana.id,
-            bd_contacto_id=campana.bd_contacto.id,
-            evento=EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+                bd_contacto_id = %s
+        """
+        params = [
+            campana.id,
+            EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO,
+            campana.bd_contacto.id
+        ]
 
         with log_timing(logger, "_programar_campana_postgresql() "
             "tardo %s seg"):
-            cursor.execute(sql)
+            cursor.execute(sql, params)
 
     def _programar_campana_sqlite(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
