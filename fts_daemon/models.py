@@ -360,22 +360,27 @@ class EventoDeContactoEstadisticasManager():
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
         # FIXME: PERFORMANCE: quitar sub-select
-        # FIXME: SEGURIDAD: sacar 'format()', usar api de BD
         sql = """SELECT DISTINCT ev_count, count(*) FROM
             (
                 SELECT count(*) AS "ev_count"
                 FROM fts_daemon_eventodecontacto
-                WHERE evento = {evento} and campana_id = {campana_id}
+                WHERE
+                    evento = %s AND
+                    campana_id = %s
                 GROUP BY contacto_id
             ) AS "ev_count"
             GROUP BY ev_count
             ORDER BY 1
-        """.format(campana_id=campana.id,
-            evento=EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO)
+        """
+
+        params = [
+            EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO,
+            campana.id
+        ]
 
         with log_timing(logger, "obtener_count_intentos() "
             "tardo %s seg"):
-            cursor.execute(sql)
+            cursor.execute(sql, params)
             values = cursor.fetchall()
         return values
 
