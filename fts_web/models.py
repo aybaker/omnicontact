@@ -312,6 +312,74 @@ class CampanaManager(models.Manager):
         return self.filter(pk=campana_id,
             estado=Campana.ESTADO_ACTIVA).exists()
 
+    def finalizar_vencidas(self):
+        """Busca campañas vencidas, y las finaliza"""
+        # Aca necesitamos *localtime*. Usamos `now_ref` como fecha de
+        # referencia para todos los calculos
+
+        # FIXME: aunque necesitamos utilizar la hora local, esto hace
+        # muy complicado crear un algoritmo respetable que funcione en
+        # escenarios de cambios horarios!
+        # El problema es que las actuaciones son basadas en hora (sin TZ),
+        # por lo tanto, tecnicamente, si justo despues de las 23:59:59.999
+        # se pasa a las 23:00:00.000 del mismo día, entonces algunas
+        # Actuaciones podrían ser validas 2 veces!
+
+        now_ref = datetime.datetime.now()
+
+        estados = [Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA]
+
+        #
+        # Primero finalizamos viejas, de ayer o anteriores
+        #
+
+        queryset = self.filter(
+            fecha_fin__lt=now_ref.date(),
+            estado__in=estados
+        )
+
+        # A las viejas, las finalizamos de una
+        for campana in queryset:
+            logger.info("finalizar_vencidas(): finalizando campana %s. "
+                "Su 'fecha_fin' es anterior a la fecha actual", campana.id)
+            campana.finalizar()
+
+        #
+        # Si hay alguna q' finalice hoy, hay q' revisar las actuaciones
+        #
+
+        queryset = self.filter(
+            fecha_fin=now_ref.date(),
+            estado__in=estados
+        ).select_related('actuaciones')
+
+        for campana in queryset:
+            actuaciones_para_hoy = [actuacion
+                for actuacion in campana.actuaciones.all()
+                if actuacion.dia_concuerda(now_ref.date())]
+
+            # Si no tiene actuaciones para hoy, la finalizamos!
+            if not actuaciones_para_hoy:
+                logger.info("finalizar_vencidas(): finalizando campana %s. "
+                    "Su 'fecha_fin' es hoy, pero no posee Actuacion para hoy",
+                    campana.id)
+                campana.finalizar()
+                continue
+
+            # Si todas las actuaciones para hoy, tienen una
+            # hora_fin menor a la actual, entonces podemos
+            # finalizar la campaña
+            son_anteriores = [act.es_anterior_a(now_ref.time())
+                for act in actuaciones_para_hoy]
+            if all(son_anteriores):
+                # Todas las Actuaciones para hoy, poseen una
+                # hora_desde / hora_hasta ANTERIOR a la actual
+                # por lo tanto, podemos finalizar la campaña
+                logger.info("finalizar_vencidas(): finalizando campana %s. "
+                    "Su 'fecha_fin' es hoy, posee Actuacion pero todas "
+                    "ya han finalizado", campana.id)
+                campana.finalizar()
+                continue
 
 upload_to_audios_asterisk = upload_to("audios_asterisk", 95)
 upload_to_audios_originales = upload_to("audios_reproduccion", 95)
