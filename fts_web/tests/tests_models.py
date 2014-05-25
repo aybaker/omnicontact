@@ -452,6 +452,18 @@ class ActuacionTests(FTSenderBaseTest):
         #esta en rango de actuación.
         self.assertFalse(actuacion1.verifica_actuacion(hoy_ahora))
 
+    def test_verifica_actuacion_solo_dia_funciona(self):
+        lunes = datetime.date(2001, 1, 1)
+        martes = datetime.date(2001, 1, 2)
+        actuacion = Actuacion(dia_semanal=Actuacion.LUNES,
+            hora_desde=datetime.time(0, 0),
+            hora_hasta=datetime.time(1, 0),
+        )
+        self.assertTrue(actuacion.verifica_actuacion_solo_dia(lunes))
+        self.assertFalse(actuacion.verifica_actuacion_solo_dia(martes))
+        with self.assertRaises(AssertionError):
+            actuacion.verifica_actuacion_solo_dia(datetime.datetime.now())
+
 
 @skipUnless(default_db_is_postgresql(), "Requiere PostgreSql")
 class ReporteTest(FTSenderBaseTest):

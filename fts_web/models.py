@@ -10,16 +10,14 @@ from collections import defaultdict
 import datetime
 import logging
 import os
-import pygal
-from pygal.style import Style
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Sum
-
-from fts_web.utiles import upload_to, log_timing
-from django.db.models.aggregates import Max
+from django.db.models import Sum, Q
+from fts_web.utiles import upload_to
+import pygal
+from pygal.style import Style
 
 
 logger = logging.getLogger(__name__)
@@ -276,6 +274,9 @@ class CampanaManager(models.Manager):
         al generar el dialplan.
         """
         # TODO: renombrar a `obtener_todas_para_generar_config()`
+        # TODO: si estan finalizadas y vencidas con más de 1 día,
+        #  podemos estar tranquilos de que no habra llamadas
+        #  para esas campañas, y podriamos ignorarlas
         return self.filter(estado__in=[Campana.ESTADO_ACTIVA,
             Campana.ESTADO_PAUSADA, Campana.ESTADO_FINALIZADA])
 
@@ -1396,6 +1397,24 @@ class Actuacion(models.Model):
             return False
 
         return True
+
+    def verifica_actuacion_solo_dia(self, fecha_a_chequear):
+        """Este método evalua si la actuacion actual `self`
+        representa una actuación para el mismo dia de la semana que
+        el día de la semana correspondiente a la fecha pasada por parametro.
+
+        :param fecha_a_chequear: fecha a chequear
+        :type fecha_a_chequear: `datetime.date`
+        :returns: bool - True si la actuacion es para el mismo dia de
+                  la semana que el dia de la semana de `fecha_a_chequear`
+        """
+        # NO quiero que funcione con `datatime` ni ninguna otra
+        #  subclase, más que específicamente `datetime.date`,
+        #  por eso no uso `isinstance()`.
+        assert type(fecha_a_chequear) == datetime.date
+
+        dia_semanal = fecha_a_chequear.weekday()
+        return self.dia_semanal == dia_semanal
 
     def clean(self):
         """
