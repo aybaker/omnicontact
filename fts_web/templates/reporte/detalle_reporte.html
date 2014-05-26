@@ -16,7 +16,11 @@
                     <table class="table">
                         <tbody>
                             <tr class="active">
-                                <td width="45%"> <h3 class="text-primary">{{ campana.nombre }}</h3></td>
+                                <td width="45%"> 
+                                    <h3 class="text-primary">
+                                        {{ campana.nombre }}
+                                    </h3>
+                                </td>
                                 <td>
                                     <h3><small>
                                         <b>Desde: </b>{{ campana.fecha_inicio|date:"d/m/Y" }}
@@ -34,7 +38,8 @@
                                         {{ campana.bd_contacto }} 
                                         ({{ graficos_estadisticas.estadisticas.total_contactos }} Contactos)
                                     </small></h3>
-                                </td>                           
+                                </td>
+                                <td><h3><small><a href="{% url 'exporta_campana_reporte' campana.id %}">Exportar Opciones</a></small></h3></td>                        
                             </tr>
                         </tbody>
                     </table>

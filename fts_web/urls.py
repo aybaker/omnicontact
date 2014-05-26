@@ -137,6 +137,10 @@ urlpatterns = patterns('',
         views.CampanaReporteDetailView.as_view(),
         name='detalle_campana_reporte',
     ),
+    url(r'^campana/(?P<pk>\d+)/exporta/$',
+        views.ExportaReporteCampanaView.as_view(),
+        name='exporta_campana_reporte',
+    ),
 
     #==========================================================================
     # AGI
