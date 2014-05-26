@@ -96,6 +96,7 @@ def opcion_seleccionada(CONN_POOL, campana_id, contacto_id, intento,
         logger.exception("Error al convertir DTMF a entero: '{0}'".format(
             dtmf_number))
         #return "ERROR,opcion_dtmf_invalido"
+        return
 
     try:
         evento = EventoDeContacto.NUMERO_OPCION_MAP[dtmf_number]
@@ -103,6 +104,7 @@ def opcion_seleccionada(CONN_POOL, campana_id, contacto_id, intento,
         logger.exception("No existe evento para el dtmf '{0}'".format(
             dtmf_number))
         #return "ERROR,opcion_dtmf_invalido"
+        return
 
     insert_evento_de_contacto(CONN_POOL, campana_id, contacto_id, evento,
         intento)
