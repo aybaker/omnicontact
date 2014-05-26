@@ -6,14 +6,16 @@ from __future__ import unicode_literals
 import os
 import shutil
 import datetime
-from random import random
+import csv
 
 from django.conf import settings
 
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.test.client import Client
+from django.test.utils import override_settings
 from django.utils.unittest.case import skipUnless
+
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
     Campana, Opcion, Calificacion, Actuacion)
@@ -403,6 +405,43 @@ class CampanaTest(FTSenderBaseTest):
         self.assertEquals(campana_ejecucion.count(), 2)
         self.assertNotIn(campana4, campana_ejecucion)
 
+    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    MEDIA_ROOT = os.path.join(tmp, "test", "reportes")
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_campana_exporta_reporte(self):
+        #Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento(finaliza=False)
+
+        dirname = 'reporte_campana'
+        files_path = "{0}/{1}".format(settings.MEDIA_ROOT, dirname)
+        shutil.rmtree(files_path)
+
+        filename = "{0}-reporte.csv".format(campana.id)
+        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname, filename)
+        file_url = "{0}/{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+
+        # Testeo que si la campana no está finalizada de una excepción.
+        self.assertRaises(AssertionError, campana.exportar_reporte_csv)
+
+        # Finalizamos la campana, acudimos al método que genera el csv para
+        # exportar, validamos que exista el archivo y que el método devuelva
+        # la url para accederlo.
+        campana.finalizar()
+        url_reporte = campana.exportar_reporte_csv()
+        self.assertTrue(os.path.exists(file_path))
+        self.assertEqual(url_reporte, file_url)
+
+        # Abrimos el archivo y contamos que tenga 100 lineas. Una por contacto,
+        # y cada linea con 11 columnas.
+        with open(file_path, 'rb') as csvfile:
+            reader = csv.reader(csvfile)
+            c = 0
+            for row in reader:
+                self.assertTrue(len(row), 11)
+                c += 1
+        self.assertEqual(c, 100)
+
 
 class FinalizarVencidasTest(FTSenderBaseTest):
     """Clase para testear Campana.finalizar_vencidas()"""
@@ -583,77 +622,6 @@ class ReporteTest(FTSenderBaseTest):
         path_graficos = '{0}graficos/'.format(settings.MEDIA_ROOT)
         if os.path.exists(path_graficos):
             shutil.rmtree(path_graficos)
-
-    def _crea_campana_emula_procesamiento(self, finaliza=True):
-        cant_contactos = 100
-        numeros_telefonicos = [int(random() * 10000000000)\
-            for _ in range(cant_contactos)]
-
-        base_datos_contactos = self.crear_base_datos_contacto(
-            cant_contactos=cant_contactos,
-            numeros_telefonicos=numeros_telefonicos)
-
-        campana = self.crear_campana(bd_contactos=base_datos_contactos,
-            cantidad_intentos=3)
-        campana.activar()
-
-        self.crea_todas_las_actuaciones(campana)
-        self.crea_calificaciones(campana)
-        self.crea_todas_las_opcion_posibles(campana)
-
-        #Progrmaa la campaña.
-        EventoDeContacto.objects_gestion_llamadas.programar_campana(
-            campana.pk)
-
-        numero_interno = 1
-        #for numero_interno in range(1, campana.cantidad_intentos):
-        #Intentos.
-        EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
-            campana.pk, numero_interno, probabilidad=1.1)
-
-        #Opciones
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_0,
-            probabilidad=0.03)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_1,
-            probabilidad=0.02)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_2,
-            probabilidad=0.01)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_3,
-            probabilidad=0.05)
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_4,
-            probabilidad=0.25)
-        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_5,
-        #     probabilidad=0.15)
-        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_6,
-        #     probabilidad=0.05)
-        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_7,
-        #     probabilidad=0.05)
-
-        #Opciones inválidas para esta campaña.
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_8,
-            probabilidad=0.02)
-        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_9,
-        #     probabilidad=0.02)
-
-        #Finaliza algunos.
-        EV_FINALIZADOR = EventoDeContacto.objects.\
-        get_eventos_finalizadores()[0]
-        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
-            numero_interno, evento=EV_FINALIZADOR, probabilidad=0.15)
-
-        if finaliza:
-            campana.finalizar()
-        return campana
 
     def test_detalle_reporte_template(self):
         #Crea y emula procesamiento de campaña.
