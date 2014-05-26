@@ -231,8 +231,9 @@ def insert_evento_de_contacto(CONN_POOL, campana_id, contacto_id, evento,
             VALUES
             (%s, %s, NOW(), %s, %s)
         """, [campana_id, contacto_id, evento, dato])
-        logger.debug("Insercion exitosa de evento %s para campana %s "
-            "y contacto %s", evento, campana_id, contacto_id)
+        logger.info("EDC - Insercion OK - "
+            "Campana: %s - Contacto: %s - Evento: %s",
+            campana_id, contacto_id, evento)
     except:
         logger.exception("No se pudo insertar evento %s para campana %s "
             "y contacto %s", evento, campana_id, contacto_id)
