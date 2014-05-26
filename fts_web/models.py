@@ -7,6 +7,7 @@ Modelos de la aplicación
 from __future__ import unicode_literals
 
 from collections import defaultdict
+import csv
 import datetime
 import logging
 import os
@@ -14,8 +15,9 @@ import os
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+
 from django.db.models import Sum, Q
-from fts_web.utiles import upload_to
+from fts_web.utiles import crear_archivo_en_media_root, upload_to
 import pygal
 from pygal.style import Style
 
@@ -824,6 +826,31 @@ class Campana(models.Model):
         }
 
         return dic_estadisticas
+
+    def exportar_reporte_csv(self):
+        from fts_daemon.models import EventoDeContacto
+
+        dirname, filename = crear_archivo_en_media_root("reporte_campana",
+            "{0}-reporte".format(self.id),
+            ".csv")
+        file_url = "{0}/{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname, filename)
+
+        values = EventoDeContacto.objects_estadisticas\
+            .obtener_opciones_por_contacto(self.pk)
+
+        with open(file_path, 'wb') as csvfile:
+            csvwiter = csv.writer(csvfile)
+            for telefono, lista_eventos in values:
+                lista_opciones = [telefono]
+                for opcion in range(9):
+                    evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
+                    if evento in lista_eventos:
+                        lista_opciones.append(opcion)
+                    else:
+                        lista_opciones.append(None)
+                csvwiter.writerow(lista_opciones)
+        return file_url
 
     def obtener_estadisticas(self):
         """
