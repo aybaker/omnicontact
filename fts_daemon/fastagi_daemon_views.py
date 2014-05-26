@@ -187,14 +187,32 @@ def create_regex():
     return regexes
 
 
+class UrlNoMatcheaNingunaVista(Exception):
+    """Representa un fallo en la busqueda de la vista para un
+    URL dado
+    """
+    pass
+
+
 def get_view(regexes, url):
     """Devuelve vista y `match_object` que matchea `url`, ala Django.
-    Genera excepcion si no se encuentra ninguna vista."""
+    Genera excepcion si no se encuentra ninguna vista.
+
+    :returns: (view, dict) con vista y argumentos para la vista
+    :raises UrlNoMatcheaNingunaVista: si no se encuentra ninguna vista
+                                      asociada a la url pasada por
+                                      parametro.
+    """
+    assert regexes
+    assert url
+
     for regex, view in regexes:
         match = regex.match(url)
         if match:
             return view, match.groupdict()
-    raise Exception("No se encontro vista")
+
+    raise UrlNoMatcheaNingunaVista("No se encontro vista mapeada "
+        "a la url {0}".format(url))
 
 
 def insert_evento_de_contacto(CONN_POOL, campana_id, contacto_id, evento,

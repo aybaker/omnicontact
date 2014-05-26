@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from fts_daemon import fastagi_daemon_views
+from fts_daemon.fastagi_daemon_views import UrlNoMatcheaNingunaVista
 import logging as _logging
 from psycopg2 import pool
 from starpy import fastagi
@@ -31,34 +32,37 @@ logger = _logging.getLogger('fts_daemon.fastagi_daemon')
 # URL = settings.FTS_FAST_AGI_DAEMON_PROXY_URL + "/_/agi-proxy/{0}"
 
 
-def fastagi_handler(agi):
-    logger.debug('Iniciando ejecucion de handler...')
-    assert isinstance(agi, FastAGIProtocol)
+#==============================================================================
+# Funciones varias
+#==============================================================================
 
-    agi_network_script = agi.variables.get('agi_network_script', '')
-    logger.info('agi_network_script: %s', agi_network_script)
-    if not agi_network_script:
-        logger.error("Se ha recibido 'agi_network_script' vacio")
-        agi.finish()
-        return
+def do_insert(_reactor, _conn_pool, _regexes, agi_network_script):
+    """Realiza insert de evento representado por agi_network_script
+    recibido via AGI.
 
-    try:
-        view, kwargs = fastagi_daemon_views.get_view(
-            REGEX, agi_network_script)
-    except:
-        view, kwargs = None, None
-        logger.exception("Error al buscar vista mapeada a url '%s'",
-            agi_network_script)
+    Recibe todos los parametros para que sea facil de testear con mocks.
+    
+    :raises: UrlNoMatcheaNingunaVista
+    """
+    view, kwargs = fastagi_daemon_views.get_view(
+        _regexes, agi_network_script)  # -> UrlNoMatcheaNingunaVista
 
-    if view and kwargs:
-        reactor.callInThread(# @UndefinedVariable
-            view, CONN_POOL, **kwargs)
-
-    agi.finish()
+    _reactor.callInThread(# @UndefinedVariable
+        view, _conn_pool, **kwargs)
 
 
 def setup_globals():
-    # Setup connection pool
+    """Realiza setup de variables globales necesarias.
+
+    Esto es un workaround. Quiza Twisted posea alguna manera de
+    compartir estas variables de alguna manera mas elegante.
+
+    No hace falta LOCKear porque esta funcion se llama desde
+    el main(), ANTES de iniciar Twisted.
+    """
+    # TODO: investigar como se pueden mover todas estas variables
+    #  globales a un objeto, o elminar las variables globales, de
+    #  alguna manera compatible con Twisted
     global CONN_POOL
     CONN_POOL = pool.ThreadedConnectionPool(5, 20,
         database=settings.DATABASES['default']['NAME'],
@@ -69,6 +73,32 @@ def setup_globals():
     # Setup regex
     global REGEX
     REGEX = fastagi_daemon_views.create_regex()
+
+
+#==============================================================================
+# Twisted / AGI
+#==============================================================================
+
+def fastagi_handler(agi):
+    """Handler para requests AGI"""
+    logger.debug('Iniciando ejecucion de handler...')
+    assert isinstance(agi, FastAGIProtocol)
+
+    agi_network_script = agi.variables.get('agi_network_script', '')
+    logger.debug('agi_network_script: %s', agi_network_script)
+
+    if agi_network_script:
+        try:
+            do_insert(reactor, CONN_POOL, REGEX, agi_network_script)
+        except UrlNoMatcheaNingunaVista:
+            logger.exception("El request recibido no se pudo procesar, "
+                "ya que no hay vista asociada")
+        except:
+            logger.exception("El request recibido no se pudo procesar")
+    else:
+        logger.error("Se ha recibido 'agi_network_script' vacio")
+
+    agi.finish()
 
 
 def main():
