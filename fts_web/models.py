@@ -830,11 +830,17 @@ class Campana(models.Model):
     def exportar_reporte_csv(self):
         from fts_daemon.models import EventoDeContacto
 
-        dirname, filename = crear_archivo_en_media_root("reporte_campana",
-            "{0}-reporte".format(self.id),
-            ".csv")
-        file_url = "{0}/{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+        assert self.estado == Campana.ESTADO_FINALIZADA
+
+        dirname = 'reporte_campana'
+        filename = "{0}-reporte.csv".format(self.id)
         file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname, filename)
+        file_url = "{0}/{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+        if os.path.exists(file_path):
+            return file_url
+
+        dirname, filename = crear_archivo_en_media_root(dirname,
+            "{0}-reporte".format(self.id), ".csv")
 
         values = EventoDeContacto.objects_estadisticas\
             .obtener_opciones_por_contacto(self.pk)
