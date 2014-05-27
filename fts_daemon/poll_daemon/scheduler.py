@@ -89,6 +89,98 @@ class OriginateThrottler(object):
         return to_sleep
 
 
+class AsteriskCallStatus(object):
+    """Encapsula informacion de fecha de ultimo status via AMI, y
+    mantiene toda la informacion que devolvio la ultima consulta
+    exitosa"""
+
+    def __init__(self):
+        self._ultimo_intento_refresco = datetime.now() - timedelta(days=30)
+        # self._ultimo_refresco = None
+        self._full_status = {}
+
+    def touch(self):
+        """Actualiza timestamp de ultimo intento de refresco"""
+        # TODO: usar time.clock() u alternativa
+        self._ultimo_intento_refresco = datetime.now()
+
+    def puede_refrescar(self):
+        """Devuelve si el tracker se debe/puede refrescar o no, teniendo
+        en cuenta solamente la fecha/hora del ultimo refresco.
+        """
+        delta = datetime.now() - self._ultimo_intento_refresco
+        # No hacemos más de 1 consulta cada 3 segundos
+
+        if delta.days == 0 and delta.seconds < 3:
+            return False
+        else:
+            return True
+
+    def necesita_refrescar_channel_status(self, trackers_campana):
+        """Devuelve booleano indicando si debe y es conveniente refrescar
+        el status de los channels de Asterisk"""
+
+        if not trackers_campana:
+            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
+                " porque no hay trackers_campana")
+            return False
+
+        if not self.puede_refrescar():
+            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
+                " porque la ultima actualizacion fue recientemente")
+            return False
+
+        # Si llegamos aca, es porque trackers_campana NO esta vacio
+        al_limite = [tracker.limite_alcanzado()
+            for tracker in trackers_campana.values()]
+
+        if any(al_limite):
+            pass  # Hay al menos 1 al limite
+        else:
+            # Ninguna esta al limite
+            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
+                " porque no se alcanzo el limite en ninguna campaña")
+            return False
+
+        # DEBUG: si todas las campañas estan al limite, lo logueamos
+        if all(al_limite):
+            logger.debug("necesita_refrescar_channel_status(): todas las "
+                "campañas estan al limite")
+
+        logger.debug("necesita_refrescar_channel_status(): True")
+        return True
+
+    @property
+    def full_status(self):
+        """Devuelve copia de ultimo status"""
+        return dict(self._full_status)
+
+    @full_status.setter
+    def full_status(self, new_full_status):
+        """Actualiza / setea ultimo full status"""
+        # self._ultimo_refresco = datetime.now()
+        self._full_status = new_full_status
+
+    def update_campana_tracker(self, tracker):
+        """Actualiza el status de la campana asociada al tracker
+        pasado por parametro, con la informacion de status"""
+
+        try:
+            info_de_llamadas = self._full_status[tracker.campana.id]
+        except KeyError:
+            # FIXME: esto que hacemos aca, no es algo peligroso? Y si habia
+            # en ejecucion!? Quizá deberiamos, además de este control, llevar
+            # control de la cantidad de llamadas generadas por minuto
+            logger.info("update_campana_tracker(): no se recibieron "
+                "datos para la campana %s... Suponemos que no hay "
+                "llamadas en curso para dicha campana", tracker.campana.id)
+            # tracker.llamadas_en_curso_aprox = 0
+            tracker.contactos_en_curso = []
+            return  # Salimos
+
+        tracker.contactos_en_curso = [item[0] for item in info_de_llamadas]
+
+
 # FIXME: renombra a RoundRobinScheduler
 class RoundRobinTracker(object):
     """Con la ayuda de CampanaTracker, devuelve contactos a realizar
@@ -97,6 +189,8 @@ class RoundRobinTracker(object):
     """
 
     def __init__(self):
+        """Crea instancia de RoundRobinTracker"""
+
         self.trackers_campana = {}
         """Diccionario con los trackers de las campañas siendo procesadas.
 
@@ -121,10 +215,7 @@ class RoundRobinTracker(object):
         refrescar_trackers()
         """
 
-        # Quiza esto deberia estar en `self.ami_status_tracker`
-        # TODO: usar time.clock() u alternativa
-        self._ultimo_refresco_ami_status = datetime.now() - timedelta(days=30)
-        """Ultima vez q' se ejecuto *ŝtatus* via AMI HTTP."""
+        self._asterisk_call_status = AsteriskCallStatus()
 
         self.max_iterations = None
         """Cantidad de interaciones maxima que debe realizar ``generator()``.
@@ -141,6 +232,10 @@ class RoundRobinTracker(object):
         assert settings.FTS_TESTING_MODE, "No esta permitido cambiar " \
             "'originate_throttler' cuando no se esta en FTS_TESTING_MODE"
         self._originate_throttler = new_value
+
+    #
+    # Refresco de TRACKERS
+    #
 
     def necesita_refrescar_trackers(self):
         """Devuleve booleano, indicando si debe o no consultarse a
@@ -216,45 +311,18 @@ class RoundRobinTracker(object):
             # No se encontraron campanas en ejecucion
             raise NoHayCampanaEnEjecucion()
 
-    def necesita_refrescar_channel_status(self):
-        """Devuelve booleano indicando si debe y es conveniente refrescar
-        el status de los channels de Asterisk"""
-
-        if not self.trackers_campana:
-            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
-                " porque no hay self.trackers_campana")
-            return False
-
-        al_limite = [tracker.limite_alcanzado()
-            for tracker in self.trackers_campana.values()]
-
-        if True not in al_limite:
-            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
-                " porque no se alcanzo el limite en ninguna campaña")
-            return False
-
-        if all(al_limite):
-            logger.debug("necesita_refrescar_channel_status(): todas las "
-                "campañas estan al limite")
-
-        # TODO: usar time.clock() u alternativa
-        delta = datetime.now() - self._ultimo_refresco_ami_status
-        # No hacemos más de 1 consulta cada 3 segundos
-        if delta.days == 0 and delta.seconds < 3:
-            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
-                " porque la ultima actualizacion fue recientemente")
-            return False
-
-        logger.debug("necesita_refrescar_channel_status(): True")
-        return True
+    #
+    # Refresco de STATUS via AMI
+    #
 
     def refrescar_channel_status(self):
         """Refresca `contactos_en_curso` de `self.trackers_campana`.
 
         En caso de error, no actualiza ningun valor.
         """
+
         # Antes q' nada, actualizamos 'ultimo refresco'
-        self._ultimo_refresco_ami_status = datetime.now()
+        self._asterisk_call_status.touch()
 
         logger.info("Actualizando status via AMI HTTP")
         try:
@@ -265,44 +333,19 @@ class RoundRobinTracker(object):
                 "no seran actualizados")
             return
 
+        # Guardamos ultimo status en asterisk_call_status
+        self._asterisk_call_status.full_status = dict(new_status)
+
         #======================================================================
         # Actualizamos estructuras...
         #======================================================================
 
-        # Dict con campañas trackeadas:
-        #   campanas_trackeadas_by_id[id_campana] -> Campana
-        campanas_trackeadas_by_id = dict([(c.id, c)
-            for c in self.trackers_campana])
+        for tracker in self.trackers_campana.values():
+            self._asterisk_call_status.update_campana_tracker(tracker)
 
-        # Iteramos status recién obtenido
-        for campana_id, info_de_llamadas in new_status.iteritems():
-            # info_de_llamadas => [contacto_id, numero, campana_id]
-
-            # Actualizamos self.trackers_campana[*]
-            if campana_id in campanas_trackeadas_by_id:
-                campana = campanas_trackeadas_by_id[campana_id]
-                tracker = self.trackers_campana[campana]
-                # tracker.llamadas_en_curso_aprox = len(info_de_llamadas)
-                tracker.contactos_en_curso = [item[0]
-                    for item in info_de_llamadas]
-                del campanas_trackeadas_by_id[campana_id]
-            else:
-                logger.info("refrescar_channel_status(): "
-                    "Ignorando datos de campana %s (%s llamadas en curso)",
-                    campana_id, len(info_de_llamadas))
-
-        # En este punto, campanas_trackeadas_by_id tiene las campañas cuyos
-        # datos no fueron refrescados...
-        for campana in campanas_trackeadas_by_id.values():
-            # FIXME: esto que hacemos aca, no es algo peligroso? Y si habia
-            # en ejecucion!? Quizá deberiamos, además de este control, llevar
-            # control de la cantidad de llamadas generadas por minuto
-            logger.info("refrescar_channel_status(): no se recibieron "
-                "datos para la campana %s... Suponemos que no hay "
-                "llamadas en curso para dicha campana", campana.id)
-            tracker = self.trackers_campana[campana]
-            # tracker.llamadas_en_curso_aprox = 0
-            tracker.contactos_en_curso = []
+    #
+    # Eventos
+    #
 
     def onNoHayCampanaEnEjecucion(self):
         """Ejecutado por generator() cuando se detecta
@@ -527,7 +570,8 @@ class RoundRobinTracker(object):
             # Refrescamos status de conexiones
             #==================================================================
 
-            if self.necesita_refrescar_channel_status():
+            if self._asterisk_call_status.necesita_refrescar_channel_status(
+                self.trackers_campana):
                 self.refrescar_channel_status()
 
             # Si TODAS las campañas han llegado al límite, no tiene sentido
@@ -563,6 +607,11 @@ class RoundRobinTracker(object):
                         campana.id)
                     loop__limite_de_campana_alcanzado = True
                     continue
+
+                #==============================================================
+                # Chequeamos limite global de llamadas en curso
+                #==============================================================
+
 
                 #==============================================================
                 # Chequeamos limite de llamadas por segundo
@@ -622,8 +671,8 @@ class RoundRobinTracker(object):
             # y hay una sola campaña en ejecucion, entonces puede
             # suceder q' no se haya procesado ningun contacto
             if loop__contactos_procesados == 0:
-                causas_ok = any(loop__TLCPEECE_detectado,
-                    loop__limite_de_campana_alcanzado)
+                causas_ok = any([loop__TLCPEECE_detectado,
+                    loop__limite_de_campana_alcanzado])
                 if not causas_ok:
                     # Si no se detecto ninguna causa que pueda generar
                     # que no se produzca el procesamineto de ningun
