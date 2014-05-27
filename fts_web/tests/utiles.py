@@ -20,6 +20,8 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.runner import DiscoverRunner
 from django.test.testcases import LiveServerTestCase
+from fts_daemon.models import EventoDeContacto
+
 from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
     Contacto, BaseDatosContacto, Campana, Opcion, Actuacion
 from fts_daemon.models import EventoDeContacto
@@ -318,8 +320,9 @@ class FTSenderBaseTest(TestCase):
         return c
 
     def crear_campana_activa(self, cant_contactos=None, bd_contactos=None,
-            *args, **kwargs):
+        *args, **kwargs):
         """Crea campañas y la pasa a ESTADO_ACTIVA."""
+
         c = self.crear_campana(cant_contactos=cant_contactos,
             bd_contactos=bd_contactos, *args, **kwargs)
         c.activar()
@@ -438,6 +441,76 @@ class FTSenderBaseTest(TestCase):
             contacto_id=contacto_id, evento=EV_FINALIZADOR,
             dato=intento)
 
+    def _crea_campana_emula_procesamiento(self, finaliza=True):
+        cant_contactos = 100
+        numeros_telefonicos = [int(random.random() * 10000000000)\
+            for _ in range(cant_contactos)]
+
+        base_datos_contactos = self.crear_base_datos_contacto(
+            cant_contactos=cant_contactos,
+            numeros_telefonicos=numeros_telefonicos)
+
+        campana = self.crear_campana(bd_contactos=base_datos_contactos,
+            cantidad_intentos=3)
+        campana.activar()
+
+        self.crea_todas_las_actuaciones(campana)
+        self.crea_calificaciones(campana)
+        self.crea_todas_las_opcion_posibles(campana)
+
+        #Progrmaa la campaña.
+        EventoDeContacto.objects_gestion_llamadas.programar_campana(
+            campana.pk)
+
+        numero_interno = 1
+        #for numero_interno in range(1, campana.cantidad_intentos):
+        #Intentos.
+        EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
+            campana.pk, numero_interno, probabilidad=1.1)
+
+        #Opciones
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_0,
+            probabilidad=0.03)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_1,
+            probabilidad=0.02)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_2,
+            probabilidad=0.01)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_3,
+            probabilidad=0.05)
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_4,
+            probabilidad=0.25)
+        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_5,
+        #     probabilidad=0.15)
+        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_6,
+        #     probabilidad=0.05)
+        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_7,
+        #     probabilidad=0.05)
+
+        #Opciones inválidas para esta campaña.
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_8,
+            probabilidad=0.02)
+        # EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+        #     numero_interno, EventoDeContacto.EVENTO_ASTERISK_OPCION_9,
+        #     probabilidad=0.02)
+
+        #Finaliza algunos.
+        EV_FINALIZADOR = EventoDeContacto.objects.\
+        get_eventos_finalizadores()[0]
+        EventoDeContacto.objects_simulacion.simular_evento(campana.pk,
+            numero_interno, evento=EV_FINALIZADOR, probabilidad=0.15)
+
+        if finaliza:
+            campana.finalizar()
+        return campana
 
 def default_db_is_postgresql():
     """Devuelve si la DB por default es PostgreSql"""

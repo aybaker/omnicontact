@@ -885,6 +885,23 @@ class DetalleCampanView(DetailView):
     model = Campana
 
 
+class ExportaReporteCampanaView(UpdateView):
+    """
+    Esta vista invoca a generar un csv de reporte de la campana.
+    """
+
+    model = Campana
+    context_object_name = 'campana'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        url = self.object.exportar_reporte_csv()
+
+        return redirect(url)
+
+
+
 # class CampanaUpdateView(UpdateView):
 #     """
 #     Esta vista actualiza un objeto Campana.

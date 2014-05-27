@@ -542,6 +542,27 @@ class EventoDeContactoEstadisticasManager():
 
         return counter_x_estado, counter_intentos, counter_por_evento
 
+    def obtener_opciones_por_contacto(self, campana_id):
+        """
+        Devuelve un diccionario con el el número de teléfono como clave y
+        una lista de los eventos que produjo.
+        """
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        sql = """SELECT telefono, array_agg(evento)
+            FROM fts_web_contacto INNER JOIN fts_daemon_eventodecontacto
+            ON fts_web_contacto.id = fts_daemon_eventodecontacto.contacto_id
+            WHERE campana_id = %s
+            GROUP BY contacto_id, telefono;
+        """
+        params = [campana.id]
+        with log_timing(logger,
+            "obtener_opciones_por_contacto() tardo %s seg"):
+            cursor.execute(sql, params)
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+        return values
+
     def obtener_contadores_por_intento(self, campana_id, cantidad_intentos,
         timestamp_ultimo_evento):
         """
