@@ -142,10 +142,12 @@ FTS_DUMP_HTTP_AMI_RESPONSES = 'FTS_DUMP_HTTP_AMI_RESPONSES' in os.environ
 FTS_SETTING_CUSTOMIZERS = [customize_INSTALLED_APPS]
 
 if 'FTS_SIMULADOR_DAEMON' in os.environ:
-    # Apunta a uWSGI
-    ASTERISK['HTTP_AMI_URL'] = 'http://127.0.0.1:8080/asterisk-ami-http/simulador'  #@IgnorePep8
-    FTS_TESTING_MODE = True
-    FTS_DAEMON_SLEEP_SIN_TRABAJO = 0.1
-    FTS_DAEMON_SLEEP_LIMITE_DE_CANALES = 0.1
-    import logging
-    logging.warn("*** Iniciando en modo SIMULADOR ***")
+    def customize_simulador(local_vars):
+        # Apunta a uWSGI
+        local_vars['ASTERISK']['HTTP_AMI_URL'] = 'http://127.0.0.1:8080/asterisk-ami-http/simulador'  #@IgnorePep8
+        local_vars['FTS_TESTING_MODE'] = True
+        local_vars['FTS_DAEMON_SLEEP_SIN_TRABAJO'] = 0.1
+        local_vars['FTS_DAEMON_SLEEP_LIMITE_DE_CANALES'] = 0.1
+        import logging
+        logging.warn("*** Iniciando en modo SIMULADOR ***")
+    FTS_SETTING_CUSTOMIZERS += [customize_simulador]
