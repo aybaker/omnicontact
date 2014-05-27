@@ -442,6 +442,8 @@ class CampanaTest(FTSenderBaseTest):
                 c += 1
         self.assertEqual(c, 100)
 
+        shutil.rmtree(files_path)
+
 
 class FinalizarVencidasTest(FTSenderBaseTest):
     """Clase para testear Campana.finalizar_vencidas()"""
