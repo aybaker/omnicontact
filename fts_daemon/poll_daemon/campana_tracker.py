@@ -6,6 +6,7 @@
 from __future__ import unicode_literals
 
 from datetime import datetime
+import pprint
 import random
 
 from fts_daemon.models import EventoDeContacto
@@ -112,7 +113,16 @@ class CampanaTracker(object):
         reportarse "falsos positivos", o sea, que se indique que el limite
         se ha alcanzado, pero no sea cierto.
         """
-        return len(self._contactos_en_curso) >= self.campana.cantidad_canales
+        en_curso = len(self._contactos_en_curso)
+        if en_curso > self.campana.cantidad_canales:
+            # FIXME: buscar la forma de testear que esto se detecta y reporta
+            logger.error("limite_alcanzado(): se detectaron %s llamadas en "
+                "curso para la campana %s, cuando la cantidad de canales "
+                "configurado es %s. Dump de '_contactos_en_curso':\n"
+                "%s", en_curso, self.campana.id, self.campana.cantidad_canales,
+                pprint.pformat(self._contactos_en_curso))
+
+        return en_curso >= self.campana.cantidad_canales
 
     @property
     def llamadas_en_curso_aprox(self):

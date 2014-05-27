@@ -551,6 +551,7 @@ class RoundRobinTracker(object):
 
             loop__contactos_procesados = 0
             loop__TLCPEECE_detectado = False
+            loop__limite_de_campana_alcanzado = False
 
             # Trabajamos en copia, por si hace falta modificarse
             dict_copy = dict(self.trackers_campana)
@@ -560,6 +561,7 @@ class RoundRobinTracker(object):
                 if tracker.limite_alcanzado():
                     logger.debug("Ignorando campana %s porque esta al limite",
                         campana.id)
+                    loop__limite_de_campana_alcanzado = True
                     continue
 
                 #==============================================================
@@ -616,10 +618,16 @@ class RoundRobinTracker(object):
             # procesaban las campañas, cambio la hora y/o el dia
             # ----- AHORA es distinta:
             # Si se detecta 'TodosLosContactosPendientesEstanEnCursoError',
+            # o se ignoro campaña porque llegó al límite de llamadas,
             # y hay una sola campaña en ejecucion, entonces puede
             # suceder q' no se haya procesado ningun contacto
             if loop__contactos_procesados == 0:
-                if not loop__TLCPEECE_detectado:
+                causas_ok = any(loop__TLCPEECE_detectado,
+                    loop__limite_de_campana_alcanzado)
+                if not causas_ok:
+                    # Si no se detecto ninguna causa que pueda generar
+                    # que no se produzca el procesamineto de ningun
+                    # contacto, logueamos un warn()
                     logger.warn("No se ha devuelto ningun contacto en el "
                         "ROUND actual")
                     self.onNoSeDevolvioContactoEnRoundActual()
