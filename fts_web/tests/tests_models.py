@@ -410,12 +410,17 @@ class CampanaTest(FTSenderBaseTest):
 
     @override_settings(MEDIA_ROOT=MEDIA_ROOT)
     def test_campana_exporta_reporte(self):
+        import glob
+
         #Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento(finaliza=False)
 
         dirname = 'reporte_campana'
         files_path = "{0}/{1}".format(settings.MEDIA_ROOT, dirname)
-        shutil.rmtree(files_path)
+
+        files = glob.glob('{0}/*'.format(files_path))
+        for f in files:
+            os.remove(f)
 
         filename = "{0}-reporte.csv".format(campana.id)
         file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname, filename)
@@ -442,8 +447,9 @@ class CampanaTest(FTSenderBaseTest):
                 c += 1
         self.assertEqual(c, 100)
 
-        shutil.rmtree(files_path)
-
+        files = glob.glob('{0}/*'.format(files_path))
+        for f in files:
+            os.remove(f)
 
 class FinalizarVencidasTest(FTSenderBaseTest):
     """Clase para testear Campana.finalizar_vencidas()"""
