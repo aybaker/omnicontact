@@ -1049,7 +1049,6 @@ class Campana(models.Model):
         finalización.
         """
         fecha_hoy = datetime.date.today()
-
         if self.fecha_inicio and self.fecha_fin:
             if self.fecha_inicio > self.fecha_fin:
                 raise ValidationError({
@@ -1064,6 +1063,12 @@ class Campana(models.Model):
                         mayor o igual a la fecha actual."],
                 })
 
+        cantidad_contactos = self.bd_contacto.contactos.count()
+        if not self.cantidad_canales < cantidad_contactos:
+            raise ValidationError({
+                    'cantidad_canales': ["La cantidad de canales debe ser\
+                        menor a la cantidad de contactos de la base de datos."]
+                })
 
 #==============================================================================
 # AgregacionDeEventoDeContacto

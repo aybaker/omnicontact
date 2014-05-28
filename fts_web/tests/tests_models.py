@@ -86,6 +86,15 @@ class CampanaTest(FTSenderBaseTest):
         self.crear_campana(fecha_inicio, fecha_fin)
         #self.assertEqual(Campana.objects.all().count(), 1)
 
+        #Testeamos que la validación en clean de Campana valide que la cantidad
+        #de canales sea menor que la cantidad de contactos de la base de datos.
+        #*** Este Test no debería fallar. Ver validación en modelos***
+        #Referencia FTS-85
+        # FIXME: Por ahora sale el assert puesto en el metodo crear_campaan de
+        # utiles.py, debería validar el modelo.
+        #self.crear_campana(cant_contactos=1)
+        #self.assertEqual(Campana.objects.all().count(), 1)
+
     def test_campana_opcion(self):
         """
         Opciones creadas a una campana.
