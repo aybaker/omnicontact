@@ -371,10 +371,7 @@ class RoundRobinTracker(object):
         # Guardamos ultimo status en asterisk_call_status
         self._asterisk_call_status.full_status = dict(new_status)
 
-        #======================================================================
-        # Actualizamos estructuras...
-        #======================================================================
-
+        # Actualizamos `self.trackers_campana`
         for tracker in self.trackers_campana.values():
             self._asterisk_call_status.update_campana_tracker(tracker)
 
@@ -554,7 +551,46 @@ class RoundRobinTracker(object):
         """Devuelve los datos de contacto a contactar, de a una
         campaña por vez.
 
-        :param originate_status: Tracks the status of the last originate.
+        En el loop, las consultas (a BD y Asterisk) se realizan asi:
+
+        +---------------------------+
+        | [1] refrescar_trackers()  | --> self.trackers_campana
+        +---------------------------+
+
+          ||
+          \/
+
+        +---------------------------------+
+        | [2] refrescar_channel_status()  | --> self._asterisk_call_status
+        +---------------------------------+
+
+          ||
+          \/
+
+        +--------------------------+
+        | proceso de las campañas  |
+        +--------------------------+
+
+          ||
+          \/
+
+        +----------------------+
+        | finalizar_campana()  | --> del self.trackers_campana[x]
+        | onXxxx()             |
+        +----------------------+
+
+
+        Pero las actualizaciones de [1] y [2] no se realiza siempre. En cada
+        ejecucion del loop, puede ejecutarse sólo [1], sólo [2],
+        ambas o ninguna... y todas las decisiones se basan en estos datos.
+
+        Pero algo a tener en cuenta es que `refrescar_channel_status()` está
+        pensado para ser ejecutado despues de `refrescar_trackers()`, por lo
+        tanto, deberia ser seguro ejecutar `refrescar_channel_status()`
+        varias veces en un mismo loop.
+
+        PERO algunos metodos ELIMINAN instancias de `self.trackers_campana`.
+        ** ESTE ES EL PROBLEMA A SOLUCIONAR **
 
         :returns: (campana, contacto_id, telefono, cant_intentos_realizados)
         """
@@ -571,7 +607,7 @@ class RoundRobinTracker(object):
                             self.max_iterations))
 
             #==================================================================
-            # Actualizamos trackers de campaña
+            # [1] Actualizamos trackers de campaña
             #==================================================================
 
             if self.necesita_refrescar_trackers():
@@ -602,9 +638,10 @@ class RoundRobinTracker(object):
                 continue
 
             #==================================================================
-            # Refrescamos status de conexiones
+            # [2] Refrescamos status de conexiones
             #==================================================================
 
+            # Este refresco tambien se hace en el loop
             if self._asterisk_call_status.necesita_refrescar_channel_status(
                 self.trackers_campana):
                 self.refrescar_channel_status()
@@ -636,6 +673,7 @@ class RoundRobinTracker(object):
             dict_copy = dict(self.trackers_campana)
 
             for campana, tracker in dict_copy.iteritems():
+
                 # Si la campana esta al limite, la ignoramos
                 if tracker.limite_alcanzado():
                     logger.debug("Ignorando campana %s porque esta al limite",
