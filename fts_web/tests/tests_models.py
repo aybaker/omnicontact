@@ -451,6 +451,7 @@ class CampanaTest(FTSenderBaseTest):
         for f in files:
             os.remove(f)
 
+
 class FinalizarVencidasTest(FTSenderBaseTest):
     """Clase para testear Campana.finalizar_vencidas()"""
 
@@ -699,8 +700,6 @@ class ReporteTest(FTSenderBaseTest):
         self.assertIn('<svg xmlns:xlink="http://www.w3.org/1999/xlink"',
             graficos_estadisticas['torta_general'].render())
         self.assertEqual(graficos_estadisticas['estadisticas']
-            ['total_intentados'], 100)
-        self.assertEqual(graficos_estadisticas['estadisticas']
             ['total_contactos'], 100)
 
     # def test__url_grafico(self):
@@ -736,7 +735,6 @@ class ReporteTest(FTSenderBaseTest):
 
         self.assertTrue(graficos['torta_general'].render())
         self.assertTrue(graficos['torta_opcion_x_porcentaje'].render())
-        self.assertTrue(graficos['torta_intentos'].render())
         self.assertTrue(graficos['barra_atendidos_intentos'].render())
 
     def test_obtener_contadores_por_intento(self):

@@ -50,12 +50,15 @@
                                     
                                     <tr>
                                         <td colspan="2">
-                                            <h5><small>% Intentos Utilizados. De {{ graficos_estadisticas.estadisticas.total_contactos }} contactos por {{ campana.cantidad_intentos }} intentos. Total de {{ graficos_estadisticas.estadisticas.total_intentos }} Intentos.</small></h5>
-                                            <div class="progress">
-                                                <div class="progress-bar progress-bar-primary" style="width: {{ graficos_estadisticas.estadisticas.porcentaje_intentados|floatformat:'0' }}%">
-                                                    {% if graficos_estadisticas.estadisticas.porcentaje_intentados > 0 %}
-                                                        <span>{{ graficos_estadisticas.estadisticas.porcentaje_intentados }}%</span>
-                                                    {% endif %} 
+                                            <h5><small>Avance</small></h5>
+                                            <div class="col-lg-1 no-padding-left">
+                                                {% if graficos_estadisticas.estadisticas.porcentaje_avance > 0 %}
+                                                    <span class="badge">{{ graficos_estadisticas.estadisticas.porcentaje_avance|floatformat:'0'  }}%</span>
+                                                {% endif %} 
+                                            </div>
+                                            <div class="col-lg-11">
+                                                <div class="progress">
+                                                    <div class="progress-bar progress-bar-primary" style="width: {{ graficos_estadisticas.estadisticas.porcentaje_avance|floatformat:'0' }}%"></div>
                                                 </div>
                                             </div>
                                             <!-- <span class="label label-success">Contestadas</span> <span class="label label-warning">No Contestadas</span> -->

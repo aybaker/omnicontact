@@ -11,6 +11,7 @@ import csv
 import datetime
 import logging
 import os
+import math
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -695,15 +696,6 @@ class Campana(models.Model):
             for opcion, porcentaje in dic_opcion_x_porcentaje.items():
                 torta_opcion_x_porcentaje.add('#{0}'.format(opcion), porcentaje)
 
-            #Torta: porcentajes de intentados y de intentos pendientes.
-            torta_intentos = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
-            torta_intentos.title = 'Porcentajes Intentados de {0} intentos.'.\
-                format(estadisticas['total_intentos'])
-            torta_intentos.add('Intentados', estadisticas[
-                'porcentaje_intentados'])
-            torta_intentos.add('No Intentados', estadisticas[
-                'porcentaje_intentos_pendientes'])
-
             #Barra: Total de llamados atendidos en cada intento.
             total_atendidos_intentos = estadisticas['total_atendidos_intentos']
             intentos = [total_atendidos_intentos[intentos] for intentos, _ in\
@@ -720,7 +712,6 @@ class Campana(models.Model):
                 'estadisticas': estadisticas,
                 'torta_general': torta_general,
                 'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
-                'torta_intentos': torta_intentos,
                 'barra_atendidos_intentos': barra_atendidos_intentos,
             }
         else:
@@ -756,27 +747,32 @@ class Campana(models.Model):
         porcentaje_no_llamados = float(100 * total_no_llamados / \
             total_contactos)
 
-        #Intentos
+        # Intentos
         total_intentos = total_contactos * dic_totales['limite_intentos']
 
-        total_intentados = dic_totales['total_intentados']
-        porcentaje_intentados = float(100 * total_intentados / total_intentos)
-        total_intentos_pendientes = dic_totales['total_intentos_pendientes']
-        porcentaje_intentos_pendientes = float(100 * total_intentos_pendientes\
-            / total_intentos)
+        # Porcentaje de avance.
+        valor_unitario = 100 / float(total_intentos)
+        intento_actual = math.ceil(dic_totales['total_intentados'] /
+            float(total_contactos))
 
-        # cantidad_no_selecciono_opcion = dic_estado_x_cantidad[
-        #     'no_selecciono_opcion']
-        # porcentaje_no_selecciono_opcion = float(
-        #     100 * cantidad_no_selecciono_opcion / total_contactos)
+        porcentaje_avance = (total_no_atendidos * intento_actual +
+            total_atentidos * dic_totales['limite_intentos']) * valor_unitario
 
-        # cantidad_selecciono_opcion = total_contactos - dic_estado_x_cantidad[
-        #     'no_selecciono_opcion']
-        # porcentaje_selecciono_opcion = float(
-        #     100 * cantidad_selecciono_opcion / total_contactos)
+        if intento_actual == dic_totales['limite_intentos']:
+            inicio_ultimo_intento = (total_contactos *
+                dic_totales['limite_intentos'] - 1)
+            avance_ultimo_intento = (dic_totales['total_intentados'] -
+                inicio_ultimo_intento)
 
+            if total_atentidos < avance_ultimo_intento:
+                finalizados_limite = avance_ultimo_intento - total_atentidos
+                porcentaje_avance = float(100 * (total_atentidos +
+                    finalizados_limite) / total_contactos)
+
+        # Atendidos en cada intento.
         total_atendidos_intentos = dic_totales['total_atendidos_intentos']
 
+        # Cantidad por opción.
         opcion_x_cantidad = defaultdict(lambda: 0)
         opcion_invalida_x_cantidad = defaultdict(lambda: 0)
         opcion_x_porcentaje = defaultdict(lambda: 0)
@@ -791,7 +787,7 @@ class Campana(models.Model):
                     opcion_invalida_x_cantidad[opcion] = cantidad_opcion
 
         dic_estadisticas = {
-            #Estadisticas Generales.
+            # Estadísticas Generales.
             'total_contactos': total_contactos,
 
             'total_atentidos': total_atentidos,
@@ -802,20 +798,9 @@ class Campana(models.Model):
             'porcentaje_no_llamados': porcentaje_no_llamados,
 
             'total_intentos': total_intentos,
-
-            'total_intentados': total_intentados,
-            'porcentaje_intentados': porcentaje_intentados,
-            'total_intentos_pendientes': total_intentos_pendientes,
-            'porcentaje_intentos_pendientes': porcentaje_intentos_pendientes,
-
-
-        #     'porcentaje_avance': porcentaje_avance,
-
-        #     'cantidad_selecciono_opcion': cantidad_selecciono_opcion,
-        #     'porcentaje_selecciono_opcion': porcentaje_selecciono_opcion,
-        #     'cantidad_no_selecciono_opcion': cantidad_no_selecciono_opcion,
-        #     'porcentaje_no_selecciono_opcion': porcentaje_no_selecciono_opcion,
-
+            'porcentaje_avance': porcentaje_avance,
+            # 'total_intentados': total_intentados,
+            # 'porcentaje_intentados': porcentaje_intentados,
 
             'total_atendidos_intentos': total_atendidos_intentos,
 
