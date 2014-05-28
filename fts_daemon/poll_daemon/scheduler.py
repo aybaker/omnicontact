@@ -489,6 +489,20 @@ class RoundRobinTracker(object):
         except KeyError:
             pass
 
+    def onLimiteGlobalDeCanalesAlcanzadoError(self):
+        """Ejecutado por generator() cuando se detecta
+        que la cantidad de canales utilizado ha llegado al limite.
+
+        El limite esta configurado a travez de settings, con la variable
+        FTS_LIMITE_GLOBAL_DE_CANALES.
+
+        Este evento no debe confundirse con onLimiteDeCanalesAlcanzadoError(),
+        este ultimo se produce cuando se alcaza el limite para una campaña
+        en particular!
+        """
+        logger.debug("onLimiteGlobalDeCanalesAlcanzadoError(): limite "
+            "alcanzado")
+
     def finalizar_campana(self, campana_id):
         campana = Campana.objects.get(pk=campana_id)
 
@@ -659,6 +673,26 @@ class RoundRobinTracker(object):
                     "Esperamos %s segs. y reiniciamos round",
                     settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
                 self.sleep(settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
+                # Reiniciamos para ver si se actualizan trackers y status
+                continue
+
+            # Si se ha alcanzado el limite global de campañas, tampoco tiene
+            # sentido hacer un busy wait
+            # +----------------------------------------------------------------
+            # | Los eventos que deberian despertar este 'sleep' son:
+            # | 1. se ha liberado un canal
+            # +----------------------------------------------------------------
+
+            # ATENCION: esta misma logica (o muy parecida) se usa en el loop
+            if self._asterisk_call_status.get_count_llamadas() >= \
+                settings.FTS_LIMITE_GLOBAL_DE_CANALES:
+                logger.debug("Se ha alcanzado el limite global de canales. "
+                    "Esperamos %s segs. y reiniciamos round",
+                    settings.FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES)
+                self.onLimiteGlobalDeCanalesAlcanzadoError()
+                self.real_sleep(settings.\
+                    FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES)
+                # Reiniciamos para ver si se actualizan trackers y status
                 continue
 
             ##
@@ -685,6 +719,25 @@ class RoundRobinTracker(object):
                 # Chequeamos limite global de llamadas en curso
                 #==============================================================
 
+                loop__esperas_por_limite_global = 0
+                while self._asterisk_call_status.get_count_llamadas() >= \
+                    settings.FTS_LIMITE_GLOBAL_DE_CANALES:
+                    # Se alcanzo el limite global. Hacemos un mini-loop
+                    loop__esperas_por_limite_global += 1
+                    self.onLimiteGlobalDeCanalesAlcanzadoError()
+                    self.real_sleep(settings.\
+                        FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES)
+
+                    if loop__esperas_por_limite_global >= 5:
+                        # mmm, esto es raro, por las dudas, `continue`
+                        logger.warn("generator(): luego de %s loops, todavia"
+                            "no podemos continuar porque se ha alcanzado"
+                            "el limite global de canales. Continuamos "
+                            "con campana siguiente",
+                            loop__esperas_por_limite_global)
+                        continue # pasamos a prox. campana
+                        # Lo ideal seria cortar el loop entero, pero no
+                        # se puede facilmente desde aca
 
                 #==============================================================
                 # Chequeamos limite de llamadas por segundo
