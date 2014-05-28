@@ -118,7 +118,22 @@ class AsteriskCallStatus(object):
 
     def necesita_refrescar_channel_status(self, trackers_campana):
         """Devuelve booleano indicando si debe y es conveniente refrescar
-        el status de los channels de Asterisk"""
+        el status de los channels de Asterisk.
+
+        Este metodo SOLO tiene en cuenta los limites de canales de las
+        campañas, por lo tanto, solo devolvera True si alguna de las
+        campañas está al límite.
+
+        Por lo tanto, NO SIRVE para refrescar el status cuando se ha
+        alcanzado el limite GLOBAL, y estamos esperando que se liberen
+        canales, ya que puede ser que, aunque se haya alcanzado el
+        limite GLOBAL, ninguna de las campañas haya alcanzado el limite.
+
+        QUIZA lo mejor sea que este metodo NO EXISTA, y solo chequear
+        el tiempo de la ultima actualizacion, aunque no deja de ser una
+        optimizacion interesante, para no perder tiempo cuando estamos
+        haciendo originates.
+        """
 
         if not trackers_campana:
             logger.debug("necesita_refrescar_channel_status(): no actualizamos"
