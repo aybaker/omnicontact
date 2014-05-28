@@ -195,6 +195,26 @@ class AsteriskCallStatus(object):
 
         tracker.contactos_en_curso = [item[0] for item in info_de_llamadas]
 
+    def get_count_llamadas(self):
+        """Devuelve el count total de llamadas parseadas por
+        el AmiStatusTracker.
+
+        ATENCION: Asterisk podria estar con muchas mas llamadas que
+        las reportadas, ya que AmiStatusTracker solo devuelve informacion
+        de las llamadas GENERADAS POR EL SISTEMA
+        """
+        # FIXME: ESTE METODO NO TIENE EN CUENTA LLAMADAS ORIGINADAS!
+        # (ya que no usa info de `trackers_campana`)
+        # FIXME: OJO! aun si se utilizara `trackers_campana`, hay
+        #  metodos que elminan instancias de `trackers_campana`
+        # FIXME: pero definitivamente, hace falta tener en cuenta
+        # `trackers_campana`, asi que seguramente hara falta mover
+        # este metodo a `RoundRobinTracker`
+        count = 0
+        for info_de_llamadas in self._full_status.values():
+            count += len(info_de_llamadas)
+        return count
+
 
 # FIXME: renombra a RoundRobinScheduler
 class RoundRobinTracker(object):
