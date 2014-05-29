@@ -77,7 +77,7 @@ class BaseDatosContactoForm(forms.ModelForm):
     class Meta:
         model = BaseDatosContacto
         exclude = ('columna_datos', 'sin_definir', 'columnas',
-            'nombre_archivo_importacion')
+            'nombre_archivo_importacion', 'cantidad_contactos')
 
 
 #===============================================================================

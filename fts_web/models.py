@@ -211,6 +211,7 @@ class BaseDatosContacto(models.Model):
                     telefono=telefono,
                     bd_contacto=self,
                 )
+            self.cantidad_contactos = len(lista_telefonos)
             return True
         return False
 
