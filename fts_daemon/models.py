@@ -314,7 +314,8 @@ class SimuladorEventoDeContactoManager():
             archivo_importacion='inexistete.csv',
             nombre_archivo_importacion='inexistete.csv',
             sin_definir=False,
-            columna_datos=1
+            columna_datos=1,
+            cantidad_contactos=cantidad,
         )
 
         cursor = connection.cursor()
