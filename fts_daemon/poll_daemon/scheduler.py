@@ -403,10 +403,19 @@ class AsteriskCallStatus(object):
     mantiene toda la informacion que devolvio la ultima consulta
     exitosa"""
 
-    def __init__(self):
+    def __init__(self, campana_call_status):
         self._ultimo_intento_refresco = datetime.now() - timedelta(days=30)
         # self._ultimo_refresco = None
-        self._full_status = {}
+
+        # self._full_status = {}
+        # NO guardamos esta info, porque la info más actualizada
+        # está en los trackers!!!! (ya que estos trackers son actualizados
+        # con los nuevos ORIGINATES producidos)
+
+        self._ami_status_tracker = AmiStatusTracker()
+        """Status tracker via HTTP AMI"""
+
+        self._campana_call_status = campana_call_status
 
     def touch(self):
         """Actualiza timestamp de ultimo intento de refresco"""
@@ -425,7 +434,17 @@ class AsteriskCallStatus(object):
         else:
             return True
 
-    def necesita_refrescar_channel_status(self, trackers_campana):
+    def refrescar_channel_status_si_es_posible(self):
+        """Si puede refrescar, refresca"""
+        if self.puede_refrescar():
+            self.refrescar_channel_status()
+
+    def refrescar_channel_status_si_es_necesario(self):
+        """Si necesita refrescar, refresca"""
+        if self.necesita_refrescar_channel_status():
+            self.refrescar_channel_status()
+
+    def necesita_refrescar_channel_status(self):
         """Devuelve booleano indicando si debe y es conveniente refrescar
         el status de los channels de Asterisk.
 
@@ -439,14 +458,15 @@ class AsteriskCallStatus(object):
         limite GLOBAL, ninguna de las campañas haya alcanzado el limite.
 
         QUIZA lo mejor sea que este metodo NO EXISTA, y solo chequear
-        el tiempo de la ultima actualizacion, aunque no deja de ser una
-        optimizacion interesante, para no perder tiempo cuando estamos
-        haciendo originates.
+        el tiempo de la ultima actualizacion (o sea, siempre actualizar,
+        excepto si la ultima actualizacion fue hace poco), aunque no deja
+        de ser una optimizacion interesante, para no perder tiempo cuando
+        estamos haciendo originates.
         """
-
-        if not trackers_campana:
+        trackers_activos = self._campana_call_status.trackers_activos
+        if not trackers_activos:
             logger.debug("necesita_refrescar_channel_status(): no actualizamos"
-                " porque no hay trackers_campana")
+                " porque no hay trackers activos")
             return False
 
         if not self.puede_refrescar():
@@ -454,10 +474,10 @@ class AsteriskCallStatus(object):
                 " porque la ultima actualizacion fue recientemente")
             return False
 
-        # Si llegamos aca, es porque trackers_campana NO esta vacio
-        al_limite = [tracker.limite_alcanzado()
-            for tracker in trackers_campana.values()]
+        # Si llegamos aca, es porque `trackers_activos` NO esta vacio
+        al_limite = [tr.limite_alcanzado() for tr in trackers_activos]
 
+        # any(): si empty, return False
         if any(al_limite):
             pass  # Hay al menos 1 al limite
         else:
@@ -474,55 +494,28 @@ class AsteriskCallStatus(object):
         logger.debug("necesita_refrescar_channel_status(): True")
         return True
 
-    @property
-    def full_status(self):
-        """Devuelve copia de ultimo status"""
-        return dict(self._full_status)
+    def refrescar_channel_status(self):
+        """Refresca `contactos_en_curso` de `self.trackers_campana`.
 
-    @full_status.setter
-    def full_status(self, new_full_status):
-        """Actualiza / setea ultimo full status"""
-        # self._ultimo_refresco = datetime.now()
-        self._full_status = new_full_status
-
-    def update_campana_tracker(self, tracker):
-        """Actualiza el status de la campana asociada al tracker
-        pasado por parametro, con la informacion de status"""
-
-        try:
-            info_de_llamadas = self._full_status[tracker.campana.id]
-        except KeyError:
-            # FIXME: esto que hacemos aca, no es algo peligroso? Y si habia
-            # en ejecucion!? Quizá deberiamos, además de este control, llevar
-            # control de la cantidad de llamadas generadas por minuto
-            logger.info("update_campana_tracker(): no se recibieron "
-                "datos para la campana %s... Suponemos que no hay "
-                "llamadas en curso para dicha campana", tracker.campana.id)
-            # tracker.llamadas_en_curso_aprox = 0
-            tracker.contactos_en_curso = []
-            return  # Salimos
-
-        tracker.contactos_en_curso = [item[0] for item in info_de_llamadas]
-
-    def get_count_llamadas(self):
-        """Devuelve el count total de llamadas parseadas por
-        el AmiStatusTracker.
-
-        ATENCION: Asterisk podria estar con muchas mas llamadas que
-        las reportadas, ya que AmiStatusTracker solo devuelve informacion
-        de las llamadas GENERADAS POR EL SISTEMA
+        En caso de error, no actualiza ningun valor.
         """
-        # FIXME: ESTE METODO NO TIENE EN CUENTA LLAMADAS ORIGINADAS!
-        # (ya que no usa info de `trackers_campana`)
-        # FIXME: OJO! aun si se utilizara `trackers_campana`, hay
-        #  metodos que elminan instancias de `trackers_campana`
-        # FIXME: pero definitivamente, hace falta tener en cuenta
-        # `trackers_campana`, asi que seguramente hara falta mover
-        # este metodo a `RoundRobinTracker`
-        count = 0
-        for info_de_llamadas in self._full_status.values():
-            count += len(info_de_llamadas)
-        return count
+        # Antes q' nada, actualizamos 'ultimo refresco'
+        self.touch()
+
+        logger.info("Actualizando status via AMI HTTP")
+        try:
+            full_status = self._ami_status_tracker.\
+                get_status_por_campana()
+        except:
+            logger.exception("Error detectado al ejecutar "
+                "ami_status_tracker.get_status_por_campana(). Los statuses "
+                "no seran actualizados")
+            return
+
+        # Actualizamos trackers
+        self._campana_call_status.update_call_status(full_status)
+
+
 
 
 # FIXME: renombra a RoundRobinScheduler
