@@ -769,8 +769,9 @@ class ReporteTest(FTSenderBaseTest):
         #Obtento el renderizado de gráfico y lo testeo.
         graficos_estadisticas = \
             campana.obtener_estadisticas_render_graficos_supervision()
-        self.assertIn('<svg xmlns:xlink="http://www.w3.org/1999/xlink"',
-            graficos_estadisticas['torta_general'].render())
+
+        self.assertTrue(graficos_estadisticas[
+            'torta_opcion_x_porcentaje'].render())
         self.assertEqual(graficos_estadisticas['estadisticas']
             ['total_contactos'], 100)
 
