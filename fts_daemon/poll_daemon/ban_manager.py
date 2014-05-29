@@ -7,6 +7,11 @@ from __future__ import unicode_literals
 
 from datetime import datetime, timedelta
 
+import logging as _logging
+
+
+logger = _logging.getLogger(__name__)
+
 # FIXME: usar TZ-aware datetimes para soportar cambios de TZ
 
 
@@ -94,6 +99,8 @@ class BanManager(object):
             baneada_hasta = datetime.max
         else:
             baneada_hasta = datetime.now() + self.get_timedelta_baneo()
+
+        logger.debug("banear_campana(): baneando hasta %s", baneada_hasta)
 
         try:
             baneo = self._campanas_baneadas[campana_u_objeto]
