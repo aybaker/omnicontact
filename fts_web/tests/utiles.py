@@ -236,6 +236,7 @@ class FTSenderBaseTest(TestCase):
             cant_contactos = random.randint(3, 7)
         for _ in range(0, cant_contactos):
             self.crear_contacto(bd_contacto)
+        bd_contacto.cantidad_contactos = cant_contactos
         return bd_contacto
 
     def crear_campana(self, fecha_inicio=None, fecha_fin=None,
