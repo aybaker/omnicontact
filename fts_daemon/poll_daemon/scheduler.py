@@ -13,7 +13,7 @@ from fts_daemon.asterisk_ami_http import AmiStatusTracker
 from fts_daemon.llamador_contacto import procesar_contacto
 from fts_daemon.poll_daemon.ban_manager import BanManager
 from fts_daemon.poll_daemon.campana_tracker import CampanaTracker, \
-    NoHayCampanaEnEjecucion, CampanaNoEnEjecucion, NoMasContactosEnCampana, \
+    CampanaNoEnEjecucion, NoMasContactosEnCampana, \
     LimiteDeCanalesAlcanzadoError, TodosLosContactosPendientesEstanEnCursoError
 from fts_web.models import Campana
 import logging as _logging
@@ -27,6 +27,12 @@ BANEO_TODOS_LOS_PENDIENTES_EN_CURSO = "BANEO_TODOS_LOS_PENDIENTES_EN_CURSO"
 
 class CantidadMaximaDeIteracionesSuperada(Exception):
     pass
+
+
+class NoHayCampanaEnEjecucion(Exception):
+    """No se encontraron campanas en ejecucion. O si hay campañas,
+    estan baneadas.
+    """
 
 
 # TODO: renombrar OriginateThrottler a OriginateThrottler
