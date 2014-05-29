@@ -84,12 +84,17 @@ class BanManager(object):
         # TODO: usar time.clock() u alternativa
         return timedelta(minutes=1)
 
-    def banear_campana(self, campana_u_objeto, reason=None):
+    def banear_campana(self, campana_u_objeto, reason=None,
+        forever=False):
         """Banea (o re-banea)  una campana"""
         # TODO: usar time.clock() u alternativa
         # FIXME: usar TZ-aware datetimes para soportar cambios de TZ
 
-        baneada_hasta = datetime.now() + self.get_timedelta_baneo()
+        if forever:
+            baneada_hasta = datetime.max
+        else:
+            baneada_hasta = datetime.now() + self.get_timedelta_baneo()
+
         try:
             baneo = self._campanas_baneadas[campana_u_objeto]
             baneo.re_banear(baneada_hasta, reason)
@@ -101,6 +106,7 @@ class BanManager(object):
         """Des-banea una campana"""
         try:
             baneo = self._campanas_baneadas[campana_u_objeto]
+            assert baneo.baneada_hasta != datetime.max
             baneo.des_banear()
         except KeyError:
             pass
