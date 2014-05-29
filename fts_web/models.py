@@ -1254,8 +1254,6 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
                         finalizados_limite) / total_contactos)
 
             dic_totales.update({
-                #'limite_intentos': limite_intentos,
-                #'total_contactos': total_contactos,
                 'total_no_llamados': total_no_llamados,
                 'total_no_atendidos': total_no_atendidos,
                 'total_opciones': total_opciones,
