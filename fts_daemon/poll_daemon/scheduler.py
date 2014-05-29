@@ -546,31 +546,15 @@ class RoundRobinTracker(object):
     def __init__(self):
         """Crea instancia de RoundRobinTracker"""
 
-        self.trackers_campana = {}
-        """Diccionario con los trackers de las campañas siendo procesadas.
-
-        :key: :class:`fts_web.models.Campana`
-        :value: :class:`.CampanaTracker`
-        """
-
-        self.ami_status_tracker = AmiStatusTracker()
-        """Status tracker via HTTP AMI"""
-
-        self.ban_manager = BanManager()
-        """Administrador de baneos"""
-
         self._originate_throttler = OriginateThrottler()
         """Administrador de limites de originates por segundo"""
 
-        # Quiza esto deberia estar en `self.trackers_campana`
-        # TODO: usar time.clock() u alternativa
-        self._ultimo_refresco_trackers = datetime.now() - timedelta(days=30)
-        """Ultima vez q' se consulto la BD, para refrescar los
-        trackers. Es usado por necesita_refrescar_trackers() y
-        refrescar_trackers()
-        """
+        self._campana_call_status = CampanaCallStatus()
 
-        self._asterisk_call_status = AsteriskCallStatus()
+        self._asterisk_call_status = AsteriskCallStatus(
+            self._campana_call_status)
+
+        self._finalizador_de_campanas = finalizar_campana
 
         self.max_iterations = None
         """Cantidad de interaciones maxima que debe realizar ``generator()``.
@@ -589,121 +573,8 @@ class RoundRobinTracker(object):
         self._originate_throttler = new_value
 
     #
-    # Refresco de TRACKERS
-    #
-
-    def necesita_refrescar_trackers(self):
-        """Devuleve booleano, indicando si debe o no consultarse a
-        la base de datos. Este metodo es ejecutado en cada ROUND,
-        por lo tanto, debe ser rapido.
-
-        Si devuelve 'True', se consultara la BD para actualizar
-        la lista de campanas. Sino, se seguira utilizando la
-        lista cacheada.
-
-        En una futura implementación, además de utilizar un "timeout",
-        podriamos chequear alguna variable que sea seteada
-        asincronamente (ej: usando Redis), o podriamos conocer cuanto
-        falta para que una campana se active (por fecha de la
-        campaña o Actuacion).
-        """
-        # Quizá habria q' chequear más seguido si el server no
-        # está haciendo nada, pero más espaciado si hay
-        # llamadas en curso, no?
-
-        # TODO: usar time.clock() u alternativa
-        delta = datetime.now() - self._ultimo_refresco_trackers
-        if delta.days > 0 or delta.seconds > 10:
-            return True
-        return False
-
-    def _obtener_campanas_en_ejecucion(self):
-        """Devuelve campañas en ejecucion. Las busca en la BD"""
-        return Campana.objects.obtener_ejecucion()
-
-    def refrescar_trackers(self):
-        """Refresca la lista de trackers de campañas (self.trackers_campana),
-        que incluye buscar en BD las campañas en ejecucion.
-
-        Se crean instancias de CampanaTracker SOLO para las nuevas campañas.
-        Las instancias de CampanaTracker para campañas que ya están siendo
-        traqueadas son mantenidas. Las instancias de CampanaTracker de campañas
-        que ya no son más trackeadas, son eliminadas.
-
-        :raises: NoHayCampanaEnEjecucion
-        """
-        logger.debug("refrescar_trackers(): Iniciando...")
-        self._ultimo_refresco_trackers = datetime.now()
-        old_trackers = dict(self.trackers_campana)
-        new_trackers = {}
-        for campana in self._obtener_campanas_en_ejecucion():
-
-            if self.ban_manager.esta_baneada(campana):
-                logger.debug("Ignorando campana %s xq esta baneada",
-                    campana.id)
-                continue
-
-            if campana in old_trackers:
-                # Ya existia de antes, la mantenemos
-                new_trackers[campana] = old_trackers[campana]
-                del old_trackers[campana]
-            else:
-                # Es nueva
-                logger.debug("refrescar_trackers(): nueva campana: %s",
-                    campana.id)
-                new_trackers[campana] = CampanaTracker(campana)
-
-        self.trackers_campana = new_trackers
-
-        # Logueamos campanas q' no van mas...
-        for campana in old_trackers:
-            logger.info("refrescar_trackers(): quitando campana %s",
-                campana.id)
-
-        # Luego de procesar y loguear todo, si vemos q' no hay campanas
-        # ejecucion, lanzamos excepcion
-        if not self.trackers_campana:
-            # No se encontraron campanas en ejecucion
-            raise NoHayCampanaEnEjecucion()
-
-    #
-    # Refresco de STATUS via AMI
-    #
-
-    def refrescar_channel_status(self):
-        """Refresca `contactos_en_curso` de `self.trackers_campana`.
-
-        En caso de error, no actualiza ningun valor.
-        """
-
-        # Antes q' nada, actualizamos 'ultimo refresco'
-        self._asterisk_call_status.touch()
-
-        logger.info("Actualizando status via AMI HTTP")
-        try:
-            new_status = self.ami_status_tracker.get_status_por_campana()
-        except:
-            logger.exception("Error detectado al ejecutar "
-                "ami_status_tracker.get_status_por_campana(). Los statuses "
-                "no seran actualizados")
-            return
-
-        # Guardamos ultimo status en asterisk_call_status
-        self._asterisk_call_status.full_status = dict(new_status)
-
-        # Actualizamos `self.trackers_campana`
-        for tracker in self.trackers_campana.values():
-            self._asterisk_call_status.update_campana_tracker(tracker)
-
-    #
     # Eventos
     #
-
-    def onNoHayCampanaEnEjecucion(self):
-        """Ejecutado por generator() cuando se detecta
-        NoHayCampanaEnEjecucion.
-        """
-        logger.debug("No hay campanas en ejecucion.")
 
     def onCampanaNoEnEjecucion(self, campana):
         """Ejecutado por generator() cuando se detecta
@@ -715,30 +586,29 @@ class RoundRobinTracker(object):
            u hora de actuacion)
         3. simplemente alguien ha pausado la campaña
 
-        Banea a la campana, y la elimina de `self.trackers_campana`
+        Banea a la campana
         """
-        self.ban_manager.banear_campana(campana)
+        self._campana_call_status.banear_campana(campana)
         logger.debug("onCampanaNoEnEjecucion: %s", campana.id)
-        try:
-            del self.trackers_campana[campana]
-        except KeyError:
-            pass
 
     def onNoMasContactosEnCampana(self, campana):
         """Ejecutado por generator() cuando se detecta
         NoMasContactosEnCampana. Esto implica que la campana que se
         estaba teniendo en cuenta en realidad no posee contactos
-        a procesar
+        a procesar.
 
-        Banea a la campana, y la elimina de `self.trackers_campana`
+        Esta situacion puede parser inicialmente parecida a
+        `TodosLosContactosPendientesEstanEnCurso`, pero NO.
+        `TLCPEEC` implica que no se pueden procesar los pendientes.
+        `NoMasContactosEnCampana` implica que la campaña ya no
+        posee pendientes, está terminada.
+
+        Banea a la campana
         """
         logger.debug("onNoMasContactosEnCampana() para la campana %s.",
             campana.id)
-        self.ban_manager.banear_campana(campana, reason=BANEO_NO_MAS_CONTACTOS)
-        try:
-            del self.trackers_campana[campana]
-        except KeyError:
-            pass
+        self._campana_call_status.banear_campana(campana,
+            reason=BANEO_NO_MAS_CONTACTOS, forever=True)
 
     def onLimiteDeCanalesAlcanzadoError(self, campana):
         """Ejecutado por generator() cuando se detecta
@@ -781,33 +651,38 @@ class RoundRobinTracker(object):
             "todos los contactos pendientes de la campana %s poseen "
             "llamadas en curso. Se baneara la campana.", campana.id)
 
-        self.ban_manager.banear_campana(campana,
+        self._campana_call_status.banear_campana(campana,
             reason=BANEO_TODOS_LOS_PENDIENTES_EN_CURSO)
 
         #
-        # ----- Versión corta
+        # ACTUALIZADO: ahora hemos refactorizado muchas cosas. El
+        # siguiente comentario ya no es válido. Lo dejamos por un
+        # tiempo SOLO COMO REFERENCIA.
         #
-        #  - ESTO ESTA MAL! No deberiamos eliminar la campaña, y
-        #    deberiamos refactorizar el manejo del baneo
         #
-        # ----- Versión larga
         #
-        # En vez eliminar campaña del tracker, el control de baneo
-        # debería moverse al loop() de `generator()`, así las campañas baneadas
-        # no son ignoradas por los otros metodos (^1), y permitimos que
-        # se actualice el 'status' de estas campañas.
+        ## ----- Versión corta
+        ##
+        ##  - ESTO ESTA MAL! No deberiamos eliminar la campaña, y
+        ##    deberiamos refactorizar el manejo del baneo
+        ##
+        ## ----- Versión larga
+        ##
+        ## En vez eliminar campaña del tracker, el control de baneo
+        ## debería moverse al loop() de generator(), así las campañas baneadas
+        ## no son ignoradas por los otros metodos (^1), y permitimos que
+        ## se actualice el 'status' de estas campañas.
+        ##
+        ## (^1) sobre todo, ahora necesitamos que refrescar_channel_status()
+        ##      NO ignore las campañas baneadas por
+        ##      BANEO_TODOS_LOS_PENDIENTES_EN_CURSO, todo lo contrario!
+        ##      Necesitamos que lo antes posible se actualice el status
+        ##      para intentar los contactos pendientes.
         #
-        # (^1) sobre todo, ahora necesitamos que refrescar_channel_status()
-        #      NO ignore las campañas baneadas por
-        #      BANEO_TODOS_LOS_PENDIENTES_EN_CURSO, todo lo contrario!
-        #      Necesitamos que lo antes posible se actualice el status
-        #      para intentar los contactos pendientes.
-        #
-
-        try:
-            del self.trackers_campana[campana]
-        except KeyError:
-            pass
+        #        try:
+        #            del self.trackers_campana[campana]
+        #        except KeyError:
+        #            pass
 
     def onLimiteGlobalDeCanalesAlcanzadoError(self):
         """Ejecutado por generator() cuando se detecta
@@ -823,24 +698,6 @@ class RoundRobinTracker(object):
         logger.debug("onLimiteGlobalDeCanalesAlcanzadoError(): limite "
             "alcanzado")
 
-    def finalizar_campana(self, campana_id):
-        campana = Campana.objects.get(pk=campana_id)
-
-        if campana.estado != Campana.ESTADO_ACTIVA:
-            logger.info("finalizar_campana(): No finalizaremos campana "
-                "%s porque su estado no es ESTADO_ACTIVA", campana.id)
-            try:
-                del self.trackers_campana[campana]
-            except KeyError:
-                pass
-            self.ban_manager.eliminar(campana)
-            return
-
-        # LIMITE = settings.FTS_MARGEN_FINALIZACION_CAMPANA
-        logger.info("finalizar_campana(): finalizando campana %s", campana.id)
-
-        campana.finalizar()
-
     def real_sleep(self, espera):
         """Metodo que realiza la espera real Si ``espera`` es < 0,
         no hace nada
@@ -855,76 +712,41 @@ class RoundRobinTracker(object):
         """
         # TODO: usar time.clock() u alternativa
         inicio = time.time()
-        for campana in self.ban_manager.obtener_por_razon(
+        for campana in self._campana_call_status.obtener_baneados_por_razon(
             BANEO_NO_MAS_CONTACTOS):
 
             logger.debug("sleep(): evaluando si finalizamos la campana %s",
                 campana.id)
-            if time.time() - inicio >= espera:
+            delta = time.time() - inicio
+            if delta >= espera:
                 # Si nos pasamos de `segundos`, salimos
                 logger.info("sleep(): ya superamos el tiempo de espera "
-                    "solicitado! No finalizaremos la campana %s", campana.id)
+                    "solicitado. No finalizaremos la campana %s, y "
+                    "continuaremos la ejecucion del loop", campana.id)
                 return
 
-            self.finalizar_campana(campana.id)
+            self._finalizador_de_campanas(campana.id)
+            self._campana_call_status.banear_campana(campana,
+                reason=BANEO_CAMPANA_FINALIZADA, forever=True)
 
         delta = time.time() - inicio
         self.real_sleep(espera - delta)
 
-    def _todas_las_campanas_al_limite(self):
-        """Chequea trackers y devuelve True si TODAS las campañas
-        en curso estan al limite"""
-        al_limite = [tracker.limite_alcanzado()
-            for tracker in self.trackers_campana.values()]
+    @property
+    def trackers_campana(self):
+        raise(Exception("'trackers_campana' ya no es parte de RRT"))
 
-        if al_limite and all(al_limite):
-            return True
-        return False
+    @trackers_campana.setter
+    def trackers_campana(self, value):
+        raise(Exception("'trackers_campana' ya no es parte de RRT"))
+
+    @trackers_campana.deleter
+    def trackers_campana(self, value):
+        raise(Exception("'trackers_campana' ya no es parte de RRT"))
 
     def generator(self):
         """Devuelve los datos de contacto a contactar, de a una
         campaña por vez.
-
-        En el loop, las consultas (a BD y Asterisk) se realizan asi:
-
-        +---------------------------+
-        | [1] refrescar_trackers()  | --> self.trackers_campana
-        +---------------------------+
-
-          ||
-          \/
-
-        +---------------------------------+
-        | [2] refrescar_channel_status()  | --> self._asterisk_call_status
-        +---------------------------------+
-
-          ||
-          \/
-
-        +--------------------------+
-        | proceso de las campañas  |
-        +--------------------------+
-
-          ||
-          \/
-
-        +----------------------+
-        | finalizar_campana()  | --> del self.trackers_campana[x]
-        | onXxxx()             |
-        +----------------------+
-
-
-        Pero las actualizaciones de [1] y [2] no se realiza siempre. En cada
-        ejecucion del loop, puede ejecutarse sólo [1], sólo [2],
-        ambas o ninguna... y todas las decisiones se basan en estos datos.
-
-        Pero algo a tener en cuenta es que `refrescar_channel_status()` está
-        pensado para ser ejecutado despues de `refrescar_trackers()`, por lo
-        tanto, deberia ser seguro ejecutar `refrescar_channel_status()`
-        varias veces en un mismo loop.
-
-        PERO algunos metodos ELIMINAN instancias de `self.trackers_campana`.
-        ** ESTE ES EL PROBLEMA A SOLUCIONAR **
 
         :returns: (campana, contacto_id, telefono, cant_intentos_realizados)
         """
@@ -944,17 +766,12 @@ class RoundRobinTracker(object):
             # [1] Actualizamos trackers de campaña
             #==================================================================
 
-            if self.necesita_refrescar_trackers():
-                try:
-                    self.refrescar_trackers()
-                except NoHayCampanaEnEjecucion:
-                    self.onNoHayCampanaEnEjecucion()
+            # Obtiene las campañas que pueden ser procesadas
+            # Si no hay campañas, espseramos y reiniciamos.
+            trackers_activos = \
+                self._campana_call_status.obtener_trackers_para_procesar()
 
-            #==================================================================
-            # Si no hay campañas, espseramos y reiniciamos
-            #==================================================================
-
-            if not bool(self.trackers_campana):
+            if not bool(trackers_activos):
                 # No hay trabajo! Esperamos y hacemos `continue`
                 # +------------------------------------------------------------
                 # | Los eventos que deberian despertar este 'sleep' son:
@@ -969,6 +786,8 @@ class RoundRobinTracker(object):
 
                 # No importa q' no se refresque el status via ami, total,
                 #    no hay trabajo!
+                # TODO: esto es asi porque, todavia, no exponemos el status
+                #  a la web!
                 continue
 
             #==================================================================
@@ -976,9 +795,8 @@ class RoundRobinTracker(object):
             #==================================================================
 
             # Este refresco tambien se hace en el loop
-            if self._asterisk_call_status.necesita_refrescar_channel_status(
-                self.trackers_campana):
-                self.refrescar_channel_status()
+            self._asterisk_call_status.\
+                refrescar_channel_status_si_es_necesario()
 
             # Si TODAS las campañas han llegado al límite, no tiene sentido
             # hacer un busy wait... mejor esperamos
@@ -988,12 +806,13 @@ class RoundRobinTracker(object):
             # |    campañas q' habian llegado al limite
             # +----------------------------------------------------------------
 
-            if self._todas_las_campanas_al_limite():
-                logger.debug("Todas las campañas han llegado al límite. "
+            if self._campana_call_status.todas_las_campanas_al_limite():
+                logger.info("Todas las campañas han llegado al límite. "
                     "Esperamos %s segs. y reiniciamos round",
                     settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
                 self.sleep(settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
-                # Reiniciamos para ver si se actualizan trackers y status
+                # Reiniciamos con la esperaza de que se actualizan trackers
+                # y status
                 continue
 
             # Si se ha alcanzado el limite global de campañas, tampoco tiene
@@ -1004,8 +823,7 @@ class RoundRobinTracker(object):
             # +----------------------------------------------------------------
 
             # ATENCION: esta misma logica (o muy parecida) se usa en el loop
-            if self._asterisk_call_status.get_count_llamadas() >= \
-                settings.FTS_LIMITE_GLOBAL_DE_CANALES:
+            if self._campana_call_status.limite_global_de_canales_alcanzado():
                 logger.debug("Se ha alcanzado el limite global de canales. "
                     "Esperamos %s segs. y reiniciamos round",
                     settings.FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES)
@@ -1022,16 +840,15 @@ class RoundRobinTracker(object):
             loop__contactos_procesados = 0
             loop__TLCPEECE_detectado = False
             loop__limite_de_campana_alcanzado = False
+            loop__campana_ignorada_x_limite_global = False
 
             # Trabajamos en copia, por si hace falta modificarse
-            dict_copy = dict(self.trackers_campana)
-
-            for campana, tracker in dict_copy.iteritems():
+            for tracker_campana in trackers_activos:
 
                 # Si la campana esta al limite, la ignoramos
-                if tracker.limite_alcanzado():
+                if tracker_campana.limite_alcanzado():
                     logger.debug("Ignorando campana %s porque esta al limite",
-                        campana.id)
+                        tracker_campana.campana.id)
                     loop__limite_de_campana_alcanzado = True
                     continue
 
@@ -1039,25 +856,54 @@ class RoundRobinTracker(object):
                 # Chequeamos limite global de llamadas en curso
                 #==============================================================
 
-                loop__esperas_por_limite_global = 0
-                while self._asterisk_call_status.get_count_llamadas() >= \
-                    settings.FTS_LIMITE_GLOBAL_DE_CANALES:
-                    # Se alcanzo el limite global. Hacemos un mini-loop
-                    loop__esperas_por_limite_global += 1
-                    self.onLimiteGlobalDeCanalesAlcanzadoError()
-                    self.real_sleep(settings.\
-                        FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES)
+                if self._campana_call_status.\
+                    limite_global_de_canales_alcanzado():
 
-                    if loop__esperas_por_limite_global >= 5:
-                        # mmm, esto es raro, por las dudas, `continue`
+                    self.onLimiteGlobalDeCanalesAlcanzadoError()
+                    loop__esperas_por_limite_global = 0
+
+                    try:
+                        # Esperamos un poco, con la intensión de que se
+                        # desocupe algun canal.
+                        # De este while se sale de 2 formas:
+                        # 1) luego de varias iteraciones, si no pasa nada,
+                        #    salimos y continuamos con otra campaña,
+                        #    para esto usamos ContinueOnOuterWhile()
+                        # 2) se detecto que hay canales libres, se sale
+                        #    con un break del loop, y continuamos el
+                        #    procesamiento normal de la campaña
+                        while True:
+                            loop__esperas_por_limite_global += 1
+                            # Somos más agresivos, usamos 'si_es_posible'
+                            self._asterisk_call_status.\
+                                refrescar_channel_status_si_es_posible()
+
+                            # Condicion de corte
+                            if not self._campana_call_status.\
+                                limite_global_de_canales_alcanzado():
+                                break  # break 'while True'
+
+                            # Condicion de corte
+                            if loop__esperas_por_limite_global >= 10:
+                                raise ContinueOnOuterWhile()
+
+                            # Esperamos...
+                            self.real_sleep(settings.\
+                                FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES)
+
+                        # Salimos del whlie (loop) sin excepcion!
+                        # Implica que hay canales libres :-)
+                        logger.info("generator(): ya no excedemos el "
+                            "limite global de canales, continuamos...")
+
+                    except ContinueOnOuterWhile:
+                        loop__campana_ignorada_x_limite_global = True
                         logger.warn("generator(): luego de %s loops, todavia"
                             "no podemos continuar porque se ha alcanzado"
                             "el limite global de canales. Continuamos "
                             "con campana siguiente",
                             loop__esperas_por_limite_global)
-                        continue # pasamos a prox. campana
-                        # Lo ideal seria cortar el loop entero, pero no
-                        # se puede facilmente desde aca
+                        continue
 
                 #==============================================================
                 # Chequeamos limite de llamadas por segundo
@@ -1066,38 +912,25 @@ class RoundRobinTracker(object):
                 if time_to_sleep > 0.0:
                     self.onLimiteDeOriginatePorSegundosError(time_to_sleep)
                     self.real_sleep(time_to_sleep)
-
-                    # TODO: convendria actualizar el status
-                    #  para aprovechar este tiempo de espera.
-                    #  El tema es que se actualizarían
-                    #  los trackers, y todo este algoritmo en
-                    #  `for campana, tracker ...` se hizo suponiendo que
-                    #  la actualizacion de trackers se hizo ANTES de arrancar,
-                    #  por lo tanto, habria que revisar cuidadosamente todo
-                    #  este `for ...` antes de implementar la llamada
-                    #  a `self.refrescar_channel_status()`
-                    #
-                    #if time_to_sleep > 1.0 and \
-                    #    self.necesita_refrescar_channel_status():
-                    #    self.refrescar_channel_status()
-                    #
+                    # TODO: podriamos actualizar el status
+                    # para aprovechar este tiempo de espera
 
                 try:
-                    yield tracker.next()
+                    yield tracker_campana.next()
                     loop__contactos_procesados += 1
                 except TodosLosContactosPendientesEstanEnCursoError:
                     self.onTodosLosContactosPendientesEstanEnCursoError(
-                        campana)
+                        tracker_campana.campana)
                     loop__TLCPEECE_detectado = True
                 except CampanaNoEnEjecucion:
-                    self.onCampanaNoEnEjecucion(campana)
+                    self.onCampanaNoEnEjecucion(tracker_campana.campana)
                 except NoMasContactosEnCampana:
                     # Esta excepcion es generada cuando la campaña esta
                     # en curso (el estado), pero ya no tiene pendientes
                     # FIXME: aca habria q' marcar la campana como finalizada?
                     # El tema es que puede haber llamadas en curso, pero esto
                     # no deberia ser problema...
-                    self.onNoMasContactosEnCampana(campana)
+                    self.onNoMasContactosEnCampana(tracker_campana.campana)
                 except LimiteDeCanalesAlcanzadoError:
                     # ESTO NO DEBERIA SUCEDER! No debio ejecutarse
                     # tracker.next() si la campaña estaba al limite
@@ -1105,20 +938,20 @@ class RoundRobinTracker(object):
                         "LimiteDeCanalesAlcanzadoError al procesar la campana "
                         "{0}, pero nunca debio intentarse obtener un contacto "
                         "de esta campana si estaba al limite".format(
-                            campana.id))
-                    self.onLimiteDeCanalesAlcanzadoError(campana)
+                            tracker_campana.campana.id))
+                    self.onLimiteDeCanalesAlcanzadoError(
+                        tracker_campana.campana)
 
-            # ----- ANTES, la situacion era:
-            # CORNER CASE: solo podria pasar si justo, mientras se
-            # procesaban las campañas, cambio la hora y/o el dia
-            # ----- AHORA es distinta:
             # Si se detecta 'TodosLosContactosPendientesEstanEnCursoError',
             # o se ignoro campaña porque llegó al límite de llamadas,
             # y hay una sola campaña en ejecucion, entonces puede
             # suceder q' no se haya procesado ningun contacto
             if loop__contactos_procesados == 0:
-                causas_ok = any([loop__TLCPEECE_detectado,
-                    loop__limite_de_campana_alcanzado])
+                causas_ok = any([
+                    loop__TLCPEECE_detectado,
+                    loop__limite_de_campana_alcanzado,
+                    loop__campana_ignorada_x_limite_global,
+                ])
                 if not causas_ok:
                     # Si no se detecto ninguna causa que pueda generar
                     # que no se produzca el procesamineto de ningun
