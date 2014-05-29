@@ -516,6 +516,24 @@ class AsteriskCallStatus(object):
         self._campana_call_status.update_call_status(full_status)
 
 
+def finalizar_campana(campana_id):
+    """Finaliza una campaña"""
+    campana = Campana.objects.get(pk=campana_id)
+
+    if campana.estado != Campana.ESTADO_ACTIVA:
+        logger.info("finalizar_campana(): No finalizaremos campana "
+            "%s porque su estado no es ESTADO_ACTIVA", campana.id)
+        return
+
+    # LIMITE = settings.FTS_MARGEN_FINALIZACION_CAMPANA
+    logger.info("finalizar_campana(): finalizando campana %s", campana.id)
+
+    campana.finalizar()
+
+
+class ContinueOnOuterWhile(Exception):
+    """Excepcion utilizada para romper un bucle"""
+    pass
 
 
 # FIXME: renombra a RoundRobinScheduler
