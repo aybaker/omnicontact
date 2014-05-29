@@ -18,9 +18,10 @@ from django.utils.unittest.case import skipUnless
 
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
-    Campana, Opcion, Calificacion, Actuacion)
+    BaseDatosContacto, Campana, Opcion, Calificacion, Actuacion)
 from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
+from fts_web.parser import autodetectar_parser
 
 
 class GrupoAtencionTest(FTSenderBaseTest):
@@ -41,11 +42,73 @@ class GrupoAtencionTest(FTSenderBaseTest):
 class BaseDatosContactoTest(FTSenderBaseTest):
     """Clase para testear Base Datos Contacto"""
 
-    def test_get_cantidad_contactos(self):
-        base_datos_contacto = self.crear_base_datos_contacto(
-            numeros_telefonicos=[3513368309, 3518586548]
+    def test_obtener_definidas(self):
+        """
+        Testea el método obtener_definidas().
+        """
+        bd_contacto = BaseDatosContacto.objects.create(
+            nombre="base-datos-contactos",
+            archivo_importacion=self.get_test_resource(
+                "planilla-ejemplo-0.xls"),
+            nombre_archivo_importacion='planilla-ejemplo-0.xls',
+            columna_datos=0
         )
-        self.assertEqual(base_datos_contacto.get_cantidad_contactos(), 2)
+
+        # Verifica que al crear una BaseDatosContacto y no definirla
+        # el método no retorne la misma.
+        self.assertEqual(BaseDatosContacto.objects.obtener_definidas().count(),
+            0)
+
+        # Verifica que la BaseDatosContacto al definirla el método la
+        # retorne.
+        bd_contacto.define()
+        self.assertEqual(BaseDatosContacto.objects.obtener_definidas().count(),
+            1)
+
+    def test_define(self):
+        """
+        Testea el método define()
+        """
+        bd_contacto = BaseDatosContacto.objects.create(
+            nombre="base-datos-contactos",
+            archivo_importacion=self.get_test_resource(
+                "planilla-ejemplo-0.xls"),
+            nombre_archivo_importacion='planilla-ejemplo-0.xls',
+            columna_datos=0
+        )
+
+        # Verifica que al crear una BaseDatosContacto y no definirla
+        # el estado sea sin definir.
+        self.assertTrue(bd_contacto.sin_definir)
+
+        # Verifica que la BaseDatosContacto al definirla cambie su
+        # estado a definida.
+        bd_contacto.define()
+        self.assertFalse(bd_contacto.sin_definir)
+
+    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    MEDIA_ROOT = os.path.join(tmp, "test")
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_get_cantidad_contactos(self):
+        """
+        Testea el método get_cantidad_contactos().
+        Procesa la planilla planilla-ejemplo-0.xls que es sabido que
+        tiene 6 contactos válidos, y que los datos estan en la columna 0.
+        """
+        bd_contacto = BaseDatosContacto.objects.create(
+            nombre="base-datos-contactos",
+            archivo_importacion=self.get_test_resource(
+                "planilla-ejemplo-0.xls"),
+            nombre_archivo_importacion='planilla-ejemplo-0.xls',
+            columna_datos=0
+        )
+        self.assertEqual(bd_contacto.get_cantidad_contactos(), 0)
+
+        parser = autodetectar_parser(bd_contacto.nombre_archivo_importacion)
+        bd_contacto.importa_contactos(parser)
+
+        self.assertEqual(bd_contacto.get_cantidad_contactos(), 6)
 
 
 class CampanaTest(FTSenderBaseTest):
@@ -706,8 +769,9 @@ class ReporteTest(FTSenderBaseTest):
         #Obtento el renderizado de gráfico y lo testeo.
         graficos_estadisticas = \
             campana.obtener_estadisticas_render_graficos_supervision()
-        self.assertIn('<svg xmlns:xlink="http://www.w3.org/1999/xlink"',
-            graficos_estadisticas['torta_general'].render())
+
+        self.assertTrue(graficos_estadisticas[
+            'torta_opcion_x_porcentaje'].render())
         self.assertEqual(graficos_estadisticas['estadisticas']
             ['total_contactos'], 100)
 

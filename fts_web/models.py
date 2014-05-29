@@ -176,6 +176,9 @@ class BaseDatosContacto(models.Model):
     columna_datos = models.PositiveIntegerField(
         blank=True, null=True,
     )
+    cantidad_contactos = models.PositiveIntegerField(
+        default=0
+    )
 
     #    active = models.BooleanField(
     #        default=True,
@@ -208,6 +211,7 @@ class BaseDatosContacto(models.Model):
                     telefono=telefono,
                     bd_contacto=self,
                 )
+            self.cantidad_contactos = len(lista_telefonos)
             return True
         return False
 
@@ -224,9 +228,10 @@ class BaseDatosContacto(models.Model):
 
     def get_cantidad_contactos(self):
         """
+        Devuelve la cantidad de contactos de la BaseDatosContacto.
         """
 
-        return self.contactos.all().count()
+        return self.cantidad_contactos
 
 
 class Contacto(models.Model):
