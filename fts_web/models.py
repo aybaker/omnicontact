@@ -176,6 +176,9 @@ class BaseDatosContacto(models.Model):
     columna_datos = models.PositiveIntegerField(
         blank=True, null=True,
     )
+    cantidad_contactos = models.PositiveIntegerField(
+        default=0
+    )
 
     #    active = models.BooleanField(
     #        default=True,
