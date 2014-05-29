@@ -229,6 +229,7 @@ class FTSenderBaseTest(TestCase):
             for nro_telefonico in numeros_telefonicos:
                 self.crear_contacto(
                     bd_contacto, nro_telefonico=nro_telefonico)
+            bd_contacto.cantidad_contactos = len(numeros_telefonicos)
             return bd_contacto
 
         if cant_contactos is None:
