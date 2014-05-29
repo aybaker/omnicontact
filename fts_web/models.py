@@ -654,30 +654,34 @@ class Campana(models.Model):
         estadisticas = self.calcular_estadisticas(
             AgregacionDeEventoDeContacto.TIPO_AGREGACION_SUPERVISION)
 
-       #Torta: porcentajes de opciones selecionadas.
-        opcion_valida_x_porcentaje = estadisticas[
-            'opcion_valida_x_porcentaje']
-        opcion_invalida_x_porcentaje = estadisticas[
-            'opcion_invalida_x_porcentaje']
+        if estadisticas:
+           #Torta: porcentajes de opciones selecionadas.
+            opcion_valida_x_porcentaje = estadisticas[
+                'opcion_valida_x_porcentaje']
+            opcion_invalida_x_porcentaje = estadisticas[
+                'opcion_invalida_x_porcentaje']
 
-        torta_opcion_x_porcentaje = pygal.Pie(style=Campana.ESTILO_MULTICOLOR)
-        torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
+            torta_opcion_x_porcentaje = pygal.Pie(
+                style=Campana.ESTILO_MULTICOLOR)
+            torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
 
-        for opcion, porcentaje in opcion_valida_x_porcentaje.items():
-            torta_opcion_x_porcentaje.add('#{0}'.format(opcion),
-                porcentaje)
+            for opcion, porcentaje in opcion_valida_x_porcentaje.items():
+                torta_opcion_x_porcentaje.add('#{0}'.format(opcion),
+                    porcentaje)
 
-        porcentaje_opciones_invalidas = 0
-        for porcentaje in opcion_invalida_x_porcentaje.values():
-            porcentaje_opciones_invalidas += porcentaje
-        if porcentaje_opciones_invalidas:
-            torta_opcion_x_porcentaje.add('Inválidas',
-                porcentaje_opciones_invalidas)
+            porcentaje_opciones_invalidas = 0
+            for porcentaje in opcion_invalida_x_porcentaje.values():
+                porcentaje_opciones_invalidas += porcentaje
+            if porcentaje_opciones_invalidas:
+                torta_opcion_x_porcentaje.add('Inválidas',
+                    porcentaje_opciones_invalidas)
 
-        return {
-                'estadisticas': estadisticas,
-                'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
-        }
+            return {
+                    'estadisticas': estadisticas,
+                    'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
+            }
+        else:
+            logger.info("Campana %s NO obtuvo estadísticas.", self.id)
 
     def obtener_estadisticas_render_graficos_reportes(self):
         estadisticas = self.calcular_estadisticas(
@@ -1155,97 +1159,108 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         :param campana_id: De que campana que se sumarizaran los contadores.
         :type campana_id: int
         """
-        try:
-            ultima_agregacion_campana = self.get(campana_id=campana_id,
-                numero_intento=cantidad_intentos)
-            # Si la obtención de ultima_agregacion_campana no da excepción
-            # quiere decir que ya se generaron los registros de agregación
-            # para la campana y hay que actualizarlos desde el último evento
-            # hasta hoy y ahora.
-            try:
-                timestamp_ultimo_evento = \
-                    ultima_agregacion_campana.timestamp_ultimo_evento
-
-                assert all(agregacion.timestamp_ultimo_evento ==
-                    timestamp_ultimo_evento for agregacion in self.filter(
-                    campana_id=campana_id)),\
-                    """Los timestamp_ultimo_evento no son iguales para todos
-                    los registros de AgregacionDeEventoDeContacto para la
-                    Campana {0}.""".format(campana_id)
-                self.establece_agregacion(campana_id, cantidad_intentos,
-                    tipo_agregacion, timestamp_ultimo_evento)
-            except:
-                # FIXME: Ver solución para cuándo se desata el assert. Ocurre
-                # cuándo se actualiza (F5) el template de manera muy seguida.
-                pass
-
-        except AgregacionDeEventoDeContacto.DoesNotExist:
-            # Si la obtención de ultima_agregacion_campana da excepción
-            # quiere decir que es la primera vez que se quiere ver el
-            # Reporte o la Supervisión y no está generados los registros
-            # de agregacion para la campana. Se generan los registros sin
-            # tener en cuenta un timestamp, toma todos los eventos de
-            # EventoDeContacto para la campana.
-            self.establece_agregacion(campana_id, cantidad_intentos,
-                tipo_agregacion)
-
-        agregaciones_campana = self.filter(campana_id=campana_id)
-
-        dic_totales = agregaciones_campana.aggregate(
-            total_intentados=Sum('cantidad_intentos'),
-            total_atentidos=Sum('cantidad_finalizados'),
-            total_opcion_0=Sum('cantidad_opcion_0'),
-            total_opcion_1=Sum('cantidad_opcion_1'),
-            total_opcion_2=Sum('cantidad_opcion_2'),
-            total_opcion_3=Sum('cantidad_opcion_3'),
-            total_opcion_4=Sum('cantidad_opcion_4'),
-            total_opcion_5=Sum('cantidad_opcion_5'),
-            total_opcion_6=Sum('cantidad_opcion_6'),
-            total_opcion_7=Sum('cantidad_opcion_7'),
-            total_opcion_8=Sum('cantidad_opcion_8'),
-            total_opcion_9=Sum('cantidad_opcion_9'))
 
         campana = Campana.objects.get(pk=campana_id)
         limite_intentos = campana.cantidad_intentos
         total_contactos = campana.bd_contacto.get_cantidad_contactos()
-
-        total_no_llamados = total_contactos - dic_totales['total_intentados']
-        if total_no_llamados < 0:
-            total_no_llamados = 0
-
-        total_no_atendidos = total_contactos - (total_no_llamados +
-            dic_totales['total_atentidos'])
-
-        total_opciones = 0
-        for opcion in range(10):
-            total_opciones += dic_totales['total_opcion_{0}'.format(opcion)]
-
-        total_atendidos_intentos = dict((agregacion_campana.numero_intento,
-            agregacion_campana.cantidad_finalizados)
-            for agregacion_campana in agregaciones_campana)
-
-        finalizados = 0
-        for agregacion_campana in agregaciones_campana:
-            finalizados += agregacion_campana.cantidad_finalizados
-
-            finalizados_limite = 0
-            if agregacion_campana == limite_intentos:
-                if agregacion_campana.cantidad_intentos >\
-                    agregacion_campana.cantidad_finalizados:
-                    finalizados_limite = agregacion_campana.cantidad_intentos\
-                        - agregacion_campana.cantidad_finalizados
-
-            porcentaje_avance = float(100 * (finalizados +
-                    finalizados_limite) / total_contactos)
-
-        dic_totales.update({
+        dic_totales = {
             'limite_intentos': limite_intentos,
             'total_contactos': total_contactos,
-            'total_no_llamados': total_no_llamados,
-            'total_no_atendidos': total_no_atendidos,
-            'total_opciones': total_opciones,
-            'total_atendidos_intentos': total_atendidos_intentos,
-            'porcentaje_avance': porcentaje_avance})
+        }
+
+        if total_contactos:
+            try:
+                ultima_agregacion_campana = self.get(campana_id=campana_id,
+                    numero_intento=cantidad_intentos)
+                # Si la obtención de ultima_agregacion_campana no da excepción
+                # quiere decir que ya se generaron los registros de agregación
+                # para la campana y hay que actualizarlos desde el último
+                # evento hasta hoy y ahora.
+                try:
+                    timestamp_ultimo_evento = \
+                        ultima_agregacion_campana.timestamp_ultimo_evento
+
+                    assert all(agregacion.timestamp_ultimo_evento ==
+                        timestamp_ultimo_evento for agregacion in self.filter(
+                        campana_id=campana_id)),\
+                        """Los timestamp_ultimo_evento no son iguales para
+                        todos los registros de AgregacionDeEventoDeContacto
+                        para la Campana {0}.""".format(campana_id)
+                    self.establece_agregacion(campana_id, cantidad_intentos,
+                        tipo_agregacion, timestamp_ultimo_evento)
+                except:
+                    # FIXME: Ver solución para cuándo se desata el assert.
+                    # Ocurre cuándo se actualiza (F5) el template de manera
+                    # muy seguida.
+                    pass
+
+            except AgregacionDeEventoDeContacto.DoesNotExist:
+                # Si la obtención de ultima_agregacion_campana da excepción
+                # quiere decir que es la primera vez que se quiere ver el
+                # Reporte o la Supervisión y no está generados los registros
+                # de agregacion para la campana. Se generan los registros sin
+                # tener en cuenta un timestamp, toma todos los eventos de
+                # EventoDeContacto para la campana.
+                self.establece_agregacion(campana_id, cantidad_intentos,
+                    tipo_agregacion)
+
+            agregaciones_campana = self.filter(campana_id=campana_id)
+
+            dic_totales.update(agregaciones_campana.aggregate(
+                total_intentados=Sum('cantidad_intentos'),
+                total_atentidos=Sum('cantidad_finalizados'),
+                total_opcion_0=Sum('cantidad_opcion_0'),
+                total_opcion_1=Sum('cantidad_opcion_1'),
+                total_opcion_2=Sum('cantidad_opcion_2'),
+                total_opcion_3=Sum('cantidad_opcion_3'),
+                total_opcion_4=Sum('cantidad_opcion_4'),
+                total_opcion_5=Sum('cantidad_opcion_5'),
+                total_opcion_6=Sum('cantidad_opcion_6'),
+                total_opcion_7=Sum('cantidad_opcion_7'),
+                total_opcion_8=Sum('cantidad_opcion_8'),
+                total_opcion_9=Sum('cantidad_opcion_9'))
+            )
+
+            total_no_llamados = total_contactos - dic_totales[
+                'total_intentados']
+            if total_no_llamados < 0:
+                total_no_llamados = 0
+
+            total_no_atendidos = total_contactos - (total_no_llamados +
+                dic_totales['total_atentidos'])
+
+            total_opciones = 0
+            for opcion in range(10):
+                total_opciones += dic_totales['total_opcion_{0}'.format(
+                    opcion)]
+
+            total_atendidos_intentos = dict((agregacion_campana.numero_intento,
+                agregacion_campana.cantidad_finalizados)
+                for agregacion_campana in agregaciones_campana)
+
+            finalizados = 0
+            for agregacion_campana in agregaciones_campana:
+                finalizados += agregacion_campana.cantidad_finalizados
+
+                finalizados_limite = 0
+                if agregacion_campana == limite_intentos:
+                    if agregacion_campana.cantidad_intentos >\
+                        agregacion_campana.cantidad_finalizados:
+                        finalizados_limite =\
+                            (agregacion_campana.cantidad_intentos -
+                            agregacion_campana.cantidad_finalizados)
+
+                porcentaje_avance = float(100 * (finalizados +
+                        finalizados_limite) / total_contactos)
+
+            dic_totales.update({
+                #'limite_intentos': limite_intentos,
+                #'total_contactos': total_contactos,
+                'total_no_llamados': total_no_llamados,
+                'total_no_atendidos': total_no_atendidos,
+                'total_opciones': total_opciones,
+                'total_atendidos_intentos': total_atendidos_intentos,
+                'porcentaje_avance': porcentaje_avance})
         return dic_totales
 
 
