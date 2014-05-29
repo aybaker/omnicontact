@@ -39,10 +39,10 @@
 
                                     <tr>
                                         <td colspan="2">
-                                            <h5><small>Gráfico</small></h5>
+                                            <h5><small>Porcentaje de opciones seleccionadas.</small></h5>
                                             <div class="graficos-avances">
                                                 <figure>
-                                                    {{ graficos_estadisticas.torta_general.render|safe }}
+                                                    {{ graficos_estadisticas.torta_opcion_x_porcentaje.render|safe }}
                                                 </figure> 
                                             </div>
                                         </td>
@@ -50,7 +50,7 @@
                                     
                                     <tr>
                                         <td colspan="2">
-                                            <h5><small>Avance</small></h5>
+                                            <h5><small>Avance de la campana.</small></h5>
                                             <div class="col-lg-1 no-padding-left">
                                                 {% if graficos_estadisticas.estadisticas.porcentaje_avance > 0 %}
                                                     <span class="badge">{{ graficos_estadisticas.estadisticas.porcentaje_avance|floatformat:'0'  }}%</span>
