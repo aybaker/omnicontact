@@ -1061,7 +1061,7 @@ class Campana(models.Model):
                         mayor o igual a la fecha actual."],
                 })
 
-        cantidad_contactos = self.bd_contacto.contactos.count()
+        cantidad_contactos = self.bd_contacto.get_cantidad_contactos()
         if not self.cantidad_canales < cantidad_contactos:
             raise ValidationError({
                     'cantidad_canales': ["La cantidad de canales debe ser\
@@ -1207,7 +1207,7 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
 
         campana = Campana.objects.get(pk=campana_id)
         limite_intentos = campana.cantidad_intentos
-        total_contactos = campana.bd_contacto.contactos.count()
+        total_contactos = campana.bd_contacto.get_cantidad_contactos()
 
         total_no_llamados = total_contactos - dic_totales['total_intentados']
         if total_no_llamados < 0:
