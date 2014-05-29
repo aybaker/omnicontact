@@ -230,6 +230,7 @@ class FTSenderBaseTest(TestCase):
                 self.crear_contacto(
                     bd_contacto, nro_telefonico=nro_telefonico)
             bd_contacto.cantidad_contactos = len(numeros_telefonicos)
+            bd_contacto.save()
             return bd_contacto
 
         if cant_contactos is None:
@@ -237,6 +238,8 @@ class FTSenderBaseTest(TestCase):
         for _ in range(0, cant_contactos):
             self.crear_contacto(bd_contacto)
         bd_contacto.cantidad_contactos = cant_contactos
+        bd_contacto.save()
+
         return bd_contacto
 
     def crear_campana(self, fecha_inicio=None, fecha_fin=None,
