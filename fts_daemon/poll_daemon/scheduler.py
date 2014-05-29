@@ -22,7 +22,18 @@ import logging as _logging
 logger = _logging.getLogger(__name__)
 
 BANEO_NO_MAS_CONTACTOS = "BANEO_NO_MAS_CONTACTOS"
-BANEO_TODOS_LOS_PENDIENTES_EN_CURSO = "BANEO_TODOS_LOS_PENDIENTES_EN_CURSO"
+"""Cuando se detecta que una campaña no posee mas contactos
+para procesar, se la banea con esta 'razon'"""
+
+BANEO_TODOS_LOS_PENDIENTES_EN_CURSO = "BANEO_TLPEN"
+"""Cuando la campaña posee contactos pendientes, pero
+todos estos contactos ya están en curso, se las banea
+con esta 'razon'"""
+
+BANEO_CAMPANA_FINALIZADA = "BANEO_CAMPANA_FINALIZADA"
+"""Luego q' la campaña es baneada con `BANEO_NO_MAS_CONTACTOS`,
+la campaña es finalizada. Para evitar que se siga intentando
+finalizar, el baneo es cambiado a BANEO_CAMPANA_FINALIZADA"""
 
 
 class CantidadMaximaDeIteracionesSuperada(Exception):
