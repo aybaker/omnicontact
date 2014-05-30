@@ -477,8 +477,11 @@ class Campana(models.Model):
     )
 
     def activar(self):
-        """Setea la campaña como ACTIVA, y genera los IntentoDeContacto
-        asociados a esta campaña
+        """
+        Setea la campaña como ACTIVA
+        Genera los IntentoDeContacto asociados a esta campaña.
+        Genera tantas instancias para AgregacionDeEventoDeContacto como
+        cantidad_intentos tenga esta campaña.
         """
         logger.info("Seteando campana %s como ACTIVA", self.id)
         assert self.estado == Campana.ESTADO_EN_DEFINICION
@@ -490,6 +493,10 @@ class Campana(models.Model):
         from fts_daemon.models import EventoDeContacto
         EventoDeContacto.objects_gestion_llamadas.programar_campana(
             self.id)
+
+        for numero_intento in range(1, self.cantidad_intentos + 1):
+            AgregacionDeEventoDeContacto.objects.create(
+                campana_id=self.pk, numero_intento=numero_intento)
 
     def finalizar(self):
         """
@@ -1111,45 +1118,26 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
                 dic_opciones.update({opcion: dic_evento_cantidad[
                     'cantidad']})
 
-            agregacion_evento_contacto, created = self.get_or_create(
-                campana_id=campana_id, numero_intento=numero_intento)
+            agregacion_evento_contacto = self.get(campana_id=campana_id,
+                numero_intento=numero_intento)
 
-            if created:
-                agregacion_evento_contacto.cantidad_intentos = \
-                    dic_contadores['cantidad_intentos']
-                agregacion_evento_contacto.cantidad_finalizados = \
-                    dic_contadores['cantidad_finalizados']
-                agregacion_evento_contacto.cantidad_opcion_0 = dic_opciones[0]
-                agregacion_evento_contacto.cantidad_opcion_1 = dic_opciones[1]
-                agregacion_evento_contacto.cantidad_opcion_2 = dic_opciones[2]
-                agregacion_evento_contacto.cantidad_opcion_3 = dic_opciones[3]
-                agregacion_evento_contacto.cantidad_opcion_4 = dic_opciones[4]
-                agregacion_evento_contacto.cantidad_opcion_5 = dic_opciones[5]
-                agregacion_evento_contacto.cantidad_opcion_6 = dic_opciones[6]
-                agregacion_evento_contacto.cantidad_opcion_7 = dic_opciones[7]
-                agregacion_evento_contacto.cantidad_opcion_8 = dic_opciones[8]
-                agregacion_evento_contacto.cantidad_opcion_9 = dic_opciones[9]
-
-            else:
-                agregacion_evento_contacto.cantidad_intentos += \
-                    dic_contadores['cantidad_intentos']
-                agregacion_evento_contacto.cantidad_finalizados += \
-                    dic_contadores['cantidad_finalizados']
-                agregacion_evento_contacto.cantidad_opcion_0 += dic_opciones[0]
-                agregacion_evento_contacto.cantidad_opcion_1 += dic_opciones[1]
-                agregacion_evento_contacto.cantidad_opcion_2 += dic_opciones[2]
-                agregacion_evento_contacto.cantidad_opcion_3 += dic_opciones[3]
-                agregacion_evento_contacto.cantidad_opcion_4 += dic_opciones[4]
-                agregacion_evento_contacto.cantidad_opcion_5 += dic_opciones[5]
-                agregacion_evento_contacto.cantidad_opcion_6 += dic_opciones[6]
-                agregacion_evento_contacto.cantidad_opcion_7 += dic_opciones[7]
-                agregacion_evento_contacto.cantidad_opcion_8 += dic_opciones[8]
-                agregacion_evento_contacto.cantidad_opcion_9 += dic_opciones[9]
-
+            agregacion_evento_contacto.cantidad_intentos += \
+                dic_contadores['cantidad_intentos']
+            agregacion_evento_contacto.cantidad_finalizados += \
+                dic_contadores['cantidad_finalizados']
+            agregacion_evento_contacto.cantidad_opcion_0 += dic_opciones[0]
+            agregacion_evento_contacto.cantidad_opcion_1 += dic_opciones[1]
+            agregacion_evento_contacto.cantidad_opcion_2 += dic_opciones[2]
+            agregacion_evento_contacto.cantidad_opcion_3 += dic_opciones[3]
+            agregacion_evento_contacto.cantidad_opcion_4 += dic_opciones[4]
+            agregacion_evento_contacto.cantidad_opcion_5 += dic_opciones[5]
+            agregacion_evento_contacto.cantidad_opcion_6 += dic_opciones[6]
+            agregacion_evento_contacto.cantidad_opcion_7 += dic_opciones[7]
+            agregacion_evento_contacto.cantidad_opcion_8 += dic_opciones[8]
+            agregacion_evento_contacto.cantidad_opcion_9 += dic_opciones[9]
             agregacion_evento_contacto.tipo_agregacion = tipo_agregacion
-            agregacion_evento_contacto.timestamp_ultimo_evento = dic_contadores[
-                'timestamp_ultimo_evento']
-
+            agregacion_evento_contacto.timestamp_ultimo_evento =\
+                dic_contadores['timestamp_ultimo_evento']
             agregacion_evento_contacto.save()
 
     def procesa_agregacion(self, campana_id, cantidad_intentos,
