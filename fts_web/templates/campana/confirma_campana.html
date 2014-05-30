@@ -21,8 +21,8 @@
                 <li class="active"><a>6- Confirmar Campaña</a></li>
             </ul>
             <br>
-            <div class="col-lg-6">
-                <form role="form" method="post" >
+            <form role="form" method="post" >
+                <div class="col-lg-6">
                     <h4>Datos Básicos</h4>
                     <dl class="dl-horizontal">
                         <dt>Nombre</dt>
@@ -131,10 +131,12 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                </div>
+                <div class="col-lg-12">
                     <br>
                     {% crispy form %} 
-                </form>           
-            </div>
+                </div>
+            </form>           
         </div>
     </div>
 {% endblock %}
