@@ -143,6 +143,12 @@ class CampanaCallStatus(object):
         """Devuelve campañas en ejecucion. Las busca en la BD"""
         return Campana.objects.obtener_ejecucion()
 
+    def _get_tiempo_minimo_entre_refresco(self):
+        """Devuelve float que representa el tiempo minimo (en segundos)
+        que debe pasar entre refrescos"""
+        # FIXME: mover a settings
+        return 10.0
+
     def _necesita_refrescar_trackers(self):
         """Devuleve booleano, indicando si debe o no consultarse a
         la base de datos. Este metodo es ejecutado en cada ROUND,
@@ -158,19 +164,28 @@ class CampanaCallStatus(object):
         falta para que una campana se active (por fecha de la
         campaña o Actuacion).
         """
+        # TODO: deberia llamarse 'puede_refrescar_trackers()'
+
         # Quizá habria q' chequear más seguido si el server no
         # está haciendo nada, pero más espaciado si hay
         # llamadas en curso, no?
 
-        # FIXME: mover a settings
         # TODO: usar time.clock() u alternativa
         delta = datetime.now() - self._ultimo_refresco_trackers
-        if delta.days > 0 or delta.seconds > 10:
+        if delta.days > 0:
             return True
+
+        elapsed = float(delta.seconds) + (float(delta.microseconds) / 1e6)
+        if elapsed > self._get_tiempo_minimo_entre_refresco():
+            return True
+
         return False
 
     def refrescar_trackers_activos(self):
         """Revisa si algun tracker activo fue baneado, y actualiza trackers.
+
+        Los tracker no-activos que sean des-baneado (o sea, se les vence
+        el baneo), NO son tenidos en cuenta.
 
         Este metdodo *NO ACCEDE A LA BD*.
     
@@ -284,7 +299,7 @@ class CampanaCallStatus(object):
 
     def todas_las_campanas_al_limite(self):
         """Chequea trackers y devuelve True si TODAS las campañas
-        en curso estan al limite"""
+        ACTIVAS/en curso estan al limite"""
         al_limite = [tracker.limite_alcanzado()
             for tracker in self._trackers_activos]
 
@@ -310,12 +325,15 @@ class CampanaCallStatus(object):
 
         try:
             if self._necesita_refrescar_trackers():
+                # Si necesita refrescar trackers, los refresca
                 self.refrescar_trackers()  # -> NoHayCampanaEnEjecucion
             else:
-                # Aunque no vayamos a la BD, puede haber habido baneos!
-                # asi q' tenemos q' actualizar igual
+                # Si no necesita refrescar trackers, debemos refrescar
+                # los activos, por si hubo baneos
                 self.refrescar_trackers_activos()  # -> NoHayCampanaEnEjecucion
         except NoHayCampanaEnEjecucion:
+            # Cualquiera de los 2 metodos de arriba pueden detectar q' no hay
+            # campañas en ejecucion.
             self.onNoHayCampanaEnEjecucion()
 
         return list(self._trackers_activos)
@@ -349,7 +367,7 @@ class CampanaCallStatus(object):
         not_updated = dict(self._trackers_campana_dict)
         by_id = dict([(c.id, c) for c in self._trackers_campana_dict])
 
-        for campana_id, items in full_status:
+        for campana_id, items in full_status.iteritems():
             contactos = [item[0] for item in items]
 
             # Si existe, actualizamos los valores
