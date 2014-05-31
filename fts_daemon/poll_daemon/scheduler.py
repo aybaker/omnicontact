@@ -222,6 +222,13 @@ class RoundRobinTracker(object):
         logger.debug("onLimiteGlobalDeCanalesAlcanzadoError(): limite "
             "alcanzado")
 
+    def onTodasLasCampanasAlLimite(self):
+        """Ejecutado por generator() cuando se detecta que todas las campañas
+        estan al limite de su ejecucion.
+        """
+        logger.debug("onTodasLasCampanasAlLimite(): todas las campanas"
+            " estan al limite")
+
     def real_sleep(self, espera):
         """Metodo que realiza la espera real Si ``espera`` es < 0,
         no hace nada
@@ -255,18 +262,6 @@ class RoundRobinTracker(object):
 
         delta = time.time() - inicio
         self.real_sleep(espera - delta)
-
-    @property
-    def trackers_campana(self):
-        raise(Exception("'trackers_campana' ya no es parte de RRT"))
-
-    @trackers_campana.setter
-    def trackers_campana(self, value):
-        raise(Exception("'trackers_campana' ya no es parte de RRT"))
-
-    @trackers_campana.deleter
-    def trackers_campana(self, value):
-        raise(Exception("'trackers_campana' ya no es parte de RRT"))
 
     def generator(self):
         """Devuelve los datos de contacto a contactar, de a una
@@ -331,6 +326,7 @@ class RoundRobinTracker(object):
             # +----------------------------------------------------------------
 
             if self._campana_call_status.todas_las_campanas_al_limite():
+                self.onTodasLasCampanasAlLimite()
                 logger.info("Todas las campañas han llegado al límite. "
                     "Esperamos %s segs. y reiniciamos round",
                     settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
