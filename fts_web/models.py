@@ -1051,12 +1051,14 @@ class Campana(models.Model):
         assert self.id
         return 'campania_{0}'.format(self.id)
 
-    def clean(self):
+    def clean(self, *args, **kwargs):
         """
         Valida que al crear una campaña la fechas de
         inicialización sea menor o igual a la fecha de
         finalización.
         """
+        super(Campana, self).clean(*args, **kwargs)
+
         fecha_hoy = datetime.date.today()
         if self.fecha_inicio and self.fecha_fin:
             if self.fecha_inicio > self.fecha_fin:
@@ -1072,12 +1074,17 @@ class Campana(models.Model):
                         mayor o igual a la fecha actual."],
                 })
 
-        cantidad_contactos = self.bd_contacto.get_cantidad_contactos()
-        if not self.cantidad_canales < cantidad_contactos:
-            raise ValidationError({
-                    'cantidad_canales': ["La cantidad de canales debe ser\
-                        menor a la cantidad de contactos de la base de datos."]
-                })
+        try:
+            cantidad_contactos = self.bd_contacto.get_cantidad_contactos()
+        except:
+            pass
+        else:
+            if not self.cantidad_canales < cantidad_contactos:
+                raise ValidationError({
+                        'cantidad_canales': ["La cantidad de canales debe ser\
+                            menor a la cantidad de contactos de la base de datos."]
+                    })
+
 
 #==============================================================================
 # AgregacionDeEventoDeContacto
