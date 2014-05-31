@@ -512,6 +512,9 @@ class AsteriskCallStatus(object):
         logger.debug("necesita_refrescar_channel_status(): True")
         return True
 
+    def _get_status_por_campana(self):
+        return self._ami_status_tracker.get_status_por_campana()
+
     def refrescar_channel_status(self):
         """Refresca `contactos_en_curso` de `self.trackers_campana`.
 
@@ -522,8 +525,7 @@ class AsteriskCallStatus(object):
 
         logger.info("Actualizando status via AMI HTTP")
         try:
-            full_status = self._ami_status_tracker.\
-                get_status_por_campana()
+            full_status = self._get_status_por_campana()
         except:
             logger.exception("Error detectado al ejecutar "
                 "ami_status_tracker.get_status_por_campana(). Los statuses "
