@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import time
 
 from django.conf import settings
-from fts_daemon.llamador_contacto import procesar_contacto
+from fts_daemon import llamador_contacto
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
 from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
@@ -483,6 +483,9 @@ class Llamador(object):
     def __init__(self):
         self.rr_tracker = RoundRobinTracker()
 
+    def procesar_contacto(self, *args, **kwargs):
+        return llamador_contacto.procesar_contacto(*args, **kwargs)
+
     def run(self, max_loops=0):
         """Inicia el llamador"""
         current_loop = 1
@@ -491,7 +494,7 @@ class Llamador(object):
             logger.debug("Llamador.run(): campana: %s - id_contacto: %s"
                 " - numero: %s", campana, id_contacto, numero)
 
-            originate_ok = procesar_contacto(campana, id_contacto, numero,
+            originate_ok = self.procesar_contacto(campana, id_contacto, numero,
                 cant_intentos)
             self.rr_tracker.originate_throttler.set_originate(originate_ok)
 
