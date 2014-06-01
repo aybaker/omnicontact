@@ -90,12 +90,6 @@ class RoundRobinTracker(object):
     def originate_throttler(self):
         return self._originate_throttler
 
-    @originate_throttler.setter
-    def originate_throttler(self, new_value):
-        assert settings.FTS_TESTING_MODE, "No esta permitido cambiar " \
-            "'originate_throttler' cuando no se esta en FTS_TESTING_MODE"
-        self._originate_throttler = new_value
-
     #
     # Eventos
     #
