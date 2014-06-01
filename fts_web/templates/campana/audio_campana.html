@@ -19,10 +19,9 @@
                 <li class="disabled"><a>5- Actuación</a></li>
                 <li class="disabled"><a>6- Confirmar Campaña</a></li>
             </ul>
-            <br>          
-            <div class="col-lg-4">                
-                <form role="form" method="post" enctype="multipart/form-data" >
-
+            <br>
+            <form role="form" method="post" enctype="multipart/form-data" >   
+                <div class="col-lg-4">               
                     {% crispy form %}                                       
 
                     {% if campana.audio_original %}
@@ -30,21 +29,20 @@
                             <h4>Audio de la Campaña</h4>
                             <audio src="{{ campana.audio_original.url }}" controls></audio>
                         </div>
-                    {% endif %}
-                    
+                    {% endif %}              
+                </div>
+                <div class="col-lg-12">
                     <br>
-
-                    <button type="submit" id="id_guardar" class="btn btn-primary btn-block">
+                    <button type="submit" id="id_guardar" class="btn btn-success btn-lg">
                         Guardar Audio
                     </button>
-                    <br>
                     {% if campana.audio_original %}
-                        <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-primary" role="button">
-                            Continuar
+                        <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-primary pull-right" role="button">
+                            Continuar <span class="glyphicon glyphicon-chevron-right"></span>
                         </a> 
                     {% endif %}
-                </form>           
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 {% endblock %}

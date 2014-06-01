@@ -29,6 +29,11 @@
 .curson-link {
     cursor: pointer;
 }
+td, th {
+    vertical-align: top;
+    padding-right: 5px; 
+}
+
 
 /* Mensajito de Ayuda*/
 .bs-callout {

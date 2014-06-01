@@ -19,12 +19,10 @@ import uuid
 from django.conf import settings
 from django.test import TestCase
 from django.test.runner import DiscoverRunner
-from django.test.testcases import LiveServerTestCase
+from django.test.testcases import LiveServerTestCase, TransactionTestCase
 from fts_daemon.models import EventoDeContacto
-
 from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
     Contacto, BaseDatosContacto, Campana, Opcion, Actuacion
-from fts_daemon.models import EventoDeContacto
 
 
 EV_FINALIZADOR = EventoDeContacto.objects.\
@@ -149,8 +147,7 @@ def rtel():
     return random.randint(1140000000, 1149999999)
 
 
-class FTSenderBaseTest(TestCase):
-    """Clase base para tests"""
+class FTSenderTestUtilsMixin(object):
 
     def get_test_resource(self, resource):
         """Devuelve el path completo a archivo del directorio test/
@@ -229,12 +226,17 @@ class FTSenderBaseTest(TestCase):
             for nro_telefonico in numeros_telefonicos:
                 self.crear_contacto(
                     bd_contacto, nro_telefonico=nro_telefonico)
+            bd_contacto.cantidad_contactos = len(numeros_telefonicos)
+            bd_contacto.save()
             return bd_contacto
 
         if cant_contactos is None:
             cant_contactos = random.randint(3, 7)
         for _ in range(0, cant_contactos):
             self.crear_contacto(bd_contacto)
+        bd_contacto.cantidad_contactos = cant_contactos
+        bd_contacto.save()
+
         return bd_contacto
 
     def crear_campana(self, fecha_inicio=None, fecha_fin=None,
@@ -511,6 +513,15 @@ class FTSenderBaseTest(TestCase):
         if finaliza:
             campana.finalizar()
         return campana
+
+class FTSenderBaseTransactionTestCase(TransactionTestCase,
+    FTSenderTestUtilsMixin):
+    """Clase base para tests"""
+
+
+class FTSenderBaseTest(TestCase, FTSenderTestUtilsMixin):
+    """Clase base para tests"""
+
 
 def default_db_is_postgresql():
     """Devuelve si la DB por default es PostgreSql"""

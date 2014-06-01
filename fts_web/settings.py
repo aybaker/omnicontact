@@ -276,6 +276,15 @@ FTS_DAEMON_ORIGINATES_PER_SECOND = 1.0 / 3.0
 Debe ser float, y >= 0.0. Si vale 0.0, implica que no hay limite.
 """
 
+FTS_LIMITE_GLOBAL_DE_CANALES = 100
+"""Cantidad maxima 'global' de canales para usar, en conjunto de todas
+las campañas"""
+
+FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES = 3.0
+"""Tiempo a esperar cuando se alcanza el limite global de canales.
+Debe ser float. Para ser usado en sleep.
+"""
+
 #FTS_MARGEN_FINALIZACION_CAMPANA = 600
 #"""Cuanto tiempo debe pasar (despues del ultimo evento) para
 #finalizar una campana

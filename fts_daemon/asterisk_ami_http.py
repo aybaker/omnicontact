@@ -549,7 +549,7 @@ class AmiStatusTracker(object):
     def get_status_por_campana(self):
         """Devuelve diccionario, cuyos KEYs son los ID de campana,
         y VALUEs son listas. Cada lista es una lista con:
-        [contacto_id, numero, campana_id]
+        [contacto_id, numero, campana_id, intentos]
         """
 
         # FIXME: crear cliente, loguear y reutilizar!

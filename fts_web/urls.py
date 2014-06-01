@@ -12,7 +12,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 from fts_web import views
-from fts_daemon import views as daemon_views
 
 
 admin.autodiscover()
@@ -140,34 +139,6 @@ urlpatterns = patterns('',
     url(r'^campana/(?P<pk>\d+)/exporta/$',
         views.ExportaReporteCampanaView.as_view(),
         name='exporta_campana_reporte',
-    ),
-
-    #==========================================================================
-    # AGI
-    #==========================================================================
-    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)/local-channel-pre-dial/$',
-        daemon_views.local_channel_pre_dial,
-    ),
-    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)/inicio/$',
-        daemon_views.inicio_campana,
-    ),
-    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)/fin/$',
-        daemon_views.fin_campana,
-    ),
-    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)/fin_err_t/$',
-        daemon_views.fin_err_t,
-    ),
-    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)/fin_err_i/$',
-        daemon_views.fin_err_i,
-    ),
-    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)/opcion/(?P<dtmf_number>\d+)/',
-        daemon_views.opcion_seleccionada,
-    ),
-    url(r'^_/agi-proxy/(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)/local-channel-post-dial/dial-status/(?P<dial_status>.+)/$',
-        daemon_views.local_channel_post_dial,
-    ),
-    url(r'^_/agi-proxy/(?P<agi_network_script>.+)/$',
-        daemon_views.handle_agi_proxy_request,
     ),
 
     #==========================================================================

@@ -11,3 +11,4 @@ logilab-common==0.61.0
 astroid==1.1.1
 unittest2==0.5.1
 sphinx-rtd-theme==0.1.6
+mock==1.0.1

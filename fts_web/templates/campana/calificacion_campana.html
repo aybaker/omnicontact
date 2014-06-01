@@ -20,53 +20,51 @@
                 <li class="disabled"><a>6- Confirmar Campaña</a></li>
             </ul>
             <br>
-            <div class="col-lg-4">
-                <form role="form" method="post">
+            <form role="form" method="post">
+                <div class="col-lg-4">                
                     {% csrf_token %}                         
 
                     <h4>Nueva Calificación</h4>
                     {% crispy form %} 
+                </div>
+                <div class="col-lg-6">
+                    {% if campana %}
+                        <h4>Calificaciones</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                                <th>Nombre</th>
+                            </thead>
+                            <tbody>
+                                {% for calificacion in campana.calificaciones.all %}
+                                    <tr>
+                                        <td>
+                                            <p class='col-lg-6'>{{ calificacion.nombre }}</p>
+                                            <p class='col-lg-6 text-right'><a href="{% url 'calificacion_campana_elimina' calificacion.pk %}"> Eliminar</a></p>
+                                        </td>
+                                    </tr>
+                                 {% empty %}
+                                    <tr>
+                                        <td> 
+                                            <p class="text-center text-danger">
+                                                <em>No se encontraron Calificaciones creadas.</em>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+                <div class="col-lg-12">
                     <br>
-
-                    <button type="submit" id="id_guardar" class="btn btn-primary btn-block">
+                    <button type="submit" id="id_guardar" class="btn btn-success btn-lg">
                         Guardar Calificación
                     </button>
-                </form> 
-
-                <br>
-  
-                <a href="{% url 'opcion_campana' campana.pk %}" class="btn btn-primary" role="button">
-                    Continuar
-                </a>       
-            </div>
-            <div class="col-lg-6">
-                {% if campana %}
-                    <h4>Calificaciones</h4>
-                    <table class="table table-bordered">
-                        <thead>
-                            <th>Nombre</th>
-                        </thead>
-                        <tbody>
-                            {% for calificacion in campana.calificaciones.all %}
-                                <tr>
-                                    <td>
-                                        <p class='col-lg-6'>{{ calificacion.nombre }}</p>
-                                        <p class='col-lg-6 text-right'><a href="{% url 'calificacion_campana_elimina' calificacion.pk %}"> Eliminar</a></p>
-                                    </td>
-                                </tr>
-                             {% empty %}
-                                <tr>
-                                    <td> 
-                                        <p class="text-center text-danger">
-                                            <em>No se encontraron Calificaciones creadas.</em>
-                                        </p>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% endif %}
-            </div>
+                    <a href="{% url 'opcion_campana' campana.pk %}" class="btn btn-primary pull-right" role="button">
+                        Continuar <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a> 
+                </div>
+            </form>
         </div>
     </div>
 {% endblock %}

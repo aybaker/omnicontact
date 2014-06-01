@@ -52,10 +52,12 @@
                         {% if error %}
                             <p class="text-danger">Es requerido que seleccione la columna que contengan los números de Teléfono.</p>
                         {% endif %}
+                        
                         <br>
-                        <button type="submit" class="btn btn-primary btn-block">
+                        <button type="submit" id="id_guardar" class="btn btn-success btn-lg">
                             Guardar Base Datos
                         </button>
+                        
                     </form>
                 {% else %}
                     <table class="table table-bordered">

@@ -6,6 +6,7 @@
 from __future__ import unicode_literals
 
 from datetime import datetime
+import pprint
 import random
 
 from fts_daemon.models import EventoDeContacto
@@ -40,11 +41,6 @@ class TodosLosContactosPendientesEstanEnCursoError(Exception):
     """
 
 
-class NoHayCampanaEnEjecucion(Exception):
-    """No se encontraron campanas en ejecucion.
-    """
-
-
 class LimiteDeCanalesAlcanzadoError(Exception):
     """Se alcanzó el límite máximo de llamadas concurrentes que pude
     poseer una campana.
@@ -52,8 +48,15 @@ class LimiteDeCanalesAlcanzadoError(Exception):
 
 
 class CampanaTracker(object):
-    """Trackea los envios pendientes de UNA campaña. La vida de las
-    instancias estan la actuación en curso.
+    """Trackea los envios pendientes de UNA campaña. Tambien trackea
+    (de manera aproximada) las llamadas en curso para dicha campaña.
+
+    Una instancia de CampanaTracker puede estar ACTIVA, cuando se trata
+    de una campaña 'en ejecucion'. En este caso, se mantiene el cache y
+    la actuacion asociada a la campaña.
+
+    Cuando la instancia NO esta ACTIVA, la actuacion y cache son eliminados,
+    hasta que se vuelva a reactivar.
     """
 
     def __init__(self, campana):
@@ -61,6 +64,8 @@ class CampanaTracker(object):
         self.campana = campana
         """Campaña siendo trackeada: :class:`fts_web.models.Campana`
         """
+
+        self._activa = True
 
         self.cache = []
         """Cache de pendientes"""
@@ -103,6 +108,50 @@ class CampanaTracker(object):
         if self.fetch_max < 100:
             self.fetch_max = 100
 
+    @property
+    def activa(self):
+        return self._activa
+
+    def desactivar(self):
+        """Elimina temporales y demas cosas, utilizado para no guardar
+        datos que no serán usados, cuando la campaña siendo trackeada
+        ya no está en curso.
+
+        Para volver a utilizar una instancia de, utilizar `update()`.
+        """
+        self._activa = False
+        self.cache = None
+        self.actuacion = None
+
+    def update_campana(self, campana):
+        """Actualiza la instancia de campana"""
+        assert self.campana.id == campana.id
+        self.campana = campana
+
+    def reactivar_si_corresponde(self, campana):
+        """Actualiza la instancia de campana, y reactiva
+        si no esta activa."""
+        assert self.campana.id == campana.id
+        if self._activa:
+            # Si ya esta activa, solo actualizamos `campana`
+            self.campana = campana
+        else:
+            # Si NO esta activa, reactivamos...
+            self.reactivar(campana)
+
+    def reactivar(self, campana):
+        """Setea el estado interno para poder volver a utilizar una
+        instancia, previamente 'desactivada', o sea, a la que previamente
+        se llamo el `desactivar()`.
+
+        Tambien actualiza la campana pasada por parametro.
+        """
+        assert self.campana.id == campana.id
+        self._activa = True
+        self.campana = campana
+        self.cache = []
+        self.actuacion = campana.obtener_actuacion_actual()
+
     # TODO: renombrar a "limite_de_canales_alcanzado" o algo asi
     def limite_alcanzado(self):
         """Devuelve booleano si se ha alcanzado (o superado) el limite de
@@ -112,7 +161,16 @@ class CampanaTracker(object):
         reportarse "falsos positivos", o sea, que se indique que el limite
         se ha alcanzado, pero no sea cierto.
         """
-        return len(self._contactos_en_curso) >= self.campana.cantidad_canales
+        en_curso = len(self._contactos_en_curso)
+        if en_curso > self.campana.cantidad_canales:
+            # FIXME: buscar la forma de testear que esto se detecta y reporta
+            logger.error("limite_alcanzado(): se detectaron %s llamadas en "
+                "curso para la campana %s, cuando la cantidad de canales "
+                "configurado es %s. Dump de '_contactos_en_curso':\n"
+                "%s", en_curso, self.campana.id, self.campana.cantidad_canales,
+                pprint.pformat(self._contactos_en_curso))
+
+        return en_curso >= self.campana.cantidad_canales
 
     @property
     def llamadas_en_curso_aprox(self):
