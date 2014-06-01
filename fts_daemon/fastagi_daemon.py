@@ -24,6 +24,8 @@ CONN_POOL = None
 
 REGEX = None
 
+INSERT_FUNCION = None
+
 # Seteamos nombre, sino al ser ejecutado via uWSGI
 #  el logger se llamara '__main__'
 logger = _logging.getLogger('fts_daemon.fastagi_daemon')
@@ -51,11 +53,11 @@ def do_insert(_reactor, _conn_pool, _regexes, agi_network_script):
         view, _conn_pool, **kwargs)
 
 
-def setup_globals():
-    """Realiza setup de variables globales necesarias.
+def setup_connection_pool():
+    """Realiza setup de connection pool.
 
     Esto es un workaround. Quiza Twisted posea alguna manera de
-    compartir estas variables de alguna manera mas elegante.
+    compartir el conn. pool de alguna manera mas elegante.
 
     No hace falta LOCKear porque esta funcion se llama desde
     el main(), ANTES de iniciar Twisted.
@@ -70,9 +72,26 @@ def setup_globals():
         password=settings.DATABASES['default']['PASSWORD']
     )
 
+
+def setup_globals():
+    """Realiza setup de variables globales necesarias.
+
+    Esto es un workaround. Quiza Twisted posea alguna manera de
+    compartir estas variables de alguna manera mas elegante.
+
+    No hace falta LOCKear porque esta funcion se llama desde
+    el main(), ANTES de iniciar Twisted.
+    """
+    # TODO: investigar como se pueden mover todas estas variables
+    #  globales a un objeto, o elminar las variables globales, de
+    #  alguna manera compatible con Twisted
+
     # Setup regex
     global REGEX
     REGEX = fastagi_daemon_views.create_regex()
+
+    global INSERT_FUNCION
+    INSERT_FUNCION = do_insert
 
 
 #==============================================================================
@@ -89,7 +108,7 @@ def fastagi_handler(agi):
 
     if agi_network_script:
         try:
-            do_insert(reactor, CONN_POOL, REGEX, agi_network_script)
+            INSERT_FUNCION(reactor, CONN_POOL, REGEX, agi_network_script)
         except UrlNoMatcheaNingunaVista:
             logger.exception("El request recibido no se pudo procesar, "
                 "ya que no hay vista asociada")
@@ -107,6 +126,7 @@ def main():
 
     logger.info("Iniciando...")
 
+    setup_connection_pool()
     setup_globals()
 
     fast_agi_server = fastagi.FastAGIFactory(fastagi_handler)
