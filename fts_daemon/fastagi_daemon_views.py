@@ -220,7 +220,12 @@ def get_view(regexes, url):
 def insert_evento_de_contacto(CONN_POOL, campana_id, contacto_id, evento,
     dato):
     """Inserta un EDC en la BD. En caso de error, lo reporta y
-    continua. No lanza excepciones.
+    continua.
+
+    Manejo de excepciones: como este metodo generalmente es llamado como ultimo
+    paso en el handlers de las pseudo-vistas (en un thread de Twisted),
+    para asegurarnos que cualquier problema es logueado, hacemos try-except
+    de las excepciones, las logueamos, y luego las re-lanzamos.
     """
     conn = None
     try:
@@ -239,6 +244,7 @@ def insert_evento_de_contacto(CONN_POOL, campana_id, contacto_id, evento,
     except:
         logger.exception("No se pudo insertar evento %s para campana %s "
             "y contacto %s", evento, campana_id, contacto_id)
+        raise
     finally:
         if conn is not None:
             CONN_POOL.putconn(conn)
