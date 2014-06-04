@@ -429,7 +429,7 @@ if 'SKIP_SELENIUM' not in os.environ:
             self.selenium.find_element_by_id(
                 'id_nombre').send_keys("Test-Carga-Selenium")
             self.selenium.find_element_by_id(
-                'id_cantidad_canales').send_keys("10")
+                'id_cantidad_canales').send_keys("1")
             self.selenium.find_element_by_id(
                 'id_cantidad_intentos').send_keys("2")
             self.selenium.find_element_by_id(
