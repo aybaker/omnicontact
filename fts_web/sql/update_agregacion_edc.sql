@@ -1,4 +1,10 @@
-CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS TIMESTAMP WITH TIME ZONE AS $$
+CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS INT AS $$
+    #
+    # Return values
+    #       0: NO SE ACTUALIZO NADA
+    #  n >= 1: SE ACTUALIZARON 'n' AEDC
+    #      -1: ERROR DE LOCK
+    #
     from plpy import spiexceptions
     import collections
     import pprint
@@ -44,7 +50,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS T
     except spiexceptions.LockNotAvailable:
         plpy.warning("update_agregacion_edc_py(): No se pudo obtener lock "
             "para campana {0}".format(campana_id))
-        return None
+        return -1
 
     plpy.info("update_agregacion_edc_py(): LOCK obtenido - continuamos")
 
@@ -153,6 +159,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS T
             campana_id = $1 AND
             dato = $2 AND
             timestamp > $3 AND
+            timestamp < NOW() - interval '2 second' AND
             (
                 evento = 2 -- EVENTO_DAEMON_INICIA_INTENTO / intento de contacto
                 OR evento = 22 -- EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO / contacto finalizado
@@ -231,6 +238,8 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS T
     # Buscamos datos para los 'numero_intento'
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    aedc_actualizados = 0
+
     for nro_intento, aedc in aedc_x_nro_intento.iteritems():
 
         # Esta es una parte CLAVE y CRITICA del sistema. Al buscar los EDC,
@@ -301,6 +310,8 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS T
         plpy.notice("update_agregacion_edc_py(): UPDATE AEDC - campana: {0} - nro_intento: {1}".format(
             campana_id, nro_intento))
 
+        aedc_actualizados += 1
+
         res_update = plpy.execute(plan_update, [
             int(datos_de_edc["cantidad_intentos"]),
             int(datos_de_edc["cantidad_finalizados"]),
@@ -323,12 +334,6 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS T
 
         # fin de proceso de 1 intento
 
-    try:
-        max_timestamp = max(row["timestamp_ultimo_evento"] for row in records_aedc)
-        plpy.info("update_agregacion_edc_py(): RETURN: {0}".format(str(max_timestamp)))
-        return max_timestamp
-    except:
-        plpy.warning("update_agregacion_edc_py(): ERROR")
-        return None
+    return aedc_actualizados
 
 $$ LANGUAGE plpythonu;
