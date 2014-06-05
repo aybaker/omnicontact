@@ -16,6 +16,7 @@ import math
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.timezone import now
 
 from django.db.models import Sum, Q
 from fts_web.utiles import crear_archivo_en_media_root, upload_to
@@ -494,9 +495,11 @@ class Campana(models.Model):
         EventoDeContacto.objects_gestion_llamadas.programar_campana(
             self.id)
 
+        timestamp_ultimo_evento = now()
         for numero_intento in range(1, self.cantidad_intentos + 1):
             AgregacionDeEventoDeContacto.objects.create(
-                campana_id=self.pk, numero_intento=numero_intento)
+                campana_id=self.pk, numero_intento=numero_intento,
+                timestamp_ultimo_evento=timestamp_ultimo_evento)
 
     def finalizar(self):
         """
