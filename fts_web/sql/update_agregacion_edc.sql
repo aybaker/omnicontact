@@ -196,20 +196,20 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         timestamp_ultima_actualizacion,
         timestamp_ultimo_evento
     ) = (
-        $1, -- cantidad_intentos
-        $2, -- cantidad_finalizados
-        $3, -- cantidad_opcion_0
-        $4, -- cantidad_opcion_1
-        $5, -- cantidad_opcion_2
-        $6, -- cantidad_opcion_3
-        $7, -- cantidad_opcion_4
-        $8, -- cantidad_opcion_5
-        $9, -- cantidad_opcion_6
-        $10, -- cantidad_opcion_7
-        $11, -- cantidad_opcion_8
-        $12, -- cantidad_opcion_9
+        cantidad_intentos    + $1, -- cantidad_intentos
+        cantidad_finalizados + $2, -- cantidad_finalizados
+        cantidad_opcion_0 +  $3, -- cantidad_opcion_0
+        cantidad_opcion_1 +  $4, -- cantidad_opcion_1
+        cantidad_opcion_2 +  $5, -- cantidad_opcion_2
+        cantidad_opcion_3 +  $6, -- cantidad_opcion_3
+        cantidad_opcion_4 +  $7, -- cantidad_opcion_4
+        cantidad_opcion_5 +  $8, -- cantidad_opcion_5
+        cantidad_opcion_6 +  $9, -- cantidad_opcion_6
+        cantidad_opcion_7 + $10, -- cantidad_opcion_7
+        cantidad_opcion_8 + $11, -- cantidad_opcion_8
+        cantidad_opcion_9 + $12, -- cantidad_opcion_9
         NOW(), -- timestamp_ultima_actualizacion
-        $13 -- timestamp_ultimo_evento
+        $13    -- timestamp_ultimo_evento
     )
     WHERE
         campana_id = $14 AND
