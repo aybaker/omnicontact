@@ -69,7 +69,8 @@ def setup_connection_pool():
     CONN_POOL = pool.ThreadedConnectionPool(5, 20,
         database=settings.DATABASES['default']['NAME'],
         user=settings.DATABASES['default']['USER'],
-        password=settings.DATABASES['default']['PASSWORD']
+        password=settings.DATABASES['default']['PASSWORD'],
+        host=settings.DATABASES['default']['HOST']
     )
 
 
