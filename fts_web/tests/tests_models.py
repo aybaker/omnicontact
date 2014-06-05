@@ -714,53 +714,53 @@ class ReporteTest(FTSenderBaseTest):
         response = c.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_obtener_estadistica(self):
-        #Crea y emula procesamiento de campaña.
-        campana = self._crea_campana_emula_procesamiento()
-        #Obtiene las estadisticas de la campana.
-        estadisticas = campana.obtener_estadisticas()
+    # def test_obtener_estadistica(self):
+    #     #Crea y emula procesamiento de campaña.
+    #     campana = self._crea_campana_emula_procesamiento()
+    #     #Obtiene las estadisticas de la campana.
+    #     estadisticas = campana.obtener_estadisticas()
 
-        #Testea los valores devueltos.
-        self.assertEqual(estadisticas['total_contactos'], 100)
-        self.assertEqual(estadisticas['cantidad_intentados'], 100)
-        self.assertEqual(estadisticas['porcentaje_intentados'], 100)
-        self.assertEqual(estadisticas['cantidad_no_intentados'], 0)
-        self.assertEqual(estadisticas['porcentaje_no_intentados'], 0.0)
+    #     #Testea los valores devueltos.
+    #     self.assertEqual(estadisticas['total_contactos'], 100)
+    #     self.assertEqual(estadisticas['cantidad_intentados'], 100)
+    #     self.assertEqual(estadisticas['porcentaje_intentados'], 100)
+    #     self.assertEqual(estadisticas['cantidad_no_intentados'], 0)
+    #     self.assertEqual(estadisticas['porcentaje_no_intentados'], 0.0)
 
-        cantidad_pendientes = estadisticas['total_contactos'] -\
-            (estadisticas['cantidad_contestadas'] +
-            estadisticas['cantidad_no_contestadas'])
-        self.assertEqual(estadisticas['cantidad_pendientes'],
-            cantidad_pendientes)
+    #     cantidad_pendientes = estadisticas['total_contactos'] -\
+    #         (estadisticas['cantidad_contestadas'] +
+    #         estadisticas['cantidad_no_contestadas'])
+    #     self.assertEqual(estadisticas['cantidad_pendientes'],
+    #         cantidad_pendientes)
 
-        porcentaje_pendientes = float(100 * cantidad_pendientes /\
-            estadisticas['total_contactos'])
-        self.assertEqual(estadisticas['porcentaje_pendientes'],
-            porcentaje_pendientes)
+    #     porcentaje_pendientes = float(100 * cantidad_pendientes /\
+    #         estadisticas['total_contactos'])
+    #     self.assertEqual(estadisticas['porcentaje_pendientes'],
+    #         porcentaje_pendientes)
 
-        cantidad_contestadas = estadisticas['total_contactos'] -\
-            (estadisticas['cantidad_pendientes'] +
-            estadisticas['cantidad_no_contestadas'])
-        self.assertEqual(estadisticas['cantidad_contestadas'],
-            cantidad_contestadas)
-        porcentaje_contestadas = float(100 * cantidad_contestadas /\
-            estadisticas['total_contactos'])
-        self.assertEqual(estadisticas['porcentaje_contestadas'],
-            porcentaje_contestadas)
+    #     cantidad_contestadas = estadisticas['total_contactos'] -\
+    #         (estadisticas['cantidad_pendientes'] +
+    #         estadisticas['cantidad_no_contestadas'])
+    #     self.assertEqual(estadisticas['cantidad_contestadas'],
+    #         cantidad_contestadas)
+    #     porcentaje_contestadas = float(100 * cantidad_contestadas /\
+    #         estadisticas['total_contactos'])
+    #     self.assertEqual(estadisticas['porcentaje_contestadas'],
+    #         porcentaje_contestadas)
 
-        cantidad_no_contestadas = estadisticas['total_contactos'] -\
-            (estadisticas['cantidad_pendientes'] +
-            estadisticas['cantidad_contestadas'])
-        self.assertEqual(estadisticas['cantidad_no_contestadas'],
-            cantidad_no_contestadas)
-        porcentaje_no_contestadas = float(100 * cantidad_no_contestadas /\
-            estadisticas['total_contactos'])
-        self.assertEqual(estadisticas['porcentaje_no_contestadas'],
-            porcentaje_no_contestadas)
+    #     cantidad_no_contestadas = estadisticas['total_contactos'] -\
+    #         (estadisticas['cantidad_pendientes'] +
+    #         estadisticas['cantidad_contestadas'])
+    #     self.assertEqual(estadisticas['cantidad_no_contestadas'],
+    #         cantidad_no_contestadas)
+    #     porcentaje_no_contestadas = float(100 * cantidad_no_contestadas /\
+    #         estadisticas['total_contactos'])
+    #     self.assertEqual(estadisticas['porcentaje_no_contestadas'],
+    #         porcentaje_no_contestadas)
 
-        porcentaje_avance = porcentaje_contestadas + porcentaje_no_contestadas
-        self.assertEqual(estadisticas['porcentaje_avance'],
-            porcentaje_avance)
+    #     porcentaje_avance = porcentaje_contestadas + porcentaje_no_contestadas
+    #     self.assertEqual(estadisticas['porcentaje_avance'],
+    #         porcentaje_avance)
 
     def test_render_grafico_torta_avance_campana(self):
         #Crea y emula procesamiento de campaña.
