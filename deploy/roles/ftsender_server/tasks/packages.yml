@@ -57,6 +57,7 @@
     - postgresql93-contrib
     - postgresql93-server
     - postgresql93-devel
+    - postgresql93-plpython
     - nginx
     - munin
     - munin-node
