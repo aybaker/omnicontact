@@ -748,13 +748,25 @@ class Campana(models.Model):
             .obtener_opciones_por_contacto(self.pk)
 
         with open(file_path, 'wb') as csvfile:
+            # Creamos encabezado
+            encabezado = ["nro_telefono"]
+            opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
+                for op in self.opciones.all()])
+            for opcion in range(9):
+                try:
+                    encabezado.append(opciones_dict[opcion])
+                except KeyError:
+                    encabezado.append("#{0} - Opcion invalida".format(opcion))
+
+            # Creamos csvwriter y guardamos encabezado y luego datos
             csvwiter = csv.writer(csvfile)
+            csvwiter.writerow(encabezado)
             for telefono, lista_eventos in values:
                 lista_opciones = [telefono]
                 for opcion in range(9):
                     evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
                     if evento in lista_eventos:
-                        lista_opciones.append(opcion)
+                        lista_opciones.append(1)
                     else:
                         lista_opciones.append(None)
                 csvwiter.writerow(lista_opciones)
