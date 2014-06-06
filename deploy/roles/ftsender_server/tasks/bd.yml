@@ -45,3 +45,20 @@
   sudo_user: postgres
   tags:
     - db
+
+- name: Check if plpython is installed
+  shell: psql -c "select * from pg_language" ftsender | grep -q plpythonu
+  sudo: yes
+  sudo_user: postgres
+  register: plpython_installed
+  ignore_errors: True
+  tags:
+    - db
+
+- name: Install plpython is not installed
+  command: createlang plpythonu ftsender
+  sudo: yes
+  sudo_user: postgres
+  when: plpython_installed|failed
+  tags:
+    - db
