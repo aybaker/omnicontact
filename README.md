@@ -6,6 +6,16 @@ Para instalar starpy:
 
     $ pip install git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba
 
+
+Base de datos
+-------------
+
+Para facilitar la ejecucion de los tests, crear el lenguaje 'plpythonu' en
+la BD 'template1', asi existe en las BD creadas por Django para ejecuar los tests.
+
+    $ createlang plpythonu template1
+
+
 Simulacion de envios
 --------------------
 
