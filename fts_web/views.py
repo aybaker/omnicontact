@@ -991,6 +991,9 @@ class CampanaReporteDetailView(DetailView):
     context_object_name = 'campana'
     model = Campana
 
+    def get_queryset(self):
+        return Campana.objects.obtener_finalizadas()
+
 
 #==============================================================================
 # Test
