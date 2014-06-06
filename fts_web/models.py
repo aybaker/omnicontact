@@ -752,7 +752,7 @@ class Campana(models.Model):
             encabezado = ["nro_telefono"]
             opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
                 for op in self.opciones.all()])
-            for opcion in range(9):
+            for opcion in range(10):
                 try:
                     encabezado.append(opciones_dict[opcion])
                 except KeyError:
@@ -763,7 +763,7 @@ class Campana(models.Model):
             csvwiter.writerow(encabezado)
             for telefono, lista_eventos in values:
                 lista_opciones = [telefono]
-                for opcion in range(9):
+                for opcion in range(10):
                     evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
                     if evento in lista_eventos:
                         lista_opciones.append(1)
