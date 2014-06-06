@@ -573,9 +573,13 @@ class Campana(models.Model):
             opcion_invalida_x_porcentaje = estadisticas[
                 'opcion_invalida_x_porcentaje']
 
-            torta_opcion_x_porcentaje = pygal.Pie(
+            no_data_text = "No se han seleccionado opciones"
+            torta_opcion_x_porcentaje = pygal.Pie(  # @UndefinedVariable
                 style=Campana.ESTILO_MULTICOLOR,
-                legend_at_bottom=True)
+                legend_at_bottom=True,
+                no_data_text=no_data_text,
+                no_data_font_size=32
+            )
             torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
 
             opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
@@ -606,7 +610,8 @@ class Campana(models.Model):
             logger.info("Generando grafico para campana %s", self.id)
 
             #Torta: porcentajes de contestados, no contestados y no llamados.
-            torta_general = pygal.Pie(style=Campana.ESTILO_VERDE_ROJO_NARANJA)
+            torta_general = pygal.Pie(  # @UndefinedVariable
+                style=Campana.ESTILO_VERDE_ROJO_NARANJA)
             torta_general.title = 'Porcentajes Generales de {0} contactos.'.\
                 format(estadisticas['total_contactos'])
             torta_general.add('Atendidos', estadisticas[
@@ -617,11 +622,15 @@ class Campana(models.Model):
             torta_general.add('Sin Llamar', estadisticas[
                 'porcentaje_no_llamados'])
 
-            #Torta: porcentajes de opciones selecionadas.
+            # Torta: porcentajes de opciones selecionadas.
+            no_data_text = "No se han seleccionado opciones"
             dic_opcion_x_porcentaje = estadisticas['opcion_x_porcentaje']
-            torta_opcion_x_porcentaje = pygal.Pie(
+            torta_opcion_x_porcentaje = pygal.Pie(  # @UndefinedVariable
                 style=Campana.ESTILO_MULTICOLOR,
-                legend_at_bottom=True)
+                legend_at_bottom=True,
+                no_data_text=no_data_text,
+                no_data_font_size=32
+            )
             torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
 
             opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
@@ -640,7 +649,8 @@ class Campana(models.Model):
             total_atendidos_intentos = estadisticas['total_atendidos_intentos']
             intentos = [total_atendidos_intentos[intentos] for intentos, _ in\
                 total_atendidos_intentos.items()]
-            barra_atendidos_intentos = pygal.Bar(show_legend=False,
+            barra_atendidos_intentos = pygal.Bar(  # @UndefinedVariable
+                show_legend=False,
                 style=Campana.ESTILO_MULTICOLOR)
             barra_atendidos_intentos.title = 'Cantidad de llamadas atendidas en\
                 cada intento.'
