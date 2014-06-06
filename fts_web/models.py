@@ -614,12 +614,13 @@ class Campana(models.Model):
             #Torta: porcentajes de contestados, no contestados y no llamados.
             torta_general = pygal.Pie(  # @UndefinedVariable
                 style=Campana.ESTILO_VERDE_ROJO_NARANJA)
-            torta_general.title = 'Porcentajes Generales de {0} contactos.'.\
-                format(estadisticas['total_contactos'])
-            torta_general.add('Atendidos', estadisticas[
+            #torta_general.title = 'Porcentajes Generales de {0} contactos.'.\
+            #    format(estadisticas['total_contactos'])
+            torta_general.title = "Resultado de llamadas"
+            torta_general.add('Atendidas', estadisticas[
                 'porcentaje_atendidos'])
 
-            torta_general.add('No Atendidos', estadisticas[
+            torta_general.add('No Atendidas', estadisticas[
                 'porcentaje_no_atendidos'])
             torta_general.add('Sin Llamar', estadisticas[
                 'porcentaje_no_llamados'])
@@ -633,7 +634,7 @@ class Campana(models.Model):
                 no_data_text=no_data_text,
                 no_data_font_size=32
             )
-            torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
+            torta_opcion_x_porcentaje.title = 'Opciones seleccionadas'
 
             opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
                 for op in self.opciones.all()])
