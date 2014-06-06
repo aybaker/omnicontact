@@ -274,7 +274,7 @@ class CampanaManager(models.Manager):
         return self.filter(estado=Campana.ESTADO_PAUSADA)
 
     def obtener_finalizadas(self):
-        """Devuelve campañas en estado finalizadas."""
+        """Devuelve queryset para filtrar campañas en estado finalizadas."""
         return self.filter(estado=Campana.ESTADO_FINALIZADA)
 
     def obtener_todas_para_generar_dialplan(self):
@@ -603,6 +603,8 @@ class Campana(models.Model):
             logger.info("Campana %s NO obtuvo estadísticas.", self.id)
 
     def obtener_estadisticas_render_graficos_reportes(self):
+        assert self.estado == Campana.ESTADO_FINALIZADA, \
+            "Solo se generan reportes de campanas finalizadas"
         estadisticas = self.calcular_estadisticas(
             AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE)
 
@@ -687,15 +689,16 @@ class Campana(models.Model):
 
         #Generales
         total_atentidos = dic_totales['total_atentidos']
-        porcentaje_atendidos = float(100 * total_atentidos / total_contactos)
+        porcentaje_atendidos = (100.0 * float(total_atentidos) /
+            float(total_contactos))
 
         total_no_atendidos = dic_totales['total_no_atendidos']
-        porcentaje_no_atendidos = float(100 * total_no_atendidos / \
-            total_contactos)
+        porcentaje_no_atendidos = (100.0 * float(total_no_atendidos) /
+            float(total_contactos))
 
         total_no_llamados = dic_totales['total_no_llamados']
-        porcentaje_no_llamados = float(100 * total_no_llamados / \
-            total_contactos)
+        porcentaje_no_llamados = (100.0 * float(total_no_llamados) /
+            float(total_contactos))
 
         # Atendidos en cada intento.
         total_atendidos_intentos = dic_totales['total_atendidos_intentos']
@@ -714,16 +717,18 @@ class Campana(models.Model):
                 cantidad_opcion = dic_totales['total_opcion_{0}'.format(
                     opcion)]
                 opcion_x_cantidad[opcion] = cantidad_opcion
-                opcion_x_porcentaje[opcion] = float(100 * cantidad_opcion / \
-                    dic_totales['total_opciones'])
+                opcion_x_porcentaje[opcion] = (100.0 * float(cantidad_opcion) /
+                    float(dic_totales['total_opciones']))
                 if not opcion in opciones_campana:
                     opcion_invalida_x_cantidad[opcion] = cantidad_opcion
-                    opcion_invalida_x_porcentaje[opcion] = float(100 *
-                        cantidad_opcion / dic_totales['total_opciones'])
+                    opcion_invalida_x_porcentaje[opcion] = (100.0 *
+                        float(cantidad_opcion) /
+                        float(dic_totales['total_opciones']))
                 else:
                     opcion_valida_x_cantidad[opcion] = cantidad_opcion
-                    opcion_valida_x_porcentaje[opcion] = float(100 *
-                        cantidad_opcion / dic_totales['total_opciones'])
+                    opcion_valida_x_porcentaje[opcion] = (100.0 *
+                        float(cantidad_opcion) /
+                        float(dic_totales['total_opciones']))
 
         dic_estadisticas = {
             # Estadísticas Generales.
