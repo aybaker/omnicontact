@@ -574,11 +574,14 @@ class Campana(models.Model):
                 'opcion_invalida_x_porcentaje']
 
             torta_opcion_x_porcentaje = pygal.Pie(
-                style=Campana.ESTILO_MULTICOLOR)
+                style=Campana.ESTILO_MULTICOLOR,
+                legend_at_bottom=True)
             torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
 
+            opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
+                for op in self.opciones.all()])
             for opcion, porcentaje in opcion_valida_x_porcentaje.items():
-                torta_opcion_x_porcentaje.add('#{0}'.format(opcion),
+                torta_opcion_x_porcentaje.add(opciones_dict[opcion],
                     porcentaje)
 
             porcentaje_opciones_invalidas = 0
@@ -1095,6 +1098,24 @@ class Opcion(models.Model):
             self.campana,
             self.digito,
         )
+
+    def get_descripcion_de_opcion(self):
+        if self.accion == Opcion.DERIVAR:
+            if self.grupo_atencion:
+                return "#{0} - Derivar a '{1}'".format(self.digito,
+                    self.grupo_atencion.nombre)
+            else:
+                return "#{0} - Derivar".format(self.digito)
+        if self.accion == Opcion.CALIFICAR:
+            if self.calificacion:
+                return "#{0} - Calificar '{1}'".format(self.digito,
+                    self.calificacion.nombre)
+            else:
+                return "#{0} - Calificar".format(self.digito)
+        if self.accion == Opcion.REPETIR:
+            return "#{0} - Repetir".format(self.digito)
+
+        return "#{0} - tipo de opcion desconocida".format(self.digito)
 
     class Meta:
         #unique_together = ("digito", "campana")
