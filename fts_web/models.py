@@ -620,11 +620,21 @@ class Campana(models.Model):
             #Torta: porcentajes de opciones selecionadas.
             dic_opcion_x_porcentaje = estadisticas['opcion_x_porcentaje']
             torta_opcion_x_porcentaje = pygal.Pie(
-                style=Campana.ESTILO_MULTICOLOR)
+                style=Campana.ESTILO_MULTICOLOR,
+                legend_at_bottom=True)
             torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
+
+            opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
+                for op in self.opciones.all()])
+
             for opcion, porcentaje in dic_opcion_x_porcentaje.items():
-                torta_opcion_x_porcentaje.add('#{0}'.format(opcion),
-                    porcentaje)
+                try:
+                    torta_opcion_x_porcentaje.add(opciones_dict[opcion],
+                        porcentaje)
+                except KeyError:
+                    torta_opcion_x_porcentaje.add(
+                        '#{0} N/A'.format(opcion),
+                            porcentaje)
 
             #Barra: Total de llamados atendidos en cada intento.
             total_atendidos_intentos = estadisticas['total_atendidos_intentos']
