@@ -74,7 +74,7 @@
   tags:
     - db
 
-- name: Install plpython is not installed
+- name: Install plpython if not installed
   command: createlang plpythonu ftsender
   sudo: yes
   sudo_user: postgres
