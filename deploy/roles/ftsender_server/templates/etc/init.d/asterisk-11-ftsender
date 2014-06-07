@@ -24,7 +24,7 @@ CMD=/opt/asterisk-11/sbin/asterisk
 case "$1" in
   start)
         echo -n "Starting asterisk-11... "
-        $CMD -U $USER -G $GROUP
+        $CMD -U $USER -G $GROUP -g
         RETVAL=$?
         if [ $RETVAL -eq 0 ]
         then
