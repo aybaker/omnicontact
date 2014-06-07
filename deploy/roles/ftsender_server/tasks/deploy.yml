@@ -141,8 +141,8 @@
 - name: Upload scripts to deploy/bin
   template: src={{item}} dest=/home/ftsender/deploy/bin mode=0755
   with_items:
-    - run_uwsgi.sh
-    - manage.sh
+    - bin/run_uwsgi.sh
+    - bin/manage.sh
     - bin/db_update_plpython_stored_proc.sh
   tags:
     - deploy
