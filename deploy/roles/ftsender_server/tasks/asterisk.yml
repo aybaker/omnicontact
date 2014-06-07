@@ -40,6 +40,25 @@
   tags:
     - asterisk
 
+- name: Upload Asterisk build script 
+  when: asterisk_installed|failed
+  sudo: yes
+  template: >
+    src=bin/build_asterisk.sh
+    dest=/home/asterisk/
+    owner=asterisk group=asterisk mode=0755
+  tags:
+    - asterisk
+
+- name: Run Asterisk build script 
+  sudo: yes
+  sudo_user: asterisk
+  command: /home/asterisk/build_asterisk.sh
+  when: asterisk_installed|failed
+  register: asterisk_installed
+  tags:
+    - asterisk
+
 - name: Upload Asterisk init script
   template: >
     src=etc/init.d/asterisk-11-ftsender
