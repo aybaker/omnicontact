@@ -143,6 +143,14 @@
   with_items:
     - run_uwsgi.sh
     - manage.sh
+    - bin/db_update_plpython_stored_proc.sh
+  tags:
+    - deploy
+
+- name: Install stored procedures
+  shell: >
+    /home/ftsender/deploy/bin/db_update_plpython_stored_proc.sh
+    /home/ftsender/deploy/app/fts_web/sql/plpython/*.sql
   tags:
     - deploy
 
