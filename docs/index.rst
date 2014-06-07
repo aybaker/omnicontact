@@ -20,7 +20,7 @@ El sistema puede ser accedido utilizando la URL http://ip-del-servidor:8088
 Usuarios
 --------
 
-El sistema funciona bajo el usuario ``ftsender``. La aplicacion se encuentra en el directorio ``~/deploy``:
+El sistema funciona bajo el usuario ``ftsender``. La aplicacion se encuentra en el directorio ``/home/ftsender/deploy``:
 
 .. code::
 
@@ -35,7 +35,7 @@ El sistema funciona bajo el usuario ``ftsender``. La aplicacion se encuentra en 
     drwxr-xr-x. 5 ftsender root     4.0K May 18 19:04 static_root
     drwxrwxr-x. 6 ftsender ftsender 4.0K May 18 19:36 virtualenv
 
-En el directorio ``~/deploy/log`` se encuentran 2 archivos de log:
+En el directorio ``/home/ftsender/deploy/log`` se encuentran 2 archivos de log:
 
 .. code::
 
@@ -44,12 +44,12 @@ En el directorio ``~/deploy/log`` se encuentran 2 archivos de log:
     -rw-rw-r--. 1 ftsender ftsender  17K May 21 22:44 django.log
     -rw-r-----. 1 ftsender ftsender 565K May 21 22:44 uwsgi.log
 
-En ``uwsgi.log`` se encuentran los logs de Nginx. En ``django.log`` los logs de la aplicación.
+En ``django.log`` se encuentran los logs de la aplicación.
 
 Servicios
 ---------
 
-El deploy del sistema incluye el setup de 2 servicios:
+El deploy del sistema incluye el setup de 2 servicios (Asterisk y FTSender):
 
 .. code::
 
@@ -57,7 +57,7 @@ El deploy del sistema incluye el setup de 2 servicios:
     -rwxr-xr-x. 1 root root 1.7K May 21 22:17 /etc/init.d/asterisk-11-ftsender
     -rwxr-xr-x. 1 root root 1.8K May 18 19:20 /etc/init.d/ftsender-daemon
 
-Para bajar el sistema (toda la aplicación: web y daemon), basta con ejecutar:
+Para bajar el sistema FTSender (toda la aplicación: web y daemon), basta con ejecutar:
 
 .. code::
 
