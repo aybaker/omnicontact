@@ -4,6 +4,10 @@
 {% block head_js %}
     <script type="text/javascript" src="{% static 'fts_web/js/svg.jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'fts_web/js/pygal-tooltips.js' %}"></script>
+
+    <script type="text/javascript">
+        setInterval(function(){window.location.reload(true)},10000);
+    </script>
 {% endblock %}
 
 {% block content %}
