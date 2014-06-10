@@ -484,6 +484,22 @@ class AudioCampanaCreateView(UpdateView):
                 message,
             )
             return self.form_invalid(form)
+        except Exception, e:
+            self.object.audio_original = None
+            self.object.save()
+
+            logger.warn("convertir_audio_de_campana(): produjo un error "
+                "inesperado. Detalle: %s", e)
+
+            message = '<strong>Operación Errónea!</strong> \
+                Se produjo un error inesperado en la conversión del audio.'
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return self.form_invalid(form)
+
 
     def get_success_url(self):
         return reverse(
