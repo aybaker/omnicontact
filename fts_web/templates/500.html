@@ -1,0 +1,36 @@
+{% load url from future %}
+{% load static %}
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block title %} FTSender Web {% endblock %}</title>
+
+    <!-- Bootstrap's  -->
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/bootstrap-theme.min.css' %}"> 
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/main.css' %}">
+
+    
+     <!-- JS -->
+    <script src="{% static 'fts_web/js/jquery-1.10.2.min.js' %}"></script>
+    <script src="{% static 'fts_web/js/jquery-ui-1.10.4.custom.min.js' %}"></script>
+    <script src="{% static 'bootstrap3/js/bootstrap.min.js' %}"></script>
+</head>
+<body ng-controller="GlobalController">
+    <div>
+        <h1 class="text-center text-danger"><span class="glyphicon glyphicon-exclamation-sign"></span></h1>
+        <h2 class="text-center">Error Interno</h2>
+        <p class="text-center">
+            Se ha producido un error inesperado.
+        </p>
+        <p class="text-center">
+            <a href="{% url 'lista_campana_por_estados' %}" role="button">Volver</a>
+        </p>
+    </div>
+</body>
+</html>
