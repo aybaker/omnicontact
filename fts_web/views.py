@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import (
     CreateView, ListView, DeleteView,
-    UpdateView, DetailView)
+    UpdateView, DetailView, RedirectView)
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config
 from fts_daemon.audio_conversor import convertir_audio_de_campana
@@ -795,19 +795,17 @@ class ConfirmaCampanaView(UpdateView):
         return reverse('lista_campana')
 
 
-class FinalizaCampanaView(UpdateView):
+class FinalizaCampanaView(RedirectView):
     """
-    Esta vista actualiza la campañana fibnalizándola.
+    Esta vista actualiza la campañana finalizándola.
     """
 
-    model = Campana
-    context_object_name = 'campana'
+    pattern_name = 'lista_campana'
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        if self.object.estado == Campana.ESTADO_PAUSADA:
-            self.object.finalizar()
+    def post(self, request, *args, **kwargs):
+        campana = Campana.objects.get(pk=request.POST['campana_id'])
+        if campana.estado == Campana.ESTADO_PAUSADA:
+            campana.finalizar()
             message = '<strong>Operación Exitosa!</strong>\
             Se llevó a cabo con éxito la finalización de\
             la Campaña.'
@@ -828,28 +826,20 @@ class FinalizaCampanaView(UpdateView):
                 message,
             )
 
-        return redirect(self.get_success_url())
-
-    def get_success_url(self):
-        return reverse('lista_campana_por_estados')
+        return super(FinalizaCampanaView, self).post(request, *args, **kwargs)
 
 
-class PausaCampanaView(UpdateView):
+class PausaCampanaView(RedirectView):
     """
     Esta vista actualiza la campañana pausándola.
     """
 
-    model = Campana
-    context_object_name = 'campana'
+    pattern_name = 'lista_campana'
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
+    def post(self, request, *args, **kwargs):
+        campana = Campana.objects.get(pk=request.POST['campana_id'])
+        campana.pausar()
 
-        self.object.pausar()
-
-        return redirect(self.get_success_url())
-
-    def get_success_url(self):
         message = '<strong>Operación Exitosa!</strong>\
         Se llevó a cabo con éxito el pausado de\
         la Campaña.'
@@ -859,26 +849,20 @@ class PausaCampanaView(UpdateView):
             messages.SUCCESS,
             message,
         )
+        return super(PausaCampanaView, self).post(request, *args, **kwargs)
 
-        return reverse('lista_campana_por_estados')
 
-
-class ActivaCampanaView(UpdateView):
+class ActivaCampanaView(RedirectView):
     """
     Esta vista actualiza la campañana activándola.
     """
 
-    model = Campana
-    context_object_name = 'campana'
+    pattern_name = 'lista_campana'
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
+    def post(self, request, *args, **kwargs):
+        campana = Campana.objects.get(pk=request.POST['campana_id'])
+        campana.despausar()
 
-        self.object.despausar()
-
-        return redirect(self.get_success_url())
-
-    def get_success_url(self):
         message = '<strong>Operación Exitosa!</strong>\
         Se llevó a cabo con éxito la activación de\
         la Campaña.'
@@ -888,8 +872,15 @@ class ActivaCampanaView(UpdateView):
             messages.SUCCESS,
             message,
         )
+        return super(ActivaCampanaView, self).post(request, *args, **kwargs)
 
-        return reverse('lista_campana_por_estados')
+
+class ReciclaCampanaTipoView(RedirectView):
+    """
+    Esta vista presenta la elección del tipo de reciclado.
+    """
+
+    pass
 
 
 class DetalleCampanView(DetailView):
@@ -915,7 +906,6 @@ class ExportaReporteCampanaView(UpdateView):
         url = self.object.exportar_reporte_csv()
 
         return redirect(url)
-
 
 
 # class CampanaUpdateView(UpdateView):
