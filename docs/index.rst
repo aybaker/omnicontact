@@ -105,20 +105,20 @@ Para crear el servidor de deploy se instalaron algunos paquetes, y se creó el u
 
 .. code::
 
-    root@deploy-server $ rpm -vih http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm
-    root@deploy-server $ yum install python-virtualenv git
-    root@deploy-server $ adduser deployer
+    root@ftsender-deployer $ rpm -vih http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm
+    root@ftsender-deployer $ yum install python-virtualenv git
+    root@ftsender-deployer $ adduser deployer
 
 Para armar el ambiente de deploy, hace falta ejecutar (con el usuario ``deployer``):
 
 .. code::
 
-    deployer@deploy-server $ cd ~
-    deployer@deploy-server $ virtualenv virtualenv
-    deployer@deploy-server $ . virtualenv/bin/activate
-    deployer@deploy-server $ pip install ansible
-    deployer@deploy-server $ git clone ssh://git@192.168.99.224/home/git/ftsenderweb.git
-    deployer@deploy-server $ cd ftsenderweb/
+    deployer@ftsender-deployer $ cd ~
+    deployer@ftsender-deployer $ virtualenv virtualenv
+    deployer@ftsender-deployer $ . virtualenv/bin/activate
+    deployer@ftsender-deployer $ pip install ansible
+    deployer@ftsender-deployer $ git clone ssh://git@192.168.99.224/home/git/ftsenderweb.git
+    deployer@ftsender-deployer $ cd ftsenderweb/
 
 
 Procedimiento de deploy en un nuevo servidor
@@ -126,9 +126,9 @@ Procedimiento de deploy en un nuevo servidor
 
 Estas son las instrucciones para realizar el deploy en un nuevo servidor. Se asume que inicialmente se tiene un servidor con CentOS 6.5 de 32 bits.
 
-Los comandos ejecutados en ``new-server`` deben ejecutarse en el nuevo servidor, donde se quiere instalar el sistema.
+Los comandos ejecutados en ``@new-server`` deben ejecutarse en el nuevo servidor, donde se quiere instalar el sistema.
 
-Los comandos ejecutados en ``deploy-server`` deben ejecutarse en el servidor de deploy (192.168.99.224).
+Los comandos ejecutados en ``@ftsender-deployer`` deben ejecutarse en el servidor de deploy (192.168.99.224).
 
 
 * Crear usuario ``ftsender``:
@@ -166,7 +166,7 @@ Para verificar que el usuario ``deployer`` puede acceder al nuevo servidor, ejec
 
 .. code::
 
-     deployer@deploy-server $ ssh ftsender@192.168.99.222
+     deployer@ftsender-deployer $ ssh ftsender@192.168.99.222
 
 
 Contents
