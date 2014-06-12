@@ -113,11 +113,12 @@ Para armar el ambiente de deploy, hace falta ejecutar (con el usuario ``deployer
 
 .. code::
 
-    deployer@deploy-server $ git clone ssh://git@192.168.99.224/home/git/ftsenderweb.git
-    deployer@deploy-server $ cd ftsenderweb/
+    deployer@deploy-server $ cd ~
     deployer@deploy-server $ virtualenv virtualenv
     deployer@deploy-server $ . virtualenv/bin/activate
     deployer@deploy-server $ pip install ansible
+    deployer@deploy-server $ git clone ssh://git@192.168.99.224/home/git/ftsenderweb.git
+    deployer@deploy-server $ cd ftsenderweb/
 
 
 Procedimiento de deploy en un nuevo servidor
@@ -144,7 +145,7 @@ Los comandos ejecutados en ``deploy-server`` deben ejecutarse en el servidor de 
     root@new-server $ echo "Defaults:ftsender        !requiretty"   >> /etc/sudoers.d/ftsender
     root@new-server $ chmod 0440 /etc/sudoers.d/ftsender
 
-* Agregar el certificado de ``deployer`` a ``~/ftsender/.ssh/authorized_keys``, para que pueda iniciar sesión sin requerir password.
+* Agregar el certificado de ``deployer`` a ``~/.ssh/authorized_keys``, para que pueda iniciar sesión sin requerir password.
 
 .. code::
 
