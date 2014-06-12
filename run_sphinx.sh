@@ -18,6 +18,6 @@ which gnome-open > /dev/null 2> /dev/null && gnome-open _build/html/index.html >
 echo ""
 echo "Para rsync:"
 echo ""
-echo "    rsync -a docs/_build/html deployer@192.168.99.224:/var/www/html/ftsender"
+echo "    rsync -av --delete docs/_build/html deployer@192.168.99.224:/var/www/html/ftsender/docs/"
 echo ""
 
