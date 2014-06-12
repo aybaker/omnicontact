@@ -9,9 +9,8 @@ IP de servidores:
 
 Archivos de inventario:
 
- * ftsender-produccion: **TODO**
- * ftsender-testing: **TODO**
-
+ * ftsender-produccion: ~/hosts-virtual-freetech-produccion
+ * ftsender-testing: ~/hosts-virtual-freetech-testing
 
 Servidor de deploy
 ------------------
@@ -41,12 +40,18 @@ Para armar el ambiente de deploy, hace falta ejecutar (con el usuario ``deployer
 Procedimiento de deploy en un nuevo servidor
 --------------------------------------------
 
-Estas son las instrucciones para realizar el deploy en un nuevo servidor. Se asume que inicialmente se tiene un servidor con CentOS 6.5 de 32 bits.
+Estas son las instrucciones para realizar el deploy en un nuevo servidor (CentOS 6.5 de 32 bits).
 
 Los comandos ejecutados en ``@new-server`` deben ejecutarse en el nuevo servidor, donde se quiere instalar el sistema.
 
 Los comandos ejecutados en ``@ftsender-deployer`` deben ejecutarse en el servidor de deploy (192.168.99.224).
 
+
+* Instalar paquetes requeridos:
+
+.. code::
+
+    root@new-server $ yum install libselinux-python
 
 * Crear usuario ``ftsender``:
 
@@ -84,3 +89,20 @@ Para verificar que el usuario ``deployer`` puede acceder al nuevo servidor, ejec
 .. code::
 
      deployer@ftsender-deployer $ ssh ftsender@192.168.99.222
+
+* Para realizar el deploy de la versión actual (en DESARROLLO, posiblemente inestable), ejecutar:
+
+.. code::
+
+    deployer@ftsender-deployer $ ./deploy.sh master ~/hosts-virtual-freetech-testing
+
+* Para realizar el deploy de una versión específica, ejecutar:
+
+.. code::
+
+    deployer@ftsender-deployer $ ./deploy.sh <VERSION> ~/hosts-virtual-freetech-testing
+
+En este caso, <VERSION> puede hacer referencia a un tag o branch de Git (ej: v1.0.0), o un commit específico (ej: 1eaf131fef84dc0c9fbea7bc095b6f8ec605fc56)
+
+
+
