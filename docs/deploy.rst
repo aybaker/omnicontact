@@ -28,6 +28,22 @@ Estos archivos de inventarios se encuentran el el servidor de deploy:
 
 
 
+Acceso al servidor de deploy
+----------------------------
+
+Para acceder al servidor de deploy:
+
+.. code::
+
+    $ ssh deployer@192.168.99.224
+
+Es recomendable agregar las claves públicas de quienes accederán en ``/home/deployer/.ssh/authorized_keys`` para evitar que solicite el password.
+
+
+
+
+
+
 Procedimiento de deploy para servidor ya deployado
 --------------------------------------------------
 
