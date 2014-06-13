@@ -19,7 +19,7 @@
             <br>
             <form role="form" method="post" enctype="multipart/form-data" >
                 {% csrf_token %}
-                <div class="col-lg-4">       
+                <div class="col-lg-4 form-group {% if form.errors %}has-error{% endif %}">      
                     {% for choice in form.tipo_reciclado %}
                         <div class="radio">
                             <label>
@@ -27,8 +27,12 @@
                                 {{ choice.tag }}
                             </label>
                         </div>
-                    {% endfor %}                                              
+                    {% endfor %}
+                    {% if form.errors %}
+                        <p class="text-danger">Debe seleccionar el tipo de reciclado que desea realizar.</p>
+                    {% endif%}                                             
                 </div>
+
                 <div class="col-lg-12">
                     <br>
                     <button type="submit" id="id_guardar" class="btn btn-primary pull-right">
