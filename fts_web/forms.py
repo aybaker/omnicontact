@@ -150,6 +150,14 @@ class ConfirmaForm(forms.ModelForm):
         fields = ()
 
 
+class TipoRecicladoForm(forms.Form):
+    tipo_reciclado = forms.TypedChoiceField(
+        choices = Campana.TIPO_RECICLADO,
+        widget = forms.RadioSelect,
+        required = True,
+    )
+
+
 #===============================================================================
 # Calificaciones
 #===============================================================================
