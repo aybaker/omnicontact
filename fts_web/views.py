@@ -6,8 +6,8 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import (
-    CreateView, ListView, DeleteView,
-    UpdateView, DetailView, RedirectView)
+    CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
+    RedirectView)
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config
 from fts_daemon.audio_conversor import convertir_audio_de_campana
@@ -16,7 +16,7 @@ from fts_web.errors import (FtsAudioConversionError,
     FtsParserOpenFileError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
-    CalificacionForm, ConfirmaForm, GrupoAtencionForm,
+    CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
     BaseDatosContactoForm, OpcionForm)
 from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion,
@@ -875,12 +875,31 @@ class ActivaCampanaView(RedirectView):
         return super(ActivaCampanaView, self).post(request, *args, **kwargs)
 
 
-class ReciclaCampanaTipoView(RedirectView):
+class ReciclaCampanaTipoView(FormView):
     """
     Esta vista presenta la elección del tipo de reciclado.
     """
 
-    pass
+    template_name = 'campana/reciclado/campana_tipo_reciclado.html'
+    form_class = TipoRecicladoForm
+
+    def post(self, request, *args, **kwargs):       
+        self.campana_id = kwargs['pk']
+        return super(ReciclaCampanaTipoView, self).post(request, args, kwargs)
+
+    def form_valid(self, form):
+        tipo_reciclado = form.cleaned_data['tipo_reciclado']
+
+        #Obtengo la base de datos que se usará en la campana reciclada.        
+        bd_contacto = BaseDatosContacto.object.reciclar(
+            self.campana_id, tipo_reciclado)
+
+        #TODO: Una vez obtenida la base de datos que utiliozaría la campana
+        #reciclada, acá se podría crear la campana reciclada para luego, 
+        #en un paso posterior, actualizar los dato de la redefinición de la 
+        #misma.
+
+        return super(ReciclaCampanaTipoView, self).form_valid(form)
 
 
 class DetalleCampanView(DetailView):
