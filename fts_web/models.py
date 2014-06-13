@@ -146,6 +146,9 @@ class BaseDatosContactoManager(models.Manager):
         """
         return self.filter(sin_definir=False)
 
+    def reciclar(campana_id, tipo_reciclado):
+        pass
+
 
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
