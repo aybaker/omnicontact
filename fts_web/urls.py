@@ -118,9 +118,15 @@ urlpatterns = patterns('',
         views.ActivaCampanaView.as_view(),
         name='estado_activa_campana',
     ),
+
+    #Reciclado
     url(r'^campana/(?P<pk>\d+)/recicla/tipo/$',
         views.TipoRecicladoCampanaView.as_view(),
         name='tipo_reciclado_campana',
+    ),
+    url(r'^campana/(?P<pk>\d+)/recicla/redefinicion/$',
+        views.RedefinicionRecicladoCampanaView.as_view(),
+        name='redefinicion_reciclado_campana',
     ),
 
     url(r'^campanas/estados/$',
