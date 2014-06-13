@@ -877,7 +877,8 @@ class ActivaCampanaView(RedirectView):
 
 class TipoRecicladoCampanaView(FormView):
     """
-    Esta vista presenta la elección del tipo de reciclado.
+    Esta vista presenta la elección del tipo de reciclado iniciando el 
+    proceso de reciclado de una camapan.
     """
 
     template_name = 'campana/reciclado/campana_tipo_reciclado.html'

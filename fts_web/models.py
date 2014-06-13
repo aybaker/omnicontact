@@ -147,6 +147,14 @@ class BaseDatosContactoManager(models.Manager):
         return self.filter(sin_definir=False)
 
     def reciclar(self, campana_id, tipo_reciclado):
+        """
+        Este método hace el reciclado de la base de datos según el tipo
+        de reciclado seleccionado.
+        Parametros:
+        - campana_id: El id de la campana que se está reciclado.
+        - tipo_reciclado: EL tipo de reciclado que se desea realizar sobre la
+        campana.
+        """
         pass
 
 
