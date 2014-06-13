@@ -1,65 +1,103 @@
+.. highlight:: bash
+
+
 Deploy
 ======
 
-IP de servidores:
+
+IP de servidores
+----------------
 
  * ftsender-deployer: *192.168.99.224*
  * ftsender-produccion: *192.168.99.221*
  * ftsender-testing: *192.168.99.222*
 
-Archivos de inventario:
+
+
+
+
+Archivos de inventario
+----------------------
+
+Estos archivos de inventarios se encuentran el el servidor de deploy:
 
  * ftsender-produccion: ~/hosts-virtual-freetech-produccion
  * ftsender-testing: ~/hosts-virtual-freetech-testing
 
-Servidor de deploy
-------------------
 
-Nota: estos pasos ya fueron realizados en el servidor ``ftsender-deployer``.
 
-Para crear el servidor de deploy se instalaron algunos paquetes, y se creó el usuario ``deployer``:
 
-.. code::
 
-    root@ftsender-deployer $ rpm -vih http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm
-    root@ftsender-deployer $ yum install python-virtualenv git
-    root@ftsender-deployer $ adduser deployer
+Procedimiento de deploy para servidor ya deployado
+--------------------------------------------------
 
-Para armar el ambiente de deploy, hace falta ejecutar (con el usuario ``deployer``):
+Para realizar el deploy del sistema, ejecutar:
 
 .. code::
 
-    deployer@ftsender-deployer $ cd ~
-    deployer@ftsender-deployer $ virtualenv virtualenv
-    deployer@ftsender-deployer $ . virtualenv/bin/activate
-    deployer@ftsender-deployer $ pip install ansible
-    deployer@ftsender-deployer $ git clone ssh://git@192.168.99.224/home/git/ftsenderweb.git
-    deployer@ftsender-deployer $ cd ftsenderweb/
+    deployer@ftsender-deployer $ ./deploy.sh <IDENTIFICADOR_DE_VERSION> ~/hosts-virtual-freetech-testing
+
+<IDENTIFICADOR_DE_VERSION> puede hacer referencia a un **tag** o **branch** de Git (ej: **v1.0.0**), o un commit específico (ej: **1eaf131fef84dc0c9fbea7bc095b6f8ec605fc56**).
+
+.. note::
+
+    Para saber el *IDENTIFICADOR_DE_VERSION* a utilizar, contáctese con los desarrolladores.
+
+.. note::
+
+    Si es la primera vez que se va a realizar el deploy en el servidor (o sea, es un servidor nuevo),
+    recuerde realizar el setup inicial, siguiendo las instrucciones de `Setup inicial de nuevo servidor`_.
 
 
-Procedimiento de deploy en un nuevo servidor
---------------------------------------------
 
-Estas son las instrucciones para realizar el deploy en un nuevo servidor (CentOS 6.5 de 32 bits).
+Deploy de versión más nueva del software (en desarrollo)
+........................................................
 
-Los comandos ejecutados en ``@new-server`` deben ejecutarse en el nuevo servidor, donde se quiere instalar el sistema.
+Para realizar el deploy de la versión actual (en DESARROLLO, posiblemente inestable), ejecutar:
 
-Los comandos ejecutados en ``@ftsender-deployer`` deben ejecutarse en el servidor de deploy (192.168.99.224).
+.. code::
+
+    deployer@ftsender-deployer $ ./deploy.sh master ~/hosts-virtual-freetech-testing
+
+.. warning::
+
+    La versión actual en desarrollo puede contener bugs, funcionalidad implementada
+    parcialmente, etc., por lo que en general NO es recomendable deployar 'master'.
 
 
-* Instalar paquetes requeridos:
+
+
+Setup inicial de nuevo servidor
+-------------------------------
+
+Estas son las instrucciones para realizar el setup inicial de un nuevo servidor. Este procedimiento
+necesita ser ejecutado **una vez**.
+
+.. note::
+
+    Los comandos ejecutados en ``@new-server`` deben ejecutarse en el nuevo servidor, donde se quiere instalar el sistema.
+
+    Los comandos ejecutados en ``@ftsender-deployer`` deben ejecutarse en el servidor de deploy (192.168.99.224).
+
+
+Instalar paquetes requeridos
+............................
 
 .. code::
 
     root@new-server $ yum install libselinux-python
 
-* Crear usuario ``ftsender``:
+Crear usuario ``ftsender``
+..........................
 
 .. code::
 
     root@new-server $ adduser ftsender
 
-* Configurar ``sudo`` para que el usuario ``ftsender`` pueda ejecutar cualquier comando sin que se le requiera el password:
+Configurar sudo
+...............
+
+Configurar ``sudo`` para que el usuario ``ftsender`` pueda ejecutar cualquier comando sin que se le requiera el password:
 
 .. code::
 
@@ -68,7 +106,10 @@ Los comandos ejecutados en ``@ftsender-deployer`` deben ejecutarse en el servido
 
     ftsender ALL=(ALL)       NOPASSWD: ALL
 
-* Agregar el certificado de ``deployer`` a ``~/.ssh/authorized_keys``, para que pueda iniciar sesión sin requerir password.
+Configurar acceso ssh
+.....................
+
+Agregar el certificado de ``deployer`` a ``~/.ssh/authorized_keys``, para que pueda iniciar sesión sin requerir password.
 
 .. code::
 
@@ -91,19 +132,34 @@ Para verificar que el usuario ``deployer`` puede acceder al nuevo servidor, ejec
 
      deployer@ftsender-deployer $ ssh ftsender@192.168.99.222
 
-* Para realizar el deploy de la versión actual (en DESARROLLO, posiblemente inestable), ejecutar:
+
+
+
+
+Servidor de deploy
+------------------
+
+.. note::
+
+    Nota: estos pasos ya fueron realizados en el servidor ``ftsender-deployer``.
+
+Para crear el servidor de deploy se instalaron algunos paquetes, y se creó el usuario ``deployer``:
 
 .. code::
 
-    deployer@ftsender-deployer $ ./deploy.sh master ~/hosts-virtual-freetech-testing
+    root@ftsender-deployer $ rpm -vih http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm
+    root@ftsender-deployer $ yum install python-virtualenv git
+    root@ftsender-deployer $ adduser deployer
 
-* Para realizar el deploy de una versión específica, ejecutar:
+Para armar el ambiente de deploy, hace falta ejecutar (con el usuario ``deployer``):
 
 .. code::
 
-    deployer@ftsender-deployer $ ./deploy.sh <VERSION> ~/hosts-virtual-freetech-testing
+    deployer@ftsender-deployer $ cd ~
+    deployer@ftsender-deployer $ virtualenv virtualenv
+    deployer@ftsender-deployer $ . virtualenv/bin/activate
+    deployer@ftsender-deployer $ pip install ansible
+    deployer@ftsender-deployer $ git clone ssh://git@192.168.99.224/home/git/ftsenderweb.git
+    deployer@ftsender-deployer $ cd ftsenderweb/
 
-En este caso, <VERSION> puede hacer referencia a un *tag* o *branch* de Git (ej: *v1.0.0*), o un commit específico (ej: *1eaf131fef84dc0c9fbea7bc095b6f8ec605fc56*).
-
-Nota: actualmente para saber que versión deployar hace falta contactarse con los desarrolladores.
 
