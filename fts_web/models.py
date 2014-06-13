@@ -146,7 +146,7 @@ class BaseDatosContactoManager(models.Manager):
         """
         return self.filter(sin_definir=False)
 
-    def reciclar(campana_id, tipo_reciclado):
+    def reciclar(self, campana_id, tipo_reciclado):
         pass
 
 
