@@ -398,6 +398,17 @@ if 'SKIP_SELENIUM' not in os.environ:
                     self.assertTrueSelenium(
                         self.selenium.page_source.find(campana.nombre) < 0)
 
+        def test_render_tipo_reciclado_campana(self):
+
+            #Creamos campana y opciones.
+            campana = self.crear_campana_activa()
+            campana.pausar()
+            campana.finalizar()
+
+            # Renderizamos selección de tipo de reciclado
+            url = reverse('tipo_reciclado_campana', kwargs={"pk": campana.id})
+            self.render_y_chequear(url)
+
     class ZCargaCampanaTests(FTSenderSeleniumBaseTest, FTSenderBaseTest):
 
         def test_carga_campana_completa(self):
