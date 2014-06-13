@@ -80,6 +80,18 @@ necesita ser ejecutado **una vez**.
     Los comandos ejecutados en ``@ftsender-deployer`` deben ejecutarse en el servidor de deploy (192.168.99.224).
 
 
+Chequear versión: CentOS 6.5
+............................
+
+El deploy automatizado fue probado en CentOS 6.5. Para asegurar el correcto funcionamiento, verificar la versión del sistema operativo:
+
+
+.. code::
+
+    root@new-server $ cat /etc/centos-release 
+    CentOS release 6.5 (Final)
+
+
 Instalar paquetes requeridos
 ............................
 
