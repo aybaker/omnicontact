@@ -133,10 +133,12 @@
                                         {{ campana.get_estado_display }}
                                     </td>
                                     <td>
-                                        <button type="button" id="{{ campana.id }}" name="{% url 'recicla_campana_tipo' %}" class="btn btn-primary btn-sm btn-submit">
-                                            <span class="glyphicon glyphicon-retweet"></span>
-                                            Reciclar
-                                        </button>                                        
+                                        <a href="{% url 'tipo_reciclado_campana' campana.pk %}">
+                                            <button type="button" class="btn btn-primary btn-sm">
+                                                <span class="glyphicon glyphicon-retweet"></span>
+                                                Reciclar
+                                            </button>
+                                        </a>                                      
                                     </td>                            
                                 </tr>
                             {% empty %}

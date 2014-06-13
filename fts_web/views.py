@@ -6,17 +6,17 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import (
-    CreateView, ListView, DeleteView,
-    UpdateView, DetailView, RedirectView)
+    CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
+    RedirectView)
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config
 from fts_daemon.audio_conversor import convertir_audio_de_campana
 from fts_web.errors import (FtsAudioConversionError,
     FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
-    FtsParserOpenFileError)
+    FtsParserOpenFileError,FtsRecicladoBaseDatosContactoError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
-    CalificacionForm, ConfirmaForm, GrupoAtencionForm,
+    CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
     BaseDatosContactoForm, OpcionForm)
 from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion,
@@ -875,12 +875,50 @@ class ActivaCampanaView(RedirectView):
         return super(ActivaCampanaView, self).post(request, *args, **kwargs)
 
 
-class ReciclaCampanaTipoView(RedirectView):
+class TipoRecicladoCampanaView(FormView):
     """
-    Esta vista presenta la elección del tipo de reciclado.
+    Esta vista presenta la elección del tipo de reciclado iniciando el 
+    proceso de reciclado de una camapan.
     """
 
-    pass
+    template_name = 'campana/reciclado/campana_tipo_reciclado.html'
+    form_class = TipoRecicladoForm
+
+    def post(self, request, *args, **kwargs):       
+        self.campana_id = kwargs['pk']
+        return super(TipoRecicladoCampanaView, self).post(request, args,
+            kwargs)
+
+    def form_valid(self, form):
+        tipo_reciclado = form.cleaned_data['tipo_reciclado']
+
+        #Obtengo la base de datos que se usará en la campana reciclada. 
+        try:       
+            bd_contacto = BaseDatosContacto.objects.reciclar(
+                self.campana_id, tipo_reciclado)
+        except FtsRecicladoBaseDatosContactoError:
+            message = '<strong>Operación Errónea!</strong>\
+            No se pudo reciclar la Base de Datos de la campana.'
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return self.form_invalid(form)
+
+        #TODO: Una vez obtenida la base de datos que utiliozaría la campana
+        #reciclada, acá se podría crear la campana reciclada para luego, 
+        #en un paso posterior, actualizar los dato de la redefinición de la 
+        #misma.
+
+        return super(TipoRecicladoCampanaView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            'tipo_reciclado_campana',
+            kwargs={"pk": self.kwargs['pk']}
+        )
 
 
 class DetalleCampanView(DetailView):

@@ -146,6 +146,17 @@ class BaseDatosContactoManager(models.Manager):
         """
         return self.filter(sin_definir=False)
 
+    def reciclar(self, campana_id, tipo_reciclado):
+        """
+        Este método hace el reciclado de la base de datos según el tipo
+        de reciclado seleccionado.
+        Parametros:
+        - campana_id: El id de la campana que se está reciclado.
+        - tipo_reciclado: EL tipo de reciclado que se desea realizar sobre la
+        campana.
+        """
+        pass
+
 
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
@@ -397,6 +408,14 @@ class Campana(models.Model):
     """Una campaña del call center"""
 
     objects = CampanaManager()
+
+    TIPO_RECICLADO_TOTAL = 1
+    TIPO_RECICLADO_PENDIENTES = 2
+
+    TIPO_RECICLADO = (
+        (TIPO_RECICLADO_TOTAL, 'TOTAL'),
+        (TIPO_RECICLADO_PENDIENTES, 'PENDIENTES'),
+    )
 
     ESTILO_VERDE_ROJO_NARANJA = Style(
         background='transparent',
