@@ -885,7 +885,8 @@ class TipoRecicladoCampanaView(FormView):
 
     def post(self, request, *args, **kwargs):       
         self.campana_id = kwargs['pk']
-        return super(TipoRecicladoCampanaView, self).post(request, args, kwargs)
+        return super(TipoRecicladoCampanaView, self).post(request, args,
+            kwargs)
 
     def form_valid(self, form):
         tipo_reciclado = form.cleaned_data['tipo_reciclado']
@@ -899,7 +900,7 @@ class TipoRecicladoCampanaView(FormView):
         #en un paso posterior, actualizar los dato de la redefinición de la 
         #misma.
 
-        return super(ReciclaCampanaTipoView, self).form_valid(form)
+        return super(TipoRecicladoCampanaView, self).form_valid(form)
 
 
 class DetalleCampanView(DetailView):
