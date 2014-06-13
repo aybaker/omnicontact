@@ -103,7 +103,7 @@ Para verificar que el usuario ``deployer`` puede acceder al nuevo servidor, ejec
 
     deployer@ftsender-deployer $ ./deploy.sh <VERSION> ~/hosts-virtual-freetech-testing
 
-En este caso, <VERSION> puede hacer referencia a un tag o branch de Git (ej: v1.0.0), o un commit específico (ej: 1eaf131fef84dc0c9fbea7bc095b6f8ec605fc56)
+En este caso, <VERSION> puede hacer referencia a un *tag* o *branch* de Git (ej: *v1.0.0*), o un commit específico (ej: *1eaf131fef84dc0c9fbea7bc095b6f8ec605fc56*).
 
-
+Nota: actualmente para saber que versión deployar hace falta contactarse con los desarrolladores.
 
