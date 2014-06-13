@@ -63,9 +63,10 @@ Los comandos ejecutados en ``@ftsender-deployer`` deben ejecutarse en el servido
 
 .. code::
 
-    root@new-server $ echo "ftsender ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers.d/ftsender
-    root@new-server $ echo "Defaults:ftsender        !requiretty"   >> /etc/sudoers.d/ftsender
-    root@new-server $ chmod 0440 /etc/sudoers.d/ftsender
+    root@new-server $ visudo
+    # Cuando aparezca el editor, agregar la linea:
+
+    ftsender ALL=(ALL)       NOPASSWD: ALL
 
 * Agregar el certificado de ``deployer`` a ``~/.ssh/authorized_keys``, para que pueda iniciar sesión sin requerir password.
 
