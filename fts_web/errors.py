@@ -77,3 +77,9 @@ class FtsParserOpenFileError(FtsError):
     No se pudo abrir el archivo a Parsear
     """
     pass
+
+class FtsRecicladoBaseDatosContactoError(FtsError):
+    """
+    No se pudo obtener la base de datos en el reciclado de la campana.
+    """
+    pass
