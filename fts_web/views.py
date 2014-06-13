@@ -891,7 +891,7 @@ class TipoRecicladoCampanaView(FormView):
         tipo_reciclado = form.cleaned_data['tipo_reciclado']
 
         #Obtengo la base de datos que se usará en la campana reciclada.        
-        bd_contacto = BaseDatosContacto.object.reciclar(
+        bd_contacto = BaseDatosContacto.objects.reciclar(
             self.campana_id, tipo_reciclado)
 
         #TODO: Una vez obtenida la base de datos que utiliozaría la campana
