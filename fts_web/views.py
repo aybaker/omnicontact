@@ -13,7 +13,7 @@ from fts_daemon.asterisk_config import create_dialplan_config_file, \
 from fts_daemon.audio_conversor import convertir_audio_de_campana
 from fts_web.errors import (FtsAudioConversionError,
     FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
-    FtsParserOpenFileError)
+    FtsParserOpenFileError,FtsRecicladoBaseDatosContactoError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
@@ -892,9 +892,20 @@ class TipoRecicladoCampanaView(FormView):
     def form_valid(self, form):
         tipo_reciclado = form.cleaned_data['tipo_reciclado']
 
-        #Obtengo la base de datos que se usará en la campana reciclada.        
-        bd_contacto = BaseDatosContacto.objects.reciclar(
-            self.campana_id, tipo_reciclado)
+        #Obtengo la base de datos que se usará en la campana reciclada. 
+        try:       
+            bd_contacto = BaseDatosContacto.objects.reciclar(
+                self.campana_id, tipo_reciclado)
+        except FtsRecicladoBaseDatosContactoError:
+            message = '<strong>Operación Errónea!</strong>\
+            No se pudo reciclar la Base de Datos de la campana.'
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return self.form_invalid(form)
 
         #TODO: Una vez obtenida la base de datos que utiliozaría la campana
         #reciclada, acá se podría crear la campana reciclada para luego, 
