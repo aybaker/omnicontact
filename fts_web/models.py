@@ -398,6 +398,14 @@ class Campana(models.Model):
 
     objects = CampanaManager()
 
+    TIPO_RECICLADO_TOTAL = 1
+    TIPO_RECICLADO_PENDIENTES = 2
+
+    TIPO_RECICLADO = (
+        (TIPO_RECICLADO_TOTAL, 'TOTAL'),
+        (TIPO_RECICLADO_PENDIENTES, 'PENDIENTES'),
+    )
+
     ESTILO_VERDE_ROJO_NARANJA = Style(
         background='transparent',
         plot_background='transparent',
