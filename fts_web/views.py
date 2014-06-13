@@ -875,7 +875,7 @@ class ActivaCampanaView(RedirectView):
         return super(ActivaCampanaView, self).post(request, *args, **kwargs)
 
 
-class ReciclaCampanaTipoView(FormView):
+class TipoRecicladoCampanaView(FormView):
     """
     Esta vista presenta la elección del tipo de reciclado.
     """
@@ -885,7 +885,7 @@ class ReciclaCampanaTipoView(FormView):
 
     def post(self, request, *args, **kwargs):       
         self.campana_id = kwargs['pk']
-        return super(ReciclaCampanaTipoView, self).post(request, args, kwargs)
+        return super(TipoRecicladoCampanaView, self).post(request, args, kwargs)
 
     def form_valid(self, form):
         tipo_reciclado = form.cleaned_data['tipo_reciclado']
