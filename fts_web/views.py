@@ -902,6 +902,12 @@ class TipoRecicladoCampanaView(FormView):
 
         return super(TipoRecicladoCampanaView, self).form_valid(form)
 
+    def get_success_url(self):
+        return reverse(
+            'tipo_reciclado_campana',
+            kwargs={"pk": self.kwargs['pk']}
+        )
+
 
 class DetalleCampanView(DetailView):
     """
