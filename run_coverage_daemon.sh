@@ -16,3 +16,10 @@ coverage run --omit='fts_daemon/migrations/*,fts_daemon/management/*,fts_web/mig
 coverage html -d /tmp/fts-coverity --title="Coverage para daemon de FTS"
 
 which gnome-open > /dev/null 2> /dev/null && gnome-open /tmp/fts-coverity/index.html > /dev/null 2> /dev/null
+
+echo ""
+echo "Para rsync:"
+echo ""
+echo "   rsync -av --delete /tmp/fts-coverity/ deployer@192.168.99.224:/var/www/html/ftsender/coverity"
+echo ""
+

@@ -96,8 +96,6 @@ Lo mismo para ejecutar comandos desde el shell:
     $ sudo -u asterisk /opt/asterisk-11/sbin/asterisk -x 'core show calls'
 
 
-
-
 Contents
 --------
 
@@ -105,6 +103,7 @@ Contents
    :maxdepth: 2
    :glob:
 
+   deploy
    fts_web_*
    fts_daemon_*
 
