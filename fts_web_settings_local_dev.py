@@ -57,6 +57,8 @@ CACHES = {
 
 UWSGI_CACHE_FALLBACK = False
 
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+
 INTERNAL_IPS = (
     "127.0.0.1",
 )
