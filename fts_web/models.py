@@ -155,7 +155,11 @@ class BaseDatosContactoManager(models.Manager):
         - tipo_reciclado: EL tipo de reciclado que se desea realizar sobre la
         campana.
         """
-        pass
+
+        # Devuelve la base de datos actual con fin de probar la
+        # funcionalidad del proceso de reciclado.
+        campana = Campana.objects.get(pk=campana_id)
+        return campana.bd_contacto
 
 
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
@@ -399,6 +403,61 @@ class CampanaManager(models.Manager):
                     "ya han finalizado", campana.id)
                 campana.finalizar()
                 continue
+
+    def reciclar_campana(self, campana_id, bd_contacto):
+        """
+        Este método replica la campana pasada por parámetro con fin de
+        reciclar la misma.
+        """
+        try:
+            campana = self.get(pk=campana_id)
+        except Campana.DoesNotExist:
+            logger.warn("No se pudo recuperar la Campana: %s", campana_id)
+
+            raise FtsRecicladoCampanaError("No se pudo recuperar la Campaña.")
+        else:
+            # Replica Campana.
+            campana_reciclada = self.create(
+                nombre='{0} (reciclada)'.format(campana.nombre),
+                cantidad_canales=campana.cantidad_canales,
+                cantidad_intentos=campana.cantidad_intentos,
+                segundos_ring=campana.segundos_ring,
+                fecha_inicio=campana.fecha_inicio,
+                fecha_fin=campana.fecha_fin,
+                audio_original=campana.audio_original,
+                audio_asterisk=campana.audio_asterisk,
+                bd_contacto=bd_contacto,
+            )
+
+            # Replica Opciones y Calificaciones.
+            opciones = campana.opciones.all()
+            for opcion in opciones:
+                calificacion_reciclada = None
+                if opcion.calificacion:
+                    calificacion_reciclada = Calificacion.objects.create(
+                        nombre=opcion.calificacion.nombre,
+                        campana=campana_reciclada,
+                    )
+
+                Opcion.objects.create(
+                    digito=opcion.digito,
+                    accion=opcion.accion,
+                    grupo_atencion=opcion.grupo_atencion,
+                    calificacion=calificacion_reciclada,
+                    campana=campana_reciclada,              
+                )
+
+            # Replica Actuaciones.
+            actuaciones = campana.actuaciones.all()
+            for actuacion in actuaciones:
+                Actuacion.objects.create(
+                    dia_semanal=actuacion.dia_semanal,
+                    hora_desde=actuacion.hora_desde,
+                    hora_hasta=actuacion.hora_hasta,
+                    campana=campana_reciclada,
+                )
+
+        return campana_reciclada
 
 upload_to_audios_asterisk = upload_to("audios_asterisk", 95)
 upload_to_audios_originales = upload_to("audios_reproduccion", 95)
