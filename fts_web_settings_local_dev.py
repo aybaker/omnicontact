@@ -49,6 +49,14 @@ DATABASES = {
 if 'USE_PG' in os.environ:
     FTS_PROGRAMAR_CAMPANA_FUNC = "_programar_campana_postgresql"
 
+CACHES = {
+    'default': {
+        'BACKEND': 'uwsgicache.UWSGICache',
+    }
+}
+
+UWSGI_CACHE_FALLBACK = False
+
 INTERNAL_IPS = (
     "127.0.0.1",
 )
