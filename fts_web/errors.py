@@ -83,3 +83,9 @@ class FtsRecicladoBaseDatosContactoError(FtsError):
     No se pudo obtener la base de datos en el reciclado de la campana.
     """
     pass
+
+class FtsRecicladoCampanaError(FtsError):
+    """
+    No se pudo generar el reciclado de la campana.
+    """
+    pass
