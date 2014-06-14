@@ -64,6 +64,9 @@ Para realizar el deploy del sistema, ejecutar:
     Si es la primera vez que se va a realizar el deploy en el servidor (o sea, es un servidor nuevo),
     recuerde realizar el setup inicial, siguiendo las instrucciones de `Setup inicial de nuevo servidor`_.
 
+    Además, es recomendable reiniciar el servidor luego de realizar el primer deploy, ya que la primera vez
+    se crean y activan varios servicios.
+
 
 
 Deploy de versión más nueva del software (en desarrollo)
