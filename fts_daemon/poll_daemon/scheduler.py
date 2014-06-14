@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 import time
 
 from django.conf import settings
+from django.core.cache import cache
 from fts_daemon import llamador_contacto
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
@@ -89,6 +90,14 @@ class RoundRobinTracker(object):
     @property
     def originate_throttler(self):
         return self._originate_throttler
+
+    def publish_statistics(self):
+        """Publica las estadisticas al cache"""
+        logger.debug("publish_statistics()")
+        stats = {}
+        stats['llamadas_en_curso'] = 0
+        stats['time'] = time.time()
+        cache.set(stats, 60)
 
     #
     # Eventos
@@ -228,6 +237,7 @@ class RoundRobinTracker(object):
         no hace nada
         """
         if espera > 0:
+            self.publish_statistics()
             time.sleep(espera)
 
     def sleep(self, espera):
