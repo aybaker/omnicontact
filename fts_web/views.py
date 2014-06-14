@@ -892,9 +892,10 @@ class TipoRecicladoCampanaView(FormView):
     def form_valid(self, form):
         tipo_reciclado = form.cleaned_data['tipo_reciclado']
 
-        #Obtengo la base de datos que se usará en la campana reciclada. 
         try:       
-            bd_contacto = BaseDatosContacto.objects.reciclar(
+            # Intenta generar la base de datos que se usará en la campana
+            # reciclada. 
+            bd_contacto_reciclada = BaseDatosContacto.objects.reciclar(
                 self.campana_id, tipo_reciclado)
         except FtsRecicladoBaseDatosContactoError:
             message = '<strong>Operación Errónea!</strong>\
@@ -906,18 +907,72 @@ class TipoRecicladoCampanaView(FormView):
                 message,
             )
             return self.form_invalid(form)
+        else:
+            try:
+                # Intenta reciclar la campana con el tipo de reciclado 
+                # seleccionado.
+                self.campana_reciclada = Campana.objects.reciclar_campana(
+                    self.campana_id, bd_contacto_reciclada)
+            except FtsRecicladoCampanaError:
+                # TODO: En esta excepción verificar si la BD generada, 
+                # es una "nueva" en la que se reciclaron contactos,
+                # o si es la misma de la campana original. Si es una "nueva"
+                # definir si se borra o que acción se realiza.
 
-        #TODO: Una vez obtenida la base de datos que utiliozaría la campana
-        #reciclada, acá se podría crear la campana reciclada para luego, 
-        #en un paso posterior, actualizar los dato de la redefinición de la 
-        #misma.
+                message = '<strong>Operación Errónea!</strong>\
+                No se pudo reciclar la Campana.'
+
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return self.form_invalid(form)
 
         return super(TipoRecicladoCampanaView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse(
-            'tipo_reciclado_campana',
-            kwargs={"pk": self.kwargs['pk']}
+            'redefinicion_reciclado_campana',
+            kwargs={"pk": self.campana_reciclada.pk}
+        )
+
+class RedefinicionRecicladoCampanaView(UpdateView):
+    """
+    Esta vista se encarga de redefinir la campana a reciclar.
+    """
+
+    template_name = 'campana/reciclado/redefinicion_reciclado_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = CampanaForm
+
+    def get(self, request, *args, **kwargs):
+        """
+        Valida que la campana a redefinir este en definición.
+        """
+        campana = self.get_object()
+        if not campana.estado == Campana.ESTADO_EN_DEFINICION:
+            return redirect('lista_campana')
+        return super(RedefinicionRecicladoCampanaView, self).get(
+            request, *args, **kwargs)
+
+    def get_form(self, form_class):
+        return form_class(reciclado=True, **self.get_form_kwargs())
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito el reciclado de la Campaña.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+
+        return reverse(
+            'redefinicion_reciclado_campana',
+            kwargs={"pk": self.object.pk}
         )
 
 
