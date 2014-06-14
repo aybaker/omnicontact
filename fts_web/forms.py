@@ -97,7 +97,15 @@ class CampanaForm(forms.ModelForm):
         queryset=BaseDatosContacto.objects.obtener_definidas(),
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, reciclado=False, *args, **kwargs):
+        super(CampanaForm, self).__init__(*args, **kwargs)
+        if reciclado:
+            self.fields['nombre'].widget.attrs['readonly'] = True
+            self.fields['cantidad_canales'].widget.attrs['readonly'] = True
+            self.fields['cantidad_intentos'].widget.attrs['readonly'] = True
+            self.fields['segundos_ring'].widget.attrs['readonly'] = True
+            self.fields['bd_contacto'].widget.attrs['readonly'] = True
+        
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -109,7 +117,6 @@ class CampanaForm(forms.ModelForm):
             Field('fecha_fin'),
             Field('bd_contacto')
         )
-        super(CampanaForm, self).__init__(*args, **kwargs)
 
     class Meta:
         model = Campana
