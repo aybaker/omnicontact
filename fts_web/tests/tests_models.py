@@ -569,6 +569,17 @@ class CampanaTest(FTSenderBaseTest):
             campana=campana_reciclada).count(), calificaciones.count())
         self.assertEqual(Actuacion.objects.filter(campana=campana_reciclada)
             .count(), 4)
+        self.assertEqual(campana.audio_original,
+            campana_reciclada.audio_original)
+        self.assertEqual(campana.audio_asterisk,
+            campana_reciclada.audio_asterisk)
+        self.assertEqual(campana.cantidad_canales,
+            campana_reciclada.cantidad_canales)
+        self.assertEqual(campana.cantidad_intentos,
+            campana_reciclada.cantidad_intentos)
+        self.assertEqual(campana.segundos_ring, 
+            campana_reciclada.segundos_ring)
+        self.assertFalse(campana.nombre == campana_reciclada.nombre)
 
 
 class FinalizarVencidasTest(FTSenderBaseTest):
