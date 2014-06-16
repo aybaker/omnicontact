@@ -19,6 +19,9 @@ from django.db import models, transaction, connection
 from django.db.models import Sum, Q
 from django.utils.timezone import now
 from fts_web.utiles import crear_archivo_en_media_root, upload_to, log_timing
+from fts_web.errors import (FtsRecicladoCampanaError, 
+    FtsRecicladoBaseDatosContactoError)
+
 import pygal
 from pygal.style import Style
 
@@ -411,9 +414,10 @@ class CampanaManager(models.Manager):
         """
         try:
             campana = self.get(pk=campana_id)
+            assert campana.estado == Campana.ESTADO_FINALIZADA
+
         except Campana.DoesNotExist:
             logger.warn("No se pudo recuperar la Campana: %s", campana_id)
-
             raise FtsRecicladoCampanaError("No se pudo recuperar la Campaña.")
         else:
             # Replica Campana.
