@@ -22,6 +22,8 @@ from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
 from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
 from fts_web.parser import autodetectar_parser
+from fts_web.errors import (FtsRecicladoCampanaError, 
+    FtsRecicladoBaseDatosContactoError)
 
 
 class GrupoAtencionTest(FTSenderBaseTest):
@@ -522,6 +524,51 @@ class CampanaTest(FTSenderBaseTest):
         files = glob.glob('{0}/*'.format(files_path))
         for f in files:
             os.remove(f)
+
+    def test_campana_reciclar_campana(self):
+        hora_desde = datetime.time(00, 00)
+        hora_hasta = datetime.time(23, 59)
+
+        bd_contacto = self.crear_base_datos_contacto(10)
+
+        campana = self.crear_campana()
+        self.crea_calificaciones(campana)
+        calificaciones = Calificacion.objects.filter(campana=campana)
+        for digito, calificacion in enumerate(calificaciones):
+            self.crea_campana_opcion(digito, campana,
+                calificacion=calificacion)
+
+        [self.crea_campana_actuacion(dia_semanal, hora_desde, hora_hasta,
+            campana) for dia_semanal in range(0, 4)]
+        
+        campana.activar()
+
+        # Testeamos que no se pueda reciclar una campana que nos este
+        # finalizada.
+        with self.assertRaises(AssertionError):
+            Campana.objects.reciclar_campana(campana.pk, bd_contacto)
+
+        campana.finalizar()
+        
+        # Testeamos que devuelva error si no encuentra la campana.
+        with self.assertRaises(FtsRecicladoCampanaError):
+            campana_inexistente = 1500
+            Campana.objects.reciclar_campana(campana_inexistente, bd_contacto)
+
+        # Reciclamos la campana.
+        campana_reciclada = Campana.objects.reciclar_campana(campana.pk,
+            bd_contacto)
+
+        # Testeamos que la campana esté en definición y tenga los mismos
+        # valores que la original.
+        self.assertEqual(campana_reciclada.estado,
+            Campana.ESTADO_EN_DEFINICION)
+        self.assertEqual(Opcion.objects.filter(campana=campana_reciclada)
+            .count(), 5)
+        self.assertEqual(Calificacion.objects.filter(
+            campana=campana_reciclada).count(), calificaciones.count())
+        self.assertEqual(Actuacion.objects.filter(campana=campana_reciclada)
+            .count(), 4)
 
 
 class FinalizarVencidasTest(FTSenderBaseTest):
