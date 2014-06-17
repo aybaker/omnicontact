@@ -13,7 +13,8 @@ from fts_daemon.asterisk_config import create_dialplan_config_file, \
 from fts_daemon.audio_conversor import convertir_audio_de_campana
 from fts_web.errors import (FtsAudioConversionError,
     FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
-    FtsParserOpenFileError,FtsRecicladoBaseDatosContactoError)
+    FtsParserOpenFileError, FtsRecicladoCampanaError, 
+    FtsRecicladoBaseDatosContactoError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
