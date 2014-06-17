@@ -714,7 +714,8 @@ class ActuacionCampanaDeleteView(DeleteView):
         )
 
 
-class ConfirmaCampanaView(UpdateView):
+class ConfirmaCampanaMixin(UpdateView):
+
     """
     Esta vista confirma la creación de un objeto
     Campana. Imprime el resumen del objeto y si
@@ -723,7 +724,6 @@ class ConfirmaCampanaView(UpdateView):
     al listado.
     """
 
-    template_name = 'campana/confirma_campana.html'
     model = Campana
     context_object_name = 'campana'
     form_class = ConfirmaForm
@@ -732,7 +732,7 @@ class ConfirmaCampanaView(UpdateView):
         campana = self.get_object()
         if not campana.estado == Campana.ESTADO_EN_DEFINICION:
             return redirect('lista_campana')
-        return super(ConfirmaCampanaView, self).get(request, *args, **kwargs)
+        return super(ConfirmaCampanaMixin, self).get(request, *args, **kwargs)
 
     def form_valid(self, form):
         if 'confirma' in self.request.POST:
@@ -793,6 +793,10 @@ class ConfirmaCampanaView(UpdateView):
 
     def get_success_url(self):
         return reverse('lista_campana')
+
+
+class ConfirmaCampanaView(ConfirmaCampanaMixin):
+    template_name = 'campana/confirma_campana.html'
 
 
 class FinalizaCampanaView(RedirectView):
@@ -937,6 +941,7 @@ class TipoRecicladoCampanaView(FormView):
             kwargs={"pk": self.campana_reciclada.pk}
         )
 
+
 class RedefinicionRecicladoCampanaView(UpdateView):
     """
     Esta vista se encarga de redefinir la campana a reciclar.
@@ -971,9 +976,13 @@ class RedefinicionRecicladoCampanaView(UpdateView):
         )
 
         return reverse(
-            'redefinicion_reciclado_campana',
+            'confirma_reciclado_campana',
             kwargs={"pk": self.object.pk}
         )
+
+
+class ConfirmaRecicladoCampanaView(ConfirmaCampanaMixin):
+    template_name = 'campana/reciclado/confirma_reciclado_campana.html'
 
 
 class DetalleCampanView(DetailView):
