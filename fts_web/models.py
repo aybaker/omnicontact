@@ -152,18 +152,50 @@ class BaseDatosContactoManager(models.Manager):
     def reciclar(self, campana_id, tipo_reciclado):
         """
         Este método hace el reciclado de la base de datos según el tipo
-        de reciclado seleccionado.
+        de reciclado seleccionado, devuelve la base de datos que usará la
+        campaña reciclada.
         Parametros:
         - campana_id: El id de la campana que se está reciclado.
         - tipo_reciclado: EL tipo de reciclado que se desea realizar sobre la
         campana.
         """
 
-        # Devuelve la base de datos actual con fin de probar la
-        # funcionalidad del proceso de reciclado.
         campana = Campana.objects.get(pk=campana_id)
-        return campana.bd_contacto
 
+        if int(tipo_reciclado) == Campana.TIPO_RECICLADO_TOTAL:
+            return campana.bd_contacto
+
+        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_PENDIENTES:
+            from fts_daemon.models import EventoDeContacto
+
+            # Trae los contatos telefónicos pendientes que se reciclaron de 
+            # EDC
+            lista_contactos = EventoDeContacto.objects.\
+                recicla_contactos_pendientes(campana_id)
+
+            if not lista_contactos:
+                logger.warn("El reciclado de base datos no arrojo contactos.")
+                raise FtsRecicladoBaseDatosContactoError("El reciclado de "
+                    "base datos no arrojo contactos.")
+
+            try:
+                bd_contacto = BaseDatosContacto.objects.create(
+                    nombre='{0} (reciclada)'.format(
+                        campana.bd_contacto.nombre),
+                    archivo_importacion=campana.bd_contacto.\
+                        archivo_importacion,
+                    nombre_archivo_importacion=campana.bd_contacto.\
+                        nombre_archivo_importacion,
+                )
+            except Exception, e:
+                logger.warn("Se produjo un error al intentar crear la base de"
+                    " datos. Exception: %s", e)
+                raise FtsRecicladoBaseDatosContactoError("No se pudo crear "
+                    "la base datos contactos.")
+            else:
+                bd_contacto.genera_contactos(lista_contactos)
+                bd_contacto.define()
+                return bd_contacto
 
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
@@ -232,6 +264,22 @@ class BaseDatosContacto(models.Model):
             self.cantidad_contactos = len(lista_telefonos)
             return True
         return False
+
+    def genera_contactos(self, lista_telefonos):
+        """
+        Este metodo se encarga de realizar la generación de contactos
+        a partir de una lista de tuplas de teléfonos.
+        Parametros:
+        - lista_telefonos: lista de tuplas con lo números telefónicos 
+        que representarán las instancias de contacto.
+        """
+
+        for telefono in lista_telefonos:
+            Contacto.objects.create(
+                telefono=telefono[0],
+                bd_contacto=self,
+            )
+        self.cantidad_contactos = len(lista_telefonos)
 
     def define(self):
         """
