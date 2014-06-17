@@ -232,6 +232,32 @@ class EventoDeContactoManager(models.Manager):
             self.__map_nombres_de_evento = _cached
         return _cached.get(evento_id, None)
 
+    def recicla_contactos_pendientes(self, campana_id):
+        """
+        Este método se encarga de reciclar los contactos que no tengan el
+        evento originate en EVD.
+        """
+
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+        sql = """SELECT telefono, array_agg(evento)
+            FROM fts_web_contacto INNER JOIN fts_daemon_eventodecontacto
+            ON fts_web_contacto.id = fts_daemon_eventodecontacto.contacto_id
+            WHERE campana_id = %s 
+            GROUP BY contacto_id, telefono
+            HAVING not( %s = ANY(array_agg(evento)))
+        """ 
+        params = [campana.id,
+            EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL]
+        with log_timing(logger,
+            "obtener_opciones_por_contacto() tardo %s seg"):
+            cursor.execute(sql, params)
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+
+        return values
+
+
 
 class SimuladorEventoDeContactoManager():
     """Simula acciones. Estos metodos son utilizados para pruebas,
