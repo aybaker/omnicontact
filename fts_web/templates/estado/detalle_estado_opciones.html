@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block head_js %}
+    <script type="text/javascript">
+        setInterval(function(){window.location.reload(true)},10000);
+    </script>
+{% endblock %}
+
 {% block content %}
     <div class="panel panel-info">
         <!-- Default panel contents -->
