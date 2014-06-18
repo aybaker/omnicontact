@@ -968,15 +968,6 @@ class RedefinicionRecicladoCampanaView(UpdateView):
         return form_class(reciclado=True, **self.get_form_kwargs())
 
     def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito el reciclado de la Campaña.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
         return reverse(
             'confirma_reciclado_campana',
             kwargs={"pk": self.object.pk}
