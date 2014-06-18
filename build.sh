@@ -2,8 +2,13 @@
 
 #
 # Script de build y deploy para FTSender
+#
 # Autor: Horacio G. de Oro <hgdeoro@gmail.com>
 # Requiere: virtualenv activado
+#
+# Forma de uso:
+#
+#   ./build.sh -i deploy/hosts-virtual-pruebas
 #
 # Otros comandos interesantes:
 #  $ ansible -m setup hostname
