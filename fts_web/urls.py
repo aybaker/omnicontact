@@ -139,7 +139,7 @@ urlpatterns = patterns('',
         name='lista_campana_por_estados',
     ),
     url(r'^campana/(?P<pk>\d+)/detalle_estado_opciones/$',
-        views.CampanaPorEstadoDetailView.as_view(),
+        views.CampanaEstadoOpcionesDetailView.as_view(),
         name='detalle_estado_opciones',
     ),
 

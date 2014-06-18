@@ -1053,12 +1053,23 @@ class CampanaPorEstadoListView(ListView):
         return context
 
 
-class CampanaPorEstadoDetailView(DetailView):
-    """Muestra el estado de la campaña con la lista de
+class CampanaEstadoOpcionesDetailView(DetailView):
+    """
+    Muestra el estado de la campaña con la lista de
     contactos asociados, y el estado de c/u de dichos contactos
     """
-    template_name = 'estado/detalle_estado_campana.html'
+
+    template_name = 'estado/detalle_estado_opciones.html'
+    context_object_name = 'campana'
     model = Campana
+
+    def get_context_data(self, **kwargs):
+        context = super(CampanaPorEstadoDetailView, self).get_context_data(
+           **kwargs)
+        
+        context['detalle_opciones'] = self.object.\
+            obtener_detalle_opciones_seleccionadas()
+        return context
 
 
 #==============================================================================
