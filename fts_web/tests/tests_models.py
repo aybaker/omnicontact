@@ -115,8 +115,8 @@ class BaseDatosContactoTest(FTSenderBaseTest):
     def test_reciclar_base_datos_total(self):
         campana = self._crea_campana_emula_procesamiento()
 
-        bd_contacto_reciclada = BaseDatosContacto.objects.reciclar(campana.pk,
-            Campana.TIPO_RECICLADO_TOTAL)
+        bd_contacto_reciclada = BaseDatosContacto.objects.reciclar_base_datos(
+            campana.pk, Campana.TIPO_RECICLADO_TOTAL)
 
         # Verificamos que para TIPO_RECICLADO_TOTAL la base de datos sea la
         # misma.
@@ -129,14 +129,14 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         # EDC, se genere la excepción FtsRecicladoBaseDatosContactoError.
 
         with self.assertRaises(FtsRecicladoBaseDatosContactoError):
-            BaseDatosContacto.objects.reciclar(campana.pk,
+            BaseDatosContacto.objects.reciclar_base_datos(campana.pk,
                 Campana.TIPO_RECICLADO_PENDIENTES)
 
     def test_reciclar_base_datos_pendientes(self):
         campana = self._crea_campana_emula_procesamiento()
 
-        bd_contacto_reciclada = BaseDatosContacto.objects.reciclar(campana.pk,
-            Campana.TIPO_RECICLADO_PENDIENTES)
+        bd_contacto_reciclada = BaseDatosContacto.objects.reciclar_base_datos(
+            campana.pk, Campana.TIPO_RECICLADO_PENDIENTES)
 
         # Verificamos que para TIPO_RECICLADO_PENDIENTES no se la misma 
         # base de datos, que se haya generado una nueva con el reciclado.

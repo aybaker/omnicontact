@@ -900,8 +900,8 @@ class TipoRecicladoCampanaView(FormView):
         try:       
             # Intenta generar la base de datos que se usará en la campana
             # reciclada. 
-            bd_contacto_reciclada = BaseDatosContacto.objects.reciclar(
-                self.campana_id, tipo_reciclado)
+            bd_contacto_reciclada = BaseDatosContacto.objects.\
+                reciclar_base_datos(self.campana_id, tipo_reciclado)
         except FtsRecicladoBaseDatosContactoError, error:
             message = '<strong>Operación Errónea!</strong>\
             No se pudo reciclar la Base de Datos de la campana. {0}'.format(
