@@ -133,15 +133,17 @@ urlpatterns = patterns('',
         name='confirma_reciclado_campana',
     ),
 
+    # Supervisión
     url(r'^campanas/estados/$',
         views.CampanaPorEstadoListView.as_view(),
         name='lista_campana_por_estados',
     ),
-    url(r'^campana/(?P<pk>\d+)/detalle_estado/$',
+    url(r'^campana/(?P<pk>\d+)/detalle_estado_opciones/$',
         views.CampanaPorEstadoDetailView.as_view(),
-        name='campana_detalle_de_estado',
+        name='detalle_estado_opciones',
     ),
 
+    # Reportes
     url(r'^campanas/reportes/$',
         views.CampanaReporteListView.as_view(),
         name='lista_campana_reportes',
