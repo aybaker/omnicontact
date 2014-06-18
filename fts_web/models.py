@@ -801,6 +801,27 @@ class Campana(models.Model):
         else:
             logger.info("Campana %s NO obtuvo estadísticas.", self.id)
 
+    def obtener_detalle_opciones_seleccionadas(self):
+        """
+        Este método se encarga de invocar al método de EDC que filtra los
+        contactos por cada opción seleccionada. Devuelve un diccionario de
+        listas con la opción como key y la lista de contactos que
+        seleccionaron esa opción como value.
+        """
+        from fts_daemon.models import EventoDeContacto
+
+        dic_detalle_opciones = dict(EventoDeContacto.objects_estadisticas.\
+            obtener_contactos_por_opciones(self.pk))
+
+        # Cambia  key:evento (50, 51, 52, ..) a key:opcion (0, 1, 2, ..)
+        for opcion, evento in EventoDeContacto.NUMERO_OPCION_MAP.items():
+            if dic_detalle_opciones[evento]:
+                dic_detalle_opciones[
+                    EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[evento]] =\
+                    dic_detalle_opciones.pop(evento)
+
+        return dic_detalle_opciones
+
     def calcular_estadisticas(self, tipo_agregacion):
         """
         Este método devuelve las estadísticas de
