@@ -1064,8 +1064,8 @@ class CampanaEstadoOpcionesDetailView(DetailView):
     model = Campana
 
     def get_context_data(self, **kwargs):
-        context = super(CampanaPorEstadoDetailView, self).get_context_data(
-           **kwargs)
+        context = super(CampanaEstadoOpcionesDetailView,
+            self).get_context_data(**kwargs)
         
         context['detalle_opciones'] = self.object.\
             obtener_detalle_opciones_seleccionadas()
