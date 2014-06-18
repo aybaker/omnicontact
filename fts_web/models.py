@@ -170,13 +170,14 @@ class BaseDatosContactoManager(models.Manager):
 
             # Trae los contatos telefónicos pendientes que se reciclaron de 
             # EDC
-            lista_contactos = EventoDeContacto.objects.\
+            lista_contactos_pendientes = EventoDeContacto.objects.\
                 recicla_contactos_pendientes(campana_id)
 
-            if not lista_contactos:
+            if not lista_contactos_pendientes:
                 logger.warn("El reciclado de base datos no arrojo contactos.")
-                raise FtsRecicladoBaseDatosContactoError("El reciclado de "
-                    "base datos no arrojo contactos.")
+                raise FtsRecicladoBaseDatosContactoError("""No se registraron
+                    contactos PENDIENTES en el reciclado de la base de 
+                    datos.""")
 
             try:
                 bd_contacto = BaseDatosContacto.objects.create(
@@ -190,10 +191,10 @@ class BaseDatosContactoManager(models.Manager):
             except Exception, e:
                 logger.warn("Se produjo un error al intentar crear la base de"
                     " datos. Exception: %s", e)
-                raise FtsRecicladoBaseDatosContactoError("No se pudo crear "
-                    "la base datos contactos.")
+                raise FtsRecicladoBaseDatosContactoError("""No se pudo crear
+                    la base datos contactos reciclada.""")
             else:
-                bd_contacto.genera_contactos(lista_contactos)
+                bd_contacto.genera_contactos(lista_contactos_pendientes)
                 bd_contacto.define()
                 return bd_contacto
 
