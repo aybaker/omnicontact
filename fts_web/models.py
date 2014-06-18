@@ -815,7 +815,7 @@ class Campana(models.Model):
 
         # Cambia  key:evento (50, 51, 52, ..) a key:opcion (0, 1, 2, ..)
         for opcion, evento in EventoDeContacto.NUMERO_OPCION_MAP.items():
-            if dic_detalle_opciones[evento]:
+            if dic_detalle_opciones.get(evento):
                 dic_detalle_opciones[
                     EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[evento]] =\
                     dic_detalle_opciones.pop(evento)
