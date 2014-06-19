@@ -232,9 +232,9 @@ class EventoDeContactoManager(models.Manager):
             self.__map_nombres_de_evento = _cached
         return _cached.get(evento_id, None)
 
-    def recicla_contactos_pendientes(self, campana_id):
+    def get_contactos_pendientes(self, campana_id):
         """
-        Este método se encarga de reciclar los contactos que no tengan el
+        Este método se encarga de devolver los contactos que no tengan el
         evento originate en EVD.
         """
 
@@ -250,7 +250,7 @@ class EventoDeContactoManager(models.Manager):
         params = [campana.id,
             EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL]
         with log_timing(logger,
-            "obtener_opciones_por_contacto() tardo %s seg"):
+            "get_contactos_pendientes() tardo %s seg"):
             cursor.execute(sql, params)
             # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
             values = cursor.fetchall()
