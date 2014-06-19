@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, get_object_or_404
+from django.db import transaction
 from django.views.generic import (
     CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
     RedirectView)
@@ -56,7 +57,8 @@ class GrupoAtencionMixin(object):
     de objetos GrupoAtencion.
     """
 
-    def process_all_forms(self, form):
+    @transaction.atomic
+    def process_all_forms_in_tx(self, form):
         """
         Este método se encarga de validar el
         formularios GrupoAtencionForm y hacer
@@ -79,6 +81,36 @@ class GrupoAtencionMixin(object):
 
         if is_valid:
             formset_agente_grupo_atencion.save()
+
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                "El grupo de atencion fue creado exitosamente",
+            )
+
+            try:
+                create_queue_config_file()
+            except:
+                logger.exception("GrupoAtencionMixin: error al intentar "
+                    "create_queue_config_file()")
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    "Atencion: hubo un inconveniente al generar"
+                    "la configuracion de Asterisk (queues)."
+                )
+
+            try:
+                reload_config()
+            except:
+                logger.exception("GrupoAtencionMixin: error al intentar "
+                    "reload_config()")
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    "Atencion: hubo un inconveniente al intentar"
+                    "recargar la configuracion de Asterisk."
+                )
 
             return redirect(self.get_success_url())
         else:
@@ -124,22 +156,12 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
         return context
 
     def form_valid(self, form):
-        return self.process_all_forms(form)
+        return self.process_all_forms_in_tx(form)
 
     def form_invalid(self, form):
-        return self.process_all_forms(form)
+        return self.process_all_forms_in_tx(form)
 
     def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la creación del\
-        Grupo de Atención.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
         return reverse('lista_grupo_atencion')
 
 
@@ -743,29 +765,28 @@ class ConfirmaCampanaMixin(UpdateView):
                 Se llevó a cabo con éxito la creación de\
                 la Campaña.'
 
-            from django.db import transaction
             with transaction.atomic():
 
                 campana.activar()
 
                 post_proceso_ok = True
-                # try:
-                #     convertir_audio_de_campana(campana)
-                # except FtsAudioConversionError:
-                #     post_proceso_ok = False
-                #     message += ' Atencion: hubo un inconveniente en la conversión\
-                #         del audio.'
 
                 try:
                     create_dialplan_config_file()
                 except:
+                    logger.exception("ConfirmaCampanaMixin: error al intentar "
+                        "create_dialplan_config_file()")
                     post_proceso_ok = False
                     message += ' Atencion: hubo un inconveniente al generar\
                         la configuracion de Asterisk (dialplan).'
 
                 try:
+                    # Esto es algo redundante! Para que re-crear los queues?
+                    # Total, esto lo hace GrupoDeAtencion!
                     create_queue_config_file()
                 except:
+                    logger.exception("ConfirmaCampanaMixin: error al intentar "
+                        "create_queue_config_file()")
                     post_proceso_ok = False
                     message += ' Atencion: hubo un inconveniente al generar\
                         la configuracion de Asterisk (queues).'
@@ -773,6 +794,8 @@ class ConfirmaCampanaMixin(UpdateView):
                 try:
                     reload_config()
                 except:
+                    logger.exception("ConfirmaCampanaMixin: error al intentar "
+                        "reload_config()")
                     post_proceso_ok = False
                     message += ' Atencion: hubo un inconveniente al intentar\
                         recargar la configuracion de Asterisk.'
