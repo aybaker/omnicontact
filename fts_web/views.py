@@ -9,11 +9,11 @@ from django.views.generic import (
     CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
     RedirectView)
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
-    reload_config
+    reload_config, create_queue_config_file
 from fts_daemon.audio_conversor import convertir_audio_de_campana
 from fts_web.errors import (FtsAudioConversionError,
     FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
-    FtsParserOpenFileError, FtsRecicladoCampanaError, 
+    FtsParserOpenFileError, FtsRecicladoCampanaError,
     FtsRecicladoBaseDatosContactoError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
@@ -761,14 +761,14 @@ class ConfirmaCampanaMixin(UpdateView):
                 except:
                     post_proceso_ok = False
                     message += ' Atencion: hubo un inconveniente al generar\
-                        la configuracion de Asterisk.'
+                        la configuracion de Asterisk (dialplan).'
 
                 try:
-                    create_dialplan_config_file()
+                    create_queue_config_file()
                 except:
                     post_proceso_ok = False
                     message += ' Atencion: hubo un inconveniente al generar\
-                        la configuracion de Asterisk.'
+                        la configuracion de Asterisk (queues).'
 
                 try:
                     reload_config()
