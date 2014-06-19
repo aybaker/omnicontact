@@ -15,33 +15,86 @@
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
-            <div class="col-lg-12">  
-                <table class="table table-bordered">
-                    <thead>
-                        {% for opcion in detalle_opciones.keys %}
-                            <th>
-                                <h5>#{{ opcion }}</h5>
-                            </th>
-                        {% endfor %}
-                    </thead>
+            <div class="col-lg-12"> 
+                <table class="table">
                     <tbody>
-                        <tr>
-                        {% for opcion, contactos in detalle_opciones.items %}
-                            <td> 
-                                <table><tbody>
-                                    {% for contacto in contactos %}
-                                        <tr>
-                                            <td>
-                                                {{ contacto }}
-                                            </td>
-                                        </tr>
-                                    {%endfor %}
-                                </tbody></table>
+                        <tr class="active">
+                            <td width="45%"> 
+                                <h3 class="text-primary">
+                                    {{ campana.nombre }}
+                                </h3>
                             </td>
-                        {% endfor %}
+                            <td>
+                                <h3><small>
+                                    <b>Desde: </b>{{ campana.fecha_inicio|date:"d/m/Y" }}
+                                </small></h3>
+                            </td>
+                            <td>
+                                <h3><small>
+                                    <b>Hasta: </b>{{ campana.fecha_fin|date:"d/m/Y" }}
+                                </small></h3>
+                            </td>
+                            
+                            <td>
+                                <h3><small>
+                                    <b>Base Datos: </b>
+                                    {{ campana.bd_contacto }} 
+                                    ({{ graficos_estadisticas.estadisticas.total_contactos }} Contactos)
+                                </small></h3>
+                            </td>                        
                         </tr>
                     </tbody>
                 </table>
+
+
+                <table width="100%">
+                <tbody><tr>
+                    {% for detalle_opcion in detalle_opciones %}
+                        {% if detalle_opcion.0.accion %}
+                            <td>
+                                <table  class="table table-bordered">
+                                    <thead>
+                                        <th class="active">
+                                            <h5 class="text-muted">#{{ detalle_opcion.0.digito }} 
+                                                <small>({{ detalle_opcion.0.get_accion_display }})</small></h5>
+                                        </th>
+                                    </thead>
+                                    <tbody>                        
+                                        {% for contacto in detalle_opcion.1 %}
+                                            <tr>
+                                                <td>
+                                                    {{ contacto }}
+                                                </td>
+                                            </tr>
+                                        {%endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                    <td>
+                        <table class="table table-bordered">
+                            <thead>
+                                <th class="active">
+                                    <h5 class="text-muted">Inválidas</h5>
+                                </th>
+                            </thead>
+                            <tbody>                        
+                                {% for detalle_opcion in detalle_opciones %}
+                                    {% if not detalle_opcion.0.accion %}
+                                        {% for contacto in detalle_opcion.1 %}
+                                            <tr>
+                                                <td>
+                                                    {{ contacto }}
+                                                </td>
+                                            </tr>
+                                        {%endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr></tbody></table>
             </div>
         </div>
     </div>
