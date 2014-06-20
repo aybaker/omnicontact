@@ -55,8 +55,15 @@
                                 <table  class="table table-bordered">
                                     <thead>
                                         <th class="active">
-                                            <h5 class="text-muted">#{{ detalle_opcion.0.digito }} 
-                                                <small>({{ detalle_opcion.0.get_accion_display }})</small></h5>
+                                            <h5 class="text-muted">#{{ detalle_opcion.0.digito }}
+                                                {% if detalle_opcion.0.calificacion %}
+                                                    <small>
+                                                        ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.calificacion.nombre }})
+                                                    </small>
+                                                {% else %}
+                                                    <small>({{ detalle_opcion.0.get_accion_display }})</small>
+                                                {% endif %}
+                                            </h5>
                                         </th>
                                     </thead>
                                     <tbody>                        
