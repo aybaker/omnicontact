@@ -18,11 +18,12 @@ from fts_web.models import (
 )
 
 
-#===============================================================================
+#=========================================================================
 # Grupos de Atención
-#===============================================================================
+#=========================================================================
 
 class AgenteGrupoAtencionForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -46,6 +47,7 @@ AgentesGrupoAtencionFormSet = inlineformset_factory(
 
 
 class GrupoAtencionForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -60,11 +62,12 @@ class GrupoAtencionForm(forms.ModelForm):
         model = GrupoAtencion
 
 
-#===============================================================================
+#=========================================================================
 # Base Datos Contactos
-#===============================================================================
+#=========================================================================
 
 class BaseDatosContactoForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -77,12 +80,12 @@ class BaseDatosContactoForm(forms.ModelForm):
     class Meta:
         model = BaseDatosContacto
         exclude = ('columna_datos', 'sin_definir', 'columnas',
-            'nombre_archivo_importacion', 'cantidad_contactos')
+                   'nombre_archivo_importacion', 'cantidad_contactos')
 
 
-#===============================================================================
+#=========================================================================
 # Campaña
-#===============================================================================
+#=========================================================================
 
 class CampanaForm(forms.ModelForm):
     fecha_inicio = forms.DateField(
@@ -99,24 +102,31 @@ class CampanaForm(forms.ModelForm):
 
     def __init__(self, reciclado=False, *args, **kwargs):
         super(CampanaForm, self).__init__(*args, **kwargs)
-        if reciclado:
-            self.fields['nombre'].widget.attrs['readonly'] = True
-            self.fields['cantidad_canales'].widget.attrs['readonly'] = True
-            self.fields['cantidad_intentos'].widget.attrs['readonly'] = True
-            self.fields['segundos_ring'].widget.attrs['readonly'] = True
-            self.fields['bd_contacto'].widget.attrs['readonly'] = True
-        
         self.helper = FormHelper()
         self.helper.form_tag = False
-        self.helper.layout = Layout(
-            Field('nombre'),
-            Field('cantidad_canales'),
-            Field('cantidad_intentos'),
-            Field('segundos_ring'),
-            Field('fecha_inicio'),
-            Field('fecha_fin'),
-            Field('bd_contacto')
-        )
+
+        if reciclado:
+            self.fields.pop('bd_contacto')
+
+            layout = Layout(
+                Field('nombre'),
+                Field('cantidad_canales'),
+                Field('cantidad_intentos'),
+                Field('segundos_ring'),
+                Field('fecha_inicio'),
+                Field('fecha_fin')
+            )
+        else:
+            layout = Layout(
+                Field('nombre'),
+                Field('cantidad_canales'),
+                Field('cantidad_intentos'),
+                Field('segundos_ring'),
+                Field('fecha_inicio'),
+                Field('fecha_fin'),
+                Field('bd_contacto')
+            )
+        self.helper.layout = layout
 
     class Meta:
         model = Campana
@@ -124,6 +134,7 @@ class CampanaForm(forms.ModelForm):
 
 
 class AudioForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         super(AudioForm, self).__init__(*args, **kwargs)
         self.fields['audio_original'].required = True
@@ -140,12 +151,13 @@ class AudioForm(forms.ModelForm):
 
 
 class ConfirmaForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.add_input(
             Submit('confirma', 'Confirmar Nueva Campaña',
-                css_class='btn btn-success btn-lg')
+                   css_class='btn btn-success btn-lg')
         )
         # self.helper.add_input(
         #     Submit('cancela', 'Cancelar', css_class='btn-danger')
@@ -159,17 +171,18 @@ class ConfirmaForm(forms.ModelForm):
 
 class TipoRecicladoForm(forms.Form):
     tipo_reciclado = forms.TypedChoiceField(
-        choices = Campana.TIPO_RECICLADO,
-        widget = forms.RadioSelect,
-        required = True,
+        choices=Campana.TIPO_RECICLADO,
+        widget=forms.RadioSelect,
+        required=True,
     )
 
 
-#===============================================================================
+#=========================================================================
 # Calificaciones
-#===============================================================================
+#=========================================================================
 
 class CalificacionForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -183,9 +196,9 @@ class CalificacionForm(forms.ModelForm):
         model = Calificacion
 
 
-#===============================================================================
+#=========================================================================
 # Opciones
-#===============================================================================
+#=========================================================================
 
 class OpcionForm(forms.ModelForm):
 
@@ -225,9 +238,9 @@ class OpcionForm(forms.ModelForm):
         return cleaned_data
 
 
-#===============================================================================
+#=========================================================================
 # Actuación
-#===============================================================================
+#=========================================================================
 
 class ActuacionForm(forms.ModelForm):
     hora_desde = forms.TimeField(
