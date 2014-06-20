@@ -523,7 +523,6 @@ class AudioCampanaCreateView(UpdateView):
             )
             return self.form_invalid(form)
 
-
     def get_success_url(self):
         return reverse(
             'audio_campana',
@@ -905,14 +904,14 @@ class ActivaCampanaView(RedirectView):
 
 class TipoRecicladoCampanaView(FormView):
     """
-    Esta vista presenta la elección del tipo de reciclado iniciando el 
+    Esta vista presenta la elección del tipo de reciclado iniciando el
     proceso de reciclado de una camapan.
     """
 
     template_name = 'campana/reciclado/campana_tipo_reciclado.html'
     form_class = TipoRecicladoForm
 
-    def post(self, request, *args, **kwargs):       
+    def post(self, request, *args, **kwargs):
         self.campana_id = kwargs['pk']
         return super(TipoRecicladoCampanaView, self).post(request, args,
             kwargs)
@@ -920,9 +919,9 @@ class TipoRecicladoCampanaView(FormView):
     def form_valid(self, form):
         tipo_reciclado = form.cleaned_data['tipo_reciclado']
 
-        try:       
+        try:
             # Intenta generar la base de datos que se usará en la campana
-            # reciclada. 
+            # reciclada.
             bd_contacto_reciclada = BaseDatosContacto.objects.\
                 reciclar_base_datos(self.campana_id, tipo_reciclado)
         except FtsRecicladoBaseDatosContactoError, error:
@@ -938,12 +937,12 @@ class TipoRecicladoCampanaView(FormView):
             return self.form_invalid(form)
         else:
             try:
-                # Intenta reciclar la campana con el tipo de reciclado 
+                # Intenta reciclar la campana con el tipo de reciclado
                 # seleccionado.
                 self.campana_reciclada = Campana.objects.reciclar_campana(
                     self.campana_id, bd_contacto_reciclada)
             except FtsRecicladoCampanaError:
-                # TODO: En esta excepción verificar si la BD generada, 
+                # TODO: En esta excepción verificar si la BD generada,
                 # es una "nueva" en la que se reciclaron contactos,
                 # o si es la misma de la campana original. Si es una "nueva"
                 # definir si se borra o que acción se realiza.
@@ -992,9 +991,80 @@ class RedefinicionRecicladoCampanaView(UpdateView):
 
     def get_success_url(self):
         return reverse(
-            'confirma_reciclado_campana',
+            'actuacion_reciclado_campana',
             kwargs={"pk": self.object.pk}
         )
+
+
+class ActuacionRecicladoCampanaView(CreateView):
+    """
+    Esta vista crea uno o varios objetos Actuacion
+    para la Campana reciclada que se este creando.
+    Inicializa el form con campo campana (hidden)
+    con el id de campana que viene en la url.
+    """
+
+    template_name = 'campana/reciclado/actuacion_reciclado_campana.html'
+    model = Actuacion
+    context_object_name = 'actuacion'
+    form_class = ActuacionForm
+
+    def get_initial(self):
+        initial = super(ActuacionRecicladoCampanaView, self).get_initial()
+        if 'pk' in self.kwargs:
+            initial.update({
+                'campana': self.kwargs['pk'],
+            })
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            ActuacionRecicladoCampanaView, self).get_context_data(**kwargs)
+
+        self.campana = get_object_or_404(
+            Campana, pk=self.kwargs['pk']
+        )
+        context['campana'] = self.campana
+        return context
+
+    def get_success_url(self):
+        return reverse(
+            'actuacion_campana',
+            kwargs={"pk": self.kwargs['pk']}
+        )
+
+
+class ActuacionRecicladoCampanaDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto Actuación seleccionado.
+    """
+
+    model = Actuacion
+    template_name = \
+        'campana/reciclado/elimina_actuacion_reciclado_campana.html'
+
+    def get_object(self, queryset=None):
+        actuacion = super(ActuacionRecicladoCampanaDeleteView, self).\
+            get_object(queryset=None)
+
+        self.campana = actuacion.campana
+        return actuacion
+
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Actuación.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return reverse(
+            'actuacion_reciclado_campana',
+            kwargs={"pk": self.campana.pk}
+        )
+
 
 
 class ConfirmaRecicladoCampanaView(ConfirmaCampanaMixin):
