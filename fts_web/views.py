@@ -1066,7 +1066,6 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
         )
 
 
-
 class ConfirmaRecicladoCampanaView(ConfirmaCampanaMixin):
     template_name = 'campana/reciclado/confirma_reciclado_campana.html'
 
@@ -1159,7 +1158,7 @@ class CampanaEstadoOpcionesDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(CampanaEstadoOpcionesDetailView,
             self).get_context_data(**kwargs)
-        
+
         context['detalle_opciones'] = self.object.\
             obtener_detalle_opciones_seleccionadas()
         return context
