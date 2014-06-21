@@ -46,11 +46,10 @@
                     </tbody>
                 </table>
 
-
                 <table width="100%">
                 <tbody><tr>
                     {% for detalle_opcion in detalle_opciones %}
-                        {% if detalle_opcion.0.accion %}
+                        {% if detalle_opcion.0.accion >= 0 %}
                             <td>
                                 <table  class="table table-bordered">
                                     <thead>
@@ -59,6 +58,10 @@
                                                 {% if detalle_opcion.0.calificacion %}
                                                     <small>
                                                         ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.calificacion.nombre }})
+                                                    </small>
+                                                {% elif detalle_opcion.0.grupo_atencion %}
+                                                    <small>
+                                                        ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.grupo_atencion.nombre }})
                                                     </small>
                                                 {% else %}
                                                     <small>({{ detalle_opcion.0.get_accion_display }})</small>
