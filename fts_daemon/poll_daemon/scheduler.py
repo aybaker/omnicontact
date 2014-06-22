@@ -96,8 +96,7 @@ class RoundRobinTracker(object):
     def publish_statistics(self):
         """Publica las estadisticas, si corresponde"""
         if not self._statistics_service.shoud_update():
-            # FIXME: cambiar a logger.debug()
-            logger.info("publish_statistics(): no hace falta. Ignorando.")
+            logger.debug("publish_statistics(): no hace falta. Ignorando.")
             return
 
         logger.debug("publish_statistics(): publicando estadisticas")
@@ -310,6 +309,23 @@ class RoundRobinTracker(object):
             trackers_activos = \
                 self._campana_call_status.obtener_trackers_para_procesar()
 
+            #==================================================================
+            # [2] Refrescamos status de conexiones
+            # ANTES: lo haciamos despues de chequear si hay trackers activos
+            # AHORA: lo hacemos ANTES, porque sino, cuando ya no hay campañas
+            #  no se actualiza nunca, y se exportan estadisticas erroneas
+            #==================================================================
+
+            # Este refresco tambien se hace en el loop
+            # Usamos `refrescar_channel_status_si_es_posible()` para que se
+            # refresque AUN cuando ninguna campaña este al limite
+            self._asterisk_call_status.\
+                refrescar_channel_status_si_es_posible()
+                # ANTES usabamos: refrescar_channel_status_si_es_necesario()
+
+            #==================================================================
+            # [1] Actualizamos trackers de campaña (continuacion...)
+            #==================================================================
             if not bool(trackers_activos):
                 # No hay trabajo! Esperamos y hacemos `continue`
                 # +------------------------------------------------------------
@@ -328,14 +344,6 @@ class RoundRobinTracker(object):
                 # TODO: esto es asi porque, todavia, no exponemos el status
                 #  a la web!
                 continue
-
-            #==================================================================
-            # [2] Refrescamos status de conexiones
-            #==================================================================
-
-            # Este refresco tambien se hace en el loop
-            self._asterisk_call_status.\
-                refrescar_channel_status_si_es_necesario()
 
             # Si TODAS las campañas han llegado al límite, no tiene sentido
             # hacer un busy wait... mejor esperamos
