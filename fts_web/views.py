@@ -1079,7 +1079,7 @@ class ActuacionRecicladoCampanaView(CreateView):
 
     def get_success_url(self):
         return reverse(
-            'actuacion_campana',
+            'actuacion_reciclado_campana',
             kwargs={"pk": self.kwargs['pk']}
         )
 
