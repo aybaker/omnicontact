@@ -1,3 +1,30 @@
 <div style="padding: 0.5em;">
-	<a href="#">Llamadas en curso</a> : <span class="badge">{{daemon_stats.llamadas_en_curso|default:'?'}}</span>
+	
+	<a href="#">Daemon</a>:
+	{% if daemon_stats.running %}
+	   <span class="label label-success">OK</span>
+	{% else %}
+        <span class="label label-danger">ERR</span>
+	{% endif %}
+
+    -
+    
+    <span class="badge">
+        {% if daemon_stats.campanas_en_ejecucion == 0 %}
+          0
+        {% else %}
+          {{daemon_stats.campanas_en_ejecucion|default:'?'}}
+        {% endif %}
+    </span> <a href="#">campañas en ejecución</a>
+
+    -
+	
+	<span class="badge">
+		{% if daemon_stats.llamadas_en_curso == 0 %}
+		  0
+		{% else %}
+		  {{daemon_stats.llamadas_en_curso|default:'?'}}
+		{% endif %}
+	</span> <a href="#">llamadas en curso</a>
+	
 </div>

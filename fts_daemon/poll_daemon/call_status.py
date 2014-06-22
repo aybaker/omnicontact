@@ -31,7 +31,9 @@ class CampanaCallStatus(object):
         """Constructor"""
 
         self._trackers_campana_dict = {}
-        """Diccionario con los trackers de las campañas siendo procesadas.
+        """Diccionario con los trackers de las campañas, ya sea que
+        estan siendo procesadas, o baneadas.
+
         :key: :class:`fts_web.models.Campana`
         :value: :class:`.CampanaTracker`
         """
@@ -263,6 +265,11 @@ class CampanaCallStatus(object):
         `obtener_trackers_para_procesar()`
         """
         return list(self._trackers_activos)
+
+    @property
+    def count_trackers_activos(self):
+        """Devuelve cantidad de trackers activos."""
+        return len(self._trackers_activos)
 
     def update_call_status(self, full_status):
         """

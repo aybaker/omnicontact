@@ -103,7 +103,11 @@ class RoundRobinTracker(object):
         logger.debug("publish_statistics(): publicando estadisticas")
 
         stats = {}
-        stats['llamadas_en_curso'] = 0
+        stats['llamadas_en_curso'] = self._campana_call_status.\
+            get_count_llamadas()
+        stats['campanas_en_ejecucion'] = self._campana_call_status.\
+            count_trackers_activos
+        stats['running'] = True
         # TODO: usar time.clock() u alternativa
         stats['time'] = time.time()
         self._statistics_service.publish_statistics(stats)
