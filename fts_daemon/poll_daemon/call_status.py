@@ -382,61 +382,6 @@ class AsteriskCallStatus(object):
         if self.puede_refrescar():
             self.refrescar_channel_status()
 
-    def refrescar_channel_status_si_es_necesario(self):
-        """Si necesita refrescar, refresca"""
-        if self.necesita_refrescar_channel_status():
-            self.refrescar_channel_status()
-
-    def necesita_refrescar_channel_status(self):
-        """Devuelve booleano indicando si debe y es conveniente refrescar
-        el status de los channels de Asterisk.
-
-        Este metodo SOLO tiene en cuenta los limites de canales de las
-        campañas, por lo tanto, solo devolvera True si alguna de las
-        campañas está al límite.
-
-        Por lo tanto, NO SIRVE para refrescar el status cuando se ha
-        alcanzado el limite GLOBAL, y estamos esperando que se liberen
-        canales, ya que puede ser que, aunque se haya alcanzado el
-        limite GLOBAL, ninguna de las campañas haya alcanzado el limite.
-
-        QUIZA lo mejor sea que este metodo NO EXISTA, y solo chequear
-        el tiempo de la ultima actualizacion (o sea, siempre actualizar,
-        excepto si la ultima actualizacion fue hace poco), aunque no deja
-        de ser una optimizacion interesante, para no perder tiempo cuando
-        estamos haciendo originates.
-        """
-        trackers_activos = self._campana_call_status.trackers_activos
-        if not trackers_activos:
-            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
-                " porque no hay trackers activos")
-            return False
-
-        if not self.puede_refrescar():
-            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
-                " porque la ultima actualizacion fue recientemente")
-            return False
-
-        # Si llegamos aca, es porque `trackers_activos` NO esta vacio
-        al_limite = [tr.limite_alcanzado() for tr in trackers_activos]
-
-        # any(): si empty, return False
-        if any(al_limite):
-            pass  # Hay al menos 1 al limite
-        else:
-            # Ninguna esta al limite
-            logger.debug("necesita_refrescar_channel_status(): no actualizamos"
-                " porque no se alcanzo el limite en ninguna campaña")
-            return False
-
-        # DEBUG: si todas las campañas estan al limite, lo logueamos
-        if all(al_limite):
-            logger.debug("necesita_refrescar_channel_status(): todas las "
-                "campañas estan al limite")
-
-        logger.debug("necesita_refrescar_channel_status(): True")
-        return True
-
     def _get_status_por_campana(self):
         return self._ami_status_tracker.get_status_por_campana()
 

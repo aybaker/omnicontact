@@ -321,7 +321,6 @@ class RoundRobinTracker(object):
             # refresque AUN cuando ninguna campaña este al limite
             self._asterisk_call_status.\
                 refrescar_channel_status_si_es_posible()
-                # ANTES usabamos: refrescar_channel_status_si_es_necesario()
 
             #==================================================================
             # [1] Actualizamos trackers de campaña (continuacion...)
