@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.db import transaction
+from django.http.response import HttpResponse
 from django.views.generic import (
     CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
     RedirectView)
@@ -14,6 +15,7 @@ from django.views.generic import (
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config, create_queue_config_file
 from fts_daemon.audio_conversor import convertir_audio_de_campana
+from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_web.errors import (FtsAudioConversionError,
     FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
     FtsParserOpenFileError, FtsRecicladoCampanaError,
@@ -1294,6 +1296,21 @@ class CampanaReporteDetailView(DetailView):
 
     def get_queryset(self):
         return Campana.objects.obtener_finalizadas()
+
+
+#==============================================================================
+# Daemon
+#==============================================================================
+
+statistics_service = StatisticsService()
+
+
+def daemon_status(request):
+    """Devuelve HTML con informacion de status / estadisticas
+    del Daemon"""
+    stats = statistics_service.get_statistics()
+    return HttpResponse('Llamadas en curso: {0}'.format(
+        stats.get('llamadas_en_curso', '?')))
 
 
 #==============================================================================
