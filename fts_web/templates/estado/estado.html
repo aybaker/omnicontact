@@ -7,7 +7,7 @@
 
 <script type="text/javascript">
     var refreshDaemonStatus = function() {
-        $("#daemon_status").load("/daemon/stats/");
+        $("#daemon_status").load("{% url 'daemon_status' %}");
     }
 
     $(document).ready(function() {
@@ -24,7 +24,9 @@
 
 {% block content %}
 
-    <div id="daemon_status"><em>(esperando por status)</em></div>
+    <div id="daemon_status">
+        {% include "estado/daemon_status.html" %}
+    </div>
 
     <div class="panel panel-info">
         <!-- Default panel contents -->
