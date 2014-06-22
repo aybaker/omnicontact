@@ -48,10 +48,6 @@ class StatisticsService(object):
         logger.debug("StatisticsService.publish_statistics(): %s", stats)
         cache.set(STATISTICS_KEY, stats, STATISTICS_TIMEOUT)
 
-        # FIXME: quitar este logger.info()
-        logger.info("publish_statistics(): se publico: %s",
-            pprint.pformat(stats))
-
     def get_statistics(self):
         """Devuelve diccionario con estadisticas publicadas, o un diccionario
         vacio si no se encontraron estadisticas.
@@ -62,9 +58,6 @@ class StatisticsService(object):
                 " estadisticas publicadas.")
             return {}
 
-        # FIXME: quitar este logger.info()
-        logger.info("get_statistics(): se encontraron: %s",
-            pprint.pformat(stats))
         return stats
 
     def shoud_update(self):
