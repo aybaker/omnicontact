@@ -706,7 +706,7 @@ class ActuacionCampanaCreateView(CreateView):
         )
 
         if not self.campana.valida_actuaciones():
-            message = """<strong>Cuidado!</strong>
+            message = """<strong>¡Cuidado!</strong>
             Los días del rango de fechas de la Campaña NO coinciden con
             ningún día de las actuaciones programadas."""
             messages.add_message(
@@ -1011,9 +1011,10 @@ class RedefinicionRecicladoCampanaView(UpdateView):
     def get_success_url(self):
         campana = self.get_object()
         if not campana.valida_actuaciones():
-            message = """<strong>Cuidado!</strong>
-            Los días del rango de fechas de la Campaña NO coinciden con
-            ningún día de las actuaciones programadas."""
+            message = """<strong>¡Cuidado!</strong>
+            Los días del rango de fechas seteados en la campaña NO coinciden
+            con ningún día de las actuaciones programadas. Por consiguiente
+            la campaña NO se ejecutará."""
             messages.add_message(
                 self.request,
                 messages.WARNING,
@@ -1066,9 +1067,10 @@ class ActuacionRecicladoCampanaView(CreateView):
         )
 
         if not self.campana.valida_actuaciones():
-            message = """<strong>Cuidado!</strong>
-            Los días del rango de fechas de la Campaña NO coinciden con
-            ningún día de las actuaciones programadas."""
+            message = """<strong>¡Cuidado!</strong>
+            Los días del rango de fechas seteados en la campaña NO coinciden
+            con ningún día de las actuaciones programadas. Por consiguiente
+            la campaña NO se ejecutará."""
             messages.add_message(
                 self.request,
                 messages.WARNING,
@@ -1112,9 +1114,10 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
         )
 
         if not self.campana.valida_actuaciones():
-            message = """<strong>Cuidado!</strong>
-            Los días del rango de fechas de la Campaña NO coinciden con
-            ningún día de las actuaciones programadas."""
+            message = """<strong>¡Cuidado!</strong>
+            Los días del rango de fechas seteados en la campaña NO coinciden
+            con ningún día de las actuaciones programadas. Por consiguiente
+            la campaña NO se ejecutará."""
             messages.add_message(
                 self.request,
                 messages.WARNING,
