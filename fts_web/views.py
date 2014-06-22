@@ -698,6 +698,8 @@ class ActuacionCampanaCreateView(CreateView):
             Campana, pk=self.kwargs['pk']
         )
         context['campana'] = self.campana
+        context['actuaciones_validas'] =\
+            self.campana.obtener_actuaciones_validas()
         return context
 
     def form_valid(self, form):
@@ -1078,6 +1080,8 @@ class ActuacionRecicladoCampanaView(CreateView):
             Campana, pk=self.kwargs['pk']
         )
         context['campana'] = self.campana
+        context['actuaciones_validas'] =\
+            self.campana.obtener_actuaciones_validas()
         return context
 
     def form_valid(self, form):

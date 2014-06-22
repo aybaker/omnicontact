@@ -38,7 +38,13 @@
                         <tbody>
                             {% for actuacion in campana.actuaciones.all %}
                                 <tr>
-                                    <td>{{ actuacion.get_dia_semanal_display }}</td>
+                                    <td>
+                                        {% if actuacion in actuaciones_validas %}
+                                            <span class="text-success">{{ actuacion.get_dia_semanal_display }}</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ actuacion.get_dia_semanal_display }}</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{ actuacion.hora_desde }} Hs.</td>
                                     <td>{{ actuacion.hora_hasta }} Hs.</td>
                                     <td>
