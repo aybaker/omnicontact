@@ -8,7 +8,6 @@ from __future__ import unicode_literals
 import time
 
 from django.conf import settings
-from django.core.cache import cache
 from fts_daemon import llamador_contacto
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
@@ -16,6 +15,7 @@ from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
     NoMasContactosEnCampana, LimiteDeCanalesAlcanzadoError, \
     TodosLosContactosPendientesEstanEnCursoError
 from fts_daemon.poll_daemon.originate_throttler import OriginateThrottler
+from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_web.models import Campana
 import logging as _logging
 
@@ -81,6 +81,8 @@ class RoundRobinTracker(object):
 
         self._finalizador_de_campanas = finalizar_campana
 
+        self._statistics_service = StatisticsService()
+
         self.max_iterations = None
         """Cantidad de interaciones maxima que debe realizar ``generator()``.
         Si vale ``None``, no se realiza ningun control.
@@ -92,12 +94,19 @@ class RoundRobinTracker(object):
         return self._originate_throttler
 
     def publish_statistics(self):
-        """Publica las estadisticas al cache"""
-        logger.debug("publish_statistics()")
+        """Publica las estadisticas, si corresponde"""
+        if not self._statistics_service.shoud_update():
+            # FIXME: cambiar a logger.debug()
+            logger.info("publish_statistics(): no hace falta. Ignorando.")
+            return
+
+        logger.debug("publish_statistics(): publicando estadisticas")
+
         stats = {}
         stats['llamadas_en_curso'] = 0
+        # TODO: usar time.clock() u alternativa
         stats['time'] = time.time()
-        cache.set(stats, 60)
+        self._statistics_service.publish_statistics(stats)
 
     #
     # Eventos
@@ -285,6 +294,9 @@ class RoundRobinTracker(object):
                         "cantidad maxima de iteraciones: {0}".format(
                             self.max_iterations))
 
+            # Publicamos estadisticas si corresponde
+            self.publish_statistics()
+
             #==================================================================
             # [1] Actualizamos trackers de campaña
             #==================================================================
@@ -368,6 +380,9 @@ class RoundRobinTracker(object):
 
             # Trabajamos en copia, por si hace falta modificarse
             for tracker_campana in trackers_activos:
+
+                # Publicamos estadisticas si corresponde
+                self.publish_statistics()
 
                 # Si la campana esta al limite, la ignoramos
                 if tracker_campana.limite_alcanzado():
