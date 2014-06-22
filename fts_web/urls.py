@@ -168,7 +168,10 @@ urlpatterns = patterns('',
     #==========================================================================
     # Vistas para estadisticas
     #==========================================================================
-    url(r'^daemon/stats/', 'fts_web.views.daemon_status'),
+    url(r'^daemon/status/',
+        views.DaemonStatusView.as_view(),
+        name='daemon_status'
+    ),
 
     #==========================================================================
     # Vistas para pruebas

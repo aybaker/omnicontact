@@ -10,8 +10,7 @@ from django.db import transaction
 from django.http.response import HttpResponse
 from django.views.generic import (
     CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
-    RedirectView)
-
+    RedirectView, TemplateView)
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config, create_queue_config_file
 from fts_daemon.audio_conversor import convertir_audio_de_campana
@@ -1305,12 +1304,18 @@ class CampanaReporteDetailView(DetailView):
 statistics_service = StatisticsService()
 
 
-def daemon_status(request):
+class DaemonStatusView(TemplateView):
     """Devuelve HTML con informacion de status / estadisticas
     del Daemon"""
-    stats = statistics_service.get_statistics()
-    return HttpResponse('Llamadas en curso: {0}'.format(
-        stats.get('llamadas_en_curso', '?')))
+
+    template_name = "estado/daemon_status.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DaemonStatusView, self).get_context_data(**kwargs)
+
+        daemon_stats = statistics_service.get_statistics()
+        context['daemon_stats'] = daemon_stats
+        return context
 
 
 #==============================================================================
