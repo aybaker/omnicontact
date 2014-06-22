@@ -5,12 +5,27 @@
     <script type="text/javascript" src="{% static 'fts_web/js/svg.jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'fts_web/js/pygal-tooltips.js' %}"></script>
 
-    <script type="text/javascript">
-        setInterval(function(){window.location.reload(true)},10000);
-    </script>
+<script type="text/javascript">
+    var refreshDaemonStatus = function() {
+        $("#daemon_status").load("/daemon/stats/");
+    }
+
+    $(document).ready(function() {
+        refreshDaemonStatus();
+        setInterval(function() {
+            window.location.reload(true)
+        }, 10000);
+        setInterval(refreshDaemonStatus, 500);
+    });
+</script>
+
 {% endblock %}
+<!--  -->
 
 {% block content %}
+
+    <div id="daemon_status"><em>(esperando por status)</em></div>
+
     <div class="panel panel-info">
         <!-- Default panel contents -->
         <div class="panel-heading">                
