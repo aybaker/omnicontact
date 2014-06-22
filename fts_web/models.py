@@ -959,22 +959,37 @@ class Campana(models.Model):
         Corrobora que al menos uno de los días semanales del rango de fechas
         de la campana concuerde con algún dia de la actuación que tenga la
         campana al momento de ser consultado este método.
+        Si la campaña tiene un solo día de ejecución o si tiene un solo día
+        de actuación, y los días semanales coinciden y es hoy, valida que
+        hora actual sea menor que la hora_hasta de la actuación.
         """
+        valida = False
+        hoy_ahora = datetime.datetime.today()
+        hoy = hoy_ahora.date()
+        ahora = hoy_ahora.time()
+
         fecha_inicio = self.fecha_inicio
         fecha_fin = self.fecha_fin
 
-        actuaciones = self.actuaciones.all()
+        lista_actuaciones = [actuacion.dia_semanal for actuacion in
+            self.actuaciones.all()]
 
         dias_totales = (self.fecha_fin - self.fecha_inicio).days + 1
         for numero_dia in range(dias_totales):
-            dia_semanal = (self.fecha_inicio + datetime.timedelta(
-                days=numero_dia)).weekday()
+            dia_actual = (self.fecha_inicio + datetime.timedelta(
+                days=numero_dia))
+            dia_semanal_actual = dia_actual.weekday()
 
-            for actuacion in actuaciones:
-                if actuacion.dia_semanal == dia_semanal:
-                    return True
-        return False
+            if dia_semanal_actual in lista_actuaciones:
+                valida = True
 
+                if len(lista_actuaciones) == 1 or dias_totales == 1:
+                    if dia_actual == hoy:
+                        actuacion = self.actuaciones.get(
+                            dia_semanal=dia_semanal_actual)
+                        if ahora > actuacion.hora_hasta:
+                            valida = False
+        return valida
 
     def __unicode__(self):
         return self.nombre
