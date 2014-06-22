@@ -4,11 +4,13 @@ from __future__ import unicode_literals
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.db import transaction
 from django.views.generic import (
     CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
     RedirectView)
+
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config, create_queue_config_file
 from fts_daemon.audio_conversor import convertir_audio_de_campana
@@ -707,8 +709,9 @@ class ActuacionCampanaCreateView(CreateView):
 
         if not self.campana.valida_actuaciones():
             message = """<strong>¡Cuidado!</strong>
-            Los días del rango de fechas de la Campaña NO coinciden con
-            ningún día de las actuaciones programadas."""
+            Los días del rango de fechas seteados en la campaña NO coinciden
+            con ningún día de las actuaciones programadas. Por consiguiente
+            la campaña NO se ejecutará."""
             messages.add_message(
                 self.request,
                 messages.WARNING,
@@ -749,10 +752,29 @@ class ActuacionCampanaDeleteView(DeleteView):
             messages.SUCCESS,
             message,
         )
+
         return reverse(
             'actuacion_campana',
             kwargs={"pk": self.campana.pk}
         )
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.delete()
+
+        if not self.campana.valida_actuaciones():
+            message = """<strong>¡Cuidado!</strong>
+            Los días del rango de fechas seteados en la campaña NO coinciden
+            con ningún día de las actuaciones programadas. Por consiguiente
+            la campaña NO se ejecutará."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+
+        return HttpResponseRedirect(success_url)
 
 
 class ConfirmaCampanaMixin(UpdateView):
@@ -1113,6 +1135,16 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
             message,
         )
 
+        return reverse(
+            'actuacion_reciclado_campana',
+            kwargs={"pk": self.campana.pk}
+        )
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.delete()
+
         if not self.campana.valida_actuaciones():
             message = """<strong>¡Cuidado!</strong>
             Los días del rango de fechas seteados en la campaña NO coinciden
@@ -1124,10 +1156,7 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
                 message,
             )
 
-        return reverse(
-            'actuacion_reciclado_campana',
-            kwargs={"pk": self.campana.pk}
-        )
+        return HttpResponseRedirect(success_url)
 
 
 class ConfirmaRecicladoCampanaView(ConfirmaCampanaMixin):
