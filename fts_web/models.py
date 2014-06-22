@@ -991,6 +991,34 @@ class Campana(models.Model):
                             valida = False
         return valida
 
+    def obtener_actuaciones_validas(self):
+        hoy_ahora = datetime.datetime.today()
+        hoy = hoy_ahora.date()
+        ahora = hoy_ahora.time()
+
+        fecha_inicio = self.fecha_inicio
+        fecha_fin = self.fecha_fin
+
+        lista_actuaciones = [actuacion.dia_semanal for actuacion in
+            self.actuaciones.all()]
+        lista_actuaciones_validas = []
+
+        dias_totales = (self.fecha_fin - self.fecha_inicio).days + 1
+        for numero_dia in range(dias_totales):
+            dia_actual = (self.fecha_inicio + datetime.timedelta(
+                days=numero_dia))
+            dia_semanal_actual = dia_actual.weekday()
+
+            if dia_semanal_actual in lista_actuaciones:
+                actuacion = self.actuaciones.get(
+                    dia_semanal=dia_semanal_actual)
+                if len(lista_actuaciones) == 1 or dias_totales == 1:
+                    if dia_actual == hoy:
+                        if ahora > actuacion.hora_hasta:
+                            continue
+                lista_actuaciones_validas.append(actuacion)
+        return lista_actuaciones_validas
+
     def __unicode__(self):
         return self.nombre
 
