@@ -698,6 +698,25 @@ class ActuacionCampanaCreateView(CreateView):
         context['campana'] = self.campana
         return context
 
+    def form_valid(self, form):
+        form_valid = super(ActuacionCampanaCreateView, self).form_valid(form)
+
+        self.campana = get_object_or_404(
+            Campana, pk=self.kwargs['pk']
+        )
+
+        if not self.campana.valida_actuaciones():
+            message = """<strong>Cuidado!</strong>
+            Los días del rango de fechas de la Campaña NO coinciden con
+            ningún día de las actuaciones programadas."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+
+        return form_valid
+
     def get_success_url(self):
         return reverse(
             'actuacion_campana',
@@ -990,6 +1009,17 @@ class RedefinicionRecicladoCampanaView(UpdateView):
         return form_class(reciclado=True, **self.get_form_kwargs())
 
     def get_success_url(self):
+        campana = self.get_object()
+        if not campana.valida_actuaciones():
+            message = """<strong>Cuidado!</strong>
+            Los días del rango de fechas de la Campaña NO coinciden con
+            ningún día de las actuaciones programadas."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+
         return reverse(
             'actuacion_reciclado_campana',
             kwargs={"pk": self.object.pk}
@@ -1027,6 +1057,26 @@ class ActuacionRecicladoCampanaView(CreateView):
         context['campana'] = self.campana
         return context
 
+    def form_valid(self, form):
+        form_valid = super(ActuacionRecicladoCampanaView, self).form_valid(
+            form)
+
+        self.campana = get_object_or_404(
+            Campana, pk=self.kwargs['pk']
+        )
+
+        if not self.campana.valida_actuaciones():
+            message = """<strong>Cuidado!</strong>
+            Los días del rango de fechas de la Campaña NO coinciden con
+            ningún día de las actuaciones programadas."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+
+        return form_valid
+
     def get_success_url(self):
         return reverse(
             'actuacion_campana',
@@ -1060,6 +1110,17 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
             messages.SUCCESS,
             message,
         )
+
+        if not self.campana.valida_actuaciones():
+            message = """<strong>Cuidado!</strong>
+            Los días del rango de fechas de la Campaña NO coinciden con
+            ningún día de las actuaciones programadas."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+
         return reverse(
             'actuacion_reciclado_campana',
             kwargs={"pk": self.campana.pk}
