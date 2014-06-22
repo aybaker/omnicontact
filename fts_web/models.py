@@ -953,6 +953,29 @@ class Campana(models.Model):
                 csvwiter.writerow(lista_opciones)
         return file_url
 
+    def valida_actuaciones(self):
+        """
+        Este método verifica que la actuaciones de una campana, sean válidas.
+        Corrobora que al menos uno de los días semanales del rango de fechas
+        de la campana concuerde con algún dia de la actuación que tenga la
+        campana al momento de ser consultado este método.
+        """
+        fecha_inicio = self.fecha_inicio
+        fecha_fin = self.fecha_fin
+
+        actuaciones = self.actuaciones.all()
+
+        dias_totales = (self.fecha_fin - self.fecha_inicio).days + 1
+        for numero_dia in range(dias_totales):
+            dia_semanal = (self.fecha_inicio + datetime.timedelta(
+                days=numero_dia)).weekday()
+
+            for actuacion in actuaciones:
+                if actuacion.dia_semanal == dia_semanal:
+                    return True
+        return False
+
+
     def __unicode__(self):
         return self.nombre
 
