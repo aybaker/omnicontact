@@ -1240,6 +1240,7 @@ class CampanaPorEstadoListView(ListView):
         context = super(CampanaPorEstadoListView, self).get_context_data(
            **kwargs)
         context['campanas_ejecucion'] = Campana.objects.obtener_ejecucion()
+        _update_context_with_statistics(context)
         return context
 
 
@@ -1304,6 +1305,13 @@ class CampanaReporteDetailView(DetailView):
 statistics_service = StatisticsService()
 
 
+def _update_context_with_statistics(context):
+    """Metodo utilitario. Recibe un contexto, y setea en el
+    las estadisticas del Daemon."""
+    daemon_stats = statistics_service.get_statistics()
+    context['daemon_stats'] = daemon_stats
+
+
 class DaemonStatusView(TemplateView):
     """Devuelve HTML con informacion de status / estadisticas
     del Daemon"""
@@ -1312,9 +1320,7 @@ class DaemonStatusView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(DaemonStatusView, self).get_context_data(**kwargs)
-
-        daemon_stats = statistics_service.get_statistics()
-        context['daemon_stats'] = daemon_stats
+        _update_context_with_statistics(context)
         return context
 
 
