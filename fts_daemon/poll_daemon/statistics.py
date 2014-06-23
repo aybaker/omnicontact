@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 
 import datetime
 
-from django.core.cache import cache
+# from django.core.cache import cache
 from django.utils import timezone
 import logging as _logging
 
@@ -29,8 +29,13 @@ class StatisticsService(object):
     usando el cache de Django.
     """
 
-    def __init__(self):
+    def __init__(self, cache):
         """Constructor"""
+
+        self._cache = cache
+        """Cache object a utilizar.
+        Por ej: django.core.cache.get_cache()
+        """
 
         self._ultimo_update = timezone.now() - datetime.timedelta(days=30)
         """Ultima vez q' se publicaron las estadisticas"""
@@ -47,13 +52,13 @@ class StatisticsService(object):
 
         stats.update({'_time': self._ultimo_update})
         logger.debug("StatisticsService.publish_statistics(): %s", stats)
-        cache.set(STATISTICS_KEY, stats, STATISTICS_TIMEOUT)
+        self._cache.set(STATISTICS_KEY, stats, STATISTICS_TIMEOUT)
 
     def get_statistics(self):
         """Devuelve diccionario con estadisticas publicadas, o un diccionario
         vacio si no se encontraron estadisticas.
         """
-        stats = cache.get(STATISTICS_KEY)
+        stats = self._cache.get(STATISTICS_KEY)
         if stats is None:
             logger.info("StatisticsService.get_statistics(): no se encontraron"
                 " estadisticas publicadas.")

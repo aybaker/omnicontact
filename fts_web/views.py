@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import messages
+from django.core.cache import get_cache
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
@@ -1304,7 +1305,7 @@ class CampanaReporteDetailView(DetailView):
 # Daemon
 #==============================================================================
 
-statistics_service = StatisticsService()
+statistics_service = StatisticsService(cache=get_cache('default'))
 
 
 def _update_context_with_statistics(context):

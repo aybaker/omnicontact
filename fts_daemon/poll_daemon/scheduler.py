@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 import time
 
 from django.conf import settings
+from django.core.cache import get_cache
 from fts_daemon import llamador_contacto
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
@@ -81,7 +82,9 @@ class RoundRobinTracker(object):
 
         self._finalizador_de_campanas = finalizar_campana
 
-        self._statistics_service = StatisticsService()
+        self._statistics_service = StatisticsService(
+            cache=get_cache('default')
+        )
 
         self.max_iterations = None
         """Cantidad de interaciones maxima que debe realizar ``generator()``.
