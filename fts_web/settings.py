@@ -428,16 +428,13 @@ assert type(FTS_DAEMON_ORIGINATES_PER_SECOND) >= 0.0, \
     "FTS_DAEMON_ORIGINATES_PER_SECOND debe >= 0.0"
 
 
-# ~~~~~ Customizators
+# ~~~~~ UWSGI_CACHE_FALLBACK
 
-if DEBUG:
-    # True - if uwsgi is not importable this cache backend will
-    #    alias to LocMemCache
-    UWSGI_CACHE_FALLBACK = True
-else:
-    # False - raises Exception if uwsgi cannot be imported
-    UWSGI_CACHE_FALLBACK = False
+UWSGI_CACHE_FALLBACK = True
 
+## Si lo desactivamos, los comandos ejecutados con 'manage.py'
+## fallan! (porque no son ejecutados en uWSGI, doh)
+## y por lo tanto, syncdb, migrate, etc. no funcionan.
 
 # ~~~~~ Customizators
 
