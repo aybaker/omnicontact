@@ -4,28 +4,37 @@
 	
 	{% if daemon_stats.running %}
 	   <span class="label label-success">OK</span>
+
+        -
+
+        <span class="badge">
+            {% if daemon_stats.campanas_en_ejecucion == 0 %}
+              0
+            {% else %}
+              {{daemon_stats.campanas_en_ejecucion|default:'?'}}
+            {% endif %}
+        </span> campañas en ejecución
+    
+        -
+        
+        <span class="badge">
+            {% if daemon_stats.llamadas_en_curso == 0 %}
+              0
+            {% else %}
+              {{daemon_stats.llamadas_en_curso|default:'?'}}
+            {% endif %}
+        </span> llamadas en curso
+    
+        -
+        
+        {% if daemon_stats.sleeping %}
+           <span class="label label-info">Esperando...</span>
+        {% else %}
+            <span class="label label-success">Ejecutando...</span>
+        {% endif %}
+
 	{% else %}
         <span class="label label-danger">ERR</span>
 	{% endif %}
 
-    -
-    
-    <span class="badge">
-        {% if daemon_stats.campanas_en_ejecucion == 0 %}
-          0
-        {% else %}
-          {{daemon_stats.campanas_en_ejecucion|default:'?'}}
-        {% endif %}
-    </span> campañas en ejecución
-
-    -
-	
-	<span class="badge">
-		{% if daemon_stats.llamadas_en_curso == 0 %}
-		  0
-		{% else %}
-		  {{daemon_stats.llamadas_en_curso|default:'?'}}
-		{% endif %}
-	</span> llamadas en curso
-	
 </div>

@@ -93,13 +93,15 @@ class RoundRobinTracker(object):
     def originate_throttler(self):
         return self._originate_throttler
 
-    def publish_statistics(self):
-        """Publica las estadisticas, si corresponde"""
-        if not self._statistics_service.shoud_update():
+    def publish_statistics(self, sleeping=False, force=False):
+        """Publica las estadisticas, si corresponde."""
+
+        if force or self._statistics_service.shoud_update():
+            logger.debug("publish_statistics(): publicando estadisticas")
+            # y continuamos...
+        else:
             logger.debug("publish_statistics(): no hace falta. Ignorando.")
             return
-
-        logger.debug("publish_statistics(): publicando estadisticas")
 
         stats = {}
         stats['llamadas_en_curso'] = self._campana_call_status.\
@@ -107,8 +109,10 @@ class RoundRobinTracker(object):
         stats['campanas_en_ejecucion'] = self._campana_call_status.\
             count_trackers_activos
         stats['running'] = True
+        stats['sleeping'] = sleeping
         # TODO: usar time.clock() u alternativa
         stats['time'] = time.time()
+
         self._statistics_service.publish_statistics(stats)
 
     #
@@ -248,9 +252,13 @@ class RoundRobinTracker(object):
         """Metodo que realiza la espera real Si ``espera`` es < 0,
         no hace nada
         """
-        if espera > 0:
-            self.publish_statistics()
+        espera = float(espera)
+        if espera > 0.0:
+            # TODO: si esto tarda mucho, puede hacer que la espera
+            # sea mayor que la requerida
+            self.publish_statistics(sleeping=True, force=True)
             time.sleep(espera)
+            self.publish_statistics(sleeping=False, force=True)
 
     def sleep(self, espera):
         """Produce espera de (al menos) ``espera`` segundos. Mientras
@@ -298,7 +306,7 @@ class RoundRobinTracker(object):
                             self.max_iterations))
 
             # Publicamos estadisticas si corresponde
-            self.publish_statistics()
+            self.publish_statistics(sleeping=False)
 
             #==================================================================
             # [1] Actualizamos trackers de campaña
@@ -357,6 +365,7 @@ class RoundRobinTracker(object):
                 logger.info("Todas las campañas han llegado al límite. "
                     "Esperamos %s segs. y reiniciamos round",
                     settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
+
                 self.sleep(settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
                 # Reiniciamos con la esperaza de que se actualizan trackers
                 # y status
@@ -393,7 +402,7 @@ class RoundRobinTracker(object):
             for tracker_campana in trackers_activos:
 
                 # Publicamos estadisticas si corresponde
-                self.publish_statistics()
+                self.publish_statistics(sleeping=False)
 
                 # Si la campana esta al limite, la ignoramos
                 if tracker_campana.limite_alcanzado():
