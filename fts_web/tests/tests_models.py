@@ -145,6 +145,15 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         self.assertEqual(bd_contacto_reciclada.cantidad_contactos, 
             Contacto.objects.filter(bd_contacto=bd_contacto_reciclada).count())
 
+    def test_campana_obtener_detalle_opciones_seleccionadas(self):
+        campana = self._crea_campana_emula_procesamiento()
+
+        detalle_opciones = campana.obtener_detalle_opciones_seleccionadas()
+        self.assertTrue(len(detalle_opciones))
+        for detalle_opcion in detalle_opciones:
+            self.assertIn(type(detalle_opcion[0]), [int, Opcion])
+            self.assertTrue(len(detalle_opcion[1]))
+
 
 class CampanaTest(FTSenderBaseTest):
     """Clase para testear Campana y CampanaManager"""
