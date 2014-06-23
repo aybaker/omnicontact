@@ -409,7 +409,7 @@ if 'SKIP_SELENIUM' not in os.environ:
             url = reverse('tipo_reciclado_campana', kwargs={"pk": campana.id})
             self.render_y_chequear(url)
 
-        def test_render_redefinicion_campana(self):
+        def test_render_redefinicion_reciclado_campana(self):
             hora_desde = datetime.time(00, 00)
             hora_hasta = datetime.time(23, 59)
 
@@ -433,6 +433,33 @@ if 'SKIP_SELENIUM' not in os.environ:
 
             # Renderizamos selección de tipo de reciclado
             url = reverse('redefinicion_reciclado_campana',
+                kwargs={"pk": campana_reciclada.id})
+            self.render_y_chequear(url)
+
+        def test_render_confirma_reciclado_campana(self):
+            hora_desde = datetime.time(00, 00)
+            hora_hasta = datetime.time(23, 59)
+
+            bd_contacto = self.crear_base_datos_contacto(10)
+
+            campana = self.crear_campana_activa()
+            self.crea_calificaciones(campana)
+            calificaciones = Calificacion.objects.filter(campana=campana)
+            for digito, calificacion in enumerate(calificaciones):
+                self.crea_campana_opcion(digito, campana,
+                    calificacion=calificacion)
+            [self.crea_campana_actuacion(dia_semanal, hora_desde, hora_hasta,
+            campana) for dia_semanal in range(0, 4)]
+
+            campana.finalizar()
+
+            # Reciclamos la campana.
+            campana_reciclada = Campana.objects.reciclar_campana(campana.pk,
+            bd_contacto)
+
+
+            # Renderizamos selección de tipo de reciclado
+            url = reverse('confirma_reciclado_campana',
                 kwargs={"pk": campana_reciclada.id})
             self.render_y_chequear(url)
 
