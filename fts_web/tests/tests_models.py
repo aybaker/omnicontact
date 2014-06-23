@@ -624,6 +624,35 @@ class CampanaTest(FTSenderBaseTest):
             campana_reciclada.segundos_ring)
         self.assertFalse(campana.nombre == campana_reciclada.nombre)
 
+    def test_campana_valida_actuaciones(self):
+        # Verificamos una campaña válida.
+        fecha_inicio = datetime.datetime.today().date()
+        fecha_fin = fecha_inicio + datetime.timedelta(days=2)
+        dia_semanal = datetime.datetime.today().weekday()
+        hora_desde = datetime.datetime.now()
+        hora_hasta = hora_desde + datetime.timedelta(hours=1)
+
+        campana_valida = self.crear_campana_activa(fecha_inicio=fecha_inicio,
+                                                   fecha_fin=fecha_fin,)
+        self.crea_campana_actuacion(
+            dia_semanal, hora_desde.time(), hora_hasta.time(), campana_valida)
+        self.assertTrue(campana_valida.valida_actuaciones())
+
+        # Verificamos una campaña inválida.
+        fecha_inicio = (datetime.datetime.today().date() +
+                        datetime.timedelta(days=2))
+        fecha_fin = fecha_inicio + datetime.timedelta(days=2)
+        dia_semanal = datetime.datetime.today().weekday()
+        hora_desde = datetime.datetime.now()
+        hora_hasta = hora_desde + datetime.timedelta(hours=1)
+
+        campana_invalida = self.crear_campana_activa(fecha_inicio=fecha_inicio,
+                                                     fecha_fin=fecha_fin,)
+        self.crea_campana_actuacion(
+            dia_semanal, hora_desde.time(), hora_hasta.time(),
+            campana_invalida)
+        self.assertFalse(campana_invalida.valida_actuaciones())
+
 
 class FinalizarVencidasTest(FTSenderBaseTest):
     """Clase para testear Campana.finalizar_vencidas()"""
