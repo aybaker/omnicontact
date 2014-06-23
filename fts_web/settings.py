@@ -285,6 +285,12 @@ FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES = 3.0
 Debe ser float. Para ser usado en sleep.
 """
 
+FTS_DAEMON_STATS_VALIDEZ = 5
+"""Por cuantos segundos se consideran validios las estadisticas
+obtenidas del cache. Si la estadistica obtenida desde el cache
+fue creada hace mas de `FTS_DAEMON_STATS_VALIDEZ` segundos,
+se muestra un WARN, avisando que las estadisticas son viejas."""
+
 #FTS_MARGEN_FINALIZACION_CAMPANA = 600
 #"""Cuanto tiempo debe pasar (despues del ultimo evento) para
 #finalizar una campana

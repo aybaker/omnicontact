@@ -9,6 +9,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.db import transaction
 from django.http.response import HttpResponse
 from django.utils import timezone
+from django.conf import settings
 from django.views.generic import (
     CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
     RedirectView, TemplateView)
@@ -1320,7 +1321,7 @@ def _update_context_with_statistics(context):
             logger.warn("_update_context_with_statistics(): delta.days: %s",
                 delta.days)
         # elif delta.seconds == 0 and delta.microseconds > 20000:
-        elif delta.seconds > 5:
+        elif delta.seconds > settings.FTS_DAEMON_STATS_VALIDEZ:
             context['daemon_stats_valid'] = False
         else:
             context['daemon_stats_valid'] = True
