@@ -972,7 +972,7 @@ class Campana(models.Model):
         fecha_fin = self.fecha_fin
 
         lista_actuaciones = [actuacion.dia_semanal for actuacion in
-            self.actuaciones.all()]
+                             self.actuaciones.all()]
 
         dias_totales = (self.fecha_fin - self.fecha_inicio).days + 1
         for numero_dia in range(dias_totales):
@@ -982,13 +982,11 @@ class Campana(models.Model):
 
             if dia_semanal_actual in lista_actuaciones:
                 valida = True
-
-                if len(lista_actuaciones) == 1 or dias_totales == 1:
-                    if dia_actual == hoy:
-                        actuacion = self.actuaciones.get(
-                            dia_semanal=dia_semanal_actual)
-                        if ahora > actuacion.hora_hasta:
-                            valida = False
+                actuaciones_diaria = self.actuaciones.filter(
+                    dia_semanal=dia_semanal_actual)
+                for actuacion in actuaciones_diaria:
+                    if dia_actual == hoy and ahora > actuacion.hora_hasta:
+                        valida = False
         return valida
 
     def obtener_actuaciones_validas(self):
@@ -1000,7 +998,7 @@ class Campana(models.Model):
         fecha_fin = self.fecha_fin
 
         lista_actuaciones = [actuacion.dia_semanal for actuacion in
-            self.actuaciones.all()]
+                             self.actuaciones.all()]
         lista_actuaciones_validas = []
 
         dias_totales = (self.fecha_fin - self.fecha_inicio).days + 1
@@ -1010,13 +1008,15 @@ class Campana(models.Model):
             dia_semanal_actual = dia_actual.weekday()
 
             if dia_semanal_actual in lista_actuaciones:
-                actuacion = self.actuaciones.get(
+                actuaciones_diaria = self.actuaciones.filter(
                     dia_semanal=dia_semanal_actual)
-                if len(lista_actuaciones) == 1 or dias_totales == 1:
-                    if dia_actual == hoy:
-                        if ahora > actuacion.hora_hasta:
-                            continue
-                lista_actuaciones_validas.append(actuacion)
+                for actuacion in actuaciones_diaria:
+                    actuacion_valida = True
+                    if dia_actual == hoy and ahora > actuacion.hora_hasta:
+                        actuacion_valida = False
+
+                    if actuacion_valida:
+                        lista_actuaciones_validas.append(actuacion)
         return lista_actuaciones_validas
 
     def __unicode__(self):
