@@ -6,7 +6,6 @@ Exports the statistics to be used by other systems.
 from __future__ import unicode_literals
 
 import datetime
-import pprint
 
 from django.core.cache import cache
 from django.utils import timezone

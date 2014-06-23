@@ -1,6 +1,7 @@
-<div style="padding: 0.5em;">
+<div class="well well-sm">
+
+	<strong>Daemon</strong>:
 	
-	<a href="#">Daemon</a>:
 	{% if daemon_stats.running %}
 	   <span class="label label-success">OK</span>
 	{% else %}
@@ -15,7 +16,7 @@
         {% else %}
           {{daemon_stats.campanas_en_ejecucion|default:'?'}}
         {% endif %}
-    </span> <a href="#">campañas en ejecución</a>
+    </span> campañas en ejecución
 
     -
 	
@@ -25,6 +26,6 @@
 		{% else %}
 		  {{daemon_stats.llamadas_en_curso|default:'?'}}
 		{% endif %}
-	</span> <a href="#">llamadas en curso</a>
+	</span> llamadas en curso
 	
 </div>
