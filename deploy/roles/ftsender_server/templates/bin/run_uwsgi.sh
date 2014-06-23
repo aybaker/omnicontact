@@ -12,6 +12,7 @@
     --python-path=/home/ftsender/deploy/app \
     --python-path=/home/ftsender/deploy/local \
     --static-map /static=${BASEDIR_WEB}/fts_web/static \
+    --cache2 name=fts-cache,items=100 \
     --mule=/home/ftsender/deploy/app/fts_daemon/poll_daemon/main.py \
     --mule=/home/ftsender/deploy/app/fts_daemon/fastagi_daemon.py \
     --mule=/home/ftsender/deploy/app/fts_daemon/finalizador_vencidas_daemon/main.py \
