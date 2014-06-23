@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.db import transaction
 from django.http.response import HttpResponse
+from django.utils import timezone
 from django.views.generic import (
     CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
     RedirectView, TemplateView)
@@ -1309,6 +1310,21 @@ def _update_context_with_statistics(context):
     """Metodo utilitario. Recibe un contexto, y setea en el
     las estadisticas del Daemon."""
     daemon_stats = statistics_service.get_statistics()
+    stats_timestamp = daemon_stats.get('_time', None)
+    if stats_timestamp is None:
+        context['daemon_stats_valid'] = False
+    else:
+        delta = timezone.now() - stats_timestamp
+        if delta.days != 0:
+            context['daemon_stats_valid'] = False
+            logger.warn("_update_context_with_statistics(): delta.days: %s",
+                delta.days)
+        # elif delta.seconds == 0 and delta.microseconds > 20000:
+        elif delta.seconds > 5:
+            context['daemon_stats_valid'] = False
+        else:
+            context['daemon_stats_valid'] = True
+
     context['daemon_stats'] = daemon_stats
 
 

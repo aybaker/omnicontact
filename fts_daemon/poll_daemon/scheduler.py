@@ -110,8 +110,6 @@ class RoundRobinTracker(object):
             count_trackers_activos
         stats['running'] = True
         stats['sleeping'] = sleeping
-        # TODO: usar time.clock() u alternativa
-        stats['time'] = time.time()
 
         self._statistics_service.publish_statistics(stats)
 

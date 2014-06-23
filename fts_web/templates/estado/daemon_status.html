@@ -33,6 +33,13 @@
             <span class="label label-success">Ejecutando...</span>
         {% endif %}
 
+        {% if not daemon_stats_valid %}
+	        -
+            <span class="label label-warning">
+                (estadisticas desactualizadas)
+            </span>
+        {% endif %}
+
 	{% else %}
         <span class="label label-danger">ERR</span>
 	{% endif %}

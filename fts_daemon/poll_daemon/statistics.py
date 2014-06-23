@@ -44,6 +44,8 @@ class StatisticsService(object):
         assert isinstance(stats, dict)
 
         self._ultimo_update = timezone.now()
+
+        stats.update({'_time': self._ultimo_update})
         logger.debug("StatisticsService.publish_statistics(): %s", stats)
         cache.set(STATISTICS_KEY, stats, STATISTICS_TIMEOUT)
 
