@@ -31,3 +31,11 @@ En otra consola:
 
     $ USE_PG=1 python manage.py crear_campana_basica --bd=160 --canales=30
 
+
+Build / Deploy
+--------------
+
+Deploy a servidor de pruebas (VM):
+
+    $ ./build.sh -i deploy/hosts-virtual-pruebas
+
