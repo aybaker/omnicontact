@@ -653,6 +653,41 @@ class CampanaTest(FTSenderBaseTest):
             campana_invalida)
         self.assertFalse(campana_invalida.valida_actuaciones())
 
+    def test_campana_obtener_actuaciones_validas(self):
+        fecha_inicio = datetime.datetime.today().date()
+        fecha_fin = fecha_inicio + datetime.timedelta(days=1)
+
+        campana = self.crear_campana_activa(fecha_inicio=fecha_inicio,
+                                            fecha_fin=fecha_fin,)
+
+        hora_desde = datetime.datetime.now() - datetime.timedelta(hours=2)
+        hora_hasta = hora_desde + datetime.timedelta(hours=4)
+
+        # Actuación válida.
+        dia_semanal = datetime.datetime.today().weekday()
+        actuacion1 = self.crea_campana_actuacion(
+            dia_semanal, hora_desde.time(), hora_hasta.time(),
+            campana)
+
+        # Actuación válida.
+        dia_semanal = (datetime.datetime.today() +
+                       datetime.timedelta(days=1)).weekday()
+        actuacion2 = self.crea_campana_actuacion(
+            dia_semanal, hora_desde.time(), hora_hasta.time(),
+            campana)
+
+        # Actuación inválida.
+        dia_semanal = (datetime.datetime.today() +
+                       datetime.timedelta(days=2)).weekday()
+        actuacion3 = self.crea_campana_actuacion(
+            dia_semanal, hora_desde.time(), hora_hasta.time(),
+            campana)
+
+        self.assertEqual(campana.actuaciones.all().count(), 3)
+        self.assertEqual(len(campana.obtener_actuaciones_validas()), 2)
+        self.assertEquals([actuacion1, actuacion2],
+                          campana.obtener_actuaciones_validas())
+
 
 class FinalizarVencidasTest(FTSenderBaseTest):
     """Clase para testear Campana.finalizar_vencidas()"""
