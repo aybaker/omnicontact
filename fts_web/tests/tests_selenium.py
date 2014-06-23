@@ -436,6 +436,52 @@ if 'SKIP_SELENIUM' not in os.environ:
                 kwargs={"pk": campana_reciclada.id})
             self.render_y_chequear(url)
 
+        def test_render_actuacion_reciclado_campana(self):
+
+            hora_desde = datetime.time(9, 00)
+            hora_hasta = datetime.time(18, 00)
+
+            campana = self.crear_campana()
+            [self.crea_campana_actuacion(
+                dia_semanal, hora_desde, hora_hasta, campana)
+                for dia_semanal in range(0, 4)]
+
+            # Renderizamos pagina de creacion
+            url = reverse('actuacion_reciclado_campana',
+                kwargs={"pk": campana.id})
+            self.render_y_chequear(url)
+
+        def test_render_elimina_actuacion_reciclado_campana(self):
+            #Testea la eliminación de una Actuación.
+
+            #Creamos campana y actuaciones.
+            hora_desde = datetime.time(9, 00)
+            hora_hasta = datetime.time(18, 00)
+
+            campana = self.crear_campana()
+            [self.crea_campana_actuacion(
+                dia_semanal, hora_desde, hora_hasta, campana)
+                for dia_semanal in range(0, 4)]
+
+            cantidad_inicial_actuaciones = Actuacion.objects.count()
+            actuacion_eliminar = Actuacion.objects.all()[1]
+
+            #Renderizamos la pagina de confirmación de eliminación.
+            url = reverse('actuacion_reciclado_campana_elimina',
+                kwargs={"pk": actuacion_eliminar.pk})
+            self.render_y_chequear(url)
+
+            #Hacemos el submit del form.
+            form = self.selenium.find_element_by_tag_name('form')
+            form.submit()
+
+            #Verificamos que se haya eliminado.
+            self.assertEqual(Actuacion.objects.count(),
+                (cantidad_inicial_actuaciones - 1))
+
+            with self.assertRaises(Actuacion.DoesNotExist):
+                Actuacion.objects.get(pk=actuacion_eliminar.pk)
+
         def test_render_confirma_reciclado_campana(self):
             hora_desde = datetime.time(00, 00)
             hora_hasta = datetime.time(23, 59)
