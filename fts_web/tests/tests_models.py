@@ -688,6 +688,41 @@ class CampanaTest(FTSenderBaseTest):
         self.assertEquals([actuacion1, actuacion2],
                           campana.obtener_actuaciones_validas())
 
+    def test_obtener_contactos_por_opciones_edc(self):
+        # Verificamos que de una campaña sin procesarce el método no
+        # devuelva datos.
+        campana = self.crear_campana_activa()
+        contactos_por_opciones = EventoDeContacto.objects_estadisticas.\
+            obtener_contactos_por_opciones(campana.pk)
+        self.assertEqual(len(contactos_por_opciones), 0)
+
+        # Verificamos que de una campaña procesada el método
+        # devuelva 6 opciones.
+        campana = self._crea_campana_emula_procesamiento()
+        contactos_por_opciones = EventoDeContacto.objects_estadisticas.\
+            obtener_contactos_por_opciones(campana.pk)
+        self.assertEqual(len(contactos_por_opciones), 6)
+
+        # Verificamos la estructura del objeto devuelto.
+        for contacto_opcion in contactos_por_opciones:
+            self.assertTrue(type(contacto_opcion[0] == int))
+            self.assertTrue(type(contacto_opcion[1] == list))
+            self.assertTrue(len(contacto_opcion[1]) > 0)
+
+    def test_get_contactos_pendientes(self):
+        # Verifico que devuelva la cantidad de pendientes correctos.
+        campana = self._crea_campana_emula_procesamiento(originate=20)
+        contactos_pendientes = EventoDeContacto.objects.\
+            get_contactos_pendientes(campana.pk)
+        self.assertEqual(len(contactos_pendientes), 80)
+
+        # Verifico la estructura del objeto devuelto.
+        for contacto_pendiente in contactos_pendientes:
+            self.assertTrue(type(contacto_pendiente[0] == int))
+            self.assertTrue(type(contacto_pendiente[1] == list))
+            self.assertTrue(len(contacto_pendiente[1]) > 0)
+
+
 
 class FinalizarVencidasTest(FTSenderBaseTest):
     """Clase para testear Campana.finalizar_vencidas()"""
