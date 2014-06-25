@@ -1,11 +1,11 @@
-Release Notes - Sprint 5
-========================
+Release Notes
+=============
 
 Sprint 5 - 25 de junio de 2014
-
+------------------------------
 
 Nueva funcionalidad
--------------------
+......
 
 * Reciclado de campaña y base de datos de contactos
 * Supervisión: mostrar estado actual del Daemon
@@ -15,14 +15,14 @@ Nueva funcionalidad
 
 
 Deploy
-------
+......
 
 * Deploy automatico de configuracion de PostgreSql
 * Deploy de procedimientos almacenados plpythonu
 * Armado de ambientes de testing y de deploy
 
 Bugs solucionados
------------------
+.................
 
 * Alta de campaña: error 500 si conversion de audio falla
 
