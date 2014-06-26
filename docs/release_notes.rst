@@ -5,7 +5,7 @@ Sprint 5 - 25 de junio de 2014
 ------------------------------
 
 Nueva funcionalidad
-......
+...................
 
 * Reciclado de campaña y base de datos de contactos
 * Supervisión: mostrar estado actual del Daemon
