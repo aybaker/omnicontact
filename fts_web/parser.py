@@ -238,20 +238,41 @@ class ParserCsv(object):
             if row:
                 structure_dic.update({i: row})
 
-        if len(structure_dic) < 3:
-            logger.warn("El archivo CSV seleccionado posee menos de 3 filas.")
-            raise FtsParserMinRowError("El archivo CSV "
-                "posee menos de 3 filas")
-
         return structure_dic
 
     def _get_dialect(self, file_obj):
         try:
-            dialect = csv.Sniffer().sniff(file_obj.read(1024), [',', ';', '\t'])
+            dialect = csv.Sniffer().sniff(file_obj.read(1024),
+                                          [',', ';', '\t'])
             file_obj.seek(0, 0)
 
             return dialect
         except csv.Error:
+            workbook = csv.reader(file_obj)
+            single_column = []
+
+            for i in range(3):
+                try:
+                    row = workbook.next()
+                except:
+                    logger.warn("El archivo CSV seleccionado posee menos de 3 "
+                                "filas.")
+                    raise FtsParserMinRowError("El archivo CSV posee menos de "
+                                               "3 filas")
+                else:
+                    value = row[0].strip()
+
+                    if i == 0 and not validate_number(value):
+                        continue
+
+                    if validate_number(value):
+                        single_column.append(True)
+                    else:
+                        single_column.append(False)
+
+            if single_column and all(single_column):
+                return None
+
             logger.warn("No se pudo determinar el delimitador del archivo CSV")
             raise FtsParserCsvDelimiterError("No se pudo determinar el "
                 "delimitador del archivo CSV")
