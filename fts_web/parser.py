@@ -49,6 +49,10 @@ def validate_number(number):
     return False
 
 
+def sanitize_number(number):
+    return re.sub("[^0-9]", "", str(number))
+
+
 class ParserXls(object):
     """
     Clase utilitaria para obtener datos de archivo XLS.
@@ -93,9 +97,9 @@ class ParserXls(object):
 
             # Guardamos valor de nro telefonico en 'cell_value'
             if type(cell.value) == float:
-                cell_value = str(int(cell.value))
+                cell_value = sanitize_number(str(int(cell.value)))
             elif type(cell.value) == str:
-                cell_value = cell.value.strip()
+                cell_value = sanitize_number(cell.value.strip())
                 if len(cell_value) == 0:
                     logger.info("Ignorando celda vacia en fila %s", curr_row)
                     self.vacias += 1
@@ -103,7 +107,7 @@ class ParserXls(object):
             else:
                 try:
                     # Intentamos convertir en string y ver que pasa...
-                    cell_value = str(cell.value).strip()
+                    cell_value = sanitize_number(str(cell.value).strip())
                 except:
                     logger.info("Ignorando celda en fila %s con valor '%s' "
                         "de tipo %s", curr_row, cell.value, type(cell.value))
@@ -202,7 +206,7 @@ class ParserCsv(object):
                 continue
 
             if not len(curr_row) == 0:
-                value = curr_row[columna_datos].strip()
+                value = sanitize_number(curr_row[columna_datos].strip())
                 if not len(value) == 0:
                     if validate_number(value):
                         value_list.append(value)
@@ -232,12 +236,20 @@ class ParserCsv(object):
 
         workbook = csv.reader(file_obj, self._get_dialect(file_obj))
 
+        i = 0
         structure_dic = {}
-        for i in range(3):
-            row = workbook.next()
+        for i, row in enumerate(workbook):
             if row:
                 structure_dic.update({i: row})
 
+            if i == 3:
+                break
+
+        if i < 3:
+            logger.warn("El archivo CSV seleccionado posee menos de 3 "
+                        "filas.")
+            raise FtsParserMinRowError("El archivo CSV posee menos de "
+                                       "3 filas")
         return structure_dic
 
     def _get_dialect(self, file_obj):
@@ -251,28 +263,32 @@ class ParserCsv(object):
             workbook = csv.reader(file_obj)
             single_column = []
 
-            for i in range(3):
+            i = 0
+            for i, row in enumerate(workbook):
+                value = row[0].strip()
                 try:
-                    row = workbook.next()
-                except:
-                    logger.warn("El archivo CSV seleccionado posee menos de 3 "
-                                "filas.")
-                    raise FtsParserMinRowError("El archivo CSV posee menos de "
-                                               "3 filas")
-                else:
-                    value = row[0].strip()
+                    int(value)
+                    value_valid = True
+                except ValueError:
+                    value_valid = False
 
-                    if i == 0 and not validate_number(value):
-                        continue
+                if i == 0 and not value_valid:
+                    continue
 
-                    if validate_number(value):
-                        single_column.append(True)
-                    else:
-                        single_column.append(False)
+                single_column.append(value_valid)
+
+                if i == 3:
+                    break
+
+            if i < 3:
+                logger.warn("El archivo CSV seleccionado posee menos de 3 "
+                            "filas.")
+                raise FtsParserMinRowError("El archivo CSV posee menos de "
+                                           "3 filas")
 
             if single_column and all(single_column):
                 return None
 
             logger.warn("No se pudo determinar el delimitador del archivo CSV")
             raise FtsParserCsvDelimiterError("No se pudo determinar el "
-                "delimitador del archivo CSV")
+                                             "delimitador del archivo CSV")
