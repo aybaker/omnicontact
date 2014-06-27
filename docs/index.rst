@@ -104,6 +104,7 @@ Contents
    :glob:
 
    deploy
+   release_notes
    fts_web_*
    fts_daemon_*
 
