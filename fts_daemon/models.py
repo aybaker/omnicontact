@@ -243,10 +243,10 @@ class EventoDeContactoManager(models.Manager):
         sql = """SELECT telefono, array_agg(evento)
             FROM fts_web_contacto INNER JOIN fts_daemon_eventodecontacto
             ON fts_web_contacto.id = fts_daemon_eventodecontacto.contacto_id
-            WHERE campana_id = %s 
+            WHERE campana_id = %s
             GROUP BY contacto_id, telefono
             HAVING not( %s = ANY(array_agg(evento)))
-        """ 
+        """
         params = [campana.id,
             EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL]
         with log_timing(logger,
@@ -257,6 +257,36 @@ class EventoDeContactoManager(models.Manager):
 
         return values
 
+    def depurar_eventos_de_contacto(self, campana_id):
+        """
+        Este método se encarga de hacer la depuración de los eventos de
+        una campaña.
+        """
+
+        campana = Campana.objects.get(pk=campana_id)
+        cursor = connection.cursor()
+
+        sql = """CREATE TABLE %s AS
+            SELECT * FROM fts_daemon_eventodecontacto
+            WHERE campana_id = %s
+            WITH DATA
+        """
+
+        nombre_tabla = "EDC_depurados_{0}".format(campana_id)
+        params = [nombre_tabla, campana.id]
+        with log_timing(logger,
+            "Depuración EDC: Crear tabla y copiar los eventos tardo %s seg"):
+            cursor.execute(sql, params)
+
+        # TODO: Verificar que el paso anterior salió bien.
+
+        sql = """DELETE FROM fts_daemon_eventodecontacto
+            WHERE campana_id = %s"""
+
+        params = [campana.id]
+        with log_timing(logger,
+            "Depuración EDC: Eliminar los eventos de EDC tardo %s seg"):
+            cursor.execute(sql, params)
 
 
 class SimuladorEventoDeContactoManager():
