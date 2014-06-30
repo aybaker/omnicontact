@@ -910,17 +910,21 @@ class Campana(models.Model):
 
         return dic_estadisticas
 
-    def exportar_reporte_csv(self):
+    def crea_reporte_csv(self):
         from fts_daemon.models import EventoDeContacto
 
         assert self.estado == Campana.ESTADO_FINALIZADA
 
         dirname = 'reporte_campana'
         filename = "{0}-reporte.csv".format(self.id)
-        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname, filename)
-        file_url = "{0}/{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
+                                         filename)
+        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
         if os.path.exists(file_path):
-            return file_url
+            # Esto no debería suceder.
+            logger.error("crea_reporte_csv(): Ya existe archivo CSV de "
+                         "descarga para la campana %s", self.pk)
+            assert not os.path.exists(file_path)
 
         dirname, filename = crear_archivo_en_media_root(dirname,
             "{0}-reporte".format(self.id), ".csv")
@@ -952,6 +956,23 @@ class Campana(models.Model):
                         lista_opciones.append(None)
                 csvwiter.writerow(lista_opciones)
         return file_url
+
+    def obtener_url_reporte_csv_descargar(self):
+        assert self.estado == Campana.ESTADO_FINALIZADA
+
+        dirname = 'reporte_campana'
+        filename = "{0}-reporte.csv".format(self.id)
+        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
+                                         filename)
+        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname,
+                                        filename)
+        if os.path.exists(file_path):
+            return file_url
+
+        # Esto no debería suceder.
+        logger.error("obtener_url_reporte_csv_descargar(): NO existe archivo"
+                     " CSV de descarga para la campana %s", self.pk)
+        assert os.path.exists(file_path)
 
     def valida_actuaciones(self):
         """
@@ -1031,6 +1052,9 @@ class Campana(models.Model):
         # el proceso de agregación de eventos de contactos por última vez.
         self.calcular_estadisticas(
             AgregacionDeEventoDeContacto.TIPO_AGREGACION_DEPURACION)
+
+        # Se crea el reporte csv para que esté disponible para su descara.
+        self.crea_reporte_csv()
 
         # Invoca al método de EventoDeContacto encargado de procesar la
         # depuración en si.
