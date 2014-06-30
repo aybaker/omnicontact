@@ -525,10 +525,10 @@ class CampanaTest(FTSenderBaseTest):
     MEDIA_ROOT = os.path.join(tmp, "test", "reportes")
 
     @override_settings(MEDIA_ROOT=MEDIA_ROOT)
-    def test_campana_exporta_reporte(self):
+    def test_campana_crea_reporte_csv(self):
         import glob
 
-        #Crea y emula procesamiento de campaña.
+        # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento(finaliza=False)
 
         dirname = 'reporte_campana'
@@ -539,29 +539,72 @@ class CampanaTest(FTSenderBaseTest):
             os.remove(f)
 
         filename = "{0}-reporte.csv".format(campana.id)
-        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname, filename)
-        file_url = "{0}/{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
+                                         filename)
+        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
 
         # Testeo que si la campana no está finalizada de una excepción.
-        self.assertRaises(AssertionError, campana.exportar_reporte_csv)
+        self.assertRaises(AssertionError, campana.crea_reporte_csv)
 
         # Finalizamos la campana, acudimos al método que genera el csv para
         # exportar, validamos que exista el archivo y que el método devuelva
         # la url para accederlo.
         campana.finalizar()
-        url_reporte = campana.exportar_reporte_csv()
+        url_reporte = campana.crea_reporte_csv()
         self.assertTrue(os.path.exists(file_path))
         self.assertEqual(url_reporte, file_url)
+
+        # Testeo que si ya se generó el reporte de una excepción.
+        self.assertRaises(AssertionError, campana.crea_reporte_csv)
 
         # Abrimos el archivo y contamos que tenga 100 lineas. Una por contacto,
         # y cada linea con 11 columnas.
         with open(file_path, 'rb') as csvfile:
             reader = csv.reader(csvfile)
-            c = 0
-            for row in reader:
+            for c, row in enumerate(reader):
                 self.assertTrue(len(row), 11)
-                c += 1
         self.assertEqual(c, 100)
+
+        files = glob.glob('{0}/*'.format(files_path))
+        for f in files:
+            os.remove(f)
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_campana_obtener_url_reporte_csv_descargar(self):
+        import glob
+
+        # Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento(finaliza=False)
+
+        dirname = 'reporte_campana'
+        files_path = "{0}/{1}".format(settings.MEDIA_ROOT, dirname)
+
+        files = glob.glob('{0}/*'.format(files_path))
+        for f in files:
+            os.remove(f)
+
+        filename = "{0}-reporte.csv".format(campana.id)
+        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
+                                         filename)
+        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+
+        # Testeo que si la campana no está finalizada de una excepción.
+        self.assertRaises(AssertionError,
+                          campana.obtener_url_reporte_csv_descargar)
+
+        # Finalizamos la campana, y verifico que al no haberse generado el
+        # reporte, de un excepción.
+        campana.finalizar()
+
+        # Acudimos al método y validamos que genere un excepción porque el
+        # reporte aún no fué generado.
+        self.assertRaises(AssertionError,
+                          campana.obtener_url_reporte_csv_descargar)
+
+        campana.crea_reporte_csv()
+        self.assertTrue(os.path.exists(file_path))
+        self.assertEqual(campana.obtener_url_reporte_csv_descargar(),
+                         file_url)
 
         files = glob.glob('{0}/*'.format(files_path))
         for f in files:
