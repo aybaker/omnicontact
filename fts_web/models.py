@@ -1019,6 +1019,24 @@ class Campana(models.Model):
                         lista_actuaciones_validas.append(actuacion)
         return lista_actuaciones_validas
 
+    def inicia_depuracion_eventos(self):
+        """
+        Este método se encarga de invocar los pasos necesarios en el proceso
+        de deuración de eventos de contactos de la campaña.
+        """
+        assert (self.estado == Campana.ESTADO_FINALIZADA,
+                "Solo se depuran  campanas finalizadas")
+
+        # Se calculan por última vez las estadisticas, haciendo que se genere
+        # el proceso de agregación de eventos de contactos por última vez.
+        self.calcular_estadisticas(
+            AgregacionDeEventoDeContacto.TIPO_AGREGACION_DEPURACION)
+
+        # Invoca al método de EventoDeContacto encargado de procesar la
+        # depuración en si.
+        from fts_daemon.models import EventoDeContacto
+        EventoDeContacto.objects.depurar_eventos_de_contacto(self.pk)
+
     def __unicode__(self):
         return self.nombre
 
