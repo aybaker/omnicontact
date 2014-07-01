@@ -1061,6 +1061,37 @@ class Campana(models.Model):
         from fts_daemon.models import EventoDeContacto
         EventoDeContacto.objects.depurar_eventos_de_contacto(self.pk)
 
+    def obtener_contactos_pendientes(self):
+        """
+        Este método se encarga de devolver los contactos que no tengan el
+        evento originate generado, o sea, que están pendientes.
+        """
+        from fts_daemon.models import EventoDeContacto
+
+        assert (self.estado == Campana.ESTADO_FINALIZADA,
+                "Solo se aplica la búsqueda a campanas finalizadas")
+
+        cursor = connection.cursor()
+        sql = """SELECT telefono, array_agg(evento)
+            FROM fts_web_contacto INNER JOIN %s
+            ON fts_web_contacto.id = %s.contacto_id
+            WHERE campana_id = %s
+            GROUP BY contacto_id, telefono
+            HAVING not( %s = ANY(array_agg(evento)))
+        """
+
+        nombre_tabla = "EDC_depurados_{0}".format(self.pk)
+        params = [nombre_tabla, self.pk,
+                  EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL]
+
+        with log_timing(logger,
+                        "obtener_contactos_pendientes() tardo %s seg"):
+            cursor.execute(sql, params)
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+
+        return values
+
     def __unicode__(self):
         return self.nombre
 
