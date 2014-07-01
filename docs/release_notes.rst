@@ -53,4 +53,7 @@ Known issues
   **no mantiene una sesion**, por lo tanto, debe loguearse cada vez que consulta
   el estado de las llamadas. Esto hace que se generen muchos logs, y no es la
   forma más eficiente de comunicarse con Asterisk.
-
+* FTS-244 - El paso del tiempo (para implementar pausas, o medir el paso del tiempo)
+  es realizado de una forma quizá demansiado simplistica, y puede tener consecuencias
+  en casos puntuales como ante **cambios de zona horaria**, o ante el ajuste de la hora
+  por parte del daemon **ntp**.
