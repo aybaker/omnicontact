@@ -1191,7 +1191,7 @@ class ExportaReporteCampanaView(UpdateView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
 
-        url = self.object.obtener_url_reporte_csv()
+        url = self.object.obtener_url_reporte_csv_descargar()
 
         return redirect(url)
 
