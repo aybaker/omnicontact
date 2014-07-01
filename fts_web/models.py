@@ -166,11 +166,8 @@ class BaseDatosContactoManager(models.Manager):
             return campana.bd_contacto
 
         elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_PENDIENTES:
-            from fts_daemon.models import EventoDeContacto
-
             # Trae los contatos telefónicos pendientes.
-            lista_contactos_pendientes = EventoDeContacto.objects.\
-                get_contactos_pendientes(campana_id)
+            lista_contactos_pendientes = campana.obtener_contactos_pendientes()
 
             if not lista_contactos_pendientes:
                 logger.warn("El reciclado de base datos no arrojo contactos.")
