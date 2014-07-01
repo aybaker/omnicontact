@@ -102,20 +102,33 @@ class GrupoAtencionMixin(object):
                 messages.add_message(
                     self.request,
                     messages.ERROR,
-                    "Atencion: hubo un inconveniente al generar"
-                    "la configuracion de Asterisk (queues)."
+                    "Atencion: hubo un inconveniente al generar "
+                    "la configuracion de Asterisk (queues). "
+                    "Por favor, contáctese con el administrador "
+                    "del sistema."
                 )
 
             try:
-                reload_config()
+                ret = reload_config()
+                if ret != 0:
+                    messages.add_message(
+                        self.request,
+                        messages.ERROR,
+                        "Atencion: hubo un inconveniente al intentar "
+                        "recargar la configuracion de Asterisk. "
+                        "Por favor, contáctese con el administrador "
+                        "del sistema."
+                    )
             except:
                 logger.exception("GrupoAtencionMixin: error al intentar "
                     "reload_config()")
                 messages.add_message(
                     self.request,
                     messages.ERROR,
-                    "Atencion: hubo un inconveniente al intentar"
-                    "recargar la configuracion de Asterisk."
+                    "Atencion: hubo un inconveniente al intentar "
+                    "recargar la configuracion de Asterisk. "
+                    "Por favor, contáctese con el administrador "
+                    "del sistema."
                 )
 
             return redirect(self.get_success_url())
@@ -807,15 +820,12 @@ class ConfirmaCampanaMixin(UpdateView):
         if 'confirma' in self.request.POST:
             campana = self.object
 
-            message = '<strong>Operación Exitosa!</strong>\
-                Se llevó a cabo con éxito la creación de\
-                la Campaña.'
+            post_proceso_ok = True
+            message = ''
 
             with transaction.atomic():
 
                 campana.activar()
-
-                post_proceso_ok = True
 
                 try:
                     create_dialplan_config_file()
@@ -838,7 +848,11 @@ class ConfirmaCampanaMixin(UpdateView):
                         la configuracion de Asterisk (queues).'
 
                 try:
-                    reload_config()
+                    ret = reload_config()
+                    if ret != 0:
+                        post_proceso_ok = False
+                        message += "Atencion: hubo un inconveniente al \
+                            intentar recargar la configuracion de Asterisk."
                 except:
                     logger.exception("ConfirmaCampanaMixin: error al intentar "
                         "reload_config()")
@@ -846,17 +860,29 @@ class ConfirmaCampanaMixin(UpdateView):
                     message += ' Atencion: hubo un inconveniente al intentar\
                         recargar la configuracion de Asterisk.'
 
-                if not post_proceso_ok:
-                    message += ' La campaña será pausada.'
-                    campana.pausar()
+            # END: with transaction.atomic()
 
-            messages.add_message(
-                self.request,
-                messages.SUCCESS,
-                message,
-            )
+            if post_proceso_ok:
+                message = '<strong>Operación Exitosa!</strong> \
+                    Se llevó a cabo con éxito la creación de \
+                    la Campaña.'
+                messages.add_message(
+                    self.request,
+                    messages.SUCCESS,
+                    message,
+                )
+            else:
+                message += ' La campaña será pausada. Por favor, contactese \
+                    con el administrador del sistema.'
+                messages.add_message(
+                    self.request,
+                    messages.WARNING,
+                    message
+                )
+                campana.pausar()
 
             return redirect(self.get_success_url())
+
         elif 'cancela' in self.request.POST:
             pass
             #TODO: Implementar la cancelación.
