@@ -264,16 +264,21 @@ class EventoDeContactoManager(models.Manager):
         """
 
         campana = Campana.objects.get(pk=campana_id)
-        cursor = connection.cursor()
 
-        sql = """CREATE TABLE %s AS
+        nombre_tabla = "EDC_depurados_{0}".format(campana_id)
+
+        cursor = connection.cursor()
+        sql = """CREATE TABLE {0} AS
             SELECT * FROM fts_daemon_eventodecontacto
             WHERE campana_id = %s
             WITH DATA
-        """
+        """.format(nombre_tabla)
 
-        nombre_tabla = "EDC_depurados_{0}".format(campana_id)
-        params = [nombre_tabla, campana.id]
+        ###
+        # FIXME: Remover el .format() de sql.
+        ###
+
+        params = [campana.id]
         with log_timing(logger,
             "Depuración EDC: Crear tabla y copiar los eventos tardo %s seg"):
             cursor.execute(sql, params)
