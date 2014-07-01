@@ -752,11 +752,12 @@ class CampanaTest(FTSenderBaseTest):
             self.assertTrue(type(contacto_opcion[1] == list))
             self.assertTrue(len(contacto_opcion[1]) > 0)
 
-    def test_get_contactos_pendientes(self):
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_campana_obtener_contactos_pendientes(self):
         # Verifico que devuelva la cantidad de pendientes correctos.
         campana = self._crea_campana_emula_procesamiento(originate=20)
-        contactos_pendientes = EventoDeContacto.objects.\
-            get_contactos_pendientes(campana.pk)
+        campana.procesar_finalizada()
+        contactos_pendientes = campana.obtener_contactos_pendientes()
         self.assertEqual(len(contactos_pendientes), 80)
 
         # Verifico la estructura del objeto devuelto.
