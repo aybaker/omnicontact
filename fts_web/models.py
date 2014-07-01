@@ -917,11 +917,13 @@ class Campana(models.Model):
         file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
                                          filename)
         file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+
         if os.path.exists(file_path):
             # Esto no debería suceder.
             logger.error("crea_reporte_csv(): Ya existe archivo CSV de "
                          "descarga para la campana %s", self.pk)
             assert not os.path.exists(file_path)
+
 
         dirname, filename = crear_archivo_en_media_root(dirname,
             "{0}-reporte".format(self.id), ".csv")
@@ -1068,18 +1070,22 @@ class Campana(models.Model):
         assert (self.estado == Campana.ESTADO_FINALIZADA,
                 "Solo se aplica la búsqueda a campanas finalizadas")
 
+        nombre_tabla = "EDC_depurados_{0}".format(self.pk)
+
         cursor = connection.cursor()
         sql = """SELECT telefono, array_agg(evento)
-            FROM fts_web_contacto INNER JOIN %s
-            ON fts_web_contacto.id = %s.contacto_id
+            FROM fts_web_contacto INNER JOIN {0}
+            ON fts_web_contacto.id = {1}.contacto_id
             WHERE campana_id = %s
             GROUP BY contacto_id, telefono
             HAVING not( %s = ANY(array_agg(evento)))
-        """
+        """.format(nombre_tabla, nombre_tabla)
 
-        nombre_tabla = "EDC_depurados_{0}".format(self.pk)
-        params = [nombre_tabla, self.pk,
-                  EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL]
+        ###
+        # FIXME: Remover el .format() de sql.
+        ###
+
+        params = [self.pk, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL]
 
         with log_timing(logger,
                         "obtener_contactos_pendientes() tardo %s seg"):
