@@ -71,9 +71,11 @@
                 <button type="submit" id="id_guardar" class="btn btn-success btn-lg">
                     Guardar Actuación
                 </button>
-                <a href="{% url 'confirma_campana' campana.pk %}" class="btn btn-primary pull-right" role="button">
-                    Continuar <span class="glyphicon glyphicon-chevron-right"></span>
-                </a> 
+                {% if actuaciones_validas %}
+                    <a href="{% url 'confirma_campana' campana.pk %}" class="btn btn-primary pull-right" role="button">
+                        Continuar <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                {% endif %}
             </div>
             </form>        
         </div>

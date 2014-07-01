@@ -4,15 +4,18 @@
 
 from __future__ import unicode_literals
 
+import os
+
 from django.test.utils import override_settings
 
 from fts_web.errors import (FtsParserMinRowError, FtsParserMaxRowError,
     FtsParserOpenFileError, FtsParserCsvDelimiterError)
 from fts_web.parser import ParserXls, autodetectar_parser, ParserCsv
 from fts_web.tests.utiles import FTSenderBaseTest
+from fts_web.models import BaseDatosContacto
 
 
-class ParserXlsTest(FTSenderBaseTest):
+class ParserTest(FTSenderBaseTest):
     """Clase para testear parse de XLS"""
 
     def test_autodetectar_parser(self):
@@ -153,7 +156,7 @@ class ParserXlsTest(FTSenderBaseTest):
 
         planilla = self.get_test_resource("planilla-ejemplo-2.csv")
         parser = autodetectar_parser(planilla)
-        with self.assertRaises(FtsParserCsvDelimiterError):
+        with self.assertRaises(FtsParserMinRowError):
             parser.read_file(0, open(planilla, 'r'))
 
     def test_planilla_ejemplo_3_csv(self):
@@ -167,4 +170,70 @@ class ParserXlsTest(FTSenderBaseTest):
 
         parser = autodetectar_parser(planilla)
         datos_parseados = parser.read_file(0, open(planilla, 'r'))
+        self.assertListEqual(datos_parseados, DATOS)
+
+
+    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    MEDIA_ROOT = os.path.join(tmp, "test")
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_planilla_ejemplo_4_csv(self):
+        DATOS = ['35430098657', '11153450923', '28301734914', '35601273413']
+
+        bd_contacto = BaseDatosContacto.objects.create(
+            nombre="base-datos-contactos",
+            archivo_importacion=self.get_test_resource(
+                "planilla-ejemplo-4.csv"),
+            nombre_archivo_importacion='planilla-ejemplo-4.csv',
+            columna_datos=0
+        )
+        parser = autodetectar_parser(bd_contacto.nombre_archivo_importacion)
+        datos_parseados = parser.read_file(0,
+            bd_contacto.archivo_importacion.file)
+        self.assertListEqual(datos_parseados, DATOS)
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_planilla_ejemplo_5_csv(self):
+        bd_contacto = BaseDatosContacto.objects.create(
+            nombre="base-datos-contactos",
+            archivo_importacion=self.get_test_resource(
+                "planilla-ejemplo-5.csv"),
+            nombre_archivo_importacion='planilla-ejemplo-5.csv',
+            columna_datos=0
+        )
+        parser = autodetectar_parser(bd_contacto.nombre_archivo_importacion)
+
+        with self.assertRaises(FtsParserCsvDelimiterError):
+            parser.read_file(0, bd_contacto.archivo_importacion.file)
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_validate_number(self):
+        DATOS = ['35430098657', '11153450923', '28301734914', '35601273413']
+
+        bd_contacto = BaseDatosContacto.objects.create(
+            nombre="base-datos-contactos",
+            archivo_importacion=self.get_test_resource(
+                "planilla-ejemplo-6.csv"),
+            nombre_archivo_importacion='planilla-ejemplo-6.csv',
+            columna_datos=0
+        )
+        parser = autodetectar_parser(bd_contacto.nombre_archivo_importacion)
+        datos_parseados = parser.read_file(0,
+            bd_contacto.archivo_importacion.file)
+        self.assertListEqual(datos_parseados, DATOS)
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_sanitize_number(self):
+        DATOS = ['35430098657', '11153450923', '28301734914', '35601273413']
+
+        bd_contacto = BaseDatosContacto.objects.create(
+            nombre="base-datos-contactos",
+            archivo_importacion=self.get_test_resource(
+                "planilla-ejemplo-7.csv"),
+            nombre_archivo_importacion='planilla-ejemplo-7.csv',
+            columna_datos=0
+        )
+        parser = autodetectar_parser(bd_contacto.nombre_archivo_importacion)
+        datos_parseados = parser.read_file(0,
+            bd_contacto.archivo_importacion.file)
         self.assertListEqual(datos_parseados, DATOS)
