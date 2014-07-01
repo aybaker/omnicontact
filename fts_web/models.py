@@ -1037,7 +1037,7 @@ class Campana(models.Model):
                         lista_actuaciones_validas.append(actuacion)
         return lista_actuaciones_validas
 
-    def inicia_depuracion_eventos(self):
+    def procesar_finalizada(self):
         """
         Este método se encarga de invocar los pasos necesarios en el proceso
         de deuración de eventos de contactos de la campaña.
