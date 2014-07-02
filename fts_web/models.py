@@ -386,8 +386,13 @@ class CampanaManager(models.Manager):
         return self.filter(pk=campana_id,
             estado=Campana.ESTADO_ACTIVA).exists()
 
-    def finalizar_vencidas(self):
-        """Busca campañas vencidas, y las finaliza"""
+    # EX: def finalizar_vencidas(self):
+    def obtener_vencidas_para_finalizar(self):
+        """GENERADOR, devuelve las campañas que deberían ser finalizadas.
+        SOLO verifica estado, fechas, actuaciones, etc. pero tomando
+        los datos de la BD. O sea, NO tiene en cuenta si la
+        campana posee llamadas en curso o no.
+        """
         # Aca necesitamos *localtime*. Usamos `now_ref` como fecha de
         # referencia para todos los calculos
 
@@ -414,9 +419,10 @@ class CampanaManager(models.Manager):
 
         # A las viejas, las finalizamos de una
         for campana in queryset:
-            logger.info("finalizar_vencidas(): finalizando campana %s. "
-                "Su 'fecha_fin' es anterior a la fecha actual", campana.id)
-            campana.finalizar()
+            logger.info("finalizar_vencidas(): incluyendo campana %s xq "
+                "su 'fecha_fin' es anterior a la fecha actual", campana.id)
+            # campana.finalizar()
+            yield campana
 
         #
         # Si hay alguna q' finalice hoy, hay q' revisar las actuaciones
@@ -434,10 +440,10 @@ class CampanaManager(models.Manager):
 
             # Si no tiene actuaciones para hoy, la finalizamos!
             if not actuaciones_para_hoy:
-                logger.info("finalizar_vencidas(): finalizando campana %s. "
-                    "Su 'fecha_fin' es hoy, pero no posee Actuacion para hoy",
+                logger.info("finalizar_vencidas(): incluyendo campana %s xq "
+                    "su 'fecha_fin' es hoy, pero no posee Actuacion para hoy",
                     campana.id)
-                campana.finalizar()
+                yield campana
                 continue
 
             # Si todas las actuaciones para hoy, tienen una
@@ -449,10 +455,10 @@ class CampanaManager(models.Manager):
                 # Todas las Actuaciones para hoy, poseen una
                 # hora_desde / hora_hasta ANTERIOR a la actual
                 # por lo tanto, podemos finalizar la campaña
-                logger.info("finalizar_vencidas(): finalizando campana %s. "
-                    "Su 'fecha_fin' es hoy, posee Actuacion pero todas "
-                    "ya han finalizado", campana.id)
-                campana.finalizar()
+                logger.info("finalizar_vencidas(): incluyendo campana %s xq "
+                    "su 'fecha_fin' es hoy, posee Actuacion pero todas "
+                    "son anteriores a hora actual", campana.id)
+                yield campana
                 continue
 
     def reciclar_campana(self, campana_id, bd_contacto):
