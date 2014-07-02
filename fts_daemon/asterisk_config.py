@@ -371,8 +371,9 @@ def create_queue_config_file():
 def reload_config():
     """Realiza reload de configuracion de Asterisk
 
-    Returns:
-        - exit status de proceso ejecutado
+    :returns: int -- exit status de proceso ejecutado.
+              0 (cero) si fue exitoso, otro valor si se produjo
+              un error
     """
     stdout_file = tempfile.TemporaryFile()
     stderr_file = tempfile.TemporaryFile()
