@@ -552,6 +552,7 @@ class AmiStatusTracker(object):
         [contacto_id, numero, campana_id, intentos]
         """
 
+        logger.info("get_status_por_campana(): realizando request HTTP")
         # FIXME: crear cliente, loguear y reutilizar!
         client = AsteriskHttpClient()
         client.login()
