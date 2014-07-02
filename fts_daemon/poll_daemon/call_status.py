@@ -408,9 +408,13 @@ class AsteriskCallStatus(object):
             return True
 
     def refrescar_channel_status_si_es_posible(self):
-        """Si puede refrescar, refresca"""
+        """Si puede refrescar, refresca.
+
+        :returns: bool - True si se refresco. False si no.
+        """
         if self.puede_refrescar():
-            self.refrescar_channel_status()
+            return self.refrescar_channel_status()
+        return False
 
     def _get_status_por_campana(self):
         return self._ami_status_tracker.get_status_por_campana()
@@ -419,18 +423,21 @@ class AsteriskCallStatus(object):
         """Refresca `contactos_en_curso` de `self.trackers_campana`.
 
         En caso de error, no actualiza ningun valor.
+
+        :returns: bool - True si se refresco. False si no.
         """
         # Antes q' nada, actualizamos 'ultimo refresco'
         self.touch()
 
-        logger.info("Actualizando status via AMI HTTP")
+        logger.info("refrescar_channel_status(): obteniendo status...")
         try:
             full_status = self._get_status_por_campana()
         except:
             logger.exception("Error detectado al ejecutar "
                 "ami_status_tracker.get_status_por_campana(). Los statuses "
                 "no seran actualizados")
-            return
+            return False
 
         # Actualizamos trackers
         self._campana_call_status.update_call_status(full_status)
+        return True
