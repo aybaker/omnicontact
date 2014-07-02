@@ -166,11 +166,8 @@ class BaseDatosContactoManager(models.Manager):
             return campana.bd_contacto
 
         elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_PENDIENTES:
-            from fts_daemon.models import EventoDeContacto
-
             # Trae los contatos telefónicos pendientes.
-            lista_contactos_pendientes = EventoDeContacto.objects.\
-                get_contactos_pendientes(campana_id)
+            lista_contactos_pendientes = campana.obtener_contactos_pendientes()
 
             if not lista_contactos_pendientes:
                 logger.warn("El reciclado de base datos no arrojo contactos.")
@@ -916,17 +913,23 @@ class Campana(models.Model):
 
         return dic_estadisticas
 
-    def exportar_reporte_csv(self):
+    def crea_reporte_csv(self):
         from fts_daemon.models import EventoDeContacto
 
         assert self.estado == Campana.ESTADO_FINALIZADA
 
         dirname = 'reporte_campana'
         filename = "{0}-reporte.csv".format(self.id)
-        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname, filename)
-        file_url = "{0}/{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
+                                         filename)
+        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+
         if os.path.exists(file_path):
-            return file_url
+            # Esto no debería suceder.
+            logger.error("crea_reporte_csv(): Ya existe archivo CSV de "
+                         "descarga para la campana %s", self.pk)
+            assert not os.path.exists(file_path)
+
 
         dirname, filename = crear_archivo_en_media_root(dirname,
             "{0}-reporte".format(self.id), ".csv")
@@ -958,6 +961,23 @@ class Campana(models.Model):
                         lista_opciones.append(None)
                 csvwiter.writerow(lista_opciones)
         return file_url
+
+    def obtener_url_reporte_csv_descargar(self):
+        assert self.estado == Campana.ESTADO_FINALIZADA
+
+        dirname = 'reporte_campana'
+        filename = "{0}-reporte.csv".format(self.id)
+        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
+                                         filename)
+        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname,
+                                        filename)
+        if os.path.exists(file_path):
+            return file_url
+
+        # Esto no debería suceder.
+        logger.error("obtener_url_reporte_csv_descargar(): NO existe archivo"
+                     " CSV de descarga para la campana %s", self.pk)
+        assert os.path.exists(file_path)
 
     def valida_actuaciones(self):
         """
@@ -1025,6 +1045,62 @@ class Campana(models.Model):
                         lista_actuaciones_validas.append(actuacion)
         return lista_actuaciones_validas
 
+    def procesar_finalizada(self):
+        """
+        Este método se encarga de invocar los pasos necesarios en el proceso
+        de deuración de eventos de contactos de la campaña.
+        """
+        assert (self.estado == Campana.ESTADO_FINALIZADA,
+                "Solo se depuran  campanas finalizadas")
+
+        # Se calculan por última vez las estadisticas, haciendo que se genere
+        # el proceso de agregación de eventos de contactos por última vez.
+        self.calcular_estadisticas(
+            AgregacionDeEventoDeContacto.TIPO_AGREGACION_DEPURACION)
+
+        # Se crea el reporte csv para que esté disponible para su descara.
+        self.crea_reporte_csv()
+
+        # Invoca al método de EventoDeContacto encargado de procesar la
+        # depuración en si.
+        from fts_daemon.models import EventoDeContacto
+        EventoDeContacto.objects.depurar_eventos_de_contacto(self.pk)
+
+    def obtener_contactos_pendientes(self):
+        """
+        Este método se encarga de devolver los contactos que no tengan el
+        evento originate generado, o sea, que están pendientes.
+        """
+        from fts_daemon.models import EventoDeContacto
+
+        assert (self.estado == Campana.ESTADO_FINALIZADA,
+                "Solo se aplica la búsqueda a campanas finalizadas")
+
+        nombre_tabla = "EDC_depurados_{0}".format(self.pk)
+
+        cursor = connection.cursor()
+        sql = """SELECT telefono, array_agg(evento)
+            FROM fts_web_contacto INNER JOIN {0}
+            ON fts_web_contacto.id = {1}.contacto_id
+            WHERE campana_id = %s
+            GROUP BY contacto_id, telefono
+            HAVING not( %s = ANY(array_agg(evento)))
+        """.format(nombre_tabla, nombre_tabla)
+
+        ###
+        # FIXME: Remover el .format() de sql.
+        ###
+
+        params = [self.pk, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL]
+
+        with log_timing(logger,
+                        "obtener_contactos_pendientes() tardo %s seg"):
+            cursor.execute(sql, params)
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+
+        return values
+
     def __unicode__(self):
         return self.nombre
 
@@ -1077,7 +1153,7 @@ class Campana(models.Model):
 
 class AgregacionDeEventoDeContactoManager(models.Manager):
     def procesa_agregacion(self, campana_id, cantidad_intentos,
-        tipo_agregacion):
+                           tipo_agregacion):
         """
         Sumariza los contadores de cada intento de contacto de la campana.
         :param campana_id: De que campana que se sumarizaran los contadores.
@@ -1097,50 +1173,17 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
                 "bd para la campana %s no posee datos", campana.id)
             return dic_totales
 
-# TODO: eliminar todo este codigo
-#        try:
-#            ultima_agregacion_campana = self.get(campana_id=campana_id,
-#                numero_intento=cantidad_intentos)
-#            # Si la obtención de ultima_agregacion_campana no da excepción
-#            # quiere decir que ya se generaron los registros de agregación
-#            # para la campana y hay que actualizarlos desde el último
-#            # evento hasta hoy y ahora.
-#            try:
-#                timestamp_ultimo_evento = \
-#                    ultima_agregacion_campana.timestamp_ultimo_evento
-#
-#                assert all(agregacion.timestamp_ultimo_evento ==
-#                    timestamp_ultimo_evento for agregacion in self.filter(
-#                    campana_id=campana_id)),\
-#                    """Los timestamp_ultimo_evento no son iguales para
-#                    todos los registros de AgregacionDeEventoDeContacto
-#                    para la Campana {0}.""".format(campana_id)
-#                self.establece_agregacion(campana_id, cantidad_intentos,
-#                    tipo_agregacion, timestamp_ultimo_evento)
-#            except:
-#                # FIXME: Ver solución para cuándo se desata el assert.
-#                # Ocurre cuándo se actualiza (F5) el template de manera
-#                # muy seguida.
-#                pass
-#
-#        except AgregacionDeEventoDeContacto.DoesNotExist:
-#            # Si la obtención de ultima_agregacion_campana da excepción
-#            # quiere decir que es la primera vez que se quiere ver el
-#            # Reporte o la Supervisión y no está generados los registros
-#            # de agregacion para la campana. Se generan los registros sin
-#            # tener en cuenta un timestamp, toma todos los eventos de
-#            # EventoDeContacto para la campana.
-#            self.establece_agregacion(campana_id, cantidad_intentos,
-#                tipo_agregacion)
+        if (not tipo_agregacion ==
+                AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE):
 
-        with log_timing(logger,
-            "procesa_agregacion(): recalculo de agregacion tardo %s seg"):
-            with transaction.atomic():
-                cursor = connection.cursor()
-                cursor.execute("SELECT update_agregacion_edc_py_v1(%s)",
-                    [campana.id])
+            with log_timing(logger,
+                "procesa_agregacion(): recalculo de agregacion tardo %s seg"):
+                with transaction.atomic():
+                    cursor = connection.cursor()
+                    cursor.execute("SELECT update_agregacion_edc_py_v1(%s)",
+                        [campana.id])
 
-                agregaciones_campana = self.filter(campana_id=campana_id)
+        agregaciones_campana = self.filter(campana_id=campana_id)
 
         dic_totales.update(agregaciones_campana.aggregate(
             total_intentados=Sum('cantidad_intentos'),
