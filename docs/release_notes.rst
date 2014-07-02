@@ -42,6 +42,10 @@ Known issues
   se baja inmediantamente.
 * FTS-136 - No se chequea el **resultado de llamada AGI**, lo que puede generar perdida
   de eventos si el llamado AGI() falla.
+* FTS-174 Sobrepaso de limites si AMI/HTTP falla: sólo sucende en un caso muy particular,
+  si existen llamadas en curso cuando el daemon arranca (porque se reinició, por ejemplo),
+  y el primer request que se hace via AMI / HTTP fallara, puede suceder que se realicen
+  ORIGINATES produciendo un sobrepaso en el límite de canales.
 * FTS-189 - El sistema de deploy no configura **logrotate**, lo que puede
   hacer que el sistema genere grandes archivos de logs
 * FTS-176 - No se ha verificado el comportamiento del sistema ante cambios
