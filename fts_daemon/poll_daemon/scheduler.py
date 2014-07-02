@@ -81,6 +81,9 @@ class RoundRobinTracker(object):
             self._campana_call_status)
 
         self._finalizador_de_campanas = finalizar_campana
+        """Funcion que recibe por parametro el ID de la campaña
+        a finalizar, y finaliza dicha campaña
+        """
 
         self._statistics_service = StatisticsService(
             cache=get_cache('default')
@@ -141,7 +144,7 @@ class RoundRobinTracker(object):
         estaba teniendo en cuenta en realidad no posee contactos
         a procesar.
 
-        Esta situacion puede parser inicialmente parecida a
+        Esta situacion puede parecer inicialmente parecida a
         `TodosLosContactosPendientesEstanEnCurso`, pero NO.
         `TLCPEEC` implica que no se pueden procesar los pendientes.
         `NoMasContactosEnCampana` implica que la campaña ya no
@@ -281,9 +284,31 @@ class RoundRobinTracker(object):
                     "continuaremos la ejecucion del loop", campana.id)
                 return
 
-            self._finalizador_de_campanas(campana.id)
-            self._campana_call_status.banear_campana(campana,
-                reason=BANEO_CAMPANA_FINALIZADA, forever=True)
+            # Aunque tengamos tiempo, *NO* finalizamos una campaña
+            # que posea llamadas en curso, por eso lo chequeaoms
+            # (y antes de chequearlos, actualizamos el status)
+
+            self._asterisk_call_status.\
+                refrescar_channel_status_si_es_posible()
+
+            # FTS-174 [TD] [CORNER CASE] Sobrepaso de limites si AMI/HTTP falla
+
+            llamadas_en_curso = self._campana_call_status.\
+                get_count_llamadas_de_campana(campana)
+
+            if llamadas_en_curso == 0:
+                logger.info("sleep(): finalizando campana %s porque "
+                    "no posee llamadas en curso", campana.id)
+                self._finalizador_de_campanas(campana.id)
+                self._campana_call_status.banear_campana(campana,
+                    reason=BANEO_CAMPANA_FINALIZADA, forever=True)
+            else:
+                logger.info("sleep(): no se finalizara campana %s porque "
+                    "posee %s llamadas en curso. Se re-baneara, para que "
+                    "en el futuro se vuelva a intentar la finalizacion",
+                    campana.id, llamadas_en_curso)
+                self._campana_call_status.banear_campana(campana,
+                    reason=BANEO_NO_MAS_CONTACTOS, forever=False)
 
         delta = time.time() - inicio
         self.real_sleep(espera - delta)
@@ -325,11 +350,13 @@ class RoundRobinTracker(object):
             #  no se actualiza nunca, y se exportan estadisticas erroneas
             #==================================================================
 
-            # Este refresco tambien se hace en el loop
+            # Este refresco tambien se hace en el loop, en sleep(), etc.
             # Usamos `refrescar_channel_status_si_es_posible()` para que se
             # refresque AUN cuando ninguna campaña este al limite
             self._asterisk_call_status.\
                 refrescar_channel_status_si_es_posible()
+
+            # FTS-174 [TD] [CORNER CASE] Sobrepaso de limites si AMI/HTTP falla
 
             #==================================================================
             # [1] Actualizamos trackers de campaña (continuacion...)

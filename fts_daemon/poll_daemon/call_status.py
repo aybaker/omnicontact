@@ -101,6 +101,23 @@ class CampanaCallStatus(object):
 
         return False
 
+    def _crear_tracker(self, campana=None, campana_id=None):
+        """Instancia CampanaTracker para la campaña pasada por parametro
+        y la devuelve."""
+        assert campana is not None or campana_id is not None, \
+            "debe especificarse campana o campana_id (ambos son None)"
+        assert campana is None or campana_id is None, \
+            "solo debe especificarse campana o campana_id, no ambas"
+
+        if campana is not None:
+            return CampanaTracker(campana)
+
+        if campana_id is not None:
+            campana = Campana.objects.get(pk=campana_id)
+            return CampanaTracker(campana)
+
+        assert False, "No debio llegarse aqui"
+
     def refrescar_trackers_activos(self):
         """Revisa si algun tracker activo fue baneado, y actualiza trackers.
 
@@ -170,7 +187,7 @@ class CampanaCallStatus(object):
                 try:
                     current_trackers[campana] = previous_trackers[campana]
                 except KeyError:
-                    current_trackers[campana] = CampanaTracker(campana)
+                    current_trackers[campana] = self._crear_tracker(campana)
                     # La creamos activa, y despues la desactivamos... no es
                     # lo mas eficiente, pero tampoco es para tanto!
 
@@ -191,7 +208,7 @@ class CampanaCallStatus(object):
             # Es nueva...
             logger.debug("refrescar_trackers(): nueva campana: %s",
                 campana.id)
-            current_trackers[campana] = CampanaTracker(campana)
+            current_trackers[campana] = self._crear_tracker(campana)
 
         # Desactivamos y logueamos campanas q' no van mas...
         for campana in previous_trackers:
@@ -308,9 +325,11 @@ class CampanaCallStatus(object):
             # No existe tracker para campana `campana_id`
             logger.debug("update_call_status(): creando tracker y seteando "
                 "llamadas en curso para la campana %s", campana_id)
-            Campana = Campana.objects.get(pk=campana_id)
-            tracker = CampanaTracker(campana)
+
+            tracker = self._crear_tracker(campana_id=campana_id)
+            tracker.contactos_en_curso = contactos
             tracker.desactivar()
+            campana = tracker.campana
             self._trackers_campana_dict[campana] = tracker
 
         # Aca procesamos todas las campanas incluidas en `full_status`
@@ -329,6 +348,17 @@ class CampanaCallStatus(object):
         for tracker in self._trackers_campana_dict.values():
             count += tracker.llamadas_en_curso_aprox
         return count
+
+    def get_count_llamadas_de_campana(self, campana):
+        """Devuelve el count total (APROXIMADO) de llamadas en curso
+        para la campaña pasada por parametro.
+        """
+        try:
+            tracker = self._trackers_campana_dict[campana]
+        except KeyError:
+            return 0
+
+        return tracker.llamadas_en_curso_aprox
 
     def limite_global_de_canales_alcanzado(self):
         """Chequea si se ha alcanzado/excedido el limite global de
