@@ -1147,7 +1147,7 @@ class Campana(models.Model):
 
 class AgregacionDeEventoDeContactoManager(models.Manager):
     def procesa_agregacion(self, campana_id, cantidad_intentos,
-        tipo_agregacion):
+                           tipo_agregacion):
         """
         Sumariza los contadores de cada intento de contacto de la campana.
         :param campana_id: De que campana que se sumarizaran los contadores.
@@ -1167,50 +1167,17 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
                 "bd para la campana %s no posee datos", campana.id)
             return dic_totales
 
-# TODO: eliminar todo este codigo
-#        try:
-#            ultima_agregacion_campana = self.get(campana_id=campana_id,
-#                numero_intento=cantidad_intentos)
-#            # Si la obtención de ultima_agregacion_campana no da excepción
-#            # quiere decir que ya se generaron los registros de agregación
-#            # para la campana y hay que actualizarlos desde el último
-#            # evento hasta hoy y ahora.
-#            try:
-#                timestamp_ultimo_evento = \
-#                    ultima_agregacion_campana.timestamp_ultimo_evento
-#
-#                assert all(agregacion.timestamp_ultimo_evento ==
-#                    timestamp_ultimo_evento for agregacion in self.filter(
-#                    campana_id=campana_id)),\
-#                    """Los timestamp_ultimo_evento no son iguales para
-#                    todos los registros de AgregacionDeEventoDeContacto
-#                    para la Campana {0}.""".format(campana_id)
-#                self.establece_agregacion(campana_id, cantidad_intentos,
-#                    tipo_agregacion, timestamp_ultimo_evento)
-#            except:
-#                # FIXME: Ver solución para cuándo se desata el assert.
-#                # Ocurre cuándo se actualiza (F5) el template de manera
-#                # muy seguida.
-#                pass
-#
-#        except AgregacionDeEventoDeContacto.DoesNotExist:
-#            # Si la obtención de ultima_agregacion_campana da excepción
-#            # quiere decir que es la primera vez que se quiere ver el
-#            # Reporte o la Supervisión y no está generados los registros
-#            # de agregacion para la campana. Se generan los registros sin
-#            # tener en cuenta un timestamp, toma todos los eventos de
-#            # EventoDeContacto para la campana.
-#            self.establece_agregacion(campana_id, cantidad_intentos,
-#                tipo_agregacion)
+        if (not tipo_agregacion ==
+                AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE):
 
-        with log_timing(logger,
-            "procesa_agregacion(): recalculo de agregacion tardo %s seg"):
-            with transaction.atomic():
-                cursor = connection.cursor()
-                cursor.execute("SELECT update_agregacion_edc_py_v1(%s)",
-                    [campana.id])
+            with log_timing(logger,
+                "procesa_agregacion(): recalculo de agregacion tardo %s seg"):
+                with transaction.atomic():
+                    cursor = connection.cursor()
+                    cursor.execute("SELECT update_agregacion_edc_py_v1(%s)",
+                        [campana.id])
 
-                agregaciones_campana = self.filter(campana_id=campana_id)
+        agregaciones_campana = self.filter(campana_id=campana_id)
 
         dic_totales.update(agregaciones_campana.aggregate(
             total_intentados=Sum('cantidad_intentos'),
