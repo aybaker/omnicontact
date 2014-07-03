@@ -409,46 +409,36 @@ class DefineBaseDatosContactoView(UpdateView):
         return reverse('lista_base_datos_contacto')
 
 
-# class BaseDatosContactoUpdateView(UpdateView, BaseDatosContactoMixin):
-#     """
-#     Esta vista actualiza el objeto
-#     BaseDatosContacto seleccionado.
-#     """
+class DepuraBaseDatosContactoView(DeleteView):
+    """
+    Esta vista se encarga de la depuración del
+    objeto Base de Datos seleccionado.
+    """
 
-#     template_name = 'base_datos_contacto/nueva_edita_listas_contacto.html'
-#     model = BaseDatosContacto
-#     context_object_name = 'base_datos_contacto'
-#     form_class = BaseDatosContactoForm
-#     form_file = FileForm
+    model = BaseDatosContacto
+    template_name = 'base_datos_contacto/depura_base_datos_contacto.html'
 
-#     def get_context_data(self, **kwargs):
-#         context = super(
-#             BaseDatosContactoUpdateView, self).get_context_data(**kwargs)
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la depuración de la Base de Datos.'
 
-#         if 'form_file' not in context:
-#             context['form_file'] = self.form_file()
-#         return context
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
 
-#     def form_valid(self, form):
-#         return self.process_all_forms(form)
+        return reverse(
+            'lista_base_datos_contacto',
+        )
 
-#     def form_invalid(self, form):
-#         return self.process_all_forms(form)
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
 
-#     def get_success_url(self):
-#         message = '<strong>Operación Exitosa!</strong>\
-#         Se llevó a cabo con éxito la actualización de\
-#         la Base de Datos de Contactos.'
+        # TODO: Llamar a los métodos de verificación y depuración.
 
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             message,
-#         )
-
-#         return reverse(
-#             'edita_base_datos_contacto',
-#             kwargs={"pk": self.object.pk})
+        return HttpResponseRedirect(success_url)
 
 
 #==============================================================================
