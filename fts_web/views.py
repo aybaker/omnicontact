@@ -832,6 +832,11 @@ class ConfirmaCampanaMixin(UpdateView):
             campana = self.object
 
             if campana.bd_contacto.verifica_depurada():
+                # TODO: Cuando en el proceso de creación de la campana se
+                # pueda ir volviendo de paso, mostrar el error y no
+                # redireccionar, permitir que puda seleccionar otra base de
+                # datos.
+
                 message = """<strong>Operación Errónea!</strong>.
                 No se pudo realizar la confirmación de la campaña debido a
                 que durante el proceso de creación de la misma, la base de
