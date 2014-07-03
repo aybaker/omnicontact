@@ -317,6 +317,16 @@ class BaseDatosContacto(models.Model):
             return False
         return True
 
+    def verifica_depurada(self):
+        """
+        Este método se encarga de verificar si la base de datos esta siendo
+        depurada o si ya fue depurada.
+        Devuelve booleano.
+        """
+        if self.estado in (self.ESTADO_EN_DEPURACION, self.ESTADO_DEPURADA):
+            return True
+        return False
+
     def elimina_contactos(self):
         """
         Este método se encarga de eliminar todos los contactos de la
