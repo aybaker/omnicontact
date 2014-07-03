@@ -147,7 +147,7 @@ class BaseDatosContactoManager(models.Manager):
         Este método filtra lo objetos BaseDatosContacto que
         esté definidos.
         """
-        return self.filter(sin_definir=False)
+        return self.filter(estado=BaseDatosContacto.ESTADO_DEFINIDA)
 
     def reciclar_base_datos(self, campana_id, tipo_reciclado):
         """
@@ -294,6 +294,8 @@ class BaseDatosContacto(models.Model):
 
         logger.info("Seteando base datos contacto %s como definida", self.id)
         self.sin_definir = False
+
+        self.estado = self.ESTADO_DEFINIDA
         self.save()
 
     def get_cantidad_contactos(self):
