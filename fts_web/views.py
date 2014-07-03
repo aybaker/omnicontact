@@ -419,15 +419,6 @@ class DepuraBaseDatosContactoView(DeleteView):
     template_name = 'base_datos_contacto/depura_base_datos_contacto.html'
 
     def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la depuración de la Base de Datos.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
         return reverse(
             'lista_base_datos_contacto',
         )
@@ -436,8 +427,28 @@ class DepuraBaseDatosContactoView(DeleteView):
         self.object = self.get_object()
         success_url = self.get_success_url()
 
-        # TODO: Llamar a los métodos de verificación y depuración.
+        if self.object.verifica_en_uso():
+            message = """<strong>¡Cuidado!</strong>
+            La Base Datos Contacto que intenta depurar esta siendo utilizada
+            por alguna campaña. No se llevará a cabo la depuración mientras
+            la misma esté siendo utilizada."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+            return HttpResponseRedirect(success_url)
 
+        # TODO: Llamar a los método de depuración.
+
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la depuración de la Base de Datos.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
         return HttpResponseRedirect(success_url)
 
 
