@@ -163,6 +163,21 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         self.assertTrue(bd_contacto.verifica_en_uso())
         self.assertEqual(bd_contacto.campanas.all().count(), 1)
 
+    def test_verifica_depurada(self):
+        """
+        Testea el método verifica_depurada().
+        """
+        # Crea la base de datos y verifica que el método devueva False
+        # hasta que no se lleve a cabo la depuración.
+        bd_contacto = self.crear_base_datos_contacto(10)
+        self.assertFalse(bd_contacto.verifica_depurada())
+
+        bd_contacto.procesa_depuracion()
+
+        # Verifica que el método devuelva True ya que la BaseDatoContacto
+        # fue depurada.
+        self.assertTrue(bd_contacto.verifica_depurada())
+
     def test_elimina_contactos(self):
         """
         Testea el método elimina_contactos().
@@ -192,6 +207,7 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         # Verifica que el estado de BaseDatoContacto sea  ESTADO_DEPURADA
         self.assertEqual(bd_contacto.estado,
                          BaseDatosContacto.ESTADO_DEPURADA)
+
 
 class ContactoTest(FTSenderBaseTest):
 
