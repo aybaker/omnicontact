@@ -296,6 +296,18 @@ class BaseDatosContacto(models.Model):
 
         return self.cantidad_contactos
 
+    def verifica_en_uso(self):
+        """
+        Este método se encarga de verificar si la base de datos esta siendo
+        usada por alguna campaña que este activa o pausada.
+        Devuelve  booleano.
+        """
+        estados_campanas = [campana.estado for campana in self.campanas.all()]
+        if all(estado == Campana.ESTADO_FINALIZADA
+               for estado in estados_campanas):
+            return False
+        return True
+
 
 class Contacto(models.Model):
     telefono = models.CharField(
