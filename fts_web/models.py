@@ -326,14 +326,19 @@ class ContactoManager(models.Manager):
         Este método realiza el dump de los contactos de la base de datos a un
         archivo.
         """
-        dir_dump_contactos = '/home/cilcobich/sql/contactos.csv'
+
+        # FIXME: Cambiar  directorio. Ajustar los test también.
+        dir_dump_contacto = '/home/cilcobich/sql/'
+        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
+
+        copy_to = dir_dump_contacto + nombre_archivo_contactos
 
         cursor = connection.cursor()
         sql = """COPY (SELECT * FROM fts_web_contacto WHERE
             bd_contacto_id = %s) TO %s;
         """
 
-        params = [bd_contacto.id, dir_dump_contactos]
+        params = [bd_contacto.id, copy_to]
         with log_timing(logger,
                         "Depuración BaseDatosContacto: Dump de los Contactos "
                         "tardo %s seg"):
