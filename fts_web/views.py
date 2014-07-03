@@ -831,6 +831,19 @@ class ConfirmaCampanaMixin(UpdateView):
         if 'confirma' in self.request.POST:
             campana = self.object
 
+            if campana.bd_contacto.verifica_depurada():
+                message = """<strong>Operación Errónea!</strong>.
+                No se pudo realizar la confirmación de la campaña debido a
+                que durante el proceso de creación de la misma, la base de
+                datos seleccionada fue depurada y no está disponible para su
+                uso. La campaña no se creará."""
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return redirect(self.get_success_url())
+
             post_proceso_ok = True
             message = ''
 
