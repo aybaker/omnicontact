@@ -21,7 +21,7 @@ from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_web.errors import (FtsAudioConversionError,
     FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
     FtsParserOpenFileError, FtsRecicladoCampanaError,
-    FtsRecicladoBaseDatosContactoError)
+    FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
@@ -439,17 +439,27 @@ class DepuraBaseDatosContactoView(DeleteView):
             )
             return HttpResponseRedirect(success_url)
 
-        # TODO: Llamar a los método de depuración.
+        try:
+            self.object.procesa_depuracion()
+        except FtsDepuraBaseDatoContactoError:
+            message = """<strong>¡Operación Errónea!</strong>
+            La Base Datos Contacto no se pudo depurar."""
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return HttpResponseRedirect(success_url)
+        else:
+            message = '<strong>Operación Exitosa!</strong>\
+            Se llevó a cabo con éxito la depuración de la Base de Datos.'
 
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la depuración de la Base de Datos.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-        return HttpResponseRedirect(success_url)
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                message,
+            )
+            return HttpResponseRedirect(success_url)
 
 
 #==============================================================================
