@@ -165,13 +165,33 @@ class BaseDatosContactoTest(FTSenderBaseTest):
 
     def test_elimina_contactos(self):
         """
-        Testea el método verifica_en_uso().
+        Testea el método elimina_contactos().
         """
         # Crea la base de datos y verifica que el método elimine los contactos.
         bd_contacto = self.crear_base_datos_contacto(10)
         bd_contacto.elimina_contactos()
         self.assertEqual(bd_contacto.contactos.count(), 0)
 
+    def test_procesa_depuracion(self):
+        """
+        Testea el método procesa_depuracion(().
+        """
+        # Crea la base de datos y invoca al proceso de depuración.
+        bd_contacto = self.crear_base_datos_contacto(10)
+        bd_contacto.procesa_depuracion()
+
+        # Verifica que no haya contactos de la BaseDatoContacto.
+        self.assertEqual(bd_contacto.contactos.count(), 0)
+
+        # Verifica que se haya creado el archivo CSV.
+        dir_dump_contacto = '/home/cilcobich/sql/'
+        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
+        copy_to = dir_dump_contacto + nombre_archivo_contactos
+        self.assertTrue(os.path.exists(copy_to))
+
+        # Verifica que el estado de BaseDatoContacto sea  ESTADO_DEPURADA
+        self.assertEqual(bd_contacto.estado,
+                         BaseDatosContacto.ESTADO_DEPURADA)
 
 class ContactoTest(FTSenderBaseTest):
 
