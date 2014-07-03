@@ -317,6 +317,13 @@ class BaseDatosContacto(models.Model):
             return False
         return True
 
+    def elimina_contactos(self):
+        """
+        Este método se encarga de eliminar todos los contactos de la
+        BaseDatoContacto actual.
+        """
+        self.contactos.all().delete()
+
 
 class ContactoManager(models.Manager):
     """Manager para Contacto"""
@@ -340,8 +347,8 @@ class ContactoManager(models.Manager):
 
         params = [bd_contacto.id, copy_to]
         with log_timing(logger,
-                        "Depuración BaseDatosContacto: Dump de los Contactos "
-                        "tardo %s seg"):
+                        "ContactoManager.realiza_dump_contactos() tardo "
+                        "%s seg"):
             cursor.execute(sql, params)
 
 
