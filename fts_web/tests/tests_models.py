@@ -163,6 +163,15 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         self.assertTrue(bd_contacto.verifica_en_uso())
         self.assertEqual(bd_contacto.campanas.all().count(), 1)
 
+    def test_elimina_contactos(self):
+        """
+        Testea el método verifica_en_uso().
+        """
+        # Crea la base de datos y verifica que el método elimine los contactos.
+        bd_contacto = self.crear_base_datos_contacto(10)
+        bd_contacto.elimina_contactos()
+        self.assertEqual(bd_contacto.contactos.count(), 0)
+
 
 class ContactoTest(FTSenderBaseTest):
 
@@ -170,6 +179,7 @@ class ContactoTest(FTSenderBaseTest):
         """
         Testea el método realiza_dump_contactos().
         """
+
         # Crea la base de datos y verifica que el método
         bd_contacto = self.crear_base_datos_contacto(10)
 
