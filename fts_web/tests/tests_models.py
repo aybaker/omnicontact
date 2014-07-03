@@ -164,6 +164,24 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         self.assertEqual(bd_contacto.campanas.all().count(), 1)
 
 
+class ContactoTest(FTSenderBaseTest):
+
+    def test_realiza_dump_contactos(self):
+        """
+        Testea el método realiza_dump_contactos().
+        """
+        # Crea la base de datos y verifica que el método
+        bd_contacto = self.crear_base_datos_contacto(10)
+
+        Contacto.objects.realiza_dump_contactos(bd_contacto)
+
+        dir_dump_contacto = '/home/cilcobich/sql/'
+        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
+
+        copy_to = dir_dump_contacto + nombre_archivo_contactos
+        self.assertTrue(os.path.exists(copy_to))
+
+
 class CampanaTest(FTSenderBaseTest):
     """Clase para testear Campana y CampanaManager"""
 
