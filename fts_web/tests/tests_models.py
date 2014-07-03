@@ -81,12 +81,14 @@ class BaseDatosContactoTest(FTSenderBaseTest):
 
         # Verifica que al crear una BaseDatosContacto y no definirla
         # el estado sea sin definir.
-        self.assertTrue(bd_contacto.sin_definir)
+        self.assertTrue(bd_contacto.estado ==
+                        BaseDatosContacto.ESTADO_EN_DEFINICION)
 
         # Verifica que la BaseDatosContacto al definirla cambie su
         # estado a definida.
         bd_contacto.define()
-        self.assertFalse(bd_contacto.sin_definir)
+        self.assertTrue(bd_contacto.estado ==
+                        BaseDatosContacto.ESTADO_DEFINIDA)
 
     tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     MEDIA_ROOT = os.path.join(tmp, "test")
