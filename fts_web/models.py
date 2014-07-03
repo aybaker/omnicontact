@@ -324,6 +324,40 @@ class BaseDatosContacto(models.Model):
         """
         self.contactos.all().delete()
 
+    def procesa_depuracion(self):
+        """
+        Este método se encarga de llevar el proceso de depuración de
+        BaseDatoContacto invocando a los métodos que realizan las distintas
+        acciones.
+        """
+        # 1) Cambio de estado BaseDatoContacto (ESTADO_EN_DEPURACION).
+        logger.info("Iniciando el proceso de depurado de BaseDatoContacto:"
+                    "Seteando base datos contacto %s como"
+                    "ESTADO_EN_DEPURACION.", self.id)
+        self.estado = self.ESTADO_EN_DEPURACION
+        self.save()
+
+        # 2) Llamada a método que hace el COPY / dump.
+        try:
+            Contacto.objects.realiza_dump_contactos(self)
+        except Exception as e:
+            logger.warning("ContactoManager.realiza_dump_contactos(): %s", e)
+            self.estado = self.ESTADO_DEFINIDA
+            self.save()
+
+            raise FtsDepuraBaseDatoContactoError("No se pudo depurar la "
+                                                 "Base Datos Contacto.")
+        else:
+            # 3) Llama el método que hace el borrado de los contactos.
+            self.elimina_contactos()
+
+            # 4) Cambio de estado BaseDatoContacto (ESTADO_DEPURADA).
+            logger.info("Finalizando el proceso de depurado de "
+                        "BaseDatoContacto: Seteando base datos contacto %s "
+                        "como ESTADO_DEPURADA.", self.id)
+            self.estado = self.ESTADO_DEPURADA
+            self.save()
+
 
 class ContactoManager(models.Manager):
     """Manager para Contacto"""
