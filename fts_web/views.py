@@ -430,8 +430,8 @@ class DepuraBaseDatosContactoView(DeleteView):
         if self.object.verifica_en_uso():
             message = """<strong>¡Cuidado!</strong>
             La Base Datos Contacto que intenta depurar esta siendo utilizada
-            por alguna campaña. No se llevará a cabo la depuración mientras
-            la misma esté siendo utilizada."""
+            por alguna campaña. No se llevará a cabo la depuración la misma 
+            mientras esté siendo utilizada."""
             messages.add_message(
                 self.request,
                 messages.WARNING,
