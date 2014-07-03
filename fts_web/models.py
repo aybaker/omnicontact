@@ -200,6 +200,17 @@ upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 class BaseDatosContacto(models.Model):
     objects = BaseDatosContactoManager()
 
+    ESTADO_EN_DEFINICION = 0
+    ESTADO_DEFINIDA = 1
+    ESTADO_EN_DEPURACION = 2
+    ESTADO_DEPURADA = 3
+    ESTADOS = (
+        (ESTADO_EN_DEFINICION, 'En Definición'),
+        (ESTADO_DEFINIDA, 'Definida'),
+        (ESTADO_EN_DEPURACION, 'En Depuracion'),
+        (ESTADO_DEPURADA, 'Depurada')
+    )
+
     nombre = models.CharField(
         max_length=128,
     )
@@ -226,17 +237,13 @@ class BaseDatosContacto(models.Model):
     cantidad_contactos = models.PositiveIntegerField(
         default=0
     )
-
-    #    active = models.BooleanField(
-    #        default=True,
-    #        editable=False,
-    #    )
+    estado = models.PositiveIntegerField(
+        choices=ESTADOS,
+        default=ESTADO_EN_DEFINICION,
+    )
 
     def __unicode__(self):
         return self.nombre
-        #    if self.active:
-        #        return self.nombre
-        #    return '(ELiminado) {0}'.format(self.nombre)
 
     def importa_contactos(self, parser_archivo):
         """
