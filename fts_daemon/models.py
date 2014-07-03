@@ -352,6 +352,7 @@ class SimuladorEventoDeContactoManager():
             sin_definir=False,
             columna_datos=1,
             cantidad_contactos=cantidad,
+            estado=BaseDatosContacto.ESTADO_DEFINIDA,
         )
 
         cursor = connection.cursor()
