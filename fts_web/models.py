@@ -368,7 +368,10 @@ class ContactoManager(models.Manager):
         archivo.
         """
 
-        # FIXME: Cambiar  directorio. Ajustar los test también.
+        # FIXME: Cambiar  directorio. Ajustar los test:
+        # 1- test_realiza_dump_contactos.
+        # 2- test_procesa_depuracion.
+
         dir_dump_contacto = '/home/cilcobich/sql/'
         nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
 
