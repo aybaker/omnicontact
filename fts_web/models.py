@@ -318,7 +318,31 @@ class BaseDatosContacto(models.Model):
         return True
 
 
+class ContactoManager(models.Manager):
+    """Manager para Contacto"""
+
+    def realiza_dump_contactos(self, bd_contacto):
+        """
+        Este método realiza el dump de los contactos de la base de datos a un
+        archivo.
+        """
+        dir_dump_contactos = '/home/cilcobich/sql/contactos.csv'
+
+        cursor = connection.cursor()
+        sql = """COPY (SELECT * FROM fts_web_contacto WHERE
+            bd_contacto_id = %s) TO %s;
+        """
+
+        params = [bd_contacto.id, dir_dump_contactos]
+        with log_timing(logger,
+                        "Depuración BaseDatosContacto: Dump de los Contactos "
+                        "tardo %s seg"):
+            cursor.execute(sql, params)
+
+
 class Contacto(models.Model):
+    objects = ContactoManager()
+
     telefono = models.CharField(
         max_length=64,
     )
