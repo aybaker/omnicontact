@@ -382,7 +382,7 @@ class ContactoManager(models.Manager):
         # 1- test_realiza_dump_contactos.
         # 2- test_procesa_depuracion.
 
-        dir_dump_contacto = '/home/cilcobich/sql/'
+        dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
         nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
 
         copy_to = dir_dump_contacto + nombre_archivo_contactos
