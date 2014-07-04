@@ -89,6 +89,8 @@ FTS_FDCD_LOOP_SLEEP = 5.0
 
 FTS_FDCD_INITIAL_WAIT = 0.5
 
+FTS_BASE_DATO_CONTACTO_DUMP_PATH = "/tmp/"
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
