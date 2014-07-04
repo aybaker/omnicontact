@@ -312,10 +312,9 @@ class BaseDatosContacto(models.Model):
         Devuelve  booleano.
         """
         estados_campanas = [campana.estado for campana in self.campanas.all()]
-        if all(estado == Campana.ESTADO_FINALIZADA
-               for estado in estados_campanas):
-            return False
-        return True
+        if any(estado == Campana.ESTADO_ACTIVA for estado in estados_campanas):
+            return True
+        return False
 
     def verifica_depurada(self):
         """
@@ -377,11 +376,6 @@ class ContactoManager(models.Manager):
         Este método realiza el dump de los contactos de la base de datos a un
         archivo.
         """
-
-        # FIXME: Cambiar  directorio. Ajustar los test:
-        # 1- test_realiza_dump_contactos.
-        # 2- test_procesa_depuracion.
-
         dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
         nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
 
