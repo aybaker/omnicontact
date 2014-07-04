@@ -187,6 +187,10 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         bd_contacto.elimina_contactos()
         self.assertEqual(bd_contacto.contactos.count(), 0)
 
+    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    DUMP_PATH = os.path.join(tmp, "test", "base_dato_contacto_dump/")
+
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=DUMP_PATH)
     def test_procesa_depuracion(self):
         """
         Testea el método procesa_depuracion(().
@@ -199,7 +203,7 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         self.assertEqual(bd_contacto.contactos.count(), 0)
 
         # Verifica que se haya creado el archivo CSV.
-        dir_dump_contacto = '/home/cilcobich/sql/'
+        dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
         nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
         copy_to = dir_dump_contacto + nombre_archivo_contactos
         self.assertTrue(os.path.exists(copy_to))
@@ -208,9 +212,17 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         self.assertEqual(bd_contacto.estado,
                          BaseDatosContacto.ESTADO_DEPURADA)
 
+        import glob
+        files = glob.glob('{0}/*'.format(dir_dump_contacto))
+        for f in files:
+            os.remove(f)
+
 
 class ContactoTest(FTSenderBaseTest):
+    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    DUMP_PATH = os.path.join(tmp, "test", "base_dato_contacto_dump/")
 
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=DUMP_PATH)
     def test_realiza_dump_contactos(self):
         """
         Testea el método realiza_dump_contactos().
@@ -221,11 +233,17 @@ class ContactoTest(FTSenderBaseTest):
 
         Contacto.objects.realiza_dump_contactos(bd_contacto)
 
-        dir_dump_contacto = '/home/cilcobich/sql/'
+        dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
         nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
 
         copy_to = dir_dump_contacto + nombre_archivo_contactos
         self.assertTrue(os.path.exists(copy_to))
+
+        import glob
+        files = glob.glob('{0}/*'.format(dir_dump_contacto))
+        for f in files:
+            os.remove(f)
+
 
 
 class CampanaTest(FTSenderBaseTest):
