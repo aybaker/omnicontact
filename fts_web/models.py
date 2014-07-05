@@ -166,33 +166,32 @@ class BaseDatosContactoManager(models.Manager):
             return campana.bd_contacto
 
         elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_PENDIENTES:
-            # Trae los contatos telefónicos pendientes.
-            lista_contactos_pendientes = campana.obtener_contactos_pendientes()
+            lista_contactos = campana.obtener_contactos_pendientes()
+        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_OCUPADOS:
+            lista_contactos = campana.obtener_contactos_ocupados()
 
-            if not lista_contactos_pendientes:
-                logger.warn("El reciclado de base datos no arrojo contactos.")
-                raise FtsRecicladoBaseDatosContactoError("""No se registraron
-                    contactos PENDIENTES en el reciclado de la base de 
-                    datos.""")
-
-            try:
-                bd_contacto = BaseDatosContacto.objects.create(
-                    nombre='{0} (reciclada)'.format(
-                        campana.bd_contacto.nombre),
-                    archivo_importacion=campana.bd_contacto.\
-                        archivo_importacion,
-                    nombre_archivo_importacion=campana.bd_contacto.\
-                        nombre_archivo_importacion,
-                )
-            except Exception, e:
-                logger.warn("Se produjo un error al intentar crear la base de"
-                    " datos. Exception: %s", e)
-                raise FtsRecicladoBaseDatosContactoError("""No se pudo crear
-                    la base datos contactos reciclada.""")
-            else:
-                bd_contacto.genera_contactos(lista_contactos_pendientes)
-                bd_contacto.define()
-                return bd_contacto
+        if not lista_contactos:
+            logger.warn("El reciclado de base datos no arrojo contactos.")
+            raise FtsRecicladoBaseDatosContactoError("""No se registraron
+                contactos en el reciclado de la base de datos.""")
+        try:
+            bd_contacto = BaseDatosContacto.objects.create(
+                nombre='{0} (reciclada)'.format(
+                    campana.bd_contacto.nombre),
+                archivo_importacion=campana.bd_contacto.\
+                    archivo_importacion,
+                nombre_archivo_importacion=campana.bd_contacto.\
+                    nombre_archivo_importacion,
+            )
+        except Exception, e:
+            logger.warn("Se produjo un error al intentar crear la base de"
+                " datos. Exception: %s", e)
+            raise FtsRecicladoBaseDatosContactoError("""No se pudo crear
+                la base datos contactos reciclada.""")
+        else:
+            bd_contacto.genera_contactos(lista_contactos)
+            bd_contacto.define()
+            return bd_contacto
 
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
@@ -1190,6 +1189,40 @@ class Campana(models.Model):
         ###
 
         params = [self.pk, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL]
+
+        with log_timing(logger,
+                        "obtener_contactos_pendientes() tardo %s seg"):
+            cursor.execute(sql, params)
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+
+        return values
+
+    def obtener_contactos_ocupados(self):
+        """
+        Este método se encarga de devolver los contactos que presentan en
+        alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_BUSY y
+        que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
+        """
+        from fts_daemon.models import EventoDeContacto
+
+        assert (self.estado == Campana.ESTADO_FINALIZADA,
+                "Solo se aplica la búsqueda a campanas finalizadas")
+
+        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
+
+        cursor = connection.cursor()
+        sql = """SELECT telefono, array_agg(evento)
+            FROM fts_web_contacto INNER JOIN {0}
+            ON fts_web_contacto.id = {0}.contacto_id
+            WHERE campana_id = %s
+            GROUP BY contacto_id, telefono
+            HAVING %s = ANY(array_agg(evento))
+            AND not( %s = ANY(array_agg(evento)))
+        """.format(nombre_tabla)
+
+        params = [self.pk, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
 
         with log_timing(logger,
                         "obtener_contactos_pendientes() tardo %s seg"):
