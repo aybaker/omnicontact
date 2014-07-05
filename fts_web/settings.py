@@ -181,7 +181,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #        en los distintos ambientes / deploys
 #==============================================================================
 
-
 #==============================================================================
 # DEPLOY -> Asterisk
 #==============================================================================
@@ -319,6 +318,12 @@ ASTERISK = {
 }
 """Configuracion para interactuar con Asterisk"""
 
+FTS_BASE_DATO_CONTACTO_DUMP_PATH = None  #@IgnorePep8
+"""
+Path completo (absoluto) al dir donde se debe generar los dumps de la
+depuración de BaseDatoContacto.
+"""
+
 
 #==============================================================================
 # Import de `fts_web_settings_local`
@@ -440,6 +445,18 @@ UWSGI_CACHE_FALLBACK = True
 
 for customizator_func in FTS_SETTING_CUSTOMIZERS:
     customizator_func(locals())
+
+# ~~~~~ Check FTS_BASE_DATO_CONTACTO_DUMP_PATH
+
+assert FTS_BASE_DATO_CONTACTO_DUMP_PATH is not None, \
+    "Falta definir setting para FTS_BASE_DATO_CONTACTO_DUMP_PATH"
+
+assert os.path.isabs(FTS_BASE_DATO_CONTACTO_DUMP_PATH), \
+    "FTS_BASE_DATO_CONTACTO_DUMP_PATH debe ser un path absoluto"
+
+assert os.path.exists(os.path.dirname(FTS_BASE_DATO_CONTACTO_DUMP_PATH)), \
+    "FTS_BASE_DATO_CONTACTO_DUMP_PATH: el directorio '{0}' no existe".format(
+        os.path.dirname(FTS_BASE_DATO_CONTACTO_DUMP_PATH))
 
 
 #==============================================================================

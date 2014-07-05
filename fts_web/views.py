@@ -21,7 +21,7 @@ from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_web.errors import (FtsAudioConversionError,
     FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
     FtsParserOpenFileError, FtsRecicladoCampanaError,
-    FtsRecicladoBaseDatosContactoError)
+    FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
@@ -409,46 +409,57 @@ class DefineBaseDatosContactoView(UpdateView):
         return reverse('lista_base_datos_contacto')
 
 
-# class BaseDatosContactoUpdateView(UpdateView, BaseDatosContactoMixin):
-#     """
-#     Esta vista actualiza el objeto
-#     BaseDatosContacto seleccionado.
-#     """
+class DepuraBaseDatosContactoView(DeleteView):
+    """
+    Esta vista se encarga de la depuración del
+    objeto Base de Datos seleccionado.
+    """
 
-#     template_name = 'base_datos_contacto/nueva_edita_listas_contacto.html'
-#     model = BaseDatosContacto
-#     context_object_name = 'base_datos_contacto'
-#     form_class = BaseDatosContactoForm
-#     form_file = FileForm
+    model = BaseDatosContacto
+    template_name = 'base_datos_contacto/depura_base_datos_contacto.html'
 
-#     def get_context_data(self, **kwargs):
-#         context = super(
-#             BaseDatosContactoUpdateView, self).get_context_data(**kwargs)
+    def get_success_url(self):
+        return reverse(
+            'lista_base_datos_contacto',
+        )
 
-#         if 'form_file' not in context:
-#             context['form_file'] = self.form_file()
-#         return context
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
 
-#     def form_valid(self, form):
-#         return self.process_all_forms(form)
+        if self.object.verifica_en_uso():
+            message = """<strong>¡Cuidado!</strong>
+            La Base Datos Contacto que intenta depurar esta siendo utilizada
+            por alguna campaña. No se llevará a cabo la depuración la misma 
+            mientras esté siendo utilizada."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+            return HttpResponseRedirect(success_url)
 
-#     def form_invalid(self, form):
-#         return self.process_all_forms(form)
+        try:
+            self.object.procesa_depuracion()
+        except FtsDepuraBaseDatoContactoError:
+            message = """<strong>¡Operación Errónea!</strong>
+            La Base Datos Contacto no se pudo depurar."""
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return HttpResponseRedirect(success_url)
+        else:
+            message = '<strong>Operación Exitosa!</strong>\
+            Se llevó a cabo con éxito la depuración de la Base de Datos.'
 
-#     def get_success_url(self):
-#         message = '<strong>Operación Exitosa!</strong>\
-#         Se llevó a cabo con éxito la actualización de\
-#         la Base de Datos de Contactos.'
-
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             message,
-#         )
-
-#         return reverse(
-#             'edita_base_datos_contacto',
-#             kwargs={"pk": self.object.pk})
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                message,
+            )
+            return HttpResponseRedirect(success_url)
 
 
 #==============================================================================
@@ -819,6 +830,24 @@ class ConfirmaCampanaMixin(UpdateView):
     def form_valid(self, form):
         if 'confirma' in self.request.POST:
             campana = self.object
+
+            if campana.bd_contacto.verifica_depurada():
+                # TODO: Cuando en el proceso de creación de la campana se
+                # pueda ir volviendo de paso, mostrar el error y no
+                # redireccionar, permitir que puda seleccionar otra base de
+                # datos.
+
+                message = """<strong>Operación Errónea!</strong>.
+                No se pudo realizar la confirmación de la campaña debido a
+                que durante el proceso de creación de la misma, la base de
+                datos seleccionada fue depurada y no está disponible para su
+                uso. La campaña no se creará."""
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return redirect(self.get_success_url())
 
             post_proceso_ok = True
             message = ''

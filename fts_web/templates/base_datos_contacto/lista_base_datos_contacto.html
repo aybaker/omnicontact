@@ -25,7 +25,7 @@
                         <th class="text-muted">Creada</th>
                         <th class="text-muted">Cantidad Contactos</th>
                         <!-- <th class="text-muted">Editar</th> -->
-                        <!-- <th class="text-muted">Eliminar</th> -->
+                        <th class="text-muted">Eliminar</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -47,13 +47,13 @@
                                         </button>
                                     </a>
                                 </td> -->
-                                <!-- <td>
-                                    <a href="#">
+                                <td>
+                                    <a href="{% url 'depurar_base_datos_contacto' base_datos_contacto.pk %}">
                                         <button type="button" class="btn btn-danger btn-sm">
-                                            <span class="glyphicon glyphicon-remove"></span> Eliminar
+                                            <span class="glyphicon glyphicon-remove"></span> Depurar
                                         </button>
                                     </a>
-                                </td> -->
+                                </td>
                             </tr>
                         {% empty %}
                             <tr>

@@ -147,7 +147,7 @@ class BaseDatosContactoManager(models.Manager):
         Este método filtra lo objetos BaseDatosContacto que
         esté definidos.
         """
-        return self.filter(sin_definir=False)
+        return self.filter(estado=BaseDatosContacto.ESTADO_DEFINIDA)
 
     def reciclar_base_datos(self, campana_id, tipo_reciclado):
         """
@@ -200,6 +200,17 @@ upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 class BaseDatosContacto(models.Model):
     objects = BaseDatosContactoManager()
 
+    ESTADO_EN_DEFINICION = 0
+    ESTADO_DEFINIDA = 1
+    ESTADO_EN_DEPURACION = 2
+    ESTADO_DEPURADA = 3
+    ESTADOS = (
+        (ESTADO_EN_DEFINICION, 'En Definición'),
+        (ESTADO_DEFINIDA, 'Definida'),
+        (ESTADO_EN_DEPURACION, 'En Depuracion'),
+        (ESTADO_DEPURADA, 'Depurada')
+    )
+
     nombre = models.CharField(
         max_length=128,
     )
@@ -226,17 +237,13 @@ class BaseDatosContacto(models.Model):
     cantidad_contactos = models.PositiveIntegerField(
         default=0
     )
-
-    #    active = models.BooleanField(
-    #        default=True,
-    #        editable=False,
-    #    )
+    estado = models.PositiveIntegerField(
+        choices=ESTADOS,
+        default=ESTADO_EN_DEFINICION,
+    )
 
     def __unicode__(self):
         return self.nombre
-        #    if self.active:
-        #        return self.nombre
-        #    return '(ELiminado) {0}'.format(self.nombre)
 
     def importa_contactos(self, parser_archivo):
         """
@@ -287,6 +294,8 @@ class BaseDatosContacto(models.Model):
 
         logger.info("Seteando base datos contacto %s como definida", self.id)
         self.sin_definir = False
+
+        self.estado = self.ESTADO_DEFINIDA
         self.save()
 
     def get_cantidad_contactos(self):
@@ -296,8 +305,97 @@ class BaseDatosContacto(models.Model):
 
         return self.cantidad_contactos
 
+    def verifica_en_uso(self):
+        """
+        Este método se encarga de verificar si la base de datos esta siendo
+        usada por alguna campaña que este activa o pausada.
+        Devuelve  booleano.
+        """
+        estados_campanas = [campana.estado for campana in self.campanas.all()]
+        if any(estado == Campana.ESTADO_ACTIVA for estado in estados_campanas):
+            return True
+        return False
+
+    def verifica_depurada(self):
+        """
+        Este método se encarga de verificar si la base de datos esta siendo
+        depurada o si ya fue depurada.
+        Devuelve booleano.
+        """
+        if self.estado in (self.ESTADO_EN_DEPURACION, self.ESTADO_DEPURADA):
+            return True
+        return False
+
+    def elimina_contactos(self):
+        """
+        Este método se encarga de eliminar todos los contactos de la
+        BaseDatoContacto actual.
+        """
+        self.contactos.all().delete()
+
+    def procesa_depuracion(self):
+        """
+        Este método se encarga de llevar el proceso de depuración de
+        BaseDatoContacto invocando a los métodos que realizan las distintas
+        acciones.
+        """
+        # 1) Cambio de estado BaseDatoContacto (ESTADO_EN_DEPURACION).
+        logger.info("Iniciando el proceso de depurado de BaseDatoContacto:"
+                    "Seteando base datos contacto %s como"
+                    "ESTADO_EN_DEPURACION.", self.id)
+        self.estado = self.ESTADO_EN_DEPURACION
+        self.save()
+
+        # 2) Llamada a método que hace el COPY / dump.
+        try:
+            Contacto.objects.realiza_dump_contactos(self)
+        except Exception as e:
+            logger.warning("ContactoManager.realiza_dump_contactos(): %s", e)
+            self.estado = self.ESTADO_DEFINIDA
+            self.save()
+
+            raise FtsDepuraBaseDatoContactoError("No se pudo depurar la "
+                                                 "Base Datos Contacto.")
+        else:
+            # 3) Llama el método que hace el borrado de los contactos.
+            self.elimina_contactos()
+
+            # 4) Cambio de estado BaseDatoContacto (ESTADO_DEPURADA).
+            logger.info("Finalizando el proceso de depurado de "
+                        "BaseDatoContacto: Seteando base datos contacto %s "
+                        "como ESTADO_DEPURADA.", self.id)
+            self.estado = self.ESTADO_DEPURADA
+            self.save()
+
+
+class ContactoManager(models.Manager):
+    """Manager para Contacto"""
+
+    def realiza_dump_contactos(self, bd_contacto):
+        """
+        Este método realiza el dump de los contactos de la base de datos a un
+        archivo.
+        """
+        dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
+        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
+
+        copy_to = dir_dump_contacto + nombre_archivo_contactos
+
+        cursor = connection.cursor()
+        sql = """COPY (SELECT * FROM fts_web_contacto WHERE
+            bd_contacto_id = %s) TO %s;
+        """
+
+        params = [bd_contacto.id, copy_to]
+        with log_timing(logger,
+                        "ContactoManager.realiza_dump_contactos() tardo "
+                        "%s seg"):
+            cursor.execute(sql, params)
+
 
 class Contacto(models.Model):
+    objects = ContactoManager()
+
     telefono = models.CharField(
         max_length=64,
     )
