@@ -1180,16 +1180,16 @@ class Campana(models.Model):
         assert (self.estado == Campana.ESTADO_FINALIZADA,
                 "Solo se aplica la búsqueda a campanas finalizadas")
 
-        nombre_tabla = "EDC_depurados_{0}".format(self.pk)
+        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
 
         cursor = connection.cursor()
         sql = """SELECT telefono, array_agg(evento)
             FROM fts_web_contacto INNER JOIN {0}
-            ON fts_web_contacto.id = {1}.contacto_id
+            ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
             GROUP BY contacto_id, telefono
             HAVING not( %s = ANY(array_agg(evento)))
-        """.format(nombre_tabla, nombre_tabla)
+        """.format(nombre_tabla)
 
         ###
         # FIXME: Remover el .format() de sql.
