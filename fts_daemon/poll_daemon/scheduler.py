@@ -9,7 +9,9 @@ import time
 
 from django.conf import settings
 from django.core.cache import get_cache
-from fts_daemon import llamador_contacto, fts_celery
+from fts_daemon import fts_celery
+from fts_daemon import llamador_contacto
+from fts_daemon.fts_celery import esperar_y_finalizar_campana
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
 from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
@@ -146,7 +148,10 @@ class RoundRobinTracker(object):
         logger.debug("onNoMasContactosEnCampana() para la campana %s.",
             campana.id)
         self._campana_call_status.banear_campana(campana,
-            reason=BANEO_NO_MAS_CONTACTOS, forever=True)
+            reason=BANEO_NO_MAS_CONTACTOS)
+
+        fts_celery.esperar_y_finalizar_campana.\
+            delay(campana.id)  # @UndefinedVariable
 
     def onLimiteDeCanalesAlcanzadoError(self, campana):
         """Ejecutado por generator() cuando se detecta
@@ -261,48 +266,11 @@ class RoundRobinTracker(object):
         se procesan llamadas.
         """
         # TODO: usar time.clock() u alternativa
-        inicio = time.time()
-        for campana in self._campana_call_status.obtener_baneados_por_razon(
-            BANEO_NO_MAS_CONTACTOS):
 
-            logger.debug("sleep(): evaluando si finalizamos la campana %s",
-                campana.id)
-            delta = time.time() - inicio
-            if delta >= espera:
-                # Si nos pasamos de `segundos`, salimos
-                logger.info("sleep(): ya superamos el tiempo de espera "
-                    "solicitado. No finalizaremos la campana %s, y "
-                    "continuaremos la ejecucion del loop", campana.id)
-                return
-
-            # Aunque tengamos tiempo, *NO* finalizamos una campaña
-            # que posea llamadas en curso, por eso lo chequeaoms
-            # (y antes de chequearlos, actualizamos el status)
-
-            self._asterisk_call_status.\
-                refrescar_channel_status_si_es_posible()
-
-            # FTS-174 [TD] [CORNER CASE] Sobrepaso de limites si AMI/HTTP falla
-
-            llamadas_en_curso = self._campana_call_status.\
-                get_count_llamadas_de_campana(campana)
-
-            if llamadas_en_curso == 0:
-                logger.info("sleep(): finalizando campana %s porque "
-                    "no posee llamadas en curso", campana.id)
-                self._finalizador_de_campanas(campana.id)
-                self._campana_call_status.banear_campana(campana,
-                    reason=BANEO_CAMPANA_FINALIZADA, forever=True)
-            else:
-                logger.info("sleep(): no se finalizara campana %s porque "
-                    "posee %s llamadas en curso. Se re-baneara, para que "
-                    "en el futuro se vuelva a intentar la finalizacion",
-                    campana.id, llamadas_en_curso)
-                self._campana_call_status.banear_campana(campana,
-                    reason=BANEO_NO_MAS_CONTACTOS, forever=False)
-
-        delta = time.time() - inicio
-        self.real_sleep(espera - delta)
+        # Ahora que usamos Celery, en realidad no tenemos nada
+        # que hacer aqui, solo esperar. Quiza sea mejor elimintar
+        # este metodo, o unificarlo con real_sleep()
+        self.real_sleep(espera)
 
     def generator(self):
         """Devuelve los datos de contacto a contactar, de a una
