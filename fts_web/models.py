@@ -1232,7 +1232,7 @@ class Campana(models.Model):
                   EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
 
         with log_timing(logger,
-                        "obtener_contactos_pendientes() tardo %s seg"):
+                        "obtener_contactos_ocupados() tardo %s seg"):
             cursor.execute(sql, params)
             # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
             values = cursor.fetchall()
