@@ -45,7 +45,9 @@ class FinalizadorDeCampanas(object):
         self.asterisk_call_status = asterisk_call_status or \
             AsteriskCallStatus(self.campana_call_status)
 
+    #----------------------------------------------------------------------
     # METODOS PROXY (para faclitar unittest)
+    #----------------------------------------------------------------------
 
     def _refrescar_status(self):
         """Llama a refrescar_channel_status_si_es_posible().
@@ -72,7 +74,9 @@ class FinalizadorDeCampanas(object):
         """
         time.sleep(settings.FTS_FDCD_LOOP_SLEEP)
 
-    # Metodos reales
+    #----------------------------------------------------------------------
+    # Metodos
+    #----------------------------------------------------------------------
 
     def _obtener_vencidas(self):
         """Devuelve campañas vencidas que hay que finalizar"""
