@@ -22,14 +22,16 @@
             <br>
             <form role="form" method="post" enctype="multipart/form-data" >   
                 <div class="col-lg-4">               
-                    {% crispy form %}                                       
 
                     {% if campana.audio_original %}
                         <div>
-                            <h4>Audio de la Campaña</h4>
+                            <h4>Audio actual de la Campaña <small>{{ campana.audio_original.name }}</small></h4>
                             <audio src="{{ campana.audio_original.url }}" controls></audio>
                         </div>
-                    {% endif %}              
+                        <hr>
+                    {% endif %} 
+
+                    {% crispy form %}
                 </div>
                 <div class="col-lg-12">
                     <br>

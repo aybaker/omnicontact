@@ -149,6 +149,17 @@ class AudioForm(forms.ModelForm):
     class Meta:
         model = Campana
         fields = ('audio_original',)
+        widgets = {
+            'audio_original': forms.FileInput(),
+        }
+        labels = {
+            'audio_original': 'Audio',
+        }
+        help_texts = {
+            'audio_original': """Seleccione el archivo de audio que desea para
+            la Campaña. Si ya existe uno y guarda otro, el audio será
+            reemplazado.""",
+        }
 
 
 class ConfirmaForm(forms.ModelForm):
