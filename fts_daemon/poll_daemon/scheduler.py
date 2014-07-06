@@ -9,7 +9,7 @@ import time
 
 from django.conf import settings
 from django.core.cache import get_cache
-from fts_daemon import llamador_contacto
+from fts_daemon import llamador_contacto, fts_celery
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
 from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
@@ -44,17 +44,8 @@ class CantidadMaximaDeIteracionesSuperada(Exception):
 
 def finalizar_campana(campana_id):
     """Finaliza una campaña"""
-    campana = Campana.objects.get(pk=campana_id)
-
-    if campana.estado != Campana.ESTADO_ACTIVA:
-        logger.info("finalizar_campana(): No finalizaremos campana "
-            "%s porque su estado no es ESTADO_ACTIVA", campana.id)
-        return
-
-    # LIMITE = settings.FTS_MARGEN_FINALIZACION_CAMPANA
-    logger.info("finalizar_campana(): finalizando campana %s", campana.id)
-
-    campana.finalizar()
+    logger.info("finalizar_campana(): finalizando campana %s", campana_id)
+    fts_celery.finalizar_campana.delay(campana_id)  # @UndefinedVariable
 
 
 class ContinueOnOuterWhile(Exception):

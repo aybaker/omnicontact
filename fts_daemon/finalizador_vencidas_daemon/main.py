@@ -12,8 +12,7 @@ from fts_daemon.poll_daemon.call_status import AsteriskCallStatus, \
     CampanaCallStatus
 from fts_web.models import Campana
 import logging as _logging
-from django.db import transaction
-
+from fts_daemon import fts_celery
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
 #  el logger se llamara '__main__'
@@ -67,9 +66,7 @@ class FinalizadorDeCampanas(object):
         """Finaliza la campaña
         Es funcion 'proxy', para facilitar unittest.
         """
-        with transaction.atomic():
-            campana.finalizar()
-            campana.procesar_finalizada()
+        fts_celery.finalizar_campana.delay(campana.id)  # @UndefinedVariable
 
     def _sleep(self):
         """Realiza espera luego de finalizar el loop
@@ -85,25 +82,23 @@ class FinalizadorDeCampanas(object):
         """Devuelve campañas vencidas que hay que finalizar"""
         return Campana.objects.obtener_vencidas_para_finalizar()
 
-    def _correr_proceso_de_finalizacion(self):
-        """Ejecuta proceso de finalizacion (busca campanas, las finaliza).
-        Esto debe ejecutarse solo cuando el udpate del status fue exitoso.
-        """
-        campanas = self._obtener_vencidas()
+    def _run_loop(self):
+        """Ejecuta una iteración (busca campanas, las finaliza)."""
 
-        if not campanas:
-            logger.info("No hay campanas por finalizar...")
-            return
+        first_run = True
+        for campana in self._obtener_vencidas():
 
-        logger.info("Obteniendo status de llamadas en curso")
-        updt_ok = self._refrescar_status()
+            if first_run:
+                first_run = False
+                logger.info("Obteniendo status de llamadas en curso")
+                if not self._refrescar_status():
+                    logger.warn("No se pudo refrescar status de llamadas en "
+                        "curso... Por lo tanto, no se finalizara ninguna "
+                        "campana.")
+                    return
 
-        if not updt_ok:
-            logger.warn("No se pudo refrescar status de llamadas en "
-                "curso... Por lo tanto, no se finalizara ninguna campana.")
-            return
-
-        for campana in campanas:
+            logger.info("Chequeando llamadas en curso para campana %s",
+                        campana.id)
             count_llamadas_en_curso = self._get_count_llamadas(campana)
 
             if count_llamadas_en_curso > 0:
@@ -114,6 +109,10 @@ class FinalizadorDeCampanas(object):
                 logger.info("Finalizando campana %s", campana.id)
                 self._finalizar(campana)
 
+        if first_run:
+            # Nunca se entro al for!
+            logger.info("No se encontro campana por finalizar...")
+
     def run(self):
         """Inicia el proceso."""
 
@@ -122,7 +121,7 @@ class FinalizadorDeCampanas(object):
         current_loop = 1
         while True:
 
-            self._correr_proceso_de_finalizacion()
+            self._run_loop()
 
             if self.max_loop > 0:
                 current_loop += 1
