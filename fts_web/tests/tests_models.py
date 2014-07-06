@@ -878,6 +878,22 @@ class CampanaTest(FTSenderBaseTest):
             self.assertTrue(type(contacto_ocupado[1] == list))
             self.assertTrue(len(contacto_ocupado[1]) > 0)
 
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_campana_obtener_contactos_no_contestados(self):
+        # Verifico que devuelva la cantidad de no contestados correctos.
+        campana = self._crea_campana_emula_procesamiento(
+            evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
+            cantidad_eventos=20)
+        campana.procesar_finalizada()
+        contactos_no_contestados = campana.obtener_contactos_no_contestados()
+        self.assertEqual(len(contactos_no_contestados), 20)
+
+        # Verifico la estructura del objeto devuelto.
+        for contacto_no_contestado in contactos_no_contestados:
+            self.assertTrue(type(contacto_no_contestado[0] == int))
+            self.assertTrue(type(contacto_no_contestado[1] == list))
+            self.assertTrue(len(contacto_no_contestado[1]) > 0)
+
     def test_campana_obtener_detalle_opciones_seleccionadas(self):
         campana = self._crea_campana_emula_procesamiento()
 
