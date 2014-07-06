@@ -11,7 +11,6 @@ from django.conf import settings
 from django.core.cache import get_cache
 from fts_daemon import fts_celery
 from fts_daemon import llamador_contacto
-from fts_daemon.fts_celery import esperar_y_finalizar_campana
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
 from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
@@ -19,7 +18,6 @@ from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
     TodosLosContactosPendientesEstanEnCursoError
 from fts_daemon.poll_daemon.originate_throttler import OriginateThrottler
 from fts_daemon.poll_daemon.statistics import StatisticsService
-from fts_web.models import Campana
 import logging as _logging
 
 
@@ -44,12 +42,6 @@ class CantidadMaximaDeIteracionesSuperada(Exception):
     pass
 
 
-def finalizar_campana(campana_id):
-    """Finaliza una campaña"""
-    logger.info("finalizar_campana(): finalizando campana %s", campana_id)
-    fts_celery.finalizar_campana.delay(campana_id)  # @UndefinedVariable
-
-
 class ContinueOnOuterWhile(Exception):
     """Excepcion utilizada para romper un bucle"""
     pass
@@ -72,11 +64,6 @@ class RoundRobinTracker(object):
 
         self._asterisk_call_status = AsteriskCallStatus(
             self._campana_call_status)
-
-        self._finalizador_de_campanas = finalizar_campana
-        """Funcion que recibe por parametro el ID de la campaña
-        a finalizar, y finaliza dicha campaña
-        """
 
         self._statistics_service = StatisticsService(
             cache=get_cache('default')
@@ -111,6 +98,11 @@ class RoundRobinTracker(object):
         stats['sleeping'] = sleeping
 
         self._statistics_service.publish_statistics(stats)
+
+    def _esperar_y_finalizar_campana(self, campana_id):
+        """Lanza tarea asincrona de espera y finalizacion"""
+        fts_celery.esperar_y_finalizar_campana.\
+            delay(campana.id)  # @UndefinedVariable
 
     #
     # Eventos
@@ -150,8 +142,7 @@ class RoundRobinTracker(object):
         self._campana_call_status.banear_campana(campana,
             reason=BANEO_NO_MAS_CONTACTOS)
 
-        fts_celery.esperar_y_finalizar_campana.\
-            delay(campana.id)  # @UndefinedVariable
+        self._esperar_y_finalizar_campana(campana.id)
 
     def onLimiteDeCanalesAlcanzadoError(self, campana):
         """Ejecutado por generator() cuando se detecta
