@@ -248,6 +248,12 @@ class ContactoTest(FTSenderBaseTest):
 
 class CampanaTest(FTSenderBaseTest):
     """Clase para testear Campana y CampanaManager"""
+    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    MEDIA_ROOT = os.path.join(tmp, "test", "media_root")
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.MEDIA_ROOT)
 
     def test_campanas_creadas(self):
         """
@@ -612,9 +618,6 @@ class CampanaTest(FTSenderBaseTest):
         self.assertEquals(campana_ejecucion.count(), 2)
         self.assertNotIn(campana4, campana_ejecucion)
 
-    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    MEDIA_ROOT = os.path.join(tmp, "test", "reportes")
-
     @override_settings(MEDIA_ROOT=MEDIA_ROOT)
     def test_campana_crea_reporte_csv(self):
         import glob
@@ -846,7 +849,9 @@ class CampanaTest(FTSenderBaseTest):
     @override_settings(MEDIA_ROOT=MEDIA_ROOT)
     def test_campana_obtener_contactos_pendientes(self):
         # Verifico que devuelva la cantidad de pendientes correctos.
-        campana = self._crea_campana_emula_procesamiento(originate=20)
+        campana = self._crea_campana_emula_procesamiento(
+            evento=EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL,
+            cantidad_eventos=20)
         campana.procesar_finalizada()
         contactos_pendientes = campana.obtener_contactos_pendientes()
         self.assertEqual(len(contactos_pendientes), 80)
@@ -856,6 +861,22 @@ class CampanaTest(FTSenderBaseTest):
             self.assertTrue(type(contacto_pendiente[0] == int))
             self.assertTrue(type(contacto_pendiente[1] == list))
             self.assertTrue(len(contacto_pendiente[1]) > 0)
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_campana_obtener_contactos_ocupados(self):
+        # Verifico que devuelva la cantidad de ocupados correctos.
+        campana = self._crea_campana_emula_procesamiento(
+            evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
+            cantidad_eventos=20)
+        campana.procesar_finalizada()
+        contactos_ocupados = campana.obtener_contactos_ocupados()
+        self.assertEqual(len(contactos_ocupados), 20)
+
+        # Verifico la estructura del objeto devuelto.
+        for contacto_ocupado in contactos_ocupados:
+            self.assertTrue(type(contacto_ocupado[0] == int))
+            self.assertTrue(type(contacto_ocupado[1] == list))
+            self.assertTrue(len(contacto_ocupado[1]) > 0)
 
     def test_campana_obtener_detalle_opciones_seleccionadas(self):
         campana = self._crea_campana_emula_procesamiento()
