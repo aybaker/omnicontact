@@ -26,6 +26,9 @@ app.conf.update(
         'fts_daemon.fts_celery.finalizar_campana': {
             'queue': 'finalizar_campana'
         },
+        'fts_daemon.fts_celery.esperar_y_finalizar_campana': {
+            'queue': 'esperar_y_finalizar_campana'
+        },
     },
 )
 
