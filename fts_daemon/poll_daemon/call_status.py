@@ -52,7 +52,8 @@ class CampanaCallStatus(object):
         """
 
     def banear_campana(self, campana_u_objeto, reason=None,
-        forever=False):
+                       forever=False):
+        """Banea la campana pasada por parametro"""
         return self._ban_manager.banear_campana(campana_u_objeto,
             reason=reason, forever=forever)
 
@@ -125,7 +126,7 @@ class CampanaCallStatus(object):
         el baneo), NO son tenidos en cuenta.
 
         Este metdodo *NO ACCEDE A LA BD*.
-    
+
         Esto hace falta porque, entre ejecuciones del loop(), las campanas
         pueden ser baneadas, y si este metodo no existiera, serian evaluadas
         una y otra vez por el loop() hasta que se vuelva a ejecutar
