@@ -1240,6 +1240,41 @@ class Campana(models.Model):
 
         return values
 
+    def obtener_contactos_no_contestados(self):
+        """
+        Este método se encarga de devolver los contactos que presentan en
+        alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_NOANSWER y
+        que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
+        """
+        from fts_daemon.models import EventoDeContacto
+
+        assert (self.estado == Campana.ESTADO_FINALIZADA,
+                "Solo se aplica la búsqueda a campanas finalizadas")
+
+        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
+
+        cursor = connection.cursor()
+        sql = """SELECT telefono, array_agg(evento)
+            FROM fts_web_contacto INNER JOIN {0}
+            ON fts_web_contacto.id = {0}.contacto_id
+            WHERE campana_id = %s
+            GROUP BY contacto_id, telefono
+            HAVING %s = ANY(array_agg(evento))
+            AND not( %s = ANY(array_agg(evento)))
+        """.format(nombre_tabla)
+
+        params = [self.pk,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
+
+        with log_timing(logger,
+                        "obtener_contactos_no_contestados() tardo %s seg"):
+            cursor.execute(sql, params)
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+
+        return values
+
     def __unicode__(self):
         return self.nombre
 
