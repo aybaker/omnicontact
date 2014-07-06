@@ -171,6 +171,12 @@ class BaseDatosContactoManager(models.Manager):
         elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_NO_CONTESTADOS:
             lista_contactos_reciclados = \
                 campana.obtener_contactos_no_contestados()
+        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_NUMERO_ERRONEO:
+            lista_contactos_reciclados = \
+                campana.obtener_contactos_numero_erroneo()
+        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_LLAMADA_ERRONEA:
+            lista_contactos_reciclados = \
+                campana.obtener_contactos_llamada_erronea()
 
         if not lista_contactos_reciclados:
             logger.warn("El reciclado de base datos no arrojo contactos.")
