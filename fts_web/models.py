@@ -509,6 +509,10 @@ class CampanaManager(models.Manager):
 
         now_ref = datetime.datetime.now()
 
+        # ¿Por que `ESTADO_PAUSADA`? Porque ya está vencida!
+        # Otra alternativa sería dejarla pausada, y al des-pausarla
+        # verificar si ya está vencida, y si está vencida, la
+        # finalizamos...
         estados = [Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA]
 
         #
