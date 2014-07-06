@@ -166,14 +166,15 @@ class BaseDatosContactoManager(models.Manager):
             return campana.bd_contacto
 
         elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_PENDIENTES:
-            lista_contactos = campana.obtener_contactos_pendientes()
+            lista_contactos_reciclados = campana.obtener_contactos_pendientes()
         elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_OCUPADOS:
-            lista_contactos = campana.obtener_contactos_ocupados()
+            lista_contactos_reciclados = campana.obtener_contactos_ocupados()
 
-        if not lista_contactos:
+        if not lista_contactos_reciclados:
             logger.warn("El reciclado de base datos no arrojo contactos.")
             raise FtsRecicladoBaseDatosContactoError("""No se registraron
-                contactos en el reciclado de la base de datos.""")
+                contactos para reciclar con el tipo de reciclado seleccionado
+                .""")
         try:
             bd_contacto = BaseDatosContacto.objects.create(
                 nombre='{0} (reciclada)'.format(
@@ -189,7 +190,7 @@ class BaseDatosContactoManager(models.Manager):
             raise FtsRecicladoBaseDatosContactoError("""No se pudo crear
                 la base datos contactos reciclada.""")
         else:
-            bd_contacto.genera_contactos(lista_contactos)
+            bd_contacto.genera_contactos(lista_contactos_reciclados)
             bd_contacto.define()
             return bd_contacto
 
