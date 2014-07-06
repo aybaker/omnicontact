@@ -88,6 +88,14 @@ class FinalizadorDeCampanas(object):
             logger.info("No hay campanas por finalizar...")
             return
 
+        logger.info("Obteniendo status de llamadas en curso")
+        updt_ok = self._refrescar_status()
+
+        if not updt_ok:
+            logger.warn("No se pudo refrescar status de llamadas en "
+                "curso... Por lo tanto, no se finalizara ninguna campana.")
+            return
+
         for campana in campanas:
             count_llamadas_en_curso = self._get_count_llamadas(campana)
 
@@ -106,14 +114,8 @@ class FinalizadorDeCampanas(object):
 
         current_loop = 1
         while True:
-            logger.info("Obteniendo status de llamadas en curso")
-            updt_ok = self._refrescar_status()
 
-            if updt_ok:
-                self._correr_proceso_de_finalizacion()
-            else:
-                logger.warn("No se pudo refrescar status de llamadas en "
-                    "curso... Por lo tanto, no se finalizara ninguna campana")
+            self._correr_proceso_de_finalizacion()
 
             if self.max_loop > 0:
                 current_loop += 1

@@ -34,7 +34,10 @@ class FinalizadorDeCampanasTests(FTSenderBaseTest):
         finalizador._finalizar.assert_called_once_with(campana)
 
     def test_no_hace_nada_sin_campanas(self):
-        """Testea que no hace nada si no hay vencidas"""
+        """Testea que no hace nada si no hay vencidas.
+        Tambien testea q' no se actualice el status si no hay campanas
+        por finalizar
+        """
         finalizador = FinalizadorDeCampanas(max_loop=5, initial_wait=0)
         finalizador._obtener_vencidas = Mock(return_value=[])
         finalizador._refrescar_status = Mock(return_value=True)
@@ -45,6 +48,8 @@ class FinalizadorDeCampanasTests(FTSenderBaseTest):
         finalizador.run()
 
         self.assertEqual(finalizador._obtener_vencidas.call_count, 5)
-        self.assertEqual(finalizador._refrescar_status.call_count, 5)
         self.assertEqual(finalizador._get_count_llamadas.call_count, 0)
         self.assertEqual(finalizador._finalizar.call_count, 0)
+
+        # Ya que no habia camppañas, no se debio actualizar el status
+        self.assertEqual(finalizador._refrescar_status.call_count, 0)
