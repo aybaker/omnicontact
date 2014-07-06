@@ -81,12 +81,14 @@ class BaseDatosContactoTest(FTSenderBaseTest):
 
         # Verifica que al crear una BaseDatosContacto y no definirla
         # el estado sea sin definir.
-        self.assertTrue(bd_contacto.sin_definir)
+        self.assertTrue(bd_contacto.estado ==
+                        BaseDatosContacto.ESTADO_EN_DEFINICION)
 
         # Verifica que la BaseDatosContacto al definirla cambie su
         # estado a definida.
         bd_contacto.define()
-        self.assertFalse(bd_contacto.sin_definir)
+        self.assertTrue(bd_contacto.estado ==
+                        BaseDatosContacto.ESTADO_DEFINIDA)
 
     tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     MEDIA_ROOT = os.path.join(tmp, "test")
@@ -145,18 +147,113 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         self.assertEqual(bd_contacto_reciclada.cantidad_contactos, 
             Contacto.objects.filter(bd_contacto=bd_contacto_reciclada).count())
 
-    def test_campana_obtener_detalle_opciones_seleccionadas(self):
-        campana = self._crea_campana_emula_procesamiento()
+    def test_verifica_en_uso(self):
+        """
+        Testea el método verifica_en_uso().
+        """
+        # Crea la base de datos y verifica que el método devueva False ya que
+        # aún no se está usando en ninguna campana.
+        bd_contacto = self.crear_base_datos_contacto(10)
+        self.assertFalse(bd_contacto.verifica_en_uso())
+        self.assertEqual(bd_contacto.campanas.all().count(), 0)
 
-        detalle_opciones = campana.obtener_detalle_opciones_seleccionadas()
-        self.assertTrue(len(detalle_opciones))
-        for detalle_opcion in detalle_opciones:
-            self.assertIn(type(detalle_opcion[0]), [int, Opcion])
-            self.assertTrue(len(detalle_opcion[1]))
+        # Crea un campana con la base de datos y verifica que el método
+        # devuelva True ya que se está usando la base de datos.
+        self.crear_campana_activa(bd_contactos=bd_contacto)
+        self.assertTrue(bd_contacto.verifica_en_uso())
+        self.assertEqual(bd_contacto.campanas.all().count(), 1)
+
+    def test_verifica_depurada(self):
+        """
+        Testea el método verifica_depurada().
+        """
+        # Crea la base de datos y verifica que el método devueva False
+        # hasta que no se lleve a cabo la depuración.
+        bd_contacto = self.crear_base_datos_contacto(10)
+        self.assertFalse(bd_contacto.verifica_depurada())
+
+        bd_contacto.procesa_depuracion()
+
+        # Verifica que el método devuelva True ya que la BaseDatoContacto
+        # fue depurada.
+        self.assertTrue(bd_contacto.verifica_depurada())
+
+    def test_elimina_contactos(self):
+        """
+        Testea el método elimina_contactos().
+        """
+        # Crea la base de datos y verifica que el método elimine los contactos.
+        bd_contacto = self.crear_base_datos_contacto(10)
+        bd_contacto.elimina_contactos()
+        self.assertEqual(bd_contacto.contactos.count(), 0)
+
+    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    DUMP_PATH = os.path.join(tmp, "test", "base_dato_contacto_dump/")
+
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=DUMP_PATH)
+    def test_procesa_depuracion(self):
+        """
+        Testea el método procesa_depuracion(().
+        """
+        # Crea la base de datos y invoca al proceso de depuración.
+        bd_contacto = self.crear_base_datos_contacto(10)
+        bd_contacto.procesa_depuracion()
+
+        # Verifica que no haya contactos de la BaseDatoContacto.
+        self.assertEqual(bd_contacto.contactos.count(), 0)
+
+        # Verifica que se haya creado el archivo CSV.
+        dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
+        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
+        copy_to = dir_dump_contacto + nombre_archivo_contactos
+        self.assertTrue(os.path.exists(copy_to))
+
+        # Verifica que el estado de BaseDatoContacto sea  ESTADO_DEPURADA
+        self.assertEqual(bd_contacto.estado,
+                         BaseDatosContacto.ESTADO_DEPURADA)
+
+        import glob
+        files = glob.glob('{0}/*'.format(dir_dump_contacto))
+        for f in files:
+            os.remove(f)
+
+
+class ContactoTest(FTSenderBaseTest):
+    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    DUMP_PATH = os.path.join(tmp, "test", "base_dato_contacto_dump/")
+
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=DUMP_PATH)
+    def test_realiza_dump_contactos(self):
+        """
+        Testea el método realiza_dump_contactos().
+        """
+
+        # Crea la base de datos y verifica que el método
+        bd_contacto = self.crear_base_datos_contacto(10)
+
+        Contacto.objects.realiza_dump_contactos(bd_contacto)
+
+        dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
+        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
+
+        copy_to = dir_dump_contacto + nombre_archivo_contactos
+        self.assertTrue(os.path.exists(copy_to))
+
+        import glob
+        files = glob.glob('{0}/*'.format(dir_dump_contacto))
+        for f in files:
+            os.remove(f)
+
 
 
 class CampanaTest(FTSenderBaseTest):
     """Clase para testear Campana y CampanaManager"""
+    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    MEDIA_ROOT = os.path.join(tmp, "test", "media_root")
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.MEDIA_ROOT)
 
     def test_campanas_creadas(self):
         """
@@ -521,9 +618,6 @@ class CampanaTest(FTSenderBaseTest):
         self.assertEquals(campana_ejecucion.count(), 2)
         self.assertNotIn(campana4, campana_ejecucion)
 
-    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    MEDIA_ROOT = os.path.join(tmp, "test", "reportes")
-
     @override_settings(MEDIA_ROOT=MEDIA_ROOT)
     def test_campana_crea_reporte_csv(self):
         import glob
@@ -755,7 +849,9 @@ class CampanaTest(FTSenderBaseTest):
     @override_settings(MEDIA_ROOT=MEDIA_ROOT)
     def test_campana_obtener_contactos_pendientes(self):
         # Verifico que devuelva la cantidad de pendientes correctos.
-        campana = self._crea_campana_emula_procesamiento(originate=20)
+        campana = self._crea_campana_emula_procesamiento(
+            evento=EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL,
+            cantidad_eventos=20)
         campana.procesar_finalizada()
         contactos_pendientes = campana.obtener_contactos_pendientes()
         self.assertEqual(len(contactos_pendientes), 80)
@@ -766,6 +862,79 @@ class CampanaTest(FTSenderBaseTest):
             self.assertTrue(type(contacto_pendiente[1] == list))
             self.assertTrue(len(contacto_pendiente[1]) > 0)
 
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_campana_obtener_contactos_ocupados(self):
+        # Verifico que devuelva la cantidad de ocupados correctos.
+        campana = self._crea_campana_emula_procesamiento(
+            evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
+            cantidad_eventos=20)
+        campana.procesar_finalizada()
+        contactos_ocupados = campana.obtener_contactos_ocupados()
+        self.assertEqual(len(contactos_ocupados), 20)
+
+        # Verifico la estructura del objeto devuelto.
+        for contacto_ocupado in contactos_ocupados:
+            self.assertTrue(type(contacto_ocupado[0] == int))
+            self.assertTrue(type(contacto_ocupado[1] == list))
+            self.assertTrue(len(contacto_ocupado[1]) > 0)
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_campana_obtener_contactos_no_contestados(self):
+        # Verifico que devuelva la cantidad de no contestados correctos.
+        campana = self._crea_campana_emula_procesamiento(
+            evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
+            cantidad_eventos=20)
+        campana.procesar_finalizada()
+        contactos_no_contestados = campana.obtener_contactos_no_contestados()
+        self.assertEqual(len(contactos_no_contestados), 20)
+
+        # Verifico la estructura del objeto devuelto.
+        for contacto_no_contestado in contactos_no_contestados:
+            self.assertTrue(type(contacto_no_contestado[0] == int))
+            self.assertTrue(type(contacto_no_contestado[1] == list))
+            self.assertTrue(len(contacto_no_contestado[1]) > 0)
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_campana_obtener_contactos_numero_erroneo(self):
+        # Verifico que devuelva la cantidad de contactos erróneos correctos.
+        campana = self._crea_campana_emula_procesamiento(
+            evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION,
+            cantidad_eventos=20)
+        campana.procesar_finalizada()
+        contactos_numeros_erroneos = campana.obtener_contactos_numero_erroneo()
+        self.assertEqual(len(contactos_numeros_erroneos), 20)
+
+        # Verifico la estructura del objeto devuelto.
+        for contactos_numero_erroneo in contactos_numeros_erroneos:
+            self.assertTrue(type(contactos_numero_erroneo[0] == int))
+            self.assertTrue(type(contactos_numero_erroneo[1] == list))
+            self.assertTrue(len(contactos_numero_erroneo[1]) > 0)
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_campana_obtener_contactos_llamada_erronea(self):
+        # Verifico que devuelva la cantidad de llamadas erróneas correctas.
+        campana = self._crea_campana_emula_procesamiento(
+            evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
+            cantidad_eventos=20)
+        campana.procesar_finalizada()
+        contactos_llamadas_erroneas =\
+            campana.obtener_contactos_llamada_erronea()
+        self.assertEqual(len(contactos_llamadas_erroneas), 20)
+
+        # Verifico la estructura del objeto devuelto.
+        for contactos_llamada_erronea in contactos_llamadas_erroneas:
+            self.assertTrue(type(contactos_llamada_erronea[0] == int))
+            self.assertTrue(type(contactos_llamada_erronea[1] == list))
+            self.assertTrue(len(contactos_llamada_erronea[1]) > 0)
+
+    def test_campana_obtener_detalle_opciones_seleccionadas(self):
+        campana = self._crea_campana_emula_procesamiento()
+
+        detalle_opciones = campana.obtener_detalle_opciones_seleccionadas()
+        self.assertTrue(len(detalle_opciones))
+        for detalle_opcion in detalle_opciones:
+            self.assertIn(type(detalle_opcion[0]), [int, Opcion])
+            self.assertTrue(len(detalle_opcion[1]))
 
 
 class FinalizarVencidasTest(FTSenderBaseTest):

@@ -443,7 +443,9 @@ class FTSenderTestUtilsMixin(object):
             contacto_id=contacto_id, evento=EV_FINALIZADOR,
             dato=intento)
 
-    def _crea_campana_emula_procesamiento(self, originate=None, finaliza=True):
+    def _crea_campana_emula_procesamiento(self, evento=None,
+        cantidad_eventos=None, finaliza=True):
+
         cant_contactos = 100
         numeros_telefonicos = [int(random.random() * 10000000000)\
             for _ in range(cant_contactos)]
@@ -470,15 +472,17 @@ class FTSenderTestUtilsMixin(object):
         EventoDeContacto.objects_simulacion.simular_realizacion_de_intentos(
             campana.pk, numero_interno, probabilidad=1.1)
 
-        #Originates
-        contactos = base_datos_contactos.contactos.all()[0:originate]
-        for contacto in contactos:
-            EventoDeContacto.objects.create(
-                campana_id=campana.pk,
-                contacto_id=contacto.pk,
-                evento=EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL,
-                dato=numero_interno,
-            )
+        if evento:
+            contactos = base_datos_contactos.contactos.all()[
+                0:cantidad_eventos]
+            for contacto in contactos:
+                EventoDeContacto.objects.create(
+                    campana_id=campana.pk,
+                    contacto_id=contacto.pk,
+                    evento=evento,
+                    dato=numero_interno,
+                )
+
 
         #Opciones
         EventoDeContacto.objects_simulacion.simular_evento(campana.pk,

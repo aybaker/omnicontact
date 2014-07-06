@@ -147,7 +147,7 @@ class BaseDatosContactoManager(models.Manager):
         Este método filtra lo objetos BaseDatosContacto que
         esté definidos.
         """
-        return self.filter(sin_definir=False)
+        return self.filter(estado=BaseDatosContacto.ESTADO_DEFINIDA)
 
     def reciclar_base_datos(self, campana_id, tipo_reciclado):
         """
@@ -164,41 +164,60 @@ class BaseDatosContactoManager(models.Manager):
 
         if int(tipo_reciclado) == Campana.TIPO_RECICLADO_TOTAL:
             return campana.bd_contacto
-
         elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_PENDIENTES:
-            # Trae los contatos telefónicos pendientes.
-            lista_contactos_pendientes = campana.obtener_contactos_pendientes()
+            lista_contactos_reciclados = campana.obtener_contactos_pendientes()
+        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_OCUPADOS:
+            lista_contactos_reciclados = campana.obtener_contactos_ocupados()
+        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_NO_CONTESTADOS:
+            lista_contactos_reciclados = \
+                campana.obtener_contactos_no_contestados()
+        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_NUMERO_ERRONEO:
+            lista_contactos_reciclados = \
+                campana.obtener_contactos_numero_erroneo()
+        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_LLAMADA_ERRONEA:
+            lista_contactos_reciclados = \
+                campana.obtener_contactos_llamada_erronea()
 
-            if not lista_contactos_pendientes:
-                logger.warn("El reciclado de base datos no arrojo contactos.")
-                raise FtsRecicladoBaseDatosContactoError("""No se registraron
-                    contactos PENDIENTES en el reciclado de la base de 
-                    datos.""")
-
-            try:
-                bd_contacto = BaseDatosContacto.objects.create(
-                    nombre='{0} (reciclada)'.format(
-                        campana.bd_contacto.nombre),
-                    archivo_importacion=campana.bd_contacto.\
-                        archivo_importacion,
-                    nombre_archivo_importacion=campana.bd_contacto.\
-                        nombre_archivo_importacion,
-                )
-            except Exception, e:
-                logger.warn("Se produjo un error al intentar crear la base de"
-                    " datos. Exception: %s", e)
-                raise FtsRecicladoBaseDatosContactoError("""No se pudo crear
-                    la base datos contactos reciclada.""")
-            else:
-                bd_contacto.genera_contactos(lista_contactos_pendientes)
-                bd_contacto.define()
-                return bd_contacto
+        if not lista_contactos_reciclados:
+            logger.warn("El reciclado de base datos no arrojo contactos.")
+            raise FtsRecicladoBaseDatosContactoError("""No se registraron
+                contactos para reciclar con el tipo de reciclado seleccionado
+                .""")
+        try:
+            bd_contacto = BaseDatosContacto.objects.create(
+                nombre='{0} (reciclada)'.format(
+                    campana.bd_contacto.nombre),
+                archivo_importacion=campana.bd_contacto.\
+                    archivo_importacion,
+                nombre_archivo_importacion=campana.bd_contacto.\
+                    nombre_archivo_importacion,
+            )
+        except Exception, e:
+            logger.warn("Se produjo un error al intentar crear la base de"
+                " datos. Exception: %s", e)
+            raise FtsRecicladoBaseDatosContactoError("""No se pudo crear
+                la base datos contactos reciclada.""")
+        else:
+            bd_contacto.genera_contactos(lista_contactos_reciclados)
+            bd_contacto.define()
+            return bd_contacto
 
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
 
 class BaseDatosContacto(models.Model):
     objects = BaseDatosContactoManager()
+
+    ESTADO_EN_DEFINICION = 0
+    ESTADO_DEFINIDA = 1
+    ESTADO_EN_DEPURACION = 2
+    ESTADO_DEPURADA = 3
+    ESTADOS = (
+        (ESTADO_EN_DEFINICION, 'En Definición'),
+        (ESTADO_DEFINIDA, 'Definida'),
+        (ESTADO_EN_DEPURACION, 'En Depuracion'),
+        (ESTADO_DEPURADA, 'Depurada')
+    )
 
     nombre = models.CharField(
         max_length=128,
@@ -226,17 +245,13 @@ class BaseDatosContacto(models.Model):
     cantidad_contactos = models.PositiveIntegerField(
         default=0
     )
-
-    #    active = models.BooleanField(
-    #        default=True,
-    #        editable=False,
-    #    )
+    estado = models.PositiveIntegerField(
+        choices=ESTADOS,
+        default=ESTADO_EN_DEFINICION,
+    )
 
     def __unicode__(self):
         return self.nombre
-        #    if self.active:
-        #        return self.nombre
-        #    return '(ELiminado) {0}'.format(self.nombre)
 
     def importa_contactos(self, parser_archivo):
         """
@@ -287,6 +302,8 @@ class BaseDatosContacto(models.Model):
 
         logger.info("Seteando base datos contacto %s como definida", self.id)
         self.sin_definir = False
+
+        self.estado = self.ESTADO_DEFINIDA
         self.save()
 
     def get_cantidad_contactos(self):
@@ -296,8 +313,97 @@ class BaseDatosContacto(models.Model):
 
         return self.cantidad_contactos
 
+    def verifica_en_uso(self):
+        """
+        Este método se encarga de verificar si la base de datos esta siendo
+        usada por alguna campaña que este activa o pausada.
+        Devuelve  booleano.
+        """
+        estados_campanas = [campana.estado for campana in self.campanas.all()]
+        if any(estado == Campana.ESTADO_ACTIVA for estado in estados_campanas):
+            return True
+        return False
+
+    def verifica_depurada(self):
+        """
+        Este método se encarga de verificar si la base de datos esta siendo
+        depurada o si ya fue depurada.
+        Devuelve booleano.
+        """
+        if self.estado in (self.ESTADO_EN_DEPURACION, self.ESTADO_DEPURADA):
+            return True
+        return False
+
+    def elimina_contactos(self):
+        """
+        Este método se encarga de eliminar todos los contactos de la
+        BaseDatoContacto actual.
+        """
+        self.contactos.all().delete()
+
+    def procesa_depuracion(self):
+        """
+        Este método se encarga de llevar el proceso de depuración de
+        BaseDatoContacto invocando a los métodos que realizan las distintas
+        acciones.
+        """
+        # 1) Cambio de estado BaseDatoContacto (ESTADO_EN_DEPURACION).
+        logger.info("Iniciando el proceso de depurado de BaseDatoContacto:"
+                    "Seteando base datos contacto %s como"
+                    "ESTADO_EN_DEPURACION.", self.id)
+        self.estado = self.ESTADO_EN_DEPURACION
+        self.save()
+
+        # 2) Llamada a método que hace el COPY / dump.
+        try:
+            Contacto.objects.realiza_dump_contactos(self)
+        except Exception as e:
+            logger.warning("ContactoManager.realiza_dump_contactos(): %s", e)
+            self.estado = self.ESTADO_DEFINIDA
+            self.save()
+
+            raise FtsDepuraBaseDatoContactoError("No se pudo depurar la "
+                                                 "Base Datos Contacto.")
+        else:
+            # 3) Llama el método que hace el borrado de los contactos.
+            self.elimina_contactos()
+
+            # 4) Cambio de estado BaseDatoContacto (ESTADO_DEPURADA).
+            logger.info("Finalizando el proceso de depurado de "
+                        "BaseDatoContacto: Seteando base datos contacto %s "
+                        "como ESTADO_DEPURADA.", self.id)
+            self.estado = self.ESTADO_DEPURADA
+            self.save()
+
+
+class ContactoManager(models.Manager):
+    """Manager para Contacto"""
+
+    def realiza_dump_contactos(self, bd_contacto):
+        """
+        Este método realiza el dump de los contactos de la base de datos a un
+        archivo.
+        """
+        dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
+        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
+
+        copy_to = dir_dump_contacto + nombre_archivo_contactos
+
+        cursor = connection.cursor()
+        sql = """COPY (SELECT * FROM fts_web_contacto WHERE
+            bd_contacto_id = %s) TO %s;
+        """
+
+        params = [bd_contacto.id, copy_to]
+        with log_timing(logger,
+                        "ContactoManager.realiza_dump_contactos() tardo "
+                        "%s seg"):
+            cursor.execute(sql, params)
+
 
 class Contacto(models.Model):
+    objects = ContactoManager()
+
     telefono = models.CharField(
         max_length=64,
     )
@@ -525,12 +631,19 @@ class Campana(models.Model):
 
     TIPO_RECICLADO_TOTAL = 1
     TIPO_RECICLADO_PENDIENTES = 2
+    TIPO_RECICLADO_OCUPADOS = 3
+    TIPO_RECICLADO_NO_CONTESTADOS = 4
+    TIPO_RECICLADO_NUMERO_ERRONEO = 5
+    TIPO_RECICLADO_LLAMADA_ERRONEA = 6
 
     TIPO_RECICLADO = (
         (TIPO_RECICLADO_TOTAL, 'TOTAL'),
         (TIPO_RECICLADO_PENDIENTES, 'PENDIENTES'),
+        (TIPO_RECICLADO_OCUPADOS, 'OCUPADOS'),
+        (TIPO_RECICLADO_NO_CONTESTADOS, 'NO CONTESTO'),
+        (TIPO_RECICLADO_NUMERO_ERRONEO, 'NUMERO ERRONEO'),
+        (TIPO_RECICLADO_LLAMADA_ERRONEA, 'LLAMADA ERRONEA'),
     )
-
     ESTILO_VERDE_ROJO_NARANJA = Style(
         background='transparent',
         plot_background='transparent',
@@ -1076,16 +1189,16 @@ class Campana(models.Model):
         assert (self.estado == Campana.ESTADO_FINALIZADA,
                 "Solo se aplica la búsqueda a campanas finalizadas")
 
-        nombre_tabla = "EDC_depurados_{0}".format(self.pk)
+        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
 
         cursor = connection.cursor()
         sql = """SELECT telefono, array_agg(evento)
             FROM fts_web_contacto INNER JOIN {0}
-            ON fts_web_contacto.id = {1}.contacto_id
+            ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
             GROUP BY contacto_id, telefono
             HAVING not( %s = ANY(array_agg(evento)))
-        """.format(nombre_tabla, nombre_tabla)
+        """.format(nombre_tabla)
 
         ###
         # FIXME: Remover el .format() de sql.
@@ -1100,6 +1213,146 @@ class Campana(models.Model):
             values = cursor.fetchall()
 
         return values
+
+    def obtener_contactos_ocupados(self):
+        """
+        Este método se encarga de devolver los contactos que presentan en
+        alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_BUSY y
+        que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
+        """
+        from fts_daemon.models import EventoDeContacto
+
+        assert (self.estado == Campana.ESTADO_FINALIZADA,
+                "Solo se aplica la búsqueda a campanas finalizadas")
+
+        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
+
+        cursor = connection.cursor()
+        sql = """SELECT telefono, array_agg(evento)
+            FROM fts_web_contacto INNER JOIN {0}
+            ON fts_web_contacto.id = {0}.contacto_id
+            WHERE campana_id = %s
+            GROUP BY contacto_id, telefono
+            HAVING %s = ANY(array_agg(evento))
+            AND not( %s = ANY(array_agg(evento)))
+        """.format(nombre_tabla)
+
+        params = [self.pk, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
+
+        with log_timing(logger,
+                        "obtener_contactos_ocupados() tardo %s seg"):
+            cursor.execute(sql, params)
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+
+        return values
+
+    def obtener_contactos_no_contestados(self):
+        """
+        Este método se encarga de devolver los contactos que presentan en
+        alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_NOANSWER y
+        que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
+        """
+        from fts_daemon.models import EventoDeContacto
+
+        assert (self.estado == Campana.ESTADO_FINALIZADA,
+                "Solo se aplica la búsqueda a campanas finalizadas")
+
+        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
+
+        cursor = connection.cursor()
+        sql = """SELECT telefono, array_agg(evento)
+            FROM fts_web_contacto INNER JOIN {0}
+            ON fts_web_contacto.id = {0}.contacto_id
+            WHERE campana_id = %s
+            GROUP BY contacto_id, telefono
+            HAVING %s = ANY(array_agg(evento))
+            AND not( %s = ANY(array_agg(evento)))
+        """.format(nombre_tabla)
+
+        params = [self.pk,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
+
+        with log_timing(logger,
+                        "obtener_contactos_no_contestados() tardo %s seg"):
+            cursor.execute(sql, params)
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+
+        return values
+
+    def obtener_contactos_numero_erroneo(self):
+        """
+        Este método se encarga de devolver los contactos que presentan en
+        alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_CONGESTION y
+        que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
+        """
+        from fts_daemon.models import EventoDeContacto
+
+        assert (self.estado == Campana.ESTADO_FINALIZADA,
+                "Solo se aplica la búsqueda a campanas finalizadas")
+
+        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
+
+        cursor = connection.cursor()
+        sql = """SELECT telefono, array_agg(evento)
+            FROM fts_web_contacto INNER JOIN {0}
+            ON fts_web_contacto.id = {0}.contacto_id
+            WHERE campana_id = %s
+            GROUP BY contacto_id, telefono
+            HAVING %s = ANY(array_agg(evento))
+            AND not( %s = ANY(array_agg(evento)))
+        """.format(nombre_tabla)
+
+        params = [self.pk,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
+
+        with log_timing(logger,
+                        "obtener_contactos_numero_erroneo() tardo %s seg"):
+            cursor.execute(sql, params)
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+
+        return values
+
+    def obtener_contactos_llamada_erronea(self):
+        """
+        Este método se encarga de devolver los contactos que presentan en
+        alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL
+        y que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
+        """
+        from fts_daemon.models import EventoDeContacto
+
+        assert (self.estado == Campana.ESTADO_FINALIZADA,
+                "Solo se aplica la búsqueda a campanas finalizadas")
+
+        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
+
+        cursor = connection.cursor()
+        sql = """SELECT telefono, array_agg(evento)
+            FROM fts_web_contacto INNER JOIN {0}
+            ON fts_web_contacto.id = {0}.contacto_id
+            WHERE campana_id = %s
+            GROUP BY contacto_id, telefono
+            HAVING %s = ANY(array_agg(evento))
+            AND not( %s = ANY(array_agg(evento)))
+        """.format(nombre_tabla)
+
+        params = [self.pk,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
+
+        with log_timing(logger,
+                        "obtener_contactos_llamada_erronea() tardo %s seg"):
+            cursor.execute(sql, params)
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+
+        return values
+
 
     def __unicode__(self):
         return self.nombre

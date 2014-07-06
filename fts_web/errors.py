@@ -89,3 +89,9 @@ class FtsRecicladoCampanaError(FtsError):
     No se pudo generar el reciclado de la campana.
     """
     pass
+
+class FtsDepuraBaseDatoContactoError(FtsError):
+    """
+    No se pudo depurar la base datos de contactos.
+    """
+    pass
