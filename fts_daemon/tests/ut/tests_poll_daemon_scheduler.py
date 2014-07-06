@@ -17,7 +17,7 @@ logger = _logging.getLogger(__name__)
 
 
 class FinalizacionDeCampanaTests(FTSenderBaseTest):
-    """Unit tests de FinalizadorDeCampana"""
+    """Testea finalizacion de llamadas por parte del scheduler"""
 
     def test_finaliza_campana_baneada_sin_llamada_en_curso(self):
         """Testea que se finalicen campañas que ya no posean contactos,
