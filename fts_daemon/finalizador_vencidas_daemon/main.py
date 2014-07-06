@@ -12,6 +12,7 @@ from fts_daemon.poll_daemon.call_status import AsteriskCallStatus, \
     CampanaCallStatus
 from fts_web.models import Campana
 import logging as _logging
+from django.db import transaction
 
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
@@ -66,7 +67,9 @@ class FinalizadorDeCampanas(object):
         """Finaliza la campaña
         Es funcion 'proxy', para facilitar unittest.
         """
-        campana.finalizar()
+        with transaction.atomic():
+            campana.finalizar()
+            campana.procesar_finalizada()
 
     def _sleep(self):
         """Realiza espera luego de finalizar el loop
