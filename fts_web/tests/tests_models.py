@@ -896,7 +896,7 @@ class CampanaTest(FTSenderBaseTest):
 
     @override_settings(MEDIA_ROOT=MEDIA_ROOT)
     def test_campana_obtener_contactos_numero_erroneo(self):
-        # Verifico que devuelva la cantidad de no contestados correctos.
+        # Verifico que devuelva la cantidad de contactos erróneos correctos.
         campana = self._crea_campana_emula_procesamiento(
             evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION,
             cantidad_eventos=20)
@@ -909,6 +909,23 @@ class CampanaTest(FTSenderBaseTest):
             self.assertTrue(type(contactos_numero_erroneo[0] == int))
             self.assertTrue(type(contactos_numero_erroneo[1] == list))
             self.assertTrue(len(contactos_numero_erroneo[1]) > 0)
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_campana_obtener_contactos_llamada_erronea(self):
+        # Verifico que devuelva la cantidad de llamadas erróneas correctas.
+        campana = self._crea_campana_emula_procesamiento(
+            evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
+            cantidad_eventos=20)
+        campana.procesar_finalizada()
+        contactos_llamadas_erroneas =\
+            campana.obtener_contactos_llamada_erronea()
+        self.assertEqual(len(contactos_llamadas_erroneas), 20)
+
+        # Verifico la estructura del objeto devuelto.
+        for contactos_llamada_erronea in contactos_llamadas_erroneas:
+            self.assertTrue(type(contactos_llamada_erronea[0] == int))
+            self.assertTrue(type(contactos_llamada_erronea[1] == list))
+            self.assertTrue(len(contactos_llamada_erronea[1]) > 0)
 
     def test_campana_obtener_detalle_opciones_seleccionadas(self):
         campana = self._crea_campana_emula_procesamiento()
