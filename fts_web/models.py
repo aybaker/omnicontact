@@ -945,6 +945,14 @@ class Campana(models.Model):
                 detalle_opcion[0] = digito
         return detalle_opciones
 
+    def recalcular_aedc_completamente(self):
+        """Recalcula COMPLETAMENTE la agregacion. Este debe
+        realizarse cuando estamos SEGUROS que ya no hay llamadas
+        en curso. Tiene en cuenta TODOS los EDC.
+        """
+        AgregacionDeEventoDeContacto.objects.\
+            _plpython_recalcular_aedc_completamente(self)
+
     def calcular_estadisticas(self, tipo_agregacion):
         """
         Este método devuelve las estadísticas de
@@ -1407,8 +1415,42 @@ class Campana(models.Model):
 # AgregacionDeEventoDeContacto
 #==============================================================================
 
-
 class AgregacionDeEventoDeContactoManager(models.Manager):
+
+    def _plpython_recalcular_aedc_completamente(self, campana):
+        """Ejecuta el procedimiento almancenado / plpython
+        `recalculate_agregacion_edc_py_v1()`.
+
+        Re-calcula COMPLETAMENTE las agregaciones (a diferencia del
+        otro procedimiento almanceado, que ACTUALIZA las agragaciones,
+        teniendo en cuenta sólo los EDC pendientes de procesar).
+
+        Este metodo debe ser llamado englobado en una transacción, ya
+        que bloquea AEDC.
+
+        Este metodo NO debería ser llamado directamente. El
+        modelo Campana posee un metodo
+        """
+
+        with log_timing(logger,
+            "recalcular_aedc(): recalculo de agregacion tardo %s seg"):
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT recalculate_agregacion_edc_py_v1(%s, %s)",
+                    [campana.id, campana.cantidad_intentos])
+
+        values = cursor.fetchall()
+        row = values[0]
+        ret_value = row[0]
+
+        # Return values
+        #       0: RECALCULO OK
+        #      -1: ERROR DE LOCK
+        #       X: EL UPDATE HA FALLADO -> genera EXCEPCION
+        assert ret_value == 0, ("_plpython_recalcular_aedc_completamente(): "
+            "el procedimiento almacenado no devolvio valor esperado. "
+            "Devolvio: %s", ret_value)
+
     def procesa_agregacion(self, campana_id, cantidad_intentos,
                            tipo_agregacion):
         """
@@ -1430,8 +1472,8 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
                 "bd para la campana %s no posee datos", campana.id)
             return dic_totales
 
-        if (not tipo_agregacion ==
-                AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE):
+        if (tipo_agregacion !=
+            AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE):
 
             with log_timing(logger,
                 "procesa_agregacion(): recalculo de agregacion tardo %s seg"):
