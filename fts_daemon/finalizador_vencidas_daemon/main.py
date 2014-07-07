@@ -19,7 +19,7 @@ from fts_daemon import tasks
 logger = _logging.getLogger('fts_daemon.finalizador_vencidas_daemon.main')
 
 
-class FinalizadorDeCampanas(object):
+class FinalizadorDeCampanasVencidasDaemon(object):
     """Implementa finalizador de campañas vencidas."""
 
     def __init__(self, max_loop=0, initial_wait=None, campana_call_status=None,
@@ -136,4 +136,4 @@ class FinalizadorDeCampanas(object):
 
 
 if __name__ == '__main__':
-    FinalizadorDeCampanas().run()
+    FinalizadorDeCampanasVencidasDaemon().run()
