@@ -101,9 +101,7 @@ class RoundRobinTracker(object):
 
     def _esperar_y_finalizar_campana(self, campana_id):
         """Lanza tarea asincrona de espera y finalizacion"""
-        tasks.esperar_y_finalizar_campana.\
-            delay(  # @UndefinedVariable
-                  campana_id)
+        tasks.esperar_y_finalizar_campana_async(campana_id)
 
     #
     # Eventos

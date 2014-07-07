@@ -21,7 +21,7 @@ logger = _logging.getLogger('fts_daemon.finalizador_de_campana.'
 
 
 class FinalizadorDeCampanasVencidasDaemon(object):
-    """Implementa finalizador de campañas vencidas."""
+    """Implementa Daemon finalizador de campañas vencidas."""
 
     def __init__(self, max_loop=0, initial_wait=None, campana_call_status=None,
         asterisk_call_status=None):
@@ -64,13 +64,11 @@ class FinalizadorDeCampanasVencidasDaemon(object):
         """
         return self.campana_call_status.get_count_llamadas_de_campana(campana)
 
-    def _finalizar(self, campana):
-        """Finaliza la campaña
+    def _finalizar_async(self, campana):
+        """Finaliza la campaña.
         Es funcion 'proxy', para facilitar unittest.
         """
-        tasks.finalizar_campana.\
-            delay(  # @UndefinedVariable
-                campana.id)
+        tasks.finalizar_campana_async(campana.id)
 
     def _sleep(self):
         """Realiza espera luego de finalizar el loop
@@ -111,7 +109,7 @@ class FinalizadorDeCampanasVencidasDaemon(object):
                     campana.id, count_llamadas_en_curso)
             else:
                 logger.info("Finalizando campana %s", campana.id)
-                self._finalizar(campana)
+                self._finalizar_async(campana)
 
         if first_run:
             # Nunca se entro al for!
