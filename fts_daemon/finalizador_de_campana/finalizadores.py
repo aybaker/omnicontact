@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-
+Componentes encargados del finalizado de Campañas.
 """
 
 from __future__ import unicode_literals
@@ -41,6 +41,10 @@ class FinalizadorDeCampanaWorkflow(object):
                         campana_id)
 
 
+class CantidadMaximaDeIteracionesSuperada(Exception):
+    pass
+
+
 class EsperadorParaFinalizacionSegura(object):
     """Espera hasta que no haya llamadas en curos para la campaña a finalizar,
     y cuando no haya llamadas, ejecuta su finalizacion (usando Celery).
@@ -52,11 +56,12 @@ class EsperadorParaFinalizacionSegura(object):
         :param campana_call_status: instancia de `CampanaCallStatus`
         :param asterisk_call_status: instancia de `AsteriskCallStatus`
         """
-
         self.campana_call_status = campana_call_status or CampanaCallStatus()
 
         self.asterisk_call_status = asterisk_call_status or \
             AsteriskCallStatus(self.campana_call_status)
+
+        self.max_loop = 0
 
     def _sleep(self):
         time.sleep(10)
@@ -69,22 +74,30 @@ class EsperadorParaFinalizacionSegura(object):
         from fts_daemon.tasks import finalizar_campana_async
         finalizar_campana_async(campana_id)
 
+    def _refrescar_status(self):
+        return self.asterisk_call_status.\
+            refrescar_channel_status_si_es_posible()
+
     def esperar_y_finalizar(self, campana_id):
         """Espera a que no haya llamadas en curso, y finaliza la campaña"""
 
         logger.info("Esperarando a que se finalicen las llamadas en curso "
                     "para la campana %s", campana_id)
 
+        current_loop = 0
         while True:
+
+            if self.max_loop > 0:
+                current_loop += 1
+                if current_loop > self.max_loop:
+                    raise(CantidadMaximaDeIteracionesSuperada())
+
             campana = self._obtener_campana(campana_id)
             if campana.estado == Campana.ESTADO_FINALIZADA:
                 logger.info("Ignorando campana finalizada: %s", campana_id)
                 return
 
-            ok = self.asterisk_call_status.\
-                refrescar_channel_status_si_es_posible()
-
-            if not ok:
+            if not self._refrescar_status():
                 logger.warn("Update de status no fue exitoso. "
                     "Esperaremos y reintentaremos...")
                 self._sleep()
@@ -104,3 +117,4 @@ class EsperadorParaFinalizacionSegura(object):
             logger.info("Finalizando campana %s porque "
                 "no posee llamadas en curso", campana.id)
             self._finalizar(campana_id)
+            return
