@@ -48,6 +48,7 @@ class FTSenderDiscoverRunner(DiscoverRunner):
                 del os.environ[key]
 
         # Settings para Celery
+        settings.BROKER_BACKEND = 'memory'
         settings.CELERY_ALWAYS_EAGER = True
         settings.CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 
