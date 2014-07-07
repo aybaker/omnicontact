@@ -110,7 +110,7 @@ Default: 20.0 (inicia ejecucion del loop despues de 20 segundos)
 #==============================================================================
 
 # Por que 475? Parecido a FTS :-P
-BROKER_URL = 'redis://127.0.0.1/475'
+BROKER_URL = 'redis://127.0.0.1/3'
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
