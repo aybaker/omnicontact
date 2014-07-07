@@ -27,14 +27,14 @@ class FinalizadorDeCampanasVencidasDaemonTests(FTSenderBaseTest):
         finalizador._obtener_vencidas = Mock(return_value=[campana])
         finalizador._refrescar_status = Mock(return_value=True)
         finalizador._get_count_llamadas = Mock(return_value=0)
-        finalizador._finalizar = Mock(return_value=None)
+        finalizador._finalizar_async = Mock(return_value=None)
 
         finalizador.run()
 
         finalizador._obtener_vencidas.assert_called_once_with()
         finalizador._refrescar_status.assert_called_once_with()
         finalizador._get_count_llamadas.assert_called_once_with(campana)
-        finalizador._finalizar.assert_called_once_with(campana)
+        finalizador._finalizar_async.assert_called_once_with(campana)
 
     def test_no_finaliza_si_hay_llamada_en_curso(self):
         """Testea que NO finaliza campana si posee llamadas en curso"""
@@ -44,14 +44,14 @@ class FinalizadorDeCampanasVencidasDaemonTests(FTSenderBaseTest):
         finalizador._obtener_vencidas = Mock(return_value=[campana])
         finalizador._refrescar_status = Mock(return_value=True)
         finalizador._get_count_llamadas = Mock(return_value=1)
-        finalizador._finalizar = Mock(return_value=None)
+        finalizador._finalizar_async = Mock(return_value=None)
 
         finalizador.run()
 
         finalizador._obtener_vencidas.assert_called_once_with()
         finalizador._refrescar_status.assert_called_once_with()
         finalizador._get_count_llamadas.assert_called_once_with(campana)
-        self.assertEqual(finalizador._finalizar.call_count, 0)
+        self.assertEqual(finalizador._finalizar_async.call_count, 0)
 
     def test_no_hace_nada_sin_campanas(self):
         """Testea que no hace nada si no hay vencidas.
@@ -63,14 +63,14 @@ class FinalizadorDeCampanasVencidasDaemonTests(FTSenderBaseTest):
         finalizador._obtener_vencidas = Mock(return_value=[])
         finalizador._refrescar_status = Mock(return_value=True)
         finalizador._get_count_llamadas = Mock(return_value=0)
-        finalizador._finalizar = Mock(return_value=None)
+        finalizador._finalizar_async = Mock(return_value=None)
         finalizador._sleep = Mock(return_value=None)
 
         finalizador.run()
 
         self.assertEqual(finalizador._obtener_vencidas.call_count, 5)
         self.assertEqual(finalizador._get_count_llamadas.call_count, 0)
-        self.assertEqual(finalizador._finalizar.call_count, 0)
+        self.assertEqual(finalizador._finalizar_async.call_count, 0)
 
         # Ya que no habia camppañas, no se debio actualizar el status
         self.assertEqual(finalizador._refrescar_status.call_count, 0)
@@ -84,11 +84,11 @@ class FinalizadorDeCampanasVencidasDaemonTests(FTSenderBaseTest):
         finalizador._obtener_vencidas = Mock(return_value=[campana])
         finalizador._refrescar_status = Mock(return_value=False)
         finalizador._get_count_llamadas = Mock(return_value=0)
-        finalizador._finalizar = Mock(return_value=None)
+        finalizador._finalizar_async = Mock(return_value=None)
 
         finalizador.run()
 
         finalizador._obtener_vencidas.assert_called_once_with()
         finalizador._refrescar_status.assert_called_once_with()
         self.assertEqual(finalizador._get_count_llamadas.call_count, 0)
-        self.assertEqual(finalizador._finalizar.call_count, 0)
+        self.assertEqual(finalizador._finalizar_async.call_count, 0)
