@@ -20,37 +20,41 @@ class FinalizadorDeCampanaWorkflowTests(FTSenderBaseTest):
     """Unit tests de FinalizadorDeCampanaWorkflow"""
 
     def test_finaliza_campana_activa(self):
+
+        class CalledOk(Exception):
+            pass
+
         campana = Campana(id=1)
-        campana.finalizar = Mock()
-        campana.procesar_finalizada = Mock()
+        campana.save = Mock()
         campana.estado = Campana.ESTADO_ACTIVA
+        campana.recalcular_aedc_completamente = Mock(side_effect=CalledOk())
 
-        obj = FinalizadorDeCampanaWorkflow()
-        obj._obtener_campana = Mock(return_value=campana)
+        finalizador = FinalizadorDeCampanaWorkflow()
+        finalizador._obtener_campana = Mock(return_value=campana)
 
-        obj.finalizar(1)
-
-        campana.finalizar.assert_called_once_with()
-        campana.procesar_finalizada.assert_called_once_with()
+        with self.assertRaises(CalledOk):
+            finalizador.finalizar(1)
 
     def test_ignora_campana_finalizada(self):
         campana = Campana(id=1)
         campana.finalizar = Mock()
-        campana.procesar_finalizada = Mock()
+        campana.save = Mock()
         campana.estado = Campana.ESTADO_FINALIZADA
+        campana.procesar_finalizada = Mock()
 
-        obj = FinalizadorDeCampanaWorkflow()
-        obj._obtener_campana = Mock(return_value=campana)
+        finalizador = FinalizadorDeCampanaWorkflow()
+        finalizador._obtener_campana = Mock(return_value=campana)
+        finalizador = Mock(wraps=finalizador)
 
-        obj.finalizar(1)
+        finalizador.finalizar(1)
 
         self.assertEquals(campana.finalizar.call_count, 0)
         self.assertEquals(campana.procesar_finalizada.call_count, 0)
 
     def test_obtener_campana(self):
         campana_id = self.crear_campana().id
-        obj = FinalizadorDeCampanaWorkflow()
-        campana = obj._obtener_campana(campana_id)
+        finalizador = FinalizadorDeCampanaWorkflow()
+        campana = finalizador._obtener_campana(campana_id)
         self.assertEquals(campana_id, campana.id)
 
 
@@ -60,64 +64,64 @@ class EsperadorParaFinalizacionSeguraTests(FTSenderBaseTest):
     def test_finaliza_pendiente(self):
         campana = Campana(id=1)
 
-        obj = EsperadorParaFinalizacionSegura()
-        obj._refrescar_status = Mock(return_value=True)
-        obj.campana_call_status.get_count_llamadas_de_campana = Mock(
+        finalizador = EsperadorParaFinalizacionSegura()
+        finalizador._refrescar_status = Mock(return_value=True)
+        finalizador.campana_call_status.get_count_llamadas_de_campana = Mock(
             return_value=0)
-        obj._finalizar = Mock()
-        obj._sleep = Mock()
-        obj._obtener_campana = Mock(return_value=campana)
-        obj.esperar_y_finalizar(1)
+        finalizador._finalizar = Mock()
+        finalizador._sleep = Mock()
+        finalizador._obtener_campana = Mock(return_value=campana)
+        finalizador.esperar_y_finalizar(1)
 
-        obj._refrescar_status.assert_called_once_with()
-        obj.campana_call_status.get_count_llamadas_de_campana.\
+        finalizador._refrescar_status.assert_called_once_with()
+        finalizador.campana_call_status.get_count_llamadas_de_campana.\
             assert_called_once_with(campana)
-        obj._finalizar.assert_called_once_with(1)
+        finalizador._finalizar.assert_called_once_with(1)
 
     def test_no_finaliza_si_update_de_status_falla(self):
         campana = Campana(id=1)
 
-        obj = EsperadorParaFinalizacionSegura()
-        obj._refrescar_status = Mock(return_value=False)
-        obj.campana_call_status.get_count_llamadas_de_campana = Mock(
+        finalizador = EsperadorParaFinalizacionSegura()
+        finalizador._refrescar_status = Mock(return_value=False)
+        finalizador.campana_call_status.get_count_llamadas_de_campana = Mock(
             return_value=0)
-        obj._finalizar = Mock()
-        obj._sleep = Mock()
-        obj._obtener_campana = Mock(return_value=campana)
-        obj.max_loop = 5
+        finalizador._finalizar = Mock()
+        finalizador._sleep = Mock()
+        finalizador._obtener_campana = Mock(return_value=campana)
+        finalizador.max_loop = 5
 
         with self.assertRaises(CantidadMaximaDeIteracionesSuperada):
-            obj.esperar_y_finalizar(1)
+            finalizador.esperar_y_finalizar(1)
 
-        self.assertTrue(obj._refrescar_status.called)
-        self.assertTrue(obj._sleep.called)
-        self.assertFalse(obj.campana_call_status.\
+        self.assertTrue(finalizador._refrescar_status.called)
+        self.assertTrue(finalizador._sleep.called)
+        self.assertFalse(finalizador.campana_call_status.\
                          get_count_llamadas_de_campana.called)
-        self.assertFalse(obj._finalizar.called)
+        self.assertFalse(finalizador._finalizar.called)
 
     def test_no_finaliza_con_llamadas_en_curso(self):
         campana = Campana(id=1)
 
-        obj = EsperadorParaFinalizacionSegura()
-        obj._refrescar_status = Mock(return_value=True)
-        obj.campana_call_status.get_count_llamadas_de_campana = Mock(
+        finalizador = EsperadorParaFinalizacionSegura()
+        finalizador._refrescar_status = Mock(return_value=True)
+        finalizador.campana_call_status.get_count_llamadas_de_campana = Mock(
             return_value=1)
-        obj._finalizar = Mock()
-        obj._sleep = Mock()
-        obj._obtener_campana = Mock(return_value=campana)
-        obj.max_loop = 5
+        finalizador._finalizar = Mock()
+        finalizador._sleep = Mock()
+        finalizador._obtener_campana = Mock(return_value=campana)
+        finalizador.max_loop = 5
 
         with self.assertRaises(CantidadMaximaDeIteracionesSuperada):
-            obj.esperar_y_finalizar(1)
+            finalizador.esperar_y_finalizar(1)
 
-        self.assertTrue(obj._refrescar_status.called)
-        self.assertTrue(obj._sleep.called)
-        self.assertTrue(obj.campana_call_status.\
+        self.assertTrue(finalizador._refrescar_status.called)
+        self.assertTrue(finalizador._sleep.called)
+        self.assertTrue(finalizador.campana_call_status.\
                          get_count_llamadas_de_campana.called)
-        self.assertFalse(obj._finalizar.called)
+        self.assertFalse(finalizador._finalizar.called)
 
     def test_obtener_campana(self):
         campana_id = self.crear_campana().id
-        obj = EsperadorParaFinalizacionSegura()
-        campana = obj._obtener_campana(campana_id)
+        finalizador = EsperadorParaFinalizacionSegura()
+        campana = finalizador._obtener_campana(campana_id)
         self.assertEquals(campana_id, campana.id)
