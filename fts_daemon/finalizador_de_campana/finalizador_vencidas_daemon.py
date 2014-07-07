@@ -16,7 +16,8 @@ from fts_daemon import tasks
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
 #  el logger se llamara '__main__'
-logger = _logging.getLogger('fts_daemon.finalizador_vencidas_daemon.main')
+logger = _logging.getLogger('fts_daemon.finalizador_de_campana.'
+                            'finalizador_vencidas_daemon')
 
 
 class FinalizadorDeCampanasVencidasDaemon(object):
