@@ -3,6 +3,7 @@ CREATE OR REPLACE FUNCTION recalculate_agregacion_edc_py_v1(campana_id int, cant
     # Return values
     #       0: RECALCULO OK
     #      -1: ERROR DE LOCK
+    #       X: EL UPDATE HA FALLADO -> genera EXCEPCION
     #
     from plpy import spiexceptions
     import collections
@@ -243,8 +244,10 @@ CREATE OR REPLACE FUNCTION recalculate_agregacion_edc_py_v1(campana_id int, cant
             campana_id,
             nro_intento,
         ])
-
-        # TODO: chequear resultado de UPDATE
+        
+        if res_update.nrows() != 1:
+            plpy.error("recalculate_agregacion_edc_py_v1({0}): UDPATE AEDC: valor erroneo de res_update.nrows(): {1}".format(
+                campana_id, res_update.nrows()))
 
         # fin de proceso de 1 intento
 
