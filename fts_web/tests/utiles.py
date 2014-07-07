@@ -47,6 +47,10 @@ class FTSenderDiscoverRunner(DiscoverRunner):
             if key.find("proxy") > -1:
                 del os.environ[key]
 
+        # Settings para Celery
+        settings.CELERY_ALWAYS_EAGER = True
+        settings.CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
+
         super(FTSenderDiscoverRunner, self).__init__(*args, **kwargs)
 
         def handleError(self, record):
