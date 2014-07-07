@@ -954,6 +954,7 @@ class Campana(models.Model):
         requerimientos de `_plpython_recalcular_aedc_completamente()`
         (ej: transacciones, etc.)
         """
+        assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
         AgregacionDeEventoDeContacto.objects.\
             _plpython_recalcular_aedc_completamente(self)
 
@@ -1058,7 +1059,6 @@ class Campana(models.Model):
             logger.error("crea_reporte_csv(): Ya existe archivo CSV de "
                          "descarga para la campana %s", self.pk)
             assert not os.path.exists(file_path)
-
 
         dirname, filename = crear_archivo_en_media_root(dirname,
             "{0}-reporte".format(self.id), ".csv")
@@ -1432,8 +1432,8 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
         Este metodo debe ser llamado englobado en una transacción, ya
         que bloquea AEDC.
 
-        Este metodo NO debería ser llamado directamente. El
-        modelo Campana posee un metodo
+        Este metodo NO debería ser llamado directamente. En su lugar,
+        utilice Campana.recalcular_aedc_completamente()
         """
 
         with log_timing(logger,
