@@ -949,6 +949,10 @@ class Campana(models.Model):
         """Recalcula COMPLETAMENTE la agregacion. Este debe
         realizarse cuando estamos SEGUROS que ya no hay llamadas
         en curso. Tiene en cuenta TODOS los EDC.
+
+        Antes de usar estes metodo, tener en cuenta los
+        requerimientos de `_plpython_recalcular_aedc_completamente()`
+        (ej: transacciones, etc.)
         """
         AgregacionDeEventoDeContacto.objects.\
             _plpython_recalcular_aedc_completamente(self)
