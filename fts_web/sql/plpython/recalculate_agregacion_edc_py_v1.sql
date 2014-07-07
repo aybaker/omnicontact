@@ -1,8 +1,7 @@
-CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS INT AS $$
+CREATE OR REPLACE FUNCTION recalculate_agregacion_edc_py_v1(campana_id int, cantidad_intentos int) RETURNS INT AS $$
     #
     # Return values
-    #       0: NO SE ACTUALIZO NADA
-    #  n >= 1: SE ACTUALIZARON 'n' AEDC
+    #       0: RECALCULO OK
     #      -1: ERROR DE LOCK
     #
     from plpy import spiexceptions
@@ -27,7 +26,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         def dump_result(result, query_name):
             pass
 
-    plpy.notice("update_agregacion_edc_py(): INICIANDO...")
+    plpy.notice("recalculate_agregacion_edc_py_v1(): INICIANDO...")
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Lock
@@ -48,68 +47,11 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
     try:
         records_lock = plpy.execute(plan_lock, [campana_id])
     except spiexceptions.LockNotAvailable:
-        plpy.warning("update_agregacion_edc_py(): No se pudo obtener lock "
+        plpy.warning("recalculate_agregacion_edc_py_v1(): No se pudo obtener lock "
             "para campana {0}".format(campana_id))
         return -1
 
-    plpy.info("update_agregacion_edc_py(): LOCK obtenido - continuamos")
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # fts_web_agregaciondeeventodecontacto
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    sql_aedc = """
-    SELECT
-        id,
-        numero_intento,
-        cantidad_intentos,
-        cantidad_finalizados,
-        cantidad_opcion_0,
-        cantidad_opcion_1,
-        cantidad_opcion_2,
-        cantidad_opcion_3,
-        cantidad_opcion_4,
-        cantidad_opcion_5,
-        cantidad_opcion_6,
-        cantidad_opcion_7,
-        cantidad_opcion_8,
-        cantidad_opcion_9,
-        timestamp_ultima_actualizacion,
-        timestamp_ultimo_evento,
-        tipo_agregacion
-    FROM
-        fts_web_agregaciondeeventodecontacto
-    WHERE
-        campana_id = $1
-    ORDER BY
-        numero_intento
-    """
-    plan_aedc = plpy.prepare(sql_aedc, ["int"])
-    records_aedc = plpy.execute(plan_aedc, [campana_id])
-
-    dump_result(records_aedc, "Current aggregates")
-
-    if DEBUG:
-        plpy.info("update_agregacion_edc_py(): AEDC: {0} records".format(len(records_aedc)))
-
-    # ----- Guardamos resultado en dicts
-
-    COLS = ["id", "numero_intento", "cantidad_intentos", "cantidad_finalizados",
-        "cantidad_opcion_0", "cantidad_opcion_1", "cantidad_opcion_2", "cantidad_opcion_3",
-        "cantidad_opcion_4", "cantidad_opcion_5", "cantidad_opcion_6", "cantidad_opcion_7",
-        "cantidad_opcion_8", "cantidad_opcion_9", "timestamp_ultima_actualizacion",
-        "timestamp_ultimo_evento", "tipo_agregacion"]
-
-    aedc_x_nro_intento = collections.defaultdict(lambda: dict())
-    for row in records_aedc:
-        numero_intento = row["numero_intento"]
-        dict_intento = aedc_x_nro_intento[numero_intento]
-        for col_name in COLS:
-            dict_intento[col_name] = row[col_name]
-
-    if DEBUG:
-        plpy.info("update_agregacion_edc_py(): aedc_x_nro_intento: {0}".format(
-            pprint.pformat(dict(aedc_x_nro_intento))))
+    plpy.info("recalculate_agregacion_edc_py_v1(): LOCK obtenido - continuamos")
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # PREPARE: select para obtener nuevos datos
@@ -158,8 +100,6 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         WHERE
             campana_id = $1 AND
             dato = $2 AND
-            timestamp > $3 AND
-            timestamp < NOW() - interval '2 second' AND
             (
                 evento = 2 -- EVENTO_DAEMON_INICIA_INTENTO / intento de contacto
                 OR evento = 22 -- EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO / contacto finalizado
@@ -171,7 +111,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
     GROUP BY ev_agregados.dato
     """
 
-    plan_nuevos_datos = plpy.prepare(sql_nuevos_datos, ["int", "int", "timestamp with time zone"])
+    plan_nuevos_datos = plpy.prepare(sql_nuevos_datos, ["int", "int"])
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # PREPARE: update de agregates
@@ -196,18 +136,18 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         timestamp_ultima_actualizacion,
         timestamp_ultimo_evento
     ) = (
-        cantidad_intentos    + $1, -- cantidad_intentos
-        cantidad_finalizados + $2, -- cantidad_finalizados
-        cantidad_opcion_0 +  $3, -- cantidad_opcion_0
-        cantidad_opcion_1 +  $4, -- cantidad_opcion_1
-        cantidad_opcion_2 +  $5, -- cantidad_opcion_2
-        cantidad_opcion_3 +  $6, -- cantidad_opcion_3
-        cantidad_opcion_4 +  $7, -- cantidad_opcion_4
-        cantidad_opcion_5 +  $8, -- cantidad_opcion_5
-        cantidad_opcion_6 +  $9, -- cantidad_opcion_6
-        cantidad_opcion_7 + $10, -- cantidad_opcion_7
-        cantidad_opcion_8 + $11, -- cantidad_opcion_8
-        cantidad_opcion_9 + $12, -- cantidad_opcion_9
+        $1, -- cantidad_intentos
+        $2, -- cantidad_finalizados
+        $3, -- cantidad_opcion_0
+        $4, -- cantidad_opcion_1
+        $5, -- cantidad_opcion_2
+        $6, -- cantidad_opcion_3
+        $7, -- cantidad_opcion_4
+        $8, -- cantidad_opcion_5
+        $9, -- cantidad_opcion_6
+        $10, -- cantidad_opcion_7
+        $11, -- cantidad_opcion_8
+        $12, -- cantidad_opcion_9
         NOW(), -- timestamp_ultima_actualizacion
         $13    -- timestamp_ultimo_evento
     )
@@ -240,7 +180,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
 
     aedc_actualizados = 0
 
-    for nro_intento, aedc in aedc_x_nro_intento.iteritems():
+    for nro_intento in range(1, cantidad_intentos + 1):
 
         # Esta es una parte CLAVE y CRITICA del sistema. Al buscar los EDC,
         #  filtramos los que posean timestamp > al timestamp del ultimo evento
@@ -250,7 +190,6 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         params_nuevos_datos = [
         campana_id,
         nro_intento,
-        aedc['timestamp_ultimo_evento']
         ]
 
         #
@@ -260,7 +199,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         records_nuevos_datos = plpy.execute(plan_nuevos_datos, params_nuevos_datos)
 
         if len(records_nuevos_datos) != 1:
-            plpy.notice("update_agregacion_edc_py(): NO se devolvieron datos para "
+            plpy.notice("recalculate_agregacion_edc_py_v1(): NO se devolvieron datos para "
                 "campana {0}, intento {1}".format(campana_id, nro_intento))
             continue
 
@@ -272,45 +211,20 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
             "cantidad_opcion_8", "cantidad_opcion_9",
             "timestamp_ultimo_evento"]
 
-        # 'nuevos_datos_por_numero_intento' YA NO SE USA
         datos_de_edc = {}
         for col_name in COLS:
             datos_de_edc[col_name] = records_nuevos_datos[0][col_name]
 
         if DEBUG:
-            plpy.info("update_agregacion_edc_py(): datos_de_edc[{0}]: {1}".format(
+            plpy.info("recalculate_agregacion_edc_py_v1(): datos_de_edc[{0}]: {1}".format(
                 nro_intento, pprint.pformat(dict(datos_de_edc))))
 
         #
         # UPDATE AEDC
         #
 
-        suma_eventos = sum([
-            int(datos_de_edc["cantidad_intentos"]),
-            int(datos_de_edc["cantidad_finalizados"]),
-            int(datos_de_edc["cantidad_opcion_0"]),
-            int(datos_de_edc["cantidad_opcion_1"]),
-            int(datos_de_edc["cantidad_opcion_2"]),
-            int(datos_de_edc["cantidad_opcion_3"]),
-            int(datos_de_edc["cantidad_opcion_4"]),
-            int(datos_de_edc["cantidad_opcion_5"]),
-            int(datos_de_edc["cantidad_opcion_6"]),
-            int(datos_de_edc["cantidad_opcion_7"]),
-            int(datos_de_edc["cantidad_opcion_8"]),
-            int(datos_de_edc["cantidad_opcion_9"]),
-        ])
-
-        if suma_eventos == 0:
-            # evitamos 1 update!
-            plpy.notice("update_agregacion_edc_py(): *NO* se hara UPDATE AEDC porque no hay "
-                "nuevos eventos - campana: {0} - intento: {1}".format(
-                    campana_id, nro_intento))
-            continue
-
-        plpy.notice("update_agregacion_edc_py(): UPDATE AEDC - campana: {0} - nro_intento: {1}".format(
+        plpy.notice("recalculate_agregacion_edc_py_v1(): UPDATE AEDC - campana: {0} - nro_intento: {1}".format(
             campana_id, nro_intento))
-
-        aedc_actualizados += 1
 
         res_update = plpy.execute(plan_update, [
             int(datos_de_edc["cantidad_intentos"]),
@@ -334,6 +248,6 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
 
         # fin de proceso de 1 intento
 
-    return aedc_actualizados
+    return 0
 
 $$ LANGUAGE plpythonu;
