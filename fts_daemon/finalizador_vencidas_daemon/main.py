@@ -12,7 +12,7 @@ from fts_daemon.poll_daemon.call_status import AsteriskCallStatus, \
     CampanaCallStatus
 from fts_web.models import Campana
 import logging as _logging
-from fts_daemon import fts_celery
+from fts_daemon import tasks
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
 #  el logger se llamara '__main__'
@@ -67,7 +67,9 @@ class FinalizadorDeCampanas(object):
         """Finaliza la campaña
         Es funcion 'proxy', para facilitar unittest.
         """
-        fts_celery.finalizar_campana.delay(campana.id)  # @UndefinedVariable
+        tasks.finalizar_campana.\
+            delay(  # @UndefinedVariable
+                campana.id)
 
     def _sleep(self):
         """Realiza espera luego de finalizar el loop

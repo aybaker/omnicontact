@@ -7,26 +7,24 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from celery import Celery
+from django.conf import settings
 import logging as _logging
 
 
-logger = _logging.getLogger('fts_celery_daemon')
+logger = _logging.getLogger('fts_daemon.fts_celery_daemon')
 
-app = Celery('fts_daemon.fts_celery',
-             broker='redis://localhost',
-             include=['fts_daemon.fts_celery'])
+app = Celery('fts_daemon.tasks')
 
+app.config_from_object('django.conf:settings')
 
-# Optional configuration, see the application user guide.
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
 app.conf.update(
-    CELERY_TASK_SERIALIZER='json',
-    CELERY_ACCEPT_CONTENT=['json'],
-    CELERY_RESULT_SERIALIZER='json',
     CELERY_ROUTES={
-        'fts_daemon.fts_celery.finalizar_campana': {
+        'fts_daemon.tasks.finalizar_campana': {
             'queue': 'finalizar_campana'
         },
-        'fts_daemon.fts_celery.esperar_y_finalizar_campana': {
+        'fts_daemon.tasks.esperar_y_finalizar_campana': {
             'queue': 'esperar_y_finalizar_campana'
         },
     },

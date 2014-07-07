@@ -7,19 +7,20 @@ ejecutarse de manera asincrona.
 from __future__ import unicode_literals
 
 import logging
+import time
 
 from django.db import transaction
-from fts_daemon import fts_celery_daemon
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
 from fts_web.models import Campana
-import time
 
 
+from fts_daemon import fts_celery_daemon
 logger = logging.getLogger(__name__)
 
 
-@fts_celery_daemon.app.task
+# @shared_task -- no funciono...
+@fts_celery_daemon.app.task(ignore_result=True)
 def finalizar_campana(campana_id):
     """Finaliza la campaña"""
     logger.info("Se iniciara el proceso de finalizacion para la camana %s",
@@ -34,7 +35,8 @@ def finalizar_campana(campana_id):
         logger.info("La campana %s fue finalizada correctamente", campana_id)
 
 
-@fts_celery_daemon.app.task
+# @shared_task -- no funciono...
+@fts_celery_daemon.app.task(ignore_result=True)
 def esperar_y_finalizar_campana(campana_id):
     """Espera a que no haya llamadas en curso, y finaliza la campaña"""
 

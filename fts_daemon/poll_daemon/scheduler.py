@@ -9,7 +9,7 @@ import time
 
 from django.conf import settings
 from django.core.cache import get_cache
-from fts_daemon import fts_celery
+from fts_daemon import tasks
 from fts_daemon import llamador_contacto
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
@@ -101,8 +101,9 @@ class RoundRobinTracker(object):
 
     def _esperar_y_finalizar_campana(self, campana_id):
         """Lanza tarea asincrona de espera y finalizacion"""
-        fts_celery.esperar_y_finalizar_campana.\
-            delay(campana.id)  # @UndefinedVariable
+        tasks.esperar_y_finalizar_campana.\
+            delay(  # @UndefinedVariable
+                  campana_id)
 
     #
     # Eventos
