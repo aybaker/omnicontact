@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 import time
 
 from django.db import transaction
+from fts_daemon.models import EventoDeContacto
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
 from fts_web.models import Campana
@@ -30,15 +31,23 @@ class FinalizadorDeCampanaWorkflow(object):
                     campana_id)
 
         with transaction.atomic():
+
             campana = self._obtener_campana(campana_id)
             if campana.estado == Campana.ESTADO_FINALIZADA:
                 logger.info("Ignorando campana ya finalizada: %s", campana_id)
                 return
 
+            campana.recalcular_aedc_completamente()
             campana.finalizar()
-            campana.procesar_finalizada()
-            logger.info("La campana %s fue finalizada correctamente",
-                        campana_id)
+
+            # campana.procesar_finalizada()
+            campana.crea_reporte_csv()
+            EventoDeContacto.objects.depurar_eventos_de_contacto(campana.id)
+
+        # Fuera de la TX, logueamos OK (por si se produce un error
+        # al realizar commit)
+        logger.info("La campana %s fue finalizada correctamente",
+                    campana_id)
 
 
 class CantidadMaximaDeIteracionesSuperada(Exception):
