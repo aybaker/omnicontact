@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-
+Modulo que define la 'aplicacion' Celery.
 """
 
 from __future__ import absolute_import

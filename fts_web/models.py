@@ -526,9 +526,9 @@ class CampanaManager(models.Manager):
 
         # A las viejas, las finalizamos de una
         for campana in queryset:
-            logger.info("finalizar_vencidas(): incluyendo campana %s xq "
-                "su 'fecha_fin' es anterior a la fecha actual", campana.id)
-            # campana.finalizar()
+            logger.info("obtener_vencidas_para_finalizar(): incluyendo "
+                "campana %s xq su 'fecha_fin' es anterior a la fecha actual",
+                campana.id)
             yield campana
 
         #
@@ -547,9 +547,9 @@ class CampanaManager(models.Manager):
 
             # Si no tiene actuaciones para hoy, la finalizamos!
             if not actuaciones_para_hoy:
-                logger.info("finalizar_vencidas(): incluyendo campana %s xq "
-                    "su 'fecha_fin' es hoy, pero no posee Actuacion para hoy",
-                    campana.id)
+                logger.info("obtener_vencidas_para_finalizar(): incluyendo "
+                    "campana %s xq su 'fecha_fin' es hoy, pero no posee "
+                    "Actuacion para hoy", campana.id)
                 yield campana
                 continue
 
@@ -562,9 +562,9 @@ class CampanaManager(models.Manager):
                 # Todas las Actuaciones para hoy, poseen una
                 # hora_desde / hora_hasta ANTERIOR a la actual
                 # por lo tanto, podemos finalizar la campaña
-                logger.info("finalizar_vencidas(): incluyendo campana %s xq "
-                    "su 'fecha_fin' es hoy, posee Actuacion pero todas "
-                    "son anteriores a hora actual", campana.id)
+                logger.info("obtener_vencidas_para_finalizar(): incluyendo "
+                    "campana %s xq su 'fecha_fin' es hoy, posee Actuacion "
+                    "pero todas son anteriores a hora actual", campana.id)
                 yield campana
                 continue
 
