@@ -2,6 +2,9 @@
 """
 Puntos de entrada a metodos que pueden (y generalmente, DEBEN)
 ejecutarse de manera asincrona.
+
+El sistema debe utilizar las funciones llamadas *_async(), para no
+quedar acoplado a la herramienta usada actualmente (ej: Celery).
 """
 
 from __future__ import unicode_literals
