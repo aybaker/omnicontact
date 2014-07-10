@@ -21,17 +21,22 @@ class Migration(SchemaMigration):
             print("Ignorando migracion: BD no es postgresql")
             return
 
-        tmp = os.path.abspath(__file__) # 0013····.py
-        tmp = os.path.dirname(tmp) # migrations
-        tmp = os.path.split(tmp)[0] # fts_web
-        tmp = os.path.join(tmp, "sql/plpython/update_agregacion_edc_py_v1.sql")
-        
-        assert os.path.exists(tmp)
+        tmp_dir = os.path.abspath(__file__) # 0013····.py
+        tmp_dir = os.path.dirname(tmp_dir) # migrations
+        tmp_dir = os.path.split(tmp_dir)[0] # fts_web
 
-        print("Creando funcion desde {0}".format(tmp))
-        filename = tmp
-        sql = open(filename, "r").read()
-        db.execute(sql)
+        for sql_file_path in (
+                              "sql/plpython/update_agregacion_edc_py_v1.sql",
+                              "sql/plpython/recalculate_agregacion_edc_py_v1.sql"
+                              ):
+            tmp = os.path.join(tmp_dir, sql_file_path)
+            
+            assert os.path.exists(tmp)
+    
+            print("Creando funcion desde {0}".format(tmp))
+            filename = tmp
+            sql = open(filename, "r").read()
+            db.execute(sql)
 
     def backwards(self, orm):
         pass
