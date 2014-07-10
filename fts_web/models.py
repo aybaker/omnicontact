@@ -750,13 +750,24 @@ class Campana(models.Model):
                 campana_id=self.pk, numero_intento=numero_intento,
                 timestamp_ultimo_evento=timestamp_ultimo_evento)
 
+    def puede_finalizarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no finalizar.
+
+        Actualmente solo chequea el estado de la campaña.
+
+        :returns: bool - True si la campaña puede finalizarse
+        """
+        return self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
+
     def finalizar(self):
         """
         Setea la campaña como finalizada.
         """
         logger.info("Seteando campana %s como ESTADO_FINALIZADA", self.id)
         # TODO: esta bien generar error si el modo actual es ESTADO_FINALIZADA?
-        assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
+        assert self.puede_finalizarse()
+
         self.estado = Campana.ESTADO_FINALIZADA
         self.save()
 

@@ -37,8 +37,8 @@ class FinalizadorDeCampanaWorkflow(object):
                 logger.info("Ignorando campana ya finalizada: %s", campana_id)
                 return
 
-            assert self.estado in (Campana.ESTADO_ACTIVA,
-                                   Campana.ESTADO_PAUSADA)
+            # assert isinstance(campana, Campana)
+            assert campana.puede_finalizarse()
 
             campana.recalcular_aedc_completamente()
             campana.finalizar()

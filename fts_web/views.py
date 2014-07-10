@@ -31,6 +31,7 @@ from fts_web.models import (
     BaseDatosContacto, Opcion)
 from fts_web.parser import autodetectar_parser
 import logging as logging_
+from fts_daemon.tasks import finalizar_campana_async
 
 
 logger = logging_.getLogger(__name__)
@@ -934,10 +935,9 @@ class FinalizaCampanaView(RedirectView):
     def post(self, request, *args, **kwargs):
         campana = Campana.objects.get(pk=request.POST['campana_id'])
         if campana.estado == Campana.ESTADO_PAUSADA:
-            campana.finalizar()
+            finalizar_campana_async(campana.id)
             message = '<strong>Operación Exitosa!</strong>\
-            Se llevó a cabo con éxito la finalización de\
-            la Campaña.'
+            Se ha programado la finalización de la campaña.'
 
             messages.add_message(
                 self.request,
