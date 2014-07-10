@@ -92,3 +92,16 @@ class FinalizadorDeCampanasVencidasDaemonTests(FTSenderBaseTest):
         finalizador._refrescar_status.assert_called_once_with()
         self.assertEqual(finalizador._get_count_llamadas.call_count, 0)
         self.assertEqual(finalizador._finalizar_async.call_count, 0)
+
+    def test_run_llama_a_finalizar(self):
+        """Testea que al ejecutar run(), se ejecuta la busqueda"""
+
+        finalizador = FinalizadorDeCampanasVencidasDaemon(max_loop=1,
+                                                          initial_wait=0)
+        finalizador._obtener_vencidas = Mock(return_value=[])
+
+        # -----
+
+        finalizador.run()
+
+        self.assertEqual(finalizador._obtener_vencidas.call_count, 1)

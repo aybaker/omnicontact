@@ -489,7 +489,6 @@ class CampanaManager(models.Manager):
         return self.filter(pk=campana_id,
             estado=Campana.ESTADO_ACTIVA).exists()
 
-    # EX: def finalizar_vencidas(self):
     def obtener_vencidas_para_finalizar(self):
         """GENERADOR, devuelve las campañas que deberían ser finalizadas.
         SOLO verifica estado, fechas, actuaciones, etc. pero tomando
