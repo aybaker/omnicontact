@@ -26,6 +26,17 @@ class FinalizadorDeCampanaWorkflow(object):
     def _obtener_campana(self, campana_id):
         return Campana.objects.get(pk=campana_id)
 
+    def _finalizar(self, campana):
+        # assert isinstance(campana, Campana)
+        assert campana.puede_finalizarse()
+
+        campana.recalcular_aedc_completamente()
+        campana.finalizar()
+
+        # campana.procesar_finalizada()
+        campana.crea_reporte_csv()
+        EventoDeContacto.objects.depurar_eventos_de_contacto(campana.id)
+
     def finalizar(self, campana_id):
         logger.info("Se iniciara el proceso de finalizacion para la camana %s",
                     campana_id)
@@ -37,15 +48,7 @@ class FinalizadorDeCampanaWorkflow(object):
                 logger.info("Ignorando campana ya finalizada: %s", campana_id)
                 return
 
-            # assert isinstance(campana, Campana)
-            assert campana.puede_finalizarse()
-
-            campana.recalcular_aedc_completamente()
-            campana.finalizar()
-
-            # campana.procesar_finalizada()
-            campana.crea_reporte_csv()
-            EventoDeContacto.objects.depurar_eventos_de_contacto(campana.id)
+            self._finalizar(campana)
 
         # Fuera de la TX, logueamos OK (por si se produce un error
         # al realizar commit)

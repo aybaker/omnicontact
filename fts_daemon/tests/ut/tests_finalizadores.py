@@ -19,37 +19,34 @@ logger = _logging.getLogger(__name__)
 class FinalizadorDeCampanaWorkflowTests(FTSenderBaseTest):
     """Unit tests de FinalizadorDeCampanaWorkflow"""
 
-    def test_finaliza_campana_activa(self):
-
-        class CalledOk(Exception):
-            pass
-
+    def test_llama_a_finaliza_con_campana_activa(self):
         campana = Campana(id=1)
         campana.save = Mock()
         campana.estado = Campana.ESTADO_ACTIVA
-        campana.recalcular_aedc_completamente = Mock(side_effect=CalledOk())
 
         finalizador = FinalizadorDeCampanaWorkflow()
         finalizador._obtener_campana = Mock(return_value=campana)
+        finalizador._finalizar = Mock()
 
-        with self.assertRaises(CalledOk):
-            finalizador.finalizar(1)
-
-    def test_ignora_campana_finalizada(self):
-        campana = Campana(id=1)
-        campana.finalizar = Mock()
-        campana.save = Mock()
-        campana.estado = Campana.ESTADO_FINALIZADA
-        campana.procesar_finalizada = Mock()
-
-        finalizador = FinalizadorDeCampanaWorkflow()
-        finalizador._obtener_campana = Mock(return_value=campana)
-        finalizador = Mock(wraps=finalizador)
+        # -----
 
         finalizador.finalizar(1)
 
-        self.assertEquals(campana.finalizar.call_count, 0)
-        self.assertEquals(campana.procesar_finalizada.call_count, 0)
+        finalizador._finalizar.assert_called_once_with(campana)
+
+    def test_ignora_campana_finalizada(self):
+        campana = Campana(id=1)
+        campana.estado = Campana.ESTADO_FINALIZADA
+
+        finalizador = FinalizadorDeCampanaWorkflow()
+        finalizador._obtener_campana = Mock(return_value=campana)
+        finalizador._finalizar = Mock()
+
+        # -----
+
+        finalizador.finalizar(1)
+
+        self.assertEquals(finalizador._finalizar.call_count, 0)
 
     def test_obtener_campana(self):
         campana_id = self.crear_campana().id
