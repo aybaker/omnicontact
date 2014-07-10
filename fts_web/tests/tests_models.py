@@ -245,15 +245,14 @@ class ContactoTest(FTSenderBaseTest):
             os.remove(f)
 
 
-
 class CampanaTest(FTSenderBaseTest):
     """Clase para testear Campana y CampanaManager"""
     tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     MEDIA_ROOT = os.path.join(tmp, "test", "media_root")
 
-    def tearDown(self):
-        import shutil
-        shutil.rmtree(self.MEDIA_ROOT)
+    # def tearDown(self):
+    #     import shutil
+    #     shutil.rmtree(self.MEDIA_ROOT)
 
     def test_campanas_creadas(self):
         """
