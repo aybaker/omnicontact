@@ -12,7 +12,7 @@ IP de servidores
  * ftsender-produccion: *192.168.99.221*
  * ftsender-testing: *192.168.99.222*
 
-
+Para agilizar la presentación de cada Sprint, los desarrolladores realizarán un deploy al servidor de testing. 
 
 
 
@@ -47,17 +47,18 @@ Es recomendable agregar las claves públicas de quienes accederán en ``/home/de
 Procedimiento de deploy para servidor ya deployado
 --------------------------------------------------
 
-Para realizar el deploy del sistema, ejecutar:
+Para realizar el deploy del sistema debe utilizar el usuario **deployer**, y ejecutar:
 
 .. code::
 
-    deployer@ftsender-deployer $ ./deploy.sh <IDENTIFICADOR_DE_VERSION> ~/hosts-virtual-freetech-testing
+    deployer@ftsender-deployer $ ./deploy.sh <BRANCH> <INVENTARIO>
 
-<IDENTIFICADOR_DE_VERSION> puede hacer referencia a un **tag** o **branch** de Git (ej: **v1.0.0**), o un commit específico (ej: **1eaf131fef84dc0c9fbea7bc095b6f8ec605fc56**).
+**<BRANCH>** hace referencia al branch de Git a deployar (el nombre del branch para cada Sprint está documentado
+en los release notes). Los branches poseen la forma **sprintNN** o **sprintNN-fixes** (donde NN es el número de sprint).
 
-.. note::
-
-    Para saber el *IDENTIFICADOR_DE_VERSION* a utilizar, contáctese con los desarrolladores.
+**<INVENTARIO>** hace referencia al archivo de inventario, donde está identificado un host
+donde se realizará el deploy, con todas sus customizaciones. Debe especificarse el PATH ABSOLUTO
+a dicho archivo, por ejemplo: ~/hosts-virtual-freetech-produccion o ~/hosts-virtual-freetech-testing.
 
 .. note::
 
