@@ -85,7 +85,9 @@ Known issues
   en casos puntuales como ante **cambios de zona horaria**, o ante el ajuste de la hora
   por parte del daemon **ntp**.
 * FTS-245 - Campañas y bases de datos que quedan "en definicion" nunca son borradas
-* FTS-248 - Luego de finalizar manualmente una campaña, el sistema permite ser
+* FTS-248 - (1) Luego de finalizar manualmente una campaña, el sistema permite ser
   modificandola (ej: des-pausarla), lo que podría causar problemas en el sistema.
   Actualmente, el usuario debe recordar NO des-pausar las campañas finalizadas
-  manualmente.
+  manualmente. (2) Cuando ya no hay llamadas en curso, la campaña continua
+  mostrandose en la pantalla de supervisión (no es un problema grave, pero las campañas
+  que están siendo finalizadas no deberian aparecer en la pantalla de supervision).
