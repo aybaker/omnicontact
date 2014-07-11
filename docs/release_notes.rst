@@ -32,6 +32,7 @@ Nueva funcionalidad
 Deploy
 ......
 
+* Deploy de Redis
 * Deploy de workers Celery
 
 
