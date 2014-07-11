@@ -1,31 +1,32 @@
 Release Notes
 =============
 
-Sprint 5 - 25 de junio de 2014
+Sprint 6 - 11 de julio de 2014
 ------------------------------
 
 Nueva funcionalidad
 ...................
 
-* Reciclado de campaña y base de datos de contactos
-* Supervisión: mostrar estado actual del Daemon
-* Derivación de llamadas
-* Refrescar automaitcamente pantalla de supervisión
-* Listado de contactos q' presionaron una opción (en vivo, estilo supervisión)
+* Nuevas formas de reciclado de campaña
+* Implementacion de Celery
+* Finalización de campaña en background
+* Depuración automatica de eventos de llamadas al finalizar campaña
 
+* FALTA
 
 Deploy
 ......
 
-* Deploy automatico de configuracion de PostgreSql
-* Deploy de procedimientos almacenados plpythonu
-* Armado de ambientes de testing y de deploy
+* xxx
+
+* FALTA
 
 Bugs solucionados
 .................
 
-* Alta de campaña: error 500 si conversion de audio falla
+* xxx
 
+* FALTA
 
 Known issues
 ------------

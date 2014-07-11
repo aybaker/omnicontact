@@ -105,6 +105,7 @@ Contents
 
    deploy
    release_notes
+   release_notes_old
    fts_web_*
    fts_daemon_*
 
