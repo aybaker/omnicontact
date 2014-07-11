@@ -7,26 +7,30 @@ Sprint 6 - 11 de julio de 2014
 Nueva funcionalidad
 ...................
 
-* Nuevas formas de reciclado de campaña
-* Implementacion de Celery
-* Finalización de campaña en background
-* Depuración automatica de eventos de llamadas al finalizar campaña
-
-* FALTA
+* Implementacion de Celery para ejecución de tareas asincronas / en background
+* Finalización manual de campañas en background
+* FTS-212 - Nuevas formas de reciclado de campaña (Ocupados/No contestó/Número erróneo/Llamada errónea)
+* FTS-234 - Validación consistencia de fechas y actuaciones de campañas
+* FTS-231 - Daemon evita finalizar campañas que posean llamadas en curso
+* FTS-152 - Depuración de eventos de contactos
+* FTS-205 - Depuración de BD de contactos
+* FTS-208 - Mejora UI de carga de audio de campaña
 
 Deploy
 ......
 
-* xxx
-
-* FALTA
+* Deploy de workers Celery
 
 Bugs solucionados
 .................
 
-* xxx
+* FTS-169 - Reporta problemas con reload de configuracion de Asterisk
+* FTS-206 - Valida y acepta csv con una sola columna (sin delimitador)
 
-* FALTA
+Otras mejoras
+.............
+
+* Unificación de archivos de dependencias y librerías Python
 
 Known issues
 ------------
@@ -43,7 +47,7 @@ Known issues
   se baja inmediantamente.
 * FTS-136 - No se chequea el **resultado de llamada AGI**, lo que puede generar perdida
   de eventos si el llamado AGI() falla.
-* FTS-174 Sobrepaso de limites si AMI/HTTP falla: sólo sucende en un caso muy particular,
+* FTS-174 - Sobrepaso de limites si AMI/HTTP falla: sólo sucende en un caso muy particular,
   si existen llamadas en curso cuando el daemon arranca (porque se reinició, por ejemplo),
   y el primer request que se hace via AMI / HTTP fallara, puede suceder que se realicen
   ORIGINATES produciendo un sobrepaso en el límite de canales.
