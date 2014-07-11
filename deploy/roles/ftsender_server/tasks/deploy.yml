@@ -26,6 +26,14 @@
   tags:
     - deploy
 
+- name: Create directories for DB dumps
+  file: path={{item}} state=directory owner=ftsender group=postgres mode=0750
+  sudo: yes
+  with_items:
+    - "{{dj_sett_FTS_BASE_DATO_CONTACTO_DUMP_PATH}}"
+  tags:
+    - deploy
+
 #----------------------------------------------------------------------
 # pip / virtualenv
 #----------------------------------------------------------------------
@@ -161,6 +169,17 @@
     - deploy
     - quick_deploy
     - update_settings
+
+#----------------------------------------------------------------------
+# Restart Celery workers
+#----------------------------------------------------------------------
+
+- name: Restart Celery worker (celery-worker-esperar-finaliza-campana)
+  service: name=celery-worker-esperar-finaliza-campana state=restarted
+  sudo: yes
+  tags:
+    - deploy
+    - celery
 
 #----------------------------------------------------------------------
 # Checks

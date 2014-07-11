@@ -58,5 +58,6 @@
 
 - include: bd.yml
 
-- include: deploy.yml
+- include: celery.yml
 
+- include: deploy.yml

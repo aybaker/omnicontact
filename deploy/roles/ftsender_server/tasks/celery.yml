@@ -1,0 +1,22 @@
+---
+
+#----------------------------------------------------------------------
+# Scripts de inicio
+#----------------------------------------------------------------------
+
+- name: Upload Celery init scripts (celery-worker-esperar-finaliza-campana)
+  template: >
+    src=etc/init.d/celery-worker-esperar-finaliza-campana
+    dest=/etc/init.d/celery-worker-esperar-finaliza-campana
+    owner=root group=root mode=0755
+  sudo: yes
+  tags:
+    - deploy
+    - celery
+
+- name: Register Celery worker (celery-worker-esperar-finaliza-campana)
+  service: name=celery-worker-esperar-finaliza-campana enabled=yes
+  sudo: yes
+  tags:
+    - deploy
+    - celery
