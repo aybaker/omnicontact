@@ -4,6 +4,18 @@ Release Notes
 Sprint 6 - 11 de julio de 2014
 ------------------------------
 
+
+Instrucciones de deploy
+.......................
+
+
+.. code::
+
+    $ ssh deployer@192.168.99.224
+    $ ./deploy.sh sprint6-fixes <INVENTARIO>
+
+
+
 Nueva funcionalidad
 ...................
 
@@ -16,10 +28,12 @@ Nueva funcionalidad
 * FTS-205 - Depuración de BD de contactos
 * FTS-208 - Mejora UI de carga de audio de campaña
 
+
 Deploy
 ......
 
 * Deploy de workers Celery
+
 
 Bugs solucionados
 .................
@@ -27,10 +41,13 @@ Bugs solucionados
 * FTS-169 - Reporta problemas con reload de configuracion de Asterisk
 * FTS-206 - Valida y acepta csv con una sola columna (sin delimitador)
 
+
 Otras mejoras
 .............
 
 * Unificación de archivos de dependencias y librerías Python
+* Ajustes a instrucciones de deploy
+
 
 Known issues
 ------------
