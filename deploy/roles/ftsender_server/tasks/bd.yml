@@ -81,3 +81,13 @@
   when: plpython_installed|failed
   tags:
     - db
+
+#----------------------------------------------------------------------
+# Redis
+#----------------------------------------------------------------------
+
+- name: Start Redis and enable at boot
+  sudo: yes
+  service: name=redis enabled=yes state=started
+  tags:
+    - db
