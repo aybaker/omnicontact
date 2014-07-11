@@ -792,7 +792,7 @@ class Campana(models.Model):
         Si no hay ninguna devuelve None.
         """
         hoy_ahora = datetime.datetime.today()
-        assert (hoy_ahora.tzinfo is None)
+        assert hoy_ahora.tzinfo is None
         dia_semanal = hoy_ahora.weekday()
         hora_actual = hoy_ahora.time()
 
@@ -1189,8 +1189,8 @@ class Campana(models.Model):
         Este método se encarga de invocar los pasos necesarios en el proceso
         de deuración de eventos de contactos de la campaña.
         """
-        assert (self.estado == Campana.ESTADO_FINALIZADA,
-                "Solo se depuran  campanas finalizadas")
+        assert self.estado == Campana.ESTADO_FINALIZADA,\
+            "Solo se depuran  campanas finalizadas"
 
         # Se calculan por última vez las estadisticas, haciendo que se genere
         # el proceso de agregación de eventos de contactos por última vez.
@@ -1212,8 +1212,8 @@ class Campana(models.Model):
         """
         from fts_daemon.models import EventoDeContacto
 
-        assert (self.estado == Campana.ESTADO_FINALIZADA,
-                "Solo se aplica la búsqueda a campanas finalizadas")
+        assert self.estado == Campana.ESTADO_FINALIZADA,\
+            "Solo se aplica la búsqueda a campanas finalizadas"
 
         nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
 
@@ -1248,8 +1248,8 @@ class Campana(models.Model):
         """
         from fts_daemon.models import EventoDeContacto
 
-        assert (self.estado == Campana.ESTADO_FINALIZADA,
-                "Solo se aplica la búsqueda a campanas finalizadas")
+        assert self.estado == Campana.ESTADO_FINALIZADA,\
+            "Solo se aplica la búsqueda a campanas finalizadas"
 
         nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
 
@@ -1282,8 +1282,8 @@ class Campana(models.Model):
         """
         from fts_daemon.models import EventoDeContacto
 
-        assert (self.estado == Campana.ESTADO_FINALIZADA,
-                "Solo se aplica la búsqueda a campanas finalizadas")
+        assert self.estado == Campana.ESTADO_FINALIZADA,\
+            "Solo se aplica la búsqueda a campanas finalizadas"
 
         nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
 
@@ -1317,8 +1317,8 @@ class Campana(models.Model):
         """
         from fts_daemon.models import EventoDeContacto
 
-        assert (self.estado == Campana.ESTADO_FINALIZADA,
-                "Solo se aplica la búsqueda a campanas finalizadas")
+        assert self.estado == Campana.ESTADO_FINALIZADA,\
+            "Solo se aplica la búsqueda a campanas finalizadas"
 
         nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
 
@@ -1352,8 +1352,8 @@ class Campana(models.Model):
         """
         from fts_daemon.models import EventoDeContacto
 
-        assert (self.estado == Campana.ESTADO_FINALIZADA,
-                "Solo se aplica la búsqueda a campanas finalizadas")
+        assert self.estado == Campana.ESTADO_FINALIZADA,\
+            "Solo se aplica la búsqueda a campanas finalizadas"
 
         nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
 
@@ -1378,7 +1378,6 @@ class Campana(models.Model):
             values = cursor.fetchall()
 
         return values
-
 
     def __unicode__(self):
         return self.nombre
