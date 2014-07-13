@@ -6,15 +6,19 @@
 #
 # Contiene:
 #  - configuracion de proxy
-#  - openssh
+#  - openssh (permite acceso SIN password!)
 #  - EPEL
-#
+#  - postgresql
+#  - instala paquetes basicos
 #
 # Para crear la imagen:
 #  $ docker build --rm=true -t hgdeoro/fts-base .
 #
-# Para crear el container:
+# Para crear y/o lanzar un container:
 #  $ docker run -i -t hgdeoro/fts-base /bin/bash
+#
+# Para lanzar container nuevo en background
+#  $ docker run -d -p 9022:22 hgdeoro/fts-base
 #
 
 FROM centos:centos6
@@ -96,10 +100,17 @@ RUN cp -fv /usr/share/zoneinfo/America/Argentina/Cordoba /etc/localtime
 RUN service sshd start
 
 # Setup supervisord
-RUN mkdir -p /etc/supervisor/conf.d /var/log/supervisor/
-COPY supervisor.conf /etc/supervisord.conf
+# RUN mkdir -p /etc/supervisor/conf.d /var/log/supervisor/
+# COPY supervisor.conf /etc/supervisord.conf
+
+# Ajustes para usar /sbin/init
+RUN rm /etc/init/start-ttys.conf /etc/init/tty.conf
+RUN chkconfig exim off
+RUN chkconfig iptables off
+RUN chkconfig crond off
 
 EXPOSE 22
 
-CMD ["/usr/bin/supervisord"]
+# CMD ["/usr/bin/supervisord"]
+CMD ["/sbin/init"]
 
