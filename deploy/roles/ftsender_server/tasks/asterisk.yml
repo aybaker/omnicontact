@@ -5,6 +5,7 @@
   group: name=asterisk state=present system=yes
   tags:
     - asterisk
+    - docker
 
 - name: Create asterisk user 
   sudo: yes
@@ -16,12 +17,14 @@
     system=yes
   tags:
     - asterisk
+    - docker
 
 - name: Create Asterisk directory (to install Asterisk)
   sudo: yes
   file: path=/opt/asterisk-11 state=directory owner=asterisk mode=0755
   tags:
     - asterisk
+    - docker
 
 - name: Download Asterisk sources
   sudo: yes
@@ -32,6 +35,7 @@
     sha256sum={{ DOWNLOAD_ASTERISK_TARGZ_SHA256 }}
   tags:
     - asterisk
+    - docker
 
 - name: Check if Asterisk is installed 
   command: test -f /opt/asterisk-11/sbin/asterisk
@@ -39,6 +43,7 @@
   ignore_errors: True
   tags:
     - asterisk
+    - docker
 
 - name: Upload Asterisk build script 
   when: asterisk_installed|failed
@@ -49,6 +54,7 @@
     owner=asterisk group=asterisk mode=0755
   tags:
     - asterisk
+    - docker
 
 - name: Run Asterisk build script 
   sudo: yes
@@ -58,6 +64,7 @@
   register: asterisk_installed
   tags:
     - asterisk
+    - docker
 
 - name: Upload Asterisk init script
   template: >
@@ -67,6 +74,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 - name: Register Asterisk service
   service: name=asterisk-11-ftsender enabled=yes
@@ -90,6 +98,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 #----------------------------------------------------------------------
 # manager.conf
@@ -105,6 +114,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 - name: Modify Asterisk manager.conf - general/webenabled/yes
   ini_file: >
@@ -116,6 +126,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 - name: Modify Asterisk manager.conf - manager/user/secret
   ini_file: >
@@ -127,6 +138,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 - name: Modify Asterisk manager.conf - manager/user/read
   ini_file: >
@@ -138,6 +150,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 - name: Modify Asterisk manager.conf - manager/user/write
   ini_file: >
@@ -149,6 +162,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 #----------------------------------------------------------------------
 # http.conf
@@ -164,6 +178,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 - name: Modify Asterisk http.conf - general/bindaddr/ASTERISK_AMI_HTTP_BIND
   ini_file: >
@@ -175,6 +190,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 - name: Modify Asterisk http.conf - general/bindport/ASTERISK_AMI_HTTP_PORT
   ini_file: >
@@ -186,6 +202,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 #----------------------------------------------------------------------
 # Start / reload

@@ -11,6 +11,7 @@
     creates=/var/lib/pgsql/9.3/data/postgresql.conf
   tags:
     - db
+    - docker
 
 - name: Start PostgreSQL and enable at boot
   sudo: yes
@@ -24,6 +25,7 @@
   copy: src=pg_hba.conf dest=/var/lib/pgsql/9.3/data/
   tags:
     - db
+    - docker
 
 - name: Copy postgresql-fts.conf
   sudo: yes
@@ -31,6 +33,7 @@
   register: postgresql_fts_updated
   tags:
     - db
+    - docker
 
 - name: Include postgresql-fts.conf in postgresql.conf
   sudo: yes
@@ -43,6 +46,7 @@
   # TODO: reload (si cambio el archivo)
   tags:
     - db
+    - docker
 
 - name: Reload PostgreSql
   sudo: yes
@@ -57,6 +61,7 @@
   sudo_user: postgres
   tags:
     - db
+    - docker
 
 - name: Create PostgreSql database
   postgresql_db: name=ftsender owner=ftsender
@@ -64,6 +69,7 @@
   sudo_user: postgres
   tags:
     - db
+    - docker
 
 - name: Check if plpython is installed
   shell: psql -c "select * from pg_language" ftsender | grep -q plpythonu
@@ -73,6 +79,7 @@
   ignore_errors: True
   tags:
     - db
+    - docker
 
 - name: Install plpython if not installed
   command: createlang plpythonu ftsender
@@ -81,6 +88,7 @@
   when: plpython_installed|failed
   tags:
     - db
+    - docker
 
 #----------------------------------------------------------------------
 # Redis
@@ -91,3 +99,4 @@
   service: name=redis enabled=yes state=started
   tags:
     - db
+    

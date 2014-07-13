@@ -25,6 +25,7 @@
     - /home/ftsender/deploy/run
   tags:
     - deploy
+    - docker
 
 - name: Create directories for DB dumps
   file: path={{item}} state=directory owner=ftsender group=postgres mode=0750
@@ -33,6 +34,7 @@
     - "{{dj_sett_FTS_BASE_DATO_CONTACTO_DUMP_PATH}}"
   tags:
     - deploy
+    - docker
 
 #----------------------------------------------------------------------
 # pip / virtualenv
@@ -46,6 +48,7 @@
     value='/home/ftsender/.pip/cache'
   tags:
     - virtualenv
+    - docker
 
 - name: Upload built (rsync to /app)
   # Copies xxx/app to /home/ftsender/deploy/app (/app on dest is implicit)
@@ -56,6 +59,7 @@
   tags:
     - deploy
     - quick_deploy
+    - docker
 
 - name: Setup virtualenv
   pip: >
@@ -66,6 +70,7 @@
     PATH: /usr/pgsql-9.3/bin:{{ lookup('env', 'PATH') }}
   tags:
     - virtualenv
+    - docker
 
 - name: Check - StarPy instalado 
   shell: find /home/ftsender/deploy/virtualenv -name starpy | grep -q starpy
@@ -73,12 +78,14 @@
   ignore_errors: True
   tags:
     - virtualenv
+    - docker
 
 - name: Install starpy
   pip: name={{ STARPY_PIP_URL }} virtualenv=/home/ftsender/deploy/virtualenv
   when: starpy_installed|failed
   tags:
     - virtualenv
+    - docker
 
 #----------------------------------------------------------------------
 # Deploy
@@ -90,6 +97,7 @@
     - deploy
     - quick_deploy
     - update_settings
+    - docker
 
 - name: Run Django syncdb
   django_manage: >
@@ -101,6 +109,7 @@
     PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
   tags:
     - deploy
+    - docker
 
 - name: Run Django migrations
   django_manage: >
@@ -113,6 +122,7 @@
   tags:
     - deploy
     - quick_deploy
+    - docker
 
 - name: Run Django collectstatic
   django_manage: >
@@ -125,11 +135,13 @@
   tags:
     - deploy
     - quick_deploy
+    - docker
 
 - name: Upload ftsender_uwsgi.ini
   template: src=ftsender_uwsgi.ini dest=/home/ftsender/deploy/local
   tags:
     - deploy
+    - docker
 
 - name: Upload FTSender init script
   template: >
@@ -154,6 +166,7 @@
     - bin/db_update_plpython_stored_proc.sh
   tags:
     - deploy
+    - docker
 
 - name: Install stored procedures
   shell: >
@@ -161,6 +174,7 @@
     /home/ftsender/deploy/app/fts_web/sql/plpython/*.sql
   tags:
     - deploy
+    - docker
 
 - name: Reload FTSenser service
   service: name=ftsender-daemon state=reloaded
