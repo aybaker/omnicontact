@@ -18,6 +18,7 @@
   service: name=postgresql-9.3 enabled=yes state=started
   tags:
     - db
+    - docker
 
 - name: Copy pg_hba.conf
   sudo: yes
@@ -54,6 +55,7 @@
   when: pg_hba_updated.changed or postgresql_fts_updated.changed
   tags:
     - db
+    - docker
 
 - name: Create PostgreSql user
   postgresql_user: name=ftsender password={{db_password}}
@@ -99,4 +101,4 @@
   service: name=redis enabled=yes state=started
   tags:
     - db
-    
+    - docker

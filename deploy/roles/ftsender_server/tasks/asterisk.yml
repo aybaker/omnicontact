@@ -82,6 +82,7 @@
   sudo: yes
   tags:
     - asterisk
+    - docker
 
 #----------------------------------------------------------------------
 # extensions.conf
@@ -216,6 +217,7 @@
   register: asterisk_started
   tags:
     - asterisk
+    - docker
 
 - name: Reload Asterisk (only if 'start' failed)
   sudo: yes
@@ -224,3 +226,4 @@
   ignore_errors: True
   tags:
     - asterisk
+    - docker

@@ -5,6 +5,7 @@
   service: name=nginx enabled=yes state=started
   tags:
     - nginx
+    - docker
 
 - name: Configure Nginx
   sudo: yes
@@ -15,4 +16,3 @@
   tags:
     - nginx
     - docker
-
