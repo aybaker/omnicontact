@@ -96,9 +96,10 @@ RUN cp -fv /usr/share/zoneinfo/America/Argentina/Cordoba /etc/localtime
 RUN service sshd start
 
 # Setup supervisord
-# RUN mkdir /etc/supervisor/conf.d
+RUN mkdir -p /etc/supervisor/conf.d
+COPY supervisor.conf /etc/supervisord.conf
 
 EXPOSE 22
 
-# CMD ["/usr/bin/supervisord"]
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/usr/bin/supervisord"]
+
