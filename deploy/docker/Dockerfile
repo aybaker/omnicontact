@@ -77,37 +77,49 @@ RUN yum --enablerepo centosplus install -y openssh-server sudo passwd supervisor
 
 RUN yum groupinstall -y "Development tools"
 
+# Evita que Ansible instale repos (ya que instalara repos i386)
 RUN touch /etc/yum.repos.d/epel.repo /etc/yum.repos.d/pgdg-93-centos.repo
 
 # FIX locales
 RUN yum reinstall -y glibc-common
 
-# Setup users
-RUN adduser ftsender
-RUN passwd --delete root
-RUN passwd --delete ftsender
-
-# Setup sudo
-RUN echo "ftsender ALL=(ALL)       NOPASSWD: ALL" > /etc/sudoers.d/ftsender
-
-# Setup ssh
-RUN echo -e "Protocol 2\nPermitRootLogin yes\nPermitEmptyPasswords yes\nGSSAPIAuthentication no\nUsePAM no" > /etc/ssh/sshd_config
-
-# Seteamos timezone
-RUN cp -fv /usr/share/zoneinfo/America/Argentina/Cordoba /etc/localtime
-
 # Genera claves
 RUN service sshd start
 
-# Setup supervisord
-# RUN mkdir -p /etc/supervisor/conf.d /var/log/supervisor/
-# COPY supervisor.conf /etc/supervisord.conf
+#--------------------------------------------------------------------------------
+# Aca terminaron los procesos pesados. Si se cambian cosas de aca hacia abajo
+#  el build igual será rapido
+#--------------------------------------------------------------------------------
+
+# Seteamos timezone
+RUN cp -fv /usr/share/zoneinfo/America/Argentina/Cordoba /etc/localtime
 
 # Ajustes para usar /sbin/init
 RUN rm /etc/init/start-ttys.conf /etc/init/tty.conf
 RUN chkconfig exim off
 RUN chkconfig iptables off
 RUN chkconfig crond off
+
+# Setup sudo
+RUN echo "ftsender ALL=(ALL)       NOPASSWD: ALL" > /etc/sudoers.d/ftsender
+
+# Setup users
+RUN adduser ftsender && su -c 'mkdir /home/ftsender/.ssh' ftsender && su -c 'chmod 0700 /home/ftsender/.ssh' ftsender
+
+# Upload authorized_keys
+COPY authorized_keys /home/ftsender/.ssh/authorized_keys
+RUN chmod 0600 /home/ftsender/.ssh/authorized_keys && chown ftsender.ftsender -R /home/ftsender/.ssh
+
+# RUN passwd --delete root
+# RUN passwd --delete ftsender
+
+# Setup ssh
+# RUN cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+# RUN echo -e "Protocol 2\nPermitRootLogin yes\nPermitEmptyPasswords yes\nGSSAPIAuthentication no\nUsePAM no" > /etc/ssh/sshd_config
+
+# Setup supervisord
+# RUN mkdir -p /etc/supervisor/conf.d /var/log/supervisor/
+# COPY supervisor.conf /etc/supervisord.conf
 
 EXPOSE 22
 
