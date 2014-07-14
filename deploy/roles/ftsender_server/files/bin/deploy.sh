@@ -56,10 +56,11 @@ git clean -fdx
 git fetch --prune --tags --force --all -v
 
 git checkout master
-
 git pull origin +master:master
-
 git checkout $VERSION
+git pull origin +$VERSION:$VERSION
+
+# git reset --hard origin/$VERSION
 
 ./build.sh -i $INVENTORY $*
 
