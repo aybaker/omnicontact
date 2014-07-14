@@ -10,18 +10,16 @@ from collections import defaultdict
 import csv
 import datetime
 import logging
-import math
 import os
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction, connection
-from django.db.models import Sum, Q
+from django.db.models import Sum
 from django.utils.timezone import now
+from fts_web.errors import (FtsRecicladoCampanaError,
+    FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError)
 from fts_web.utiles import crear_archivo_en_media_root, upload_to, log_timing
-from fts_web.errors import (FtsRecicladoCampanaError, 
-    FtsRecicladoBaseDatosContactoError)
-
 import pygal
 from pygal.style import Style
 
@@ -282,7 +280,7 @@ class BaseDatosContacto(models.Model):
         Este metodo se encarga de realizar la generación de contactos
         a partir de una lista de tuplas de teléfonos.
         Parametros:
-        - lista_telefonos: lista de tuplas con lo números telefónicos 
+        - lista_telefonos: lista de tuplas con lo números telefónicos
         que representarán las instancias de contacto.
         """
 
@@ -347,33 +345,27 @@ class BaseDatosContacto(models.Model):
         BaseDatoContacto invocando a los métodos que realizan las distintas
         acciones.
         """
+
         # 1) Cambio de estado BaseDatoContacto (ESTADO_EN_DEPURACION).
         logger.info("Iniciando el proceso de depurado de BaseDatoContacto:"
                     "Seteando base datos contacto %s como"
                     "ESTADO_EN_DEPURACION.", self.id)
+
         self.estado = self.ESTADO_EN_DEPURACION
         self.save()
 
         # 2) Llamada a método que hace el COPY / dump.
-        try:
-            Contacto.objects.realiza_dump_contactos(self)
-        except Exception as e:
-            logger.warning("ContactoManager.realiza_dump_contactos(): %s", e)
-            self.estado = self.ESTADO_DEFINIDA
-            self.save()
+        Contacto.objects.realiza_dump_contactos(self)
 
-            raise FtsDepuraBaseDatoContactoError("No se pudo depurar la "
-                                                 "Base Datos Contacto.")
-        else:
-            # 3) Llama el método que hace el borrado de los contactos.
-            self.elimina_contactos()
+        # 3) Llama el método que hace el borrado de los contactos.
+        self.elimina_contactos()
 
-            # 4) Cambio de estado BaseDatoContacto (ESTADO_DEPURADA).
-            logger.info("Finalizando el proceso de depurado de "
-                        "BaseDatoContacto: Seteando base datos contacto %s "
-                        "como ESTADO_DEPURADA.", self.id)
-            self.estado = self.ESTADO_DEPURADA
-            self.save()
+        # 4) Cambio de estado BaseDatoContacto (ESTADO_DEPURADA).
+        logger.info("Finalizando el proceso de depurado de "
+                    "BaseDatoContacto: Seteando base datos contacto %s "
+                    "como ESTADO_DEPURADA.", self.id)
+        self.estado = self.ESTADO_DEPURADA
+        self.save()
 
 
 class ContactoManager(models.Manager):
