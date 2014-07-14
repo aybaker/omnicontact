@@ -13,7 +13,7 @@ while [ -n "$1" ] ; do
 		echo " - El procedimiento ya existen en BD"
 	else
 		echo " - Creando procedimiento..."
-		sudo -u postgres psql -f $1 $BD
+		sudo -u postgres psql -f - $BD < $1
 		EXIT_STATUS=$?
 		if [ "$EXIT_STATUS" -ne "0" ] ; then
 			echo "ERROR: exit status de psql: $EXIT_STATUS"
