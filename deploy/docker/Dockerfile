@@ -12,35 +12,67 @@
 # INSTRUCCIONES
 # -------------
 #
-# 1) Crear authorized_keys
+# 1) Crear authorized_keys (para poder ingrear al contenedor usando ssh)
 #
 #   ANTES de crear la imagen, crear el archivo 'authorized_keys', con las claves
 #    que estarán autorizadas a ingresar al sistema con el usuario 'ftsender'
+#
 #   Por ejemplo:
 #    $ cp ~/.ssh/authorized_keys .
+#
 #   Otro ejemplo:
 #    $ cat ~/.ssh/*.pub > authorized_keys
 #
 # 2) Generar la imagen
 #
-#   Para crear la imagen:
+#   Para generar la imagen usando (debe estar posicionado en el directorio
+#    donde se encuentra este archivo, Dockerfile; puede ser necesario
+#    utilizar 'sudo' para los comandos 'docker'):
+#
 #    $ docker build -t hgdeoro/fts-base .
 #
 # 3) Crear un container
+#   
+#   Esto seria a generar una 'maquina virtual', desde la 'imagen' creada
+#    en el paso anterior.
 #
-#   Para probar imagen en container:
+#   Para probar la imagen en un nuevo container de prueba:
+#
 #    $ docker run -i -t hgdeoro/fts-base /bin/bash
 #
 #   Para lanzar container nuevo en background, basado en la imagen creada
+#    (este container se ejecutará en background, y tendrá
+#    el nombre 'ftsender-dev').
+#
 #    $ docker run -d -p 9022:22 -p 9088:8088 --name ftsender-dev hgdeoro/fts-base
 #
-# Para bajar un container
+# Para bajar/apagar un container
 #
+#    $ docker stop ftsender-dev
+#        o
 #    $ docker kill ftsender-dev
 #
-# Para iniciar un container
+# Para iniciar/prender el container creado anteriormente
 #
 #    $ docker start ftsender-dev
+#
+#-------------------------------------------
+# Imagen intermedia con Asterisk (OPCIONAL)
+#-------------------------------------------
+#
+#   Creacion de imagen intermedia, que posea Asterisk compilado e instalado
+#    (para agilizar el deploy). Esta imagen intermedia tendrá el
+#    nombre 'hgdeoro/fts-base-mas-asterisk'.
+#
+#   $ docker run -d -p 9022:22 -p 9088:8088 --name ftsender-tmp hgdeoro/fts-base
+#   $ ./build.sh -v -i deploy/hosts-virtual-docker -t docker-image
+#   $ docker stop ftsender-tmp
+#   $ docker commit ftsender-tmp hgdeoro/fts-base-mas-asterisk
+#   $ docker rm ftsender-tmp
+#
+#   Uso de imagen intermedia en nuevo container
+#
+#   $ docker run -d -p 9022:22 -p 9088:8088 --name ftsender-dev hgdeoro/fts-base-mas-asterisk
 #
 #----------------------------------------
 # Deploy
@@ -49,6 +81,10 @@
 # Desde el directorio raiz del proyecto, ejecutar:
 #
 #    $ ./build.sh -v -i deploy/hosts-virtual-docker -t docker
+#
+# Para que el deploy se mas rápido:
+#
+#    $ ./build.sh -v -i deploy/hosts-virtual-docker --skip-tags=yum -t docker
 #
 
 FROM centos:centos6
