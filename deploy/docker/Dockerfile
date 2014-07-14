@@ -24,15 +24,23 @@
 # 2) Generar la imagen
 #
 #   Para crear la imagen:
-#    $ docker build --rm=true -t hgdeoro/fts-base .
+#    $ docker build -t hgdeoro/fts-base .
 #
 # 3) Crear un container
 #
-#   Para crear y/o lanzar un container:
+#   Para probar imagen en container:
 #    $ docker run -i -t hgdeoro/fts-base /bin/bash
 #
-#   Para lanzar container nuevo en background
-#    $ docker run -d -p 9022:22 hgdeoro/fts-base
+#   Para lanzar container nuevo en background, basado en la imagen creada
+#    $ docker run -d -p 9022:22 --name ftsender-dev hgdeoro/fts-base
+#
+# Para bajar un container
+#
+#    $ docker kill ftsender-dev
+#
+# Para iniciar un container
+#
+#    $ docker start ftsender-dev
 #
 
 FROM centos:centos6
@@ -132,4 +140,3 @@ EXPOSE 22
 
 # CMD ["/usr/bin/supervisord"]
 CMD ["/sbin/init"]
-
