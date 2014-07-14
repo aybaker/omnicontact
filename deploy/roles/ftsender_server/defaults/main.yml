@@ -16,6 +16,9 @@ DOWNLOAD_ASTERISK_FILENAME: 'asterisk-11.9.0.tar.gz'
 # Directory created when extracting
 DOWNLOAD_ASTERISK_EXTRACT_DIRNAME: 'asterisk-11.9.0'
 
+# CFLAGS para compilar Asterisk
+BUILD_ASTERISK_CFLAGS: '-march=i586'
+
 # URL to install StarPy
 STARPY_PIP_URL: 'git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba#egg=starpy'
 
