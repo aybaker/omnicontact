@@ -3,27 +3,26 @@
 """Tests generales"""
 from __future__ import unicode_literals
 
+import csv
+import datetime
 import os
 import shutil
-import datetime
-import csv
 
 from django.conf import settings
-
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
+from django.db.utils import ProgrammingError
 from django.test.client import Client
 from django.test.utils import override_settings
-from django.utils.unittest.case import skipUnless
-
+from django.utils.unittest.case import skipUnless, skipIf
 from fts_daemon.models import EventoDeContacto
+from fts_web.errors import (FtsRecicladoCampanaError,
+    FtsRecicladoBaseDatosContactoError)
 from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
     BaseDatosContacto, Campana, Contacto, Opcion, Calificacion, Actuacion)
+from fts_web.parser import autodetectar_parser
 from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
-from fts_web.parser import autodetectar_parser
-from fts_web.errors import (FtsRecicladoCampanaError, 
-    FtsRecicladoBaseDatosContactoError)
 
 
 class GrupoAtencionTest(FTSenderBaseTest):
@@ -212,17 +211,16 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         self.assertEqual(bd_contacto.estado,
                          BaseDatosContacto.ESTADO_DEPURADA)
 
-        import glob
-        files = glob.glob('{0}/*'.format(dir_dump_contacto))
-        for f in files:
-            os.remove(f)
+        ## Esto es peligrosisimo! NUNCA borrar con glob!!!
+        # import glob
+        # files = glob.glob('{0}/*'.format(dir_dump_contacto))
+        # for f in files:
+        #     os.remove(f)
 
 
 class ContactoTest(FTSenderBaseTest):
-    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    DUMP_PATH = os.path.join(tmp, "test", "base_dato_contacto_dump/")
 
-    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=DUMP_PATH)
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH="/tmp/")
     def test_realiza_dump_contactos(self):
         """
         Testea el método realiza_dump_contactos().
@@ -239,10 +237,25 @@ class ContactoTest(FTSenderBaseTest):
         copy_to = dir_dump_contacto + nombre_archivo_contactos
         self.assertTrue(os.path.exists(copy_to))
 
-        import glob
-        files = glob.glob('{0}/*'.format(dir_dump_contacto))
-        for f in files:
-            os.remove(f)
+        ## Esto es peligrosisimo! NUNCA borrar con glob!!!
+        # import glob
+        # files = glob.glob('{0}/*'.format(dir_dump_contacto))
+        # for f in files:
+        #     os.remove(f)
+
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH="/root/")
+    def test_dump_a_directorio_invalido_falla(self):
+        """Testea que si hay problemas de permisos se genere
+        una excepcion."""
+        bd_contacto = self.crear_base_datos_contacto(10)
+        with self.assertRaises(ProgrammingError):
+            Contacto.objects.realiza_dump_contactos(bd_contacto)
+
+    @skipIf(True, "Falta implementar")
+    def test_dump_con_no_superusuario_falla(self):
+        """Testea que export falla si se ejecuta con usuario
+        SIN permisos de superusuario"""
+        # FIXME: como implementamos este test?
 
 
 class CampanaTest(FTSenderBaseTest):
@@ -627,9 +640,10 @@ class CampanaTest(FTSenderBaseTest):
         dirname = 'reporte_campana'
         files_path = "{0}/{1}".format(settings.MEDIA_ROOT, dirname)
 
-        files = glob.glob('{0}/*'.format(files_path))
-        for f in files:
-            os.remove(f)
+        ## Esto es peligrosisimo! NUNCA borrar con glob!!!
+        # files = glob.glob('{0}/*'.format(files_path))
+        # for f in files:
+        #     os.remove(f)
 
         filename = "{0}-reporte.csv".format(campana.id)
         file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
@@ -658,9 +672,10 @@ class CampanaTest(FTSenderBaseTest):
                 self.assertTrue(len(row), 11)
         self.assertEqual(c, 100)
 
-        files = glob.glob('{0}/*'.format(files_path))
-        for f in files:
-            os.remove(f)
+        ## Esto es peligrosisimo! NUNCA borrar con glob!!!
+        # files = glob.glob('{0}/*'.format(files_path))
+        # for f in files:
+        #     os.remove(f)
 
     @override_settings(MEDIA_ROOT=MEDIA_ROOT)
     def test_campana_obtener_url_reporte_csv_descargar(self):
@@ -672,9 +687,10 @@ class CampanaTest(FTSenderBaseTest):
         dirname = 'reporte_campana'
         files_path = "{0}/{1}".format(settings.MEDIA_ROOT, dirname)
 
-        files = glob.glob('{0}/*'.format(files_path))
-        for f in files:
-            os.remove(f)
+        ## Esto es peligrosisimo! NUNCA borrar con glob!!!
+        # files = glob.glob('{0}/*'.format(files_path))
+        # for f in files:
+        #     os.remove(f)
 
         filename = "{0}-reporte.csv".format(campana.id)
         file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
@@ -699,9 +715,10 @@ class CampanaTest(FTSenderBaseTest):
         self.assertEqual(campana.obtener_url_reporte_csv_descargar(),
                          file_url)
 
-        files = glob.glob('{0}/*'.format(files_path))
-        for f in files:
-            os.remove(f)
+        ## Esto es peligrosisimo! NUNCA borrar con glob!!!
+        # files = glob.glob('{0}/*'.format(files_path))
+        # for f in files:
+        #     os.remove(f)
 
     def test_campana_reciclar_campana(self):
         hora_desde = datetime.time(00, 00)
