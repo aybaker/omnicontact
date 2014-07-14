@@ -11,3 +11,4 @@ settings_local.py
 /docs/_build
 /build
 /deploy/hosts-virtual-pruebas
+/deploy/docker/authorized_keys

@@ -1,24 +1,38 @@
 #------------------------------------------------------------
 # Crea container para deployar FTSender
+#------------------------------------------------------------
 #
-# ATENCION! EL CONTAINER GENERADO ES TOTALMENTE INSEGURO
-#  ya que el acceso SSH *NO* solicita password.
-#
-# Contiene:
+# Realiza:
 #  - configuracion de proxy
-#  - openssh (permite acceso SIN password!)
-#  - EPEL
-#  - postgresql
-#  - instala paquetes basicos
+#  - instala openssh & claves
+#  - instala EPEL
+#  - instala postgresql
+#  - instala paquetes basicos (p/acelerar deploy)
 #
-# Para crear la imagen:
-#  $ docker build --rm=true -t hgdeoro/fts-base .
+# INSTRUCCIONES
+# -------------
 #
-# Para crear y/o lanzar un container:
-#  $ docker run -i -t hgdeoro/fts-base /bin/bash
+# 1) Crear authorized_keys
 #
-# Para lanzar container nuevo en background
-#  $ docker run -d -p 9022:22 hgdeoro/fts-base
+#   ANTES de crear la imagen, crear el archivo 'authorized_keys', con las claves
+#    que estarán autorizadas a ingresar al sistema con el usuario 'ftsender'
+#   Por ejemplo:
+#    $ cp ~/.ssh/authorized_keys .
+#   Otro ejemplo:
+#    $ cat ~/.ssh/*.pub > authorized_keys
+#
+# 2) Generar la imagen
+#
+#   Para crear la imagen:
+#    $ docker build --rm=true -t hgdeoro/fts-base .
+#
+# 3) Crear un container
+#
+#   Para crear y/o lanzar un container:
+#    $ docker run -i -t hgdeoro/fts-base /bin/bash
+#
+#   Para lanzar container nuevo en background
+#    $ docker run -d -p 9022:22 hgdeoro/fts-base
 #
 
 FROM centos:centos6
@@ -109,13 +123,6 @@ RUN adduser ftsender && su -c 'mkdir /home/ftsender/.ssh' ftsender && su -c 'chm
 # Upload authorized_keys
 COPY authorized_keys /home/ftsender/.ssh/authorized_keys
 RUN chmod 0600 /home/ftsender/.ssh/authorized_keys && chown ftsender.ftsender -R /home/ftsender/.ssh
-
-# RUN passwd --delete root
-# RUN passwd --delete ftsender
-
-# Setup ssh
-# RUN cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
-# RUN echo -e "Protocol 2\nPermitRootLogin yes\nPermitEmptyPasswords yes\nGSSAPIAuthentication no\nUsePAM no" > /etc/ssh/sshd_config
 
 # Setup supervisord
 # RUN mkdir -p /etc/supervisor/conf.d /var/log/supervisor/
