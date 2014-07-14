@@ -6,6 +6,7 @@
   tags:
     - asterisk
     - docker
+    - docker-image
 
 - name: Create asterisk user 
   sudo: yes
@@ -18,6 +19,7 @@
   tags:
     - asterisk
     - docker
+    - docker-image
 
 - name: Create Asterisk directory (to install Asterisk)
   sudo: yes
@@ -25,6 +27,7 @@
   tags:
     - asterisk
     - docker
+    - docker-image
 
 - name: Download Asterisk sources
   sudo: yes
@@ -36,6 +39,7 @@
   tags:
     - asterisk
     - docker
+    - docker-image
 
 - name: Check if Asterisk is installed 
   command: test -f /opt/asterisk-11/sbin/asterisk
@@ -44,6 +48,7 @@
   tags:
     - asterisk
     - docker
+    - docker-image
 
 - name: Upload Asterisk build script 
   when: asterisk_installed|failed
@@ -55,6 +60,7 @@
   tags:
     - asterisk
     - docker
+    - docker-image
 
 - name: Run Asterisk build script 
   sudo: yes
@@ -65,6 +71,7 @@
   tags:
     - asterisk
     - docker
+    - docker-image
 
 - name: Upload Asterisk init script
   template: >
@@ -75,6 +82,7 @@
   tags:
     - asterisk
     - docker
+    - docker-image
 
 - name: Register Asterisk service
   service: name=asterisk-11-ftsender enabled=yes
@@ -83,6 +91,7 @@
   tags:
     - asterisk
     - docker
+    - docker-image
 
 #----------------------------------------------------------------------
 # extensions.conf

@@ -12,6 +12,7 @@
   tags:
     - db
     - docker
+    - docker-image
 
 - name: Start PostgreSQL and enable at boot
   sudo: yes
@@ -19,6 +20,7 @@
   tags:
     - db
     - docker
+    - docker-image
 
 - name: Copy pg_hba.conf
   sudo: yes
@@ -85,6 +87,7 @@
   tags:
     - db
     - docker
+    - docker-image
 
 - name: Install plpython if not installed
   command: createlang plpythonu ftsender
@@ -94,6 +97,7 @@
   tags:
     - db
     - docker
+    - docker-image
 
 #----------------------------------------------------------------------
 # Redis
@@ -105,3 +109,4 @@
   tags:
     - db
     - docker
+    - docker-image

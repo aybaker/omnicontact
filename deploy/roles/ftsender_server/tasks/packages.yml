@@ -33,6 +33,7 @@
   yum: name="@Development tools" state=present
   tags:
     - yum
+    - docker-image
 
 - name: Install basic packages
   sudo: yes
@@ -48,6 +49,7 @@
     - ntpdate
   tags:
     - yum
+    - docker-image
 
 - name: Install packages for required services
   sudo: yes
@@ -65,6 +67,7 @@
     - sox
   tags:
     - yum
+    - docker-image
 
 - name: Install packages for buliding Asterisk
   sudo: yes
@@ -84,3 +87,4 @@
   tags:
     - asterisk
     - yum
+    - docker-image
