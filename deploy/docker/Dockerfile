@@ -32,7 +32,7 @@
 #    $ docker run -i -t hgdeoro/fts-base /bin/bash
 #
 #   Para lanzar container nuevo en background, basado en la imagen creada
-#    $ docker run -d -p 9022:22 --name ftsender-dev hgdeoro/fts-base
+#    $ docker run -d -p 9022:22 -p 9088:8088 --name ftsender-dev hgdeoro/fts-base
 #
 # Para bajar un container
 #
@@ -41,6 +41,14 @@
 # Para iniciar un container
 #
 #    $ docker start ftsender-dev
+#
+#----------------------------------------
+# Deploy
+#----------------------------------------
+#
+# Desde el directorio raiz del proyecto, ejecutar:
+#
+#    $ ./build.sh -v -i deploy/hosts-virtual-docker -t docker
 #
 
 FROM centos:centos6
@@ -137,6 +145,7 @@ RUN chmod 0600 /home/ftsender/.ssh/authorized_keys && chown ftsender.ftsender -R
 # COPY supervisor.conf /etc/supervisord.conf
 
 EXPOSE 22
+EXPOSE 8088
 
 # CMD ["/usr/bin/supervisord"]
 CMD ["/sbin/init"]
