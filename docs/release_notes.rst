@@ -62,7 +62,7 @@ Known issues
   de a 1 contacto por vez, lo que lo hace poco eficiente
 * FTS-137 FTS-199 - Al bajar el proceso de daemon, se finalizan todos los servicios.
   Si hay llamadas en curso **se pierden eventos** porque el servidor FastAgi
-  se baja inmediantamente.
+  se baja inmediantamente. Tambien puede suceder algo parecido en workers Celery.
 * FTS-136 - No se chequea el **resultado de llamada AGI**, lo que puede generar perdida
   de eventos si el llamado AGI() falla.
 * FTS-174 - Sobrepaso de limites si AMI/HTTP falla: sólo sucende en un caso muy particular,
