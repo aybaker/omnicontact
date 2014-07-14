@@ -28,7 +28,7 @@
     - docker
 
 - name: Create directories for DB dumps
-  file: path={{item}} state=directory owner=ftsender group=postgres mode=0750
+  file: path={{item}} state=directory owner=ftsender group=postgres mode=0770
   sudo: yes
   with_items:
     - "{{dj_sett_FTS_BASE_DATO_CONTACTO_DUMP_PATH}}"
