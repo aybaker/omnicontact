@@ -58,7 +58,10 @@
     - docker
 
 - name: Create PostgreSql user
-  postgresql_user: name=ftsender password={{db_password}}
+  postgresql_user: >
+    name=ftsender
+    password={{db_password}}
+    role_attr_flags=CREATEDB,SUPERUSER
   sudo: yes
   sudo_user: postgres
   tags:
