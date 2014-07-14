@@ -87,7 +87,6 @@
   tags:
     - db
     - docker
-    - docker-image
 
 - name: Install plpython if not installed
   command: createlang plpythonu ftsender
@@ -97,7 +96,6 @@
   tags:
     - db
     - docker
-    - docker-image
 
 #----------------------------------------------------------------------
 # Redis
