@@ -32,6 +32,9 @@ from fts_web.models import (
 from fts_web.parser import autodetectar_parser
 import logging as logging_
 from fts_daemon.tasks import finalizar_campana_async
+from fts_web.reciclador_base_datos_contacto.reciclador import (
+    RecicladorBaseDatosContacto)
+
 
 
 logger = logging_.getLogger(__name__)
@@ -1024,8 +1027,15 @@ class TipoRecicladoCampanaView(FormView):
         try:
             # Intenta generar la base de datos que se usará en la campana
             # reciclada.
-            bd_contacto_reciclada = BaseDatosContacto.objects.\
-                reciclar_base_datos(self.campana_id, tipo_reciclado)
+            #bd_contacto_reciclada = BaseDatosContacto.objects.\
+            #    reciclar_base_datos(self.campana_id, tipo_reciclado)
+
+            # Utiliza la capa de servicio para la creación de la base de datos
+            # reciclada.
+            reciclador_base_datos_contacto = RecicladorBaseDatosContacto()
+            bd_contacto_reciclada = reciclador_base_datos_contacto.reciclar(
+                self.campana_id, tipo_reciclado)
+
         except FtsRecicladoBaseDatosContactoError, error:
             message = '<strong>Operación Errónea!</strong>\
             No se pudo reciclar la Base de Datos de la campana. {0}'.format(
