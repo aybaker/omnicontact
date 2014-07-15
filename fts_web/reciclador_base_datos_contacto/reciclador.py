@@ -16,6 +16,7 @@ class RecicladorBaseDatosContacto(object):
         return Campana.objects.get(pk=campana_id)
 
     def _obtener_contactos_reciclados(self, campana, tipo_reciclado):
+        # CODE SMELL: el metodo devuelve 2 tipos de datos diferentes
 
         if int(tipo_reciclado) == Campana.TIPO_RECICLADO_TOTAL:
             contactos_reciclados = campana.bd_contacto
@@ -47,6 +48,7 @@ class RecicladorBaseDatosContacto(object):
 
         if not contactos_reciclados:
             logger.warn("El reciclado de base datos no arrojo contactos.")
+            # CODE SMELL: mensajes de log / de excepcion con multiples lineas
             raise FtsRecicladoBaseDatosContactoError("""No se registraron
                 contactos para reciclar con el tipo de reciclado seleccionado
                 .""")
@@ -54,6 +56,9 @@ class RecicladorBaseDatosContacto(object):
         if isinstance(contactos_reciclados, BaseDatosContacto):
             return contactos_reciclados
 
+        # CODE SMELL: se maneja la excepción, pero no se recupera del error!
+        # Seguramente es mejor NO manejar la excepcion, y que quien llame
+        # a este metodo se encargue de manejarla.
         try:
             bd_contacto = BaseDatosContacto.objects.create(
                 nombre='{0} (reciclada)'.format(
@@ -64,8 +69,15 @@ class RecicladorBaseDatosContacto(object):
                     nombre_archivo_importacion,
             )
         except Exception, e:
+            # CODE SMELL: excep de Exception (y no de un tipo específico)
+            # CODE SMELL: no se loguea traceback
             logger.warn("Se produjo un error al intentar crear la base de"
                 " datos. Exception: %s", e)
+            # FIXME: se encapsula una excepcion generica (Exception), o sea,
+            # un error generado por OTRO componente (no por el Reciclador)
+            # en una excepción del reciclador. Las excepciones del Reciclador
+            # deberian indicar un problema en el reciclado en sí.
+            # CODE SMELL: mensajes de log / de excepcion con multiples lineas
             raise FtsRecicladoBaseDatosContactoError("""No se pudo crear
                 la base datos contactos reciclada.""")
         else:
