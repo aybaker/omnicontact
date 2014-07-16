@@ -483,9 +483,9 @@ class CampanaManager(models.Manager):
 
     def obtener_vencidas_para_finalizar(self):
         """GENERADOR, devuelve las campañas que deberían ser finalizadas.
-        SOLO verifica estado, fechas, actuaciones, etc. pero tomando
-        los datos de la BD. O sea, NO tiene en cuenta si la
-        campana posee llamadas en curso o no.
+        SOLO verifica estado, fechas, actuaciones, etc., tomando
+        los datos de la BD, pero NO tiene en cuenta si la
+        campana posee llamadas en curso, etc.
         """
         # Aca necesitamos *localtime*. Usamos `now_ref` como fecha de
         # referencia para todos los calculos
@@ -558,6 +558,9 @@ class CampanaManager(models.Manager):
                     "pero todas son anteriores a hora actual", campana.id)
                 yield campana
                 continue
+
+            # FIXME: falta devolver campañas que terminan en fechas
+            # futuras, pero NO poseen actuaciones para dichas fechas
 
     def reciclar_campana(self, campana_id, bd_contacto):
         """
@@ -682,11 +685,15 @@ class Campana(models.Model):
     ESTADO_FINALIZADA = 4
     """La campaña fue finalizada, automatica o manualmente"""
 
+    ESTADO_DEPURADA = 5
+    """La campaña ya fue depurada"""
+
     ESTADOS = (
         (ESTADO_EN_DEFINICION, '(en definicion)'),
         (ESTADO_ACTIVA, 'Activa'),
         (ESTADO_PAUSADA, 'Pausada'),
         (ESTADO_FINALIZADA, 'Finalizada'),
+        (ESTADO_DEPURADA, 'Depurada'),
     )
 
     nombre = models.CharField(
@@ -754,6 +761,16 @@ class Campana(models.Model):
     def finalizar(self):
         """
         Setea la campaña como finalizada.
+
+        Obviamente, este metodo pasa la campaña al estado FINALIZADA,
+        sin hacer ningun tipo de control 'externo' al modelo, como
+        por ejemplo, si hay llamadas en curso para esta Campaña.
+
+        Antes de implementar FTS-248 (cuando se introdujo ESTADO_DEPURADA),
+        ESTADO_FINALIZADA implicaba que la campaña ya estaba depurada.
+        Ahora (post FTS-248) ESTADO_FINALIZADA significa que la campaña está
+        finalizada (o sea, ya no debe procesarse), pero todavia no está
+        depurada.
         """
         logger.info("Seteando campana %s como ESTADO_FINALIZADA", self.id)
         # TODO: esta bien generar error si el modo actual es ESTADO_FINALIZADA?
