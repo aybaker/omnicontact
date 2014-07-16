@@ -777,7 +777,6 @@ class Campana(models.Model):
                                           la campaña en la BD
         """
         logger.info("Seteando campana %s como ESTADO_FINALIZADA", self.id)
-        # TODO: esta bien generar error si el modo actual es ESTADO_FINALIZADA?
         assert self.puede_finalizarse()
 
         # @@@@@@@@@@ MEJORAR CONTROL DE OPTIMISTICK LOCKING @@@@@@@@@@

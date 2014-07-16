@@ -93,7 +93,7 @@ class FinalizadorDeCampanasVencidasDaemon(object):
 
     def _obtener_finalizadas_por_depurar(self):
         """Devuelve campañas finalizadas pendientes de ser depuradas"""
-        # @@@@@@@@@@ IMPLEMENTAR @@@@@@@@@@
+        return Campana.objects.obtener_finalizadas()
 
     def _finalizar_y_programar_depuracion(self, campana):
         """Finaliza la campaña, y lanza la tarea asincrona para esperar
