@@ -22,6 +22,7 @@ from fts_daemon.poll_daemon.call_status import AsteriskCallStatus, \
 from fts_web.models import Campana
 import logging as _logging
 from fts_daemon import tasks
+from fts_web.errors import FTSOptimisticLockingError
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
 #  el logger se llamara '__main__'
@@ -98,12 +99,13 @@ class FinalizadorDeCampanasVencidasDaemon(object):
         """Finaliza la campaña, y lanza la tarea asincrona para esperar
         a que no haya llamadas en curso y depurar la campaña.
         """
-        # @@@@@@@@@@ CHEQUEAR ESTADO ANTES DE FINALIZAR @@@@@@@@@@
-        campana.finalizar()
+        try:
+            campana.finalizar()
+        except FTSOptimisticLockingError:
+            logger.warn("Se detecto FTSOptimisticLockingError. "
+                        "Ignoraremos este error y continuaremos",
+                        exc_info=True)
 
-        # @@@@@@@@@@ EVITAR RE-PROGRAMAR TAREAS @@@@@@@@@@
-        # O sea, si ya hay una tarea (encolada o ejecutandose) para esta
-        # campaña, entonces NO deberiamos hacer nada!
         # ANTES: tasks.finalizar_campana_async(campana.id)
         tasks.esperar_y_depurar_campana_async(campana.id)
 
@@ -111,12 +113,6 @@ class FinalizadorDeCampanasVencidasDaemon(object):
         """Lanza la tarea asincrona para esperar
         a que no haya llamadas en curso y depurar la campaña.
         """
-        # @@@@@@@@@@ EVITAR RE-PROGRAMAR TAREAS @@@@@@@@@@
-        # O sea, si ya hay una tarea (encolada o ejecutandose) para esta
-        # campaña, entonces NO deberiamos hacer nada!
-        # Un cache local NO sirve, porque por ahi se programó, pero
-        # por algun problema no se procesó. Por esto hay que ir a la fuente,
-        # a Celery (queues y/o workers)
         tasks.esperar_y_depurar_campana_async(campana.id)
 
     def _run_loop(self):
