@@ -44,7 +44,7 @@ def depurar_campana_async(campana_id):
 def esperar_y_depurar_campana(campana_id):
     """Espera a que no haya llamadas en curso, y depura la campaña"""
     # EX: esperar_y_finalizar_campana(campana_id)
-    EsperadorParaDepuracionSegura().esperar_y_finalizar(campana_id)
+    EsperadorParaDepuracionSegura().esperar_y_depurar(campana_id)
 
 
 def esperar_y_depurar_campana_async(campana_id):

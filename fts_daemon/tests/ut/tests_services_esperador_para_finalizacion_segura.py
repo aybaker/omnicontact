@@ -29,7 +29,7 @@ class EsperadorParaDepuracionSeguraTests(FTSenderBaseTest):
         finalizador._finalizar = Mock()
         finalizador._sleep = Mock()
         finalizador._obtener_campana = Mock(return_value=campana)
-        finalizador.esperar_y_finalizar(1)
+        finalizador.esperar_y_depurar(1)
 
         finalizador._refrescar_status.assert_called_once_with()
         finalizador.campana_call_status.get_count_llamadas_de_campana.\
@@ -49,7 +49,7 @@ class EsperadorParaDepuracionSeguraTests(FTSenderBaseTest):
         finalizador.max_loop = 5
 
         with self.assertRaises(CantidadMaximaDeIteracionesSuperada):
-            finalizador.esperar_y_finalizar(1)
+            finalizador.esperar_y_depurar(1)
 
         self.assertTrue(finalizador._refrescar_status.called)
         self.assertTrue(finalizador._sleep.called)
@@ -70,7 +70,7 @@ class EsperadorParaDepuracionSeguraTests(FTSenderBaseTest):
         finalizador.max_loop = 5
 
         with self.assertRaises(CantidadMaximaDeIteracionesSuperada):
-            finalizador.esperar_y_finalizar(1)
+            finalizador.esperar_y_depurar(1)
 
         self.assertTrue(finalizador._refrescar_status.called)
         self.assertTrue(finalizador._sleep.called)
