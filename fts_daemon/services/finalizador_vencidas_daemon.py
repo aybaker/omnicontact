@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
 """
+Servicio encargado de chequear en la BD si hay campañas vencidas.
 
+Campañas vencidas son las que no se procesarán, debido a la fecha fin,
+o combinación de fecha fin / actuaciones.
+
+Estas campañas son finalizadas, y luego se programa una tarea asincrona para
+esperar hasta que puedan ser depuradas (por si hay llamadas en curso).
+
+Este daemon, además, chequea si hay campañas finalizadas pendientes de ser
+depurdas.
 """
 
 from __future__ import unicode_literals
@@ -16,8 +25,11 @@ from fts_daemon import tasks
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
 #  el logger se llamara '__main__'
-logger = _logging.getLogger('fts_daemon.finalizador_de_campana.'
+logger = _logging.getLogger('fts_daemon.services.'
                             'finalizador_vencidas_daemon')
+
+
+# @@@@@@@@@@ PENDIENTE: ARREGLAR TESTS @@@@@@@@@@
 
 
 class FinalizadorDeCampanasVencidasDaemon(object):
@@ -64,12 +76,6 @@ class FinalizadorDeCampanasVencidasDaemon(object):
         """
         return self.campana_call_status.get_count_llamadas_de_campana(campana)
 
-    def _finalizar_async(self, campana):
-        """Finaliza la campaña.
-        Es funcion 'proxy', para facilitar unittest.
-        """
-        tasks.finalizar_campana_async(campana.id)
-
     def _sleep(self):
         """Realiza espera luego de finalizar el loop
         Es funcion 'proxy', para facilitar unittest.
@@ -84,35 +90,76 @@ class FinalizadorDeCampanasVencidasDaemon(object):
         """Devuelve campañas vencidas que hay que finalizar"""
         return Campana.objects.obtener_vencidas_para_finalizar()
 
+    def _obtener_finalizadas_por_depurar(self):
+        """Devuelve campañas finalizadas pendientes de ser depuradas"""
+        # @@@@@@@@@@ IMPLEMENTAR @@@@@@@@@@
+
+    def _finalizar_y_programar_depuracion(self, campana):
+        """Finaliza la campaña, y lanza la tarea asincrona para esperar
+        a que no haya llamadas en curso y depurar la campaña.
+        """
+        # @@@@@@@@@@ CHEQUEAR ESTADO ANTES DE FINALIZAR @@@@@@@@@@
+        campana.finalizar()
+
+        # @@@@@@@@@@ EVITAR RE-PROGRAMAR TAREAS @@@@@@@@@@
+        # O sea, si ya hay una tarea (encolada o ejecutandose) para esta
+        # campaña, entonces NO deberiamos hacer nada!
+        # ANTES: tasks.finalizar_campana_async(campana.id)
+        tasks.esperar_y_depurar_campana_async(campana.id)
+
+    def _programar_depuracion(self, campana):
+        """Lanza la tarea asincrona para esperar
+        a que no haya llamadas en curso y depurar la campaña.
+        """
+        # @@@@@@@@@@ EVITAR RE-PROGRAMAR TAREAS @@@@@@@@@@
+        # O sea, si ya hay una tarea (encolada o ejecutandose) para esta
+        # campaña, entonces NO deberiamos hacer nada!
+        # Un cache local NO sirve, porque por ahi se programó, pero
+        # por algun problema no se procesó. Por esto hay que ir a la fuente,
+        # a Celery (queues y/o workers)
+        tasks.esperar_y_depurar_campana_async(campana.id)
+
     def _run_loop(self):
-        """Ejecuta una iteración (busca campanas, las finaliza)."""
+        """Ejecuta una iteración (busca campanas, las procesa)."""
 
-        first_run = True
-        for campana in self._obtener_vencidas():
+        #
+        # Depuracion
+        #
 
-            if first_run:
-                first_run = False
-                logger.info("Obteniendo status de llamadas en curso")
-                if not self._refrescar_status():
-                    logger.warn("No se pudo refrescar status de llamadas en "
-                        "curso... Por lo tanto, no se finalizara ninguna "
-                        "campana.")
-                    return
-
+        for campana in self._obtener_finalizadas_por_depurar():
             logger.info("Chequeando llamadas en curso para campana %s",
                         campana.id)
-            count_llamadas_en_curso = self._get_count_llamadas(campana)
+            self._programar_depuracion(campana)
 
-            if count_llamadas_en_curso > 0:
-                logger.info("No se finalizara la campana %s porque "
-                    "hay %s llamadas en curso de dicha campana",
-                    campana.id, count_llamadas_en_curso)
-            else:
+        #
+        # Finalizacion
+        #
+
+        campanas_vencidas = list(self._obtener_vencidas())
+
+        if campanas_vencidas:
+            logger.info("Obteniendo status de llamadas en curso")
+            if not self._refrescar_status():
+                logger.warn("No se pudo refrescar status de llamadas en "
+                    "curso... Por lo tanto, no se finalizara ninguna "
+                    "campana.")
+                # Si no se pudo chequear status, cancelamos todo
+                return
+
+            for campana in campanas_vencidas:
+                logger.info("Chequeando llamadas en curso para campana %s",
+                            campana.id)
+                count_llamadas_en_curso = self._get_count_llamadas(campana)
+
+                if count_llamadas_en_curso > 0:
+                    logger.info("No se finalizara la campana %s porque "
+                        "hay %s llamadas en curso de dicha campana",
+                        campana.id, count_llamadas_en_curso)
+                    continue
+
                 logger.info("Finalizando campana %s", campana.id)
-                self._finalizar_async(campana)
-
-        if first_run:
-            # Nunca se entro al for!
+                self._finalizar_y_programar_depuracion(campana)
+        else:
             logger.info("No se encontro campana por finalizar...")
 
     def run(self):
