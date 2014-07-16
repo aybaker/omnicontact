@@ -95,3 +95,8 @@ class FtsDepuraBaseDatoContactoError(FtsError):
     No se pudo depurar la base datos de contactos.
     """
     pass
+
+
+class FTSOptimisticLockingError(FtsError):
+    """Se intentó actualizar un objeto modificado por otro thread/proceso"""
+    pass
