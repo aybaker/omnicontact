@@ -18,7 +18,8 @@ from django.db import models, transaction, connection
 from django.db.models import Sum
 from django.utils.timezone import now
 from fts_web.errors import (FtsRecicladoCampanaError,
-    FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError)
+    FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError,
+    FTSOptimisticLockingError)
 from fts_web.utiles import crear_archivo_en_media_root, upload_to, log_timing
 import pygal
 from pygal.style import Style
@@ -771,13 +772,25 @@ class Campana(models.Model):
         Ahora (post FTS-248) ESTADO_FINALIZADA significa que la campaña está
         finalizada (o sea, ya no debe procesarse), pero todavia no está
         depurada.
+
+        :raise FTSOptimisticLockingError: si otro thread/proceso ha actualizado
+                                          la campaña en la BD
         """
         logger.info("Seteando campana %s como ESTADO_FINALIZADA", self.id)
         # TODO: esta bien generar error si el modo actual es ESTADO_FINALIZADA?
         assert self.puede_finalizarse()
 
+        # @@@@@@@@@@ MEJORAR CONTROL DE OPTIMISTICK LOCKING @@@@@@@@@@
+        # VER DE USAR DatetimeFiled con autoupdate
+
         self.estado = Campana.ESTADO_FINALIZADA
-        self.save()
+        # self.save()
+        update_count = Campana.objects.get(
+            id=self.id, estado=self.estado).update(
+                estado=Campana.ESTADO_FINALIZADA)
+        if update_count != 1:
+            raise(FTSOptimisticLockingError("No se pudo cambiar el estado "
+                                            "de la campana en BD"))
 
     def pausar(self):
         """Setea la campaña como ESTADO_PAUSADA"""
