@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 
 from fts_daemon.services.esperador_para_finalizacion_segura import (
-    EsperadorParaFinalizacionSegura, CantidadMaximaDeIteracionesSuperada
+    EsperadorParaDepuracionSegura, CantidadMaximaDeIteracionesSuperada
 )
 from fts_web.models import Campana
 from fts_web.tests.utiles import FTSenderBaseTest
@@ -16,13 +16,13 @@ from mock import Mock
 logger = _logging.getLogger(__name__)
 
 
-class EsperadorParaFinalizacionSeguraTests(FTSenderBaseTest):
-    """Unit tests de EsperadorParaFinalizacionSegura"""
+class EsperadorParaDepuracionSeguraTests(FTSenderBaseTest):
+    """Unit tests de EsperadorParaDepuracionSegura"""
 
     def test_finaliza_pendiente(self):
         campana = Campana(id=1)
 
-        finalizador = EsperadorParaFinalizacionSegura()
+        finalizador = EsperadorParaDepuracionSegura()
         finalizador._refrescar_status = Mock(return_value=True)
         finalizador.campana_call_status.get_count_llamadas_de_campana = Mock(
             return_value=0)
@@ -39,7 +39,7 @@ class EsperadorParaFinalizacionSeguraTests(FTSenderBaseTest):
     def test_no_finaliza_si_update_de_status_falla(self):
         campana = Campana(id=1)
 
-        finalizador = EsperadorParaFinalizacionSegura()
+        finalizador = EsperadorParaDepuracionSegura()
         finalizador._refrescar_status = Mock(return_value=False)
         finalizador.campana_call_status.get_count_llamadas_de_campana = Mock(
             return_value=0)
@@ -60,7 +60,7 @@ class EsperadorParaFinalizacionSeguraTests(FTSenderBaseTest):
     def test_no_finaliza_con_llamadas_en_curso(self):
         campana = Campana(id=1)
 
-        finalizador = EsperadorParaFinalizacionSegura()
+        finalizador = EsperadorParaDepuracionSegura()
         finalizador._refrescar_status = Mock(return_value=True)
         finalizador.campana_call_status.get_count_llamadas_de_campana = Mock(
             return_value=1)
@@ -80,6 +80,6 @@ class EsperadorParaFinalizacionSeguraTests(FTSenderBaseTest):
 
     def test_obtener_campana(self):
         campana_id = self.crear_campana().id
-        finalizador = EsperadorParaFinalizacionSegura()
+        finalizador = EsperadorParaDepuracionSegura()
         campana = finalizador._obtener_campana(campana_id)
         self.assertEquals(campana_id, campana.id)

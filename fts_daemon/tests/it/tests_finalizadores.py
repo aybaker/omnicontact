@@ -8,7 +8,7 @@ import unittest
 
 from django.utils.unittest.case import skipIf
 from fts_daemon.finalizador_de_campana.finalizadores import \
-    EsperadorParaFinalizacionSegura, DepuradorDeCampanaWorkflow, \
+    EsperadorParaDepuracionSegura, DepuradorDeCampanaWorkflow, \
     CantidadMaximaDeIteracionesSuperada
 from fts_web.models import Campana
 from fts_web.tests.utiles import FTSenderBaseTest
@@ -28,7 +28,7 @@ class DepuradorDeCampanaWorkflowTests(FTSenderBaseTest):
         finalizador.finalizar(campana_id)
 
 
-class EsperadorParaFinalizacionSeguraTests(FTSenderBaseTest):
-    """Integration tests de EsperadorParaFinalizacionSegura"""
+class EsperadorParaDepuracionSeguraTests(FTSenderBaseTest):
+    """Integration tests de EsperadorParaDepuracionSegura"""
 
     # FIXME: implementar

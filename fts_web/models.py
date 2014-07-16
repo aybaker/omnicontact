@@ -1210,7 +1210,7 @@ class Campana(models.Model):
         return lista_actuaciones_validas
 
     # Este metodo ya no existe. La finalizacion fue movida
-    # al controlador/servicio EsperadorParaFinalizacionSegura
+    # al controlador/servicio EsperadorParaDepuracionSegura
     # def procesar_finalizada(self):
     #     """
     #     Este método se encarga de invocar los pasos necesarios en el proceso

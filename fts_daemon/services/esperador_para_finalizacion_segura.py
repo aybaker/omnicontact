@@ -20,7 +20,7 @@ class CantidadMaximaDeIteracionesSuperada(Exception):
     pass
 
 
-class EsperadorParaFinalizacionSegura(object):
+class EsperadorParaDepuracionSegura(object):
     """Espera hasta que no haya llamadas en curos para la campaña a finalizar,
     y cuando no haya llamadas, ejecuta su finalizacion (usando Celery).
     """
