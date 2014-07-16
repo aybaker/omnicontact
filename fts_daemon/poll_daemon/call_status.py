@@ -434,6 +434,7 @@ class AsteriskCallStatus(object):
         try:
             full_status = self._get_status_por_campana()
         except:
+            # FIXME: esta excepcion deberia propagarse!
             logger.exception("Error detectado al ejecutar "
                 "ami_status_tracker.get_status_por_campana(). Los statuses "
                 "no seran actualizados")
