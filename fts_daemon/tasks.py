@@ -13,17 +13,14 @@ import logging
 
 from fts_daemon import fts_celery_daemon
 from fts_daemon.services.depurador_de_campana import (
-    DepuradorDeCampanaWorkflow, EsperadorParaFinalizacionSegura)
+    DepuradorDeCampanaWorkflow
+)
+from fts_daemon.services.esperador_para_finalizacion_segura import (
+    EsperadorParaFinalizacionSegura
+)
 
 
 logger = logging.getLogger(__name__)
-
-# @@@@@@@@@@ EVITAR RE-PROGRAMAR TAREAS @@@@@@@@@@
-# O sea, si ya hay una tarea (encolada o ejecutandose) para esta
-# campaña, entonces NO deberiamos hacer nada!
-# Un cache local NO sirve, porque por ahi se programó, pero
-# por algun problema no se procesó. Por esto hay que ir a la fuente,
-# a Celery (queues y/o workers)
 
 
 # @shared_task -- no funciono...
