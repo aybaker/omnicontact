@@ -105,6 +105,7 @@ class FinalizadorDeCampanasVencidasDaemon(object):
             logger.warn("Se detecto FTSOptimisticLockingError. "
                         "Ignoraremos este error y continuaremos",
                         exc_info=True)
+            return
 
         # ANTES: tasks.finalizar_campana_async(campana.id)
         tasks.esperar_y_depurar_campana_async(campana.id)
