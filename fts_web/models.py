@@ -783,6 +783,9 @@ class Campana(models.Model):
         # @@@@@@@@@@ MEJORAR CONTROL DE OPTIMISTICK LOCKING @@@@@@@@@@
         # VER DE USAR DatetimeFiled con autoupdate
 
+        # @@@@@@@@@@ IMPLEMENTAR UNITTESTS DE ESTO @@@@@@@@@@
+        # VER DE USAR DatetimeFiled con autoupdate
+
         self.estado = Campana.ESTADO_FINALIZADA
         # self.save()
         update_count = Campana.objects.get(
