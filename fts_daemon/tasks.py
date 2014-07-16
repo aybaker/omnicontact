@@ -15,7 +15,7 @@ from fts_daemon import fts_celery_daemon
 from fts_daemon.services.depurador_de_campana import (
     DepuradorDeCampanaWorkflow
 )
-from fts_daemon.services.esperador_para_finalizacion_segura import (
+from fts_daemon.services.esperador_para_depuracion_segura import (
     EsperadorParaDepuracionSegura
 )
 

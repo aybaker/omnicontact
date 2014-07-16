@@ -4,7 +4,7 @@
 
 from __future__ import unicode_literals
 
-from fts_daemon.services.esperador_para_finalizacion_segura import (
+from fts_daemon.services.esperador_para_depuracion_segura import (
     EsperadorParaDepuracionSegura, CantidadMaximaDeIteracionesSuperada
 )
 from fts_web.models import Campana
