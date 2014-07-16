@@ -21,27 +21,31 @@ logger = logging.getLogger(__name__)
 
 # @shared_task -- no funciono...
 @fts_celery_daemon.app.task(ignore_result=True)
-def finalizar_campana(campana_id):
-    """Finaliza la campaña"""
+def depurar_campana(campana_id):
+    """Depura la campaña"""
+    # EX: finalizar_campana(campana_id)
     FinalizadorDeCampanaWorkflow().finalizar(campana_id)
 
 
-def finalizar_campana_async(campana_id):
-    """Finaliza la campaña.
+def depurar_campana_async(campana_id):
+    """Depura la campaña.
     Realiza llamada asyncrona.
     """
-    return finalizar_campana.delay(campana_id)
+    # EX: finalizar_campana_async(campana_id)
+    return depurar_campana.delay(campana_id)
 
 
 # @shared_task -- no funciono...
 @fts_celery_daemon.app.task(ignore_result=True)
-def esperar_y_finalizar_campana(campana_id):
-    """Espera a que no haya llamadas en curso, y finaliza la campaña"""
+def esperar_y_depurar_campana(campana_id):
+    """Espera a que no haya llamadas en curso, y depura la campaña"""
+    # EX: esperar_y_finalizar_campana(campana_id)
     EsperadorParaFinalizacionSegura().esperar_y_finalizar(campana_id)
 
 
-def esperar_y_finalizar_campana_async(campana_id):
-    """Espera a que no haya llamadas en curso, y finaliza la campaña.
+def esperar_y_depurar_campana_async(campana_id):
+    """Espera a que no haya llamadas en curso, y depura la campaña.
     Realiza llamada asyncrona.
     """
-    return esperar_y_finalizar_campana.delay(campana_id)
+    # EX: esperar_y_finalizar_campana_async(campana_id)
+    return esperar_y_depurar_campana.delay(campana_id)
