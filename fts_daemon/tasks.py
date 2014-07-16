@@ -12,8 +12,8 @@ from __future__ import unicode_literals
 import logging
 
 from fts_daemon import fts_celery_daemon
-from fts_daemon.finalizador_de_campana.finalizadores \
-    import FinalizadorDeCampanaWorkflow, EsperadorParaFinalizacionSegura
+from fts_daemon.services.depurador_de_campana import FinalizadorDeCampanaWorkflow, \
+    EsperadorParaFinalizacionSegura
 
 
 logger = logging.getLogger(__name__)

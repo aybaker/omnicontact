@@ -5,8 +5,8 @@
 
 from __future__ import unicode_literals
 
-from fts_daemon.finalizador_de_campana.finalizador_vencidas_daemon \
-    import FinalizadorDeCampanasVencidasDaemon
+from fts_daemon.services.finalizador_vencidas_daemon import \
+    FinalizadorDeCampanasVencidasDaemon
 from fts_web.models import Campana
 from fts_web.tests.utiles import FTSenderBaseTest
 import logging as _logging

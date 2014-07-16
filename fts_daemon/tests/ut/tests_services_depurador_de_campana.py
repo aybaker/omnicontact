@@ -4,9 +4,10 @@
 
 from __future__ import unicode_literals
 
-from fts_daemon.finalizador_de_campana.finalizadores import \
-    EsperadorParaFinalizacionSegura, FinalizadorDeCampanaWorkflow, \
+from fts_daemon.services.depurador_de_campana import (
+    FinalizadorDeCampanaWorkflow, EsperadorParaFinalizacionSegura,
     CantidadMaximaDeIteracionesSuperada
+)
 from fts_web.models import Campana
 from fts_web.tests.utiles import FTSenderBaseTest
 import logging as _logging
