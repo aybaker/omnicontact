@@ -9,8 +9,8 @@ import time
 
 from django.conf import settings
 from django.core.cache import get_cache
-from fts_daemon import tasks
 from fts_daemon import llamador_contacto
+from fts_daemon import tasks
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
 from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
@@ -18,6 +18,7 @@ from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
     TodosLosContactosPendientesEstanEnCursoError
 from fts_daemon.poll_daemon.originate_throttler import OriginateThrottler
 from fts_daemon.poll_daemon.statistics import StatisticsService
+from fts_web.errors import FTSOptimisticLockingError
 import logging as _logging
 
 
@@ -95,10 +96,15 @@ class RoundRobinTracker(object):
         self._statistics_service.publish_statistics(stats)
 
     def _finalizar_y_programar_depuracion(self, campana):
-        """
-        Finaliza la campaña, y lanza tarea asíncrona depurarla
-        """
-        campana.finalizar()
+        """Finaliza la campaña, y lanza tarea asíncrona para depurarla"""
+        try:
+            campana.finalizar()
+        except FTSOptimisticLockingError:
+            logger.warn("Se detecto FTSOptimisticLockingError. "
+                        "Ignoraremos este error, y NO se programara "
+                        "la depurcion", exc_info=True)
+            return
+
         tasks.esperar_y_depurar_campana_async(campana.id)
 
     #
