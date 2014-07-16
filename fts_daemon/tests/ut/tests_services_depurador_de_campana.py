@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 
 from fts_daemon.services.depurador_de_campana import (
-    FinalizadorDeCampanaWorkflow, EsperadorParaFinalizacionSegura,
+    DepuradorDeCampanaWorkflow, EsperadorParaFinalizacionSegura,
     CantidadMaximaDeIteracionesSuperada
 )
 from fts_web.models import Campana
@@ -17,15 +17,15 @@ from mock import Mock
 logger = _logging.getLogger(__name__)
 
 
-class FinalizadorDeCampanaWorkflowTests(FTSenderBaseTest):
-    """Unit tests de FinalizadorDeCampanaWorkflow"""
+class DepuradorDeCampanaWorkflowTests(FTSenderBaseTest):
+    """Unit tests de DepuradorDeCampanaWorkflow"""
 
     def test_llama_a_finaliza_con_campana_activa(self):
         campana = Campana(id=1)
         campana.save = Mock()
         campana.estado = Campana.ESTADO_ACTIVA
 
-        finalizador = FinalizadorDeCampanaWorkflow()
+        finalizador = DepuradorDeCampanaWorkflow()
         finalizador._obtener_campana = Mock(return_value=campana)
         finalizador._finalizar = Mock()
 
@@ -39,7 +39,7 @@ class FinalizadorDeCampanaWorkflowTests(FTSenderBaseTest):
         campana = Campana(id=1)
         campana.estado = Campana.ESTADO_FINALIZADA
 
-        finalizador = FinalizadorDeCampanaWorkflow()
+        finalizador = DepuradorDeCampanaWorkflow()
         finalizador._obtener_campana = Mock(return_value=campana)
         finalizador._finalizar = Mock()
 
@@ -51,7 +51,7 @@ class FinalizadorDeCampanaWorkflowTests(FTSenderBaseTest):
 
     def test_obtener_campana(self):
         campana_id = self.crear_campana().id
-        finalizador = FinalizadorDeCampanaWorkflow()
+        finalizador = DepuradorDeCampanaWorkflow()
         campana = finalizador._obtener_campana(campana_id)
         self.assertEquals(campana_id, campana.id)
 

@@ -18,7 +18,7 @@ import logging as _logging
 logger = _logging.getLogger(__name__)
 
 
-class FinalizadorDeCampanaWorkflow(object):
+class DepuradorDeCampanaWorkflow(object):
     """Realiza los chequeos y pasos necesarios para finalizar una campaña.
     El metodo `finalizar()` debe ser llamddo, y pasar el ID de la campaña
     a finalizar por parametro."""

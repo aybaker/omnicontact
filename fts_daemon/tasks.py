@@ -13,7 +13,7 @@ import logging
 
 from fts_daemon import fts_celery_daemon
 from fts_daemon.services.depurador_de_campana import (
-    FinalizadorDeCampanaWorkflow, EsperadorParaFinalizacionSegura)
+    DepuradorDeCampanaWorkflow, EsperadorParaFinalizacionSegura)
 
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 def depurar_campana(campana_id):
     """Depura la campaña"""
     # EX: finalizar_campana(campana_id)
-    FinalizadorDeCampanaWorkflow().finalizar(campana_id)
+    DepuradorDeCampanaWorkflow().finalizar(campana_id)
 
 
 def depurar_campana_async(campana_id):

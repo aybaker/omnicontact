@@ -8,7 +8,7 @@ import unittest
 
 from django.utils.unittest.case import skipIf
 from fts_daemon.finalizador_de_campana.finalizadores import \
-    EsperadorParaFinalizacionSegura, FinalizadorDeCampanaWorkflow, \
+    EsperadorParaFinalizacionSegura, DepuradorDeCampanaWorkflow, \
     CantidadMaximaDeIteracionesSuperada
 from fts_web.models import Campana
 from fts_web.tests.utiles import FTSenderBaseTest
@@ -19,12 +19,12 @@ from mock import Mock
 logger = _logging.getLogger(__name__)
 
 
-class FinalizadorDeCampanaWorkflowTests(FTSenderBaseTest):
-    """Integration tests de FinalizadorDeCampanaWorkflow"""
+class DepuradorDeCampanaWorkflowTests(FTSenderBaseTest):
+    """Integration tests de DepuradorDeCampanaWorkflow"""
 
     def test_finaliza_campana(self):
         campana_id = self.crear_campana_activa().id
-        finalizador = FinalizadorDeCampanaWorkflow()
+        finalizador = DepuradorDeCampanaWorkflow()
         finalizador.finalizar(campana_id)
 
 
