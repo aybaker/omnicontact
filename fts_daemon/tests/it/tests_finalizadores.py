@@ -7,9 +7,7 @@ from __future__ import unicode_literals
 import unittest
 
 from django.utils.unittest.case import skipIf
-from fts_daemon.finalizador_de_campana.finalizadores import \
-    EsperadorParaDepuracionSegura, DepuradorDeCampanaWorkflow, \
-    CantidadMaximaDeIteracionesSuperada
+from fts_daemon.services.depurador_de_campana import DepuradorDeCampanaWorkflow
 from fts_web.models import Campana
 from fts_web.tests.utiles import FTSenderBaseTest
 import logging as _logging

@@ -75,7 +75,7 @@ class EsperadorParaDepuracionSegura(object):
                 return
 
             if campana.estado != Campana.ESTADO_FINALIZADA:
-                logger.error("La campaña a procesar NO ha sido finalizada",
+                logger.error("La campaña a depurar NO ha sido finalizada: %s",
                              campana_id)
                 return
 
