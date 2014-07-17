@@ -1022,14 +1022,22 @@ class TipoRecicladoCampanaView(FormView):
             kwargs)
 
     def form_valid(self, form):
-        tipo_reciclado = form.cleaned_data['tipo_reciclado']
+        # TODO: Validar y mostrar error si no lo hace.
+        tipo_reciclado_unico = list(form.cleaned_data['tipo_reciclado_unico'])
+        tipo_reciclado_conjunto = form.cleaned_data['tipo_reciclado_conjunto']
+        assert not (len(tipo_reciclado_unico) and len(tipo_reciclado_conjunto))
+        assert (len(tipo_reciclado_unico) or len(tipo_reciclado_conjunto))
+
+        tipos_reciclado = tipo_reciclado_unico
+        if tipo_reciclado_conjunto:
+            tipos_reciclado = tipo_reciclado_conjunto
 
         try:
             # Utiliza la capa de servicio para la creación de la base de datos
             # reciclada que usara la campana que se está reciclando.
             reciclador_base_datos_contacto = RecicladorBaseDatosContacto()
             bd_contacto_reciclada = reciclador_base_datos_contacto.reciclar(
-                self.campana_id, tipo_reciclado)
+                self.campana_id, tipos_reciclado)
 
         except FtsRecicladoBaseDatosContactoError, error:
             message = '<strong>Operación Errónea!</strong>\
