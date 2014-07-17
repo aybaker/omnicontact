@@ -789,12 +789,6 @@ class Campana(models.Model):
         logger.info("Seteando campana %s como ESTADO_FINALIZADA", self.id)
         assert self.puede_finalizarse()
 
-        # @@@@@@@@@@ MEJORAR CONTROL DE OPTIMISTICK LOCKING @@@@@@@@@@
-        # VER DE USAR DatetimeFiled con autoupdate
-
-        # @@@@@@@@@@ IMPLEMENTAR UNITTESTS DE ESTO @@@@@@@@@@
-        # VER DE USAR DatetimeFiled con autoupdate
-
         update_count = Campana.objects.filter(
             id=self.id, estado=self.estado).update(
                 estado=Campana.ESTADO_FINALIZADA)
