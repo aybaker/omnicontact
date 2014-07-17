@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout, Submit
+from crispy_forms.layout import Field, Layout, Submit, Div
 from fts_web.models import (
     Actuacion, AgenteGrupoAtencion, BaseDatosContacto,
     Campana, Calificacion, GrupoAtencion, Opcion
@@ -182,15 +182,6 @@ class ConfirmaForm(forms.ModelForm):
 
 
 class TipoRecicladoForm(forms.Form):
-    SELECCIONE = (
-        ('SELECCIONE', 'SELECCIONE'),
-    )
-    seleccione = forms.ChoiceField(
-        choices=SELECCIONE,
-        widget=forms.RadioSelect,
-        required=False,
-    )
-
     tipo_reciclado_unico = forms.ChoiceField(
         choices=Campana.TIPO_RECICLADO_UNICO,
         widget=forms.RadioSelect,
@@ -215,9 +206,9 @@ class TipoRecicladoForm(forms.Form):
         )
 
         self.helper.layout = Layout(
-            Field('tipo_reciclado_unico'),
-            Field('seleccione'),
-            Field('tipo_reciclado_conjunto'))
+            Field('tipo_reciclado_unico', css_class='radio_reciclado'),
+            Field('tipo_reciclado_conjunto', css_class='checkboxs_reciclado'),
+        )
 
 
 #=========================================================================
