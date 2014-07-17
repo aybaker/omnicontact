@@ -23,9 +23,13 @@ class DepuradorDeCampanaWorkflowIntegTests(FTSenderBaseTest):
     def test_depura_campana_finalizada(self):
         campana = self.crear_campana_finalizada()
         depurador = DepuradorDeCampanaWorkflow()
-        depurada = depurador.depurar(campana.id)
 
+        # -----
+
+        depurada = depurador.depurar(campana.id)
         self.assertTrue(depurada)
+        self.assertEquals(Campana.objects.get(pk=campana.id).estado,
+                          Campana.ESTADO_DEPURADA)
 
 
 class EsperadorParaDepuracionSeguraIntegTests(FTSenderBaseTest):
