@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Tests del modulo fts_daemon.finalizador_de_campana.finalizadores"""
+"""Tests del modulo fts_daemon.services.esperador_para_depuracion_segura"""
 
 from __future__ import unicode_literals
 

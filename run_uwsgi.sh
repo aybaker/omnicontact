@@ -24,7 +24,7 @@ uwsgi \
     $STATIC_MAP \
     --mule=${BASEDIR}/fts_daemon/poll_daemon/main.py \
     --mule=${BASEDIR}/fts_daemon/fastagi_daemon.py \
-    --mule=${BASEDIR}/fts_daemon/finalizador_de_campana/finalizador_vencidas_daemon.py \
+    --mule=${BASEDIR}/fts_daemon/services/finalizador_vencidas_daemon.py \
     --attach-daemon=${BASEDIR}/celery_worker_finalizar_campana.sh \
     --attach-daemon=${BASEDIR}/celery_worker_esperar_y_finalizar_campana.sh \
     $*
