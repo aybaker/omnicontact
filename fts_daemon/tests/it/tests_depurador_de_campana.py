@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-"""Tests del modulo fts_daemon.finalizador_de_campana.finalizadores"""
+"""Tests del modulo fts_daemon.services.depurador_de_campana"""
 
 from __future__ import unicode_literals
-
-import unittest
 
 from django.test.utils import override_settings
 from django.utils.unittest.case import skipIf
@@ -12,7 +10,6 @@ from fts_daemon.services.depurador_de_campana import DepuradorDeCampanaWorkflow
 from fts_web.models import Campana
 from fts_web.tests.utiles import FTSenderBaseTest
 import logging as _logging
-from mock import Mock
 import tempfile
 
 
@@ -45,3 +42,6 @@ class EsperadorParaDepuracionSeguraIntegTests(FTSenderBaseTest):
     """Integration tests de EsperadorParaDepuracionSegura"""
 
     # FIXME: implementar
+    @skipIf(True, "Implementar test")
+    def test(self):
+        pass
