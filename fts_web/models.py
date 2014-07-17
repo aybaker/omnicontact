@@ -759,6 +759,16 @@ class Campana(models.Model):
         """
         return self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
 
+    def puede_depurarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no depurar.
+
+        Actualmente solo chequea el estado de la campaña.
+
+        :returns: bool - True si la campaña puede depurarse
+        """
+        return self.estado == Campana.ESTADO_FINALIZADA
+
     def finalizar(self):
         """
         Setea la campaña como finalizada.
@@ -785,14 +795,22 @@ class Campana(models.Model):
         # @@@@@@@@@@ IMPLEMENTAR UNITTESTS DE ESTO @@@@@@@@@@
         # VER DE USAR DatetimeFiled con autoupdate
 
-        self.estado = Campana.ESTADO_FINALIZADA
-        # self.save()
-        update_count = Campana.objects.get(
+        update_count = Campana.objects.filter(
             id=self.id, estado=self.estado).update(
                 estado=Campana.ESTADO_FINALIZADA)
         if update_count != 1:
             raise(FTSOptimisticLockingError("No se pudo cambiar el estado "
                                             "de la campana en BD"))
+        self.estado = Campana.ESTADO_FINALIZADA
+        # self.save()
+
+    def depurar(self):
+        """Setea la campaña como depurada"""
+        # NO hace falta chequear por optimistick locking, ya que hay
+        # 1 solo proceso que pasa del estado FINALIZADA a DEPURADA
+        # (el depurador, ejceutado en Celery)
+        self.estado = Campana.ESTADO_DEPURADA
+        self.save()
 
     def pausar(self):
         """Setea la campaña como ESTADO_PAUSADA"""
@@ -988,7 +1006,7 @@ class Campana(models.Model):
         requerimientos de `_plpython_recalcular_aedc_completamente()`
         (ej: transacciones, etc.)
         """
-        assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
+        assert self.estado == Campana.ESTADO_FINALIZADA
         AgregacionDeEventoDeContacto.objects.\
             _plpython_recalcular_aedc_completamente(self)
 
