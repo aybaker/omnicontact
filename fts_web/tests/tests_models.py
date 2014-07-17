@@ -141,8 +141,12 @@ class BaseDatosContactoTest(FTSenderBaseTest):
             BaseDatosContacto.objects.reciclar_base_datos(campana.pk,
                 Campana.TIPO_RECICLADO_PENDIENTES)
 
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir(),
+                       MEDIA_ROOT=_tmpdir())
     def test_reciclar_base_datos_pendientes(self):
         campana = self._crea_campana_emula_procesamiento()
+
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
 
         bd_contacto_reciclada = BaseDatosContacto.objects.reciclar_base_datos(
             campana.pk, Campana.TIPO_RECICLADO_PENDIENTES)
