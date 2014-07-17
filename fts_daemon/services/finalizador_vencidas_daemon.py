@@ -103,8 +103,6 @@ class FinalizadorDeCampanasVencidasDaemon(object):
         #
 
         for campana in self._obtener_finalizadas_por_depurar():
-            logger.info("Chequeando llamadas en curso para campana %s",
-                        campana.id)
             self._programar_depuracion(campana)
 
         #
