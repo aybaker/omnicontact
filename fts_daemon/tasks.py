@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 def depurar_campana(campana_id):
     """Depura la campaña"""
     # EX: finalizar_campana(campana_id)
-    DepuradorDeCampanaWorkflow().finalizar(campana_id)
+    DepuradorDeCampanaWorkflow().depurar(campana_id)
 
 
 def depurar_campana_async(campana_id):

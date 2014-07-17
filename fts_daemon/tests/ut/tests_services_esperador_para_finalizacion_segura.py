@@ -19,67 +19,77 @@ logger = _logging.getLogger(__name__)
 class EsperadorParaDepuracionSeguraTests(FTSenderBaseTest):
     """Unit tests de EsperadorParaDepuracionSegura"""
 
-    def test_finaliza_pendiente(self):
+    def test_depura_finalizada(self):
         campana = Campana(id=1)
+        campana.estado = Campana.ESTADO_FINALIZADA
 
-        finalizador = EsperadorParaDepuracionSegura()
-        finalizador._refrescar_status = Mock(return_value=True)
-        finalizador.campana_call_status.get_count_llamadas_de_campana = Mock(
+        depurador = EsperadorParaDepuracionSegura()
+        depurador._refrescar_status = Mock(return_value=True)
+        depurador.campana_call_status.get_count_llamadas_de_campana = Mock(
             return_value=0)
-        finalizador._finalizar = Mock()
-        finalizador._sleep = Mock()
-        finalizador._obtener_campana = Mock(return_value=campana)
-        finalizador.esperar_y_depurar(1)
+        depurador._depurar = Mock()
+        depurador._sleep = Mock()
+        depurador._obtener_campana = Mock(return_value=campana)
 
-        finalizador._refrescar_status.assert_called_once_with()
-        finalizador.campana_call_status.get_count_llamadas_de_campana.\
+        # -----
+
+        depurador.esperar_y_depurar(1)
+
+        depurador._refrescar_status.assert_called_once_with()
+        depurador.campana_call_status.get_count_llamadas_de_campana.\
             assert_called_once_with(campana)
-        finalizador._finalizar.assert_called_once_with(1)
+        depurador._depurar.assert_called_once_with(1)
 
-    def test_no_finaliza_si_update_de_status_falla(self):
+    def test_no_depura_si_update_de_status_falla(self):
         campana = Campana(id=1)
+        campana.estado = Campana.ESTADO_FINALIZADA
 
-        finalizador = EsperadorParaDepuracionSegura()
-        finalizador._refrescar_status = Mock(return_value=False)
-        finalizador.campana_call_status.get_count_llamadas_de_campana = Mock(
+        depurador = EsperadorParaDepuracionSegura()
+        depurador._refrescar_status = Mock(return_value=False)
+        depurador.campana_call_status.get_count_llamadas_de_campana = Mock(
             return_value=0)
-        finalizador._finalizar = Mock()
-        finalizador._sleep = Mock()
-        finalizador._obtener_campana = Mock(return_value=campana)
-        finalizador.max_loop = 5
+        depurador._depurar = Mock()
+        depurador._sleep = Mock()
+        depurador._obtener_campana = Mock(return_value=campana)
+        depurador.max_loop = 5
+
+        # -----
 
         with self.assertRaises(CantidadMaximaDeIteracionesSuperada):
-            finalizador.esperar_y_depurar(1)
+            depurador.esperar_y_depurar(1)
 
-        self.assertTrue(finalizador._refrescar_status.called)
-        self.assertTrue(finalizador._sleep.called)
-        self.assertFalse(finalizador.campana_call_status.\
+        self.assertTrue(depurador._refrescar_status.called)
+        self.assertTrue(depurador._sleep.called)
+        self.assertFalse(depurador.campana_call_status.\
                          get_count_llamadas_de_campana.called)
-        self.assertFalse(finalizador._finalizar.called)
+        self.assertFalse(depurador._depurar.called)
 
-    def test_no_finaliza_con_llamadas_en_curso(self):
+    def test_no_depura_con_llamadas_en_curso(self):
         campana = Campana(id=1)
+        campana.estado = Campana.ESTADO_FINALIZADA
 
-        finalizador = EsperadorParaDepuracionSegura()
-        finalizador._refrescar_status = Mock(return_value=True)
-        finalizador.campana_call_status.get_count_llamadas_de_campana = Mock(
+        depurador = EsperadorParaDepuracionSegura()
+        depurador._refrescar_status = Mock(return_value=True)
+        depurador.campana_call_status.get_count_llamadas_de_campana = Mock(
             return_value=1)
-        finalizador._finalizar = Mock()
-        finalizador._sleep = Mock()
-        finalizador._obtener_campana = Mock(return_value=campana)
-        finalizador.max_loop = 5
+        depurador._depurar = Mock()
+        depurador._sleep = Mock()
+        depurador._obtener_campana = Mock(return_value=campana)
+        depurador.max_loop = 5
+
+        # -----
 
         with self.assertRaises(CantidadMaximaDeIteracionesSuperada):
-            finalizador.esperar_y_depurar(1)
+            depurador.esperar_y_depurar(1)
 
-        self.assertTrue(finalizador._refrescar_status.called)
-        self.assertTrue(finalizador._sleep.called)
-        self.assertTrue(finalizador.campana_call_status.\
+        self.assertTrue(depurador._refrescar_status.called)
+        self.assertTrue(depurador._sleep.called)
+        self.assertTrue(depurador.campana_call_status.\
                          get_count_llamadas_de_campana.called)
-        self.assertFalse(finalizador._finalizar.called)
+        self.assertFalse(depurador._depurar.called)
 
     def test_obtener_campana(self):
         campana_id = self.crear_campana().id
-        finalizador = EsperadorParaDepuracionSegura()
-        campana = finalizador._obtener_campana(campana_id)
+        depurador = EsperadorParaDepuracionSegura()
+        campana = depurador._obtener_campana(campana_id)
         self.assertEquals(campana_id, campana.id)

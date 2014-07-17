@@ -17,7 +17,7 @@ from mock import Mock
 logger = _logging.getLogger(__name__)
 
 
-class DepuradorDeCampanaWorkflowTests(FTSenderBaseTest):
+class DepuradorDeCampanaWorkflowIntegTests(FTSenderBaseTest):
     """Integration tests de DepuradorDeCampanaWorkflow"""
 
     def test_depura_campana_finalizada(self):
@@ -28,7 +28,7 @@ class DepuradorDeCampanaWorkflowTests(FTSenderBaseTest):
         self.assertTrue(depurada)
 
 
-class EsperadorParaDepuracionSeguraTests(FTSenderBaseTest):
+class EsperadorParaDepuracionSeguraIntegTests(FTSenderBaseTest):
     """Integration tests de EsperadorParaDepuracionSegura"""
 
     # FIXME: implementar
