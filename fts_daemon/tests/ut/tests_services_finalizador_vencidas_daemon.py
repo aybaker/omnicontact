@@ -22,19 +22,21 @@ class FinalizadorDeCampanasVencidasDaemonTests(FTSenderBaseTest):
     def test_finaliza_vencida(self):
         """Testea que finaliza campanas vencidas"""
         campana = Campana(id=1)
+        campana.estado = Campana.ESTADO_ACTIVA
         finalizador = FinalizadorDeCampanasVencidasDaemon(max_loop=1,
                                                           initial_wait=0)
         finalizador._obtener_vencidas = Mock(return_value=[campana])
         finalizador._refrescar_status = Mock(return_value=True)
         finalizador._get_count_llamadas = Mock(return_value=0)
-        finalizador._finalizar_async = Mock(return_value=None)
+        finalizador._finalizar_y_programar_depuracion = Mock(return_value=None)
 
         finalizador.run()
 
         finalizador._obtener_vencidas.assert_called_once_with()
         finalizador._refrescar_status.assert_called_once_with()
         finalizador._get_count_llamadas.assert_called_once_with(campana)
-        finalizador._finalizar_async.assert_called_once_with(campana)
+        finalizador._finalizar_y_programar_depuracion.assert_called_once_with(
+            campana)
 
     def test_no_finaliza_si_hay_llamada_en_curso(self):
         """Testea que NO finaliza campana si posee llamadas en curso"""
