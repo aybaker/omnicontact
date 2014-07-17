@@ -21,10 +21,10 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 app.conf.update(
     CELERY_ROUTES={
-        'fts_daemon.tasks.finalizar_campana': {
+        'fts_daemon.tasks.depurar_campana': {
             'queue': 'finalizar_campana'
         },
-        'fts_daemon.tasks.esperar_y_finalizar_campana': {
+        'fts_daemon.tasks.esperar_y_depurar_campana': {
             'queue': 'esperar_y_finalizar_campana'
         },
     },
