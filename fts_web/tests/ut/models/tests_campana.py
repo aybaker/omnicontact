@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import datetime
 
+from django.utils.unittest.case import skipIf
 from fts_web.models import Campana, Actuacion
 from fts_web.tests.utiles import FTSenderBaseTest
 
@@ -110,6 +111,7 @@ class ObtenerVencidasParaFinalizarTest(FTSenderBaseTest):
         self.assertEqual(len(campanas), 1)
         self.assertEqual(campanas[0].id, campana_a_finalizar.id)
 
+    @skipIf(True, "Falta implementar")
     def test_devuelve_de_manana_sin_actuaciones(self):
         # FIXME: implementar tests y funcionalidad!
         pass

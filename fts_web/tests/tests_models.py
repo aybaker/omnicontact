@@ -17,6 +17,8 @@ from django.test.client import Client
 from django.test.utils import override_settings
 from django.utils.unittest.case import skipUnless, skipIf
 from fts_daemon.models import EventoDeContacto
+from fts_daemon.services import depurador_de_campana
+from fts_daemon.services.depurador_de_campana import DepuradorDeCampanaWorkflow
 from fts_web.errors import (FtsRecicladoCampanaError,
     FtsRecicladoBaseDatosContactoError)
 from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
@@ -874,7 +876,8 @@ class CampanaTest(FTSenderBaseTest):
         campana = self._crea_campana_emula_procesamiento(
             evento=EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL,
             cantidad_eventos=20)
-        campana.procesar_finalizada()
+        # campana.procesar_finalizada()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
         contactos_pendientes = campana.obtener_contactos_pendientes()
         self.assertEqual(len(contactos_pendientes), 80)
 
@@ -890,7 +893,8 @@ class CampanaTest(FTSenderBaseTest):
         campana = self._crea_campana_emula_procesamiento(
             evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
             cantidad_eventos=20)
-        campana.procesar_finalizada()
+        # campana.procesar_finalizada()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
         contactos_ocupados = campana.obtener_contactos_ocupados()
         self.assertEqual(len(contactos_ocupados), 20)
 
@@ -906,7 +910,8 @@ class CampanaTest(FTSenderBaseTest):
         campana = self._crea_campana_emula_procesamiento(
             evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
             cantidad_eventos=20)
-        campana.procesar_finalizada()
+        # campana.procesar_finalizada()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
         contactos_no_contestados = campana.obtener_contactos_no_contestados()
         self.assertEqual(len(contactos_no_contestados), 20)
 
@@ -922,7 +927,8 @@ class CampanaTest(FTSenderBaseTest):
         campana = self._crea_campana_emula_procesamiento(
             evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION,
             cantidad_eventos=20)
-        campana.procesar_finalizada()
+        # campana.procesar_finalizada()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
         contactos_numeros_erroneos = campana.obtener_contactos_numero_erroneo()
         self.assertEqual(len(contactos_numeros_erroneos), 20)
 
@@ -938,7 +944,8 @@ class CampanaTest(FTSenderBaseTest):
         campana = self._crea_campana_emula_procesamiento(
             evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
             cantidad_eventos=20)
-        campana.procesar_finalizada()
+        # campana.procesar_finalizada()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
         contactos_llamadas_erroneas = \
             campana.obtener_contactos_llamada_erronea()
         self.assertEqual(len(contactos_llamadas_erroneas), 20)
