@@ -17,12 +17,11 @@ from __future__ import unicode_literals
 import time
 
 from django.conf import settings
-from fts_daemon.poll_daemon.call_status import AsteriskCallStatus, \
-    CampanaCallStatus
-from fts_web.models import Campana
-import logging as _logging
 from fts_daemon import tasks
 from fts_web.errors import FTSOptimisticLockingError
+from fts_web.models import Campana
+import logging as _logging
+
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
 #  el logger se llamara '__main__'
@@ -30,18 +29,11 @@ logger = _logging.getLogger('fts_daemon.services.'
                             'finalizador_vencidas_daemon')
 
 
-# @@@@@@@@@@ PENDIENTE: ARREGLAR TESTS @@@@@@@@@@
-
-
 class FinalizadorDeCampanasVencidasDaemon(object):
     """Implementa Daemon finalizador de campañas vencidas."""
 
-    def __init__(self, max_loop=0, initial_wait=None, campana_call_status=None,
-        asterisk_call_status=None):
-        """Constructor del finalizador de campañas
-        :param campana_call_status: instancia de `CampanaCallStatus`
-        :param asterisk_call_status: instancia de `AsteriskCallStatus`
-        """
+    def __init__(self, max_loop=0, initial_wait=None):
+        """Constructor del finalizador de campañas"""
 
         self.max_loop = max_loop or settings.FTS_FDCD_MAX_LOOP_COUNT
 
@@ -55,27 +47,9 @@ class FinalizadorDeCampanasVencidasDaemon(object):
             time.sleep(self.initial_wait)
             logger.info("Espera inicial finalizada")
 
-        self.campana_call_status = campana_call_status or CampanaCallStatus()
-
-        self.asterisk_call_status = asterisk_call_status or \
-            AsteriskCallStatus(self.campana_call_status)
-
     #----------------------------------------------------------------------
     # METODOS PROXY (para faclitar unittest)
     #----------------------------------------------------------------------
-
-    def _refrescar_status(self):
-        """Llama a refrescar_channel_status_si_es_posible().
-        Es funcion 'proxy', para facilitar unittest.
-        """
-        return self.asterisk_call_status.\
-            refrescar_channel_status_si_es_posible()
-
-    def _get_count_llamadas(self, campana):
-        """Llama a get_count_llamadas_de_campana().
-        Es funcion 'proxy', para facilitar unittest.
-        """
-        return self.campana_call_status.get_count_llamadas_de_campana(campana)
 
     def _sleep(self):
         """Realiza espera luego de finalizar el loop
@@ -98,17 +72,22 @@ class FinalizadorDeCampanasVencidasDaemon(object):
     def _finalizar_y_programar_depuracion(self, campana):
         """Finaliza la campaña, y lanza la tarea asincrona para esperar
         a que no haya llamadas en curso y depurar la campaña.
+
+        :returns: bool - True si se finalizo correctamente
+                  False si se produjo FTSOptimisticLockingError
         """
         try:
             campana.finalizar()
         except FTSOptimisticLockingError:
             logger.warn("Se detecto FTSOptimisticLockingError. "
-                        "Ignoraremos este error y continuaremos",
+                        "Ignoraremos esta campana y continuaremos procesando "
+                        "otras campanas",
                         exc_info=True)
-            return
+            return False
 
         # ANTES: tasks.finalizar_campana_async(campana.id)
         tasks.esperar_y_depurar_campana_async(campana.id)
+        return True
 
     def _programar_depuracion(self, campana):
         """Lanza la tarea asincrona para esperar
@@ -132,32 +111,9 @@ class FinalizadorDeCampanasVencidasDaemon(object):
         # Finalizacion
         #
 
-        campanas_vencidas = list(self._obtener_vencidas())
-
-        if campanas_vencidas:
-            logger.info("Obteniendo status de llamadas en curso")
-            if not self._refrescar_status():
-                logger.warn("No se pudo refrescar status de llamadas en "
-                    "curso... Por lo tanto, no se finalizara ninguna "
-                    "campana.")
-                # Si no se pudo chequear status, cancelamos todo
-                return
-
-            for campana in campanas_vencidas:
-                logger.info("Chequeando llamadas en curso para campana %s",
-                            campana.id)
-                count_llamadas_en_curso = self._get_count_llamadas(campana)
-
-                if count_llamadas_en_curso > 0:
-                    logger.info("No se finalizara la campana %s porque "
-                        "hay %s llamadas en curso de dicha campana",
-                        campana.id, count_llamadas_en_curso)
-                    continue
-
-                logger.info("Finalizando campana %s", campana.id)
-                self._finalizar_y_programar_depuracion(campana)
-        else:
-            logger.info("No se encontro campana por finalizar...")
+        for campana in self._obtener_vencidas():
+            logger.info("Finalizando campana %s", campana.id)
+            self._finalizar_y_programar_depuracion(campana)
 
     def run(self):
         """Inicia el proceso."""
