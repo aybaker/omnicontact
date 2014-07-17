@@ -10,7 +10,8 @@ from fts_daemon.services.finalizador_vencidas_daemon import \
 from fts_web.models import Campana
 from fts_web.tests.utiles import FTSenderBaseTest
 import logging as _logging
-from mock import Mock
+from mock import Mock, patch
+from django.test.utils import override_settings
 
 
 logger = _logging.getLogger(__name__)
@@ -75,6 +76,38 @@ class FinalizadorDeCampanasVencidasDaemonTests(FTSenderBaseTest):
 
         # Ya que no habia camppañas, no se debio actualizar el status
 
+    @patch("fts_daemon.tasks.esperar_y_depurar_campana")
+    def test_metodo_finalizar_y_programar_depuracion(self, func_mock):
+        """Testea el metodo finalizar_y_programar_depuracion()"""
+        func_mock.delay = Mock()
+        campana = Campana(id=1)
+        campana.estado = Campana.ESTADO_ACTIVA
+        campana.finalizar = Mock()
+
+        finalizador = FinalizadorDeCampanasVencidasDaemon(initial_wait=0)
+
+        # -----
+
+        finalizador._finalizar_y_programar_depuracion(campana)
+
+        func_mock.delay.assert_called_once_with(campana.id)
+        campana.finalizar.assert_called_once_with()
+
+    @patch("fts_daemon.tasks.esperar_y_depurar_campana")
+    def test_metodo_programar_depuracion(self, func_mock):
+        """Testea el metodo _programar_depuracion()"""
+        func_mock.delay = Mock()
+        campana = Campana(id=1)
+        campana.estado = Campana.ESTADO_ACTIVA
+
+        finalizador = FinalizadorDeCampanasVencidasDaemon(initial_wait=0)
+
+        # -----
+
+        finalizador._programar_depuracion(campana)
+
+        func_mock.delay.assert_called_once_with(campana.id)
+
     def test_run_realiza_busqueda(self):
         """Testea que al ejecutar run(), se ejecuta la busqueda"""
 
@@ -87,3 +120,31 @@ class FinalizadorDeCampanasVencidasDaemonTests(FTSenderBaseTest):
         finalizador.run()
 
         self.assertEqual(finalizador._obtener_vencidas.call_count, 1)
+
+
+class TestsConstructor(FTSenderBaseTest):
+    """Unit tests de constructor"""
+
+    @override_settings(FTS_FDCD_INITIAL_WAIT=0.0001)
+    def test_initial_wait_desde_settings(self):
+        finalizador = FinalizadorDeCampanasVencidasDaemon()
+        self.assertEquals(finalizador.initial_wait, 0.0001)
+
+    @override_settings(FTS_FDCD_INITIAL_WAIT=0.0001)
+    def test_initial_wait_sobreescrito_en_constructor(self):
+        finalizador = FinalizadorDeCampanasVencidasDaemon(initial_wait=0.001)
+        self.assertEquals(finalizador.initial_wait, 0.001)
+
+
+class TestsMetodosVarios(FTSenderBaseTest):
+    """Unit tests de los metodos utilitarios de
+    FinalizadorDeCampanasVencidasDaemon
+    """
+
+    @patch("time.sleep")
+    @override_settings(FTS_FDCD_INITIAL_WAIT=0,
+                       FTS_FDCD_LOOP_SLEEP=34)
+    def test_sleep(self, sleep_mock):
+        finalizador = FinalizadorDeCampanasVencidasDaemon()
+        finalizador._sleep()
+        sleep_mock.assert_called_once_with(34)
