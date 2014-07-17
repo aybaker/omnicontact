@@ -7,6 +7,7 @@ import csv
 import datetime
 import os
 import shutil
+import tempfile
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -23,6 +24,11 @@ from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
 from fts_web.parser import autodetectar_parser
 from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
+
+
+def _tmpdir():
+    """Crea directorio temporal"""
+    return tempfile.mkdtemp(prefix=".fts-tests-", dir="/dev/shm")
 
 
 class GrupoAtencionTest(FTSenderBaseTest):
@@ -139,11 +145,11 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         bd_contacto_reciclada = BaseDatosContacto.objects.reciclar_base_datos(
             campana.pk, Campana.TIPO_RECICLADO_PENDIENTES)
 
-        # Verificamos que para TIPO_RECICLADO_PENDIENTES no se la misma 
+        # Verificamos que para TIPO_RECICLADO_PENDIENTES no se la misma
         # base de datos, que se haya generado una nueva con el reciclado.
 
         self.assertFalse(bd_contacto_reciclada == campana.bd_contacto)
-        self.assertEqual(bd_contacto_reciclada.cantidad_contactos, 
+        self.assertEqual(bd_contacto_reciclada.cantidad_contactos,
             Contacto.objects.filter(bd_contacto=bd_contacto_reciclada).count())
 
     def test_verifica_en_uso(self):
@@ -186,10 +192,10 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         bd_contacto.elimina_contactos()
         self.assertEqual(bd_contacto.contactos.count(), 0)
 
-    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    DUMP_PATH = os.path.join(tmp, "test", "base_dato_contacto_dump/")
+    # tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    # DUMP_PATH = os.path.join(tmp, "test", "base_dato_contacto_dump/")
 
-    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=DUMP_PATH)
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir())
     def test_procesa_depuracion(self):
         """
         Testea el método procesa_depuracion(().
@@ -220,7 +226,7 @@ class BaseDatosContactoTest(FTSenderBaseTest):
 
 class ContactoTest(FTSenderBaseTest):
 
-    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH="/tmp/")
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir())
     def test_realiza_dump_contactos(self):
         """
         Testea el método realiza_dump_contactos().
@@ -280,36 +286,36 @@ class CampanaTest(FTSenderBaseTest):
         """
         fecha_actual = datetime.date.today()
 
-        #Testeamos que con las fechas correctas se cree la campana.
+        # Testeamos que con las fechas correctas se cree la campana.
         fecha_inicio = fecha_actual
         fecha_fin = fecha_actual + datetime.timedelta(days=10)
         self.crear_campana(fecha_inicio, fecha_fin)
         self.assertEqual(Campana.objects.all().count(), 1)
 
-        #Testeamos que con la fecha inicio sea >= a la fecha actual.
+        # Testeamos que con la fecha inicio sea >= a la fecha actual.
         #*** Este Test no debería fallar. Ver validación en modelos***
-        #Referencia FTS-86
+        # Referencia FTS-86
         fecha_inicio = fecha_actual - datetime.timedelta(days=10)
         fecha_fin = fecha_actual + datetime.timedelta(days=10)
         self.crear_campana(fecha_inicio, fecha_fin)
-        #self.assertEqual(Campana.objects.all().count(), 1)
+        # self.assertEqual(Campana.objects.all().count(), 1)
 
-        #Testeamos que con la fecha inicio sea <= a la fecha fin.
+        # Testeamos que con la fecha inicio sea <= a la fecha fin.
         #*** Este Test no debería fallar. Ver validación en modelos***
-        #Referencia FTS-86
+        # Referencia FTS-86
         fecha_inicio = fecha_actual + datetime.timedelta(days=10)
         fecha_fin = fecha_actual
         self.crear_campana(fecha_inicio, fecha_fin)
-        #self.assertEqual(Campana.objects.all().count(), 1)
+        # self.assertEqual(Campana.objects.all().count(), 1)
 
-        #Testeamos que la validación en clean de Campana valide que la cantidad
-        #de canales sea menor que la cantidad de contactos de la base de datos.
+        # Testeamos que la validación en clean de Campana valide que la cantidad
+        # de canales sea menor que la cantidad de contactos de la base de datos.
         #*** Este Test no debería fallar. Ver validación en modelos***
-        #Referencia FTS-85
+        # Referencia FTS-85
         # FIXME: Por ahora sale el assert puesto en el metodo crear_campaan de
         # utiles.py, debería validar el modelo.
-        #self.crear_campana(cant_contactos=1)
-        #self.assertEqual(Campana.objects.all().count(), 1)
+        # self.crear_campana(cant_contactos=1)
+        # self.assertEqual(Campana.objects.all().count(), 1)
 
     def test_campana_opcion(self):
         """
@@ -325,8 +331,8 @@ class CampanaTest(FTSenderBaseTest):
         únicos.
         """
 
-        #Testeamos que no se cree dos opciones con
-        #el mismo dígito.
+        # Testeamos que no se cree dos opciones con
+        # el mismo dígito.
         campana = self.crear_campana()
         self.crea_campana_opcion(0, campana)
         with self.assertRaises(IntegrityError):
@@ -339,8 +345,8 @@ class CampanaTest(FTSenderBaseTest):
         """
         campana = self.crear_campana()
 
-        #Testeamos que no se cree dos opciones con la misma acción.
-        #1- Mismo Grupo de Atención.
+        # Testeamos que no se cree dos opciones con la misma acción.
+        # 1- Mismo Grupo de Atención.
         grupo_atencion = self.crear_grupo_atencion()
         self.crea_campana_opcion(0, campana, Opcion.DERIVAR, grupo_atencion)
         with self.assertRaises(IntegrityError):
@@ -355,7 +361,7 @@ class CampanaTest(FTSenderBaseTest):
         campana = self.crear_campana()
         self.crea_campana_opcion(0, campana)
 
-        #2- Misma Calificación.
+        # 2- Misma Calificación.
         self.crea_calificaciones(campana)
         calificacion = Calificacion.objects.all()[1]
         self.crea_campana_opcion(1, campana, Opcion.CALIFICAR, None,
@@ -378,22 +384,22 @@ class CampanaTest(FTSenderBaseTest):
 
         self.assertEqual(Actuacion.objects.all().count(), 4)
 
-        #Testeamos que con la hora_desde sea < a la hora_hasta.
+        # Testeamos que con la hora_desde sea < a la hora_hasta.
         #*** Este Test no debería fallar. Ver validación en modelos***
-        #Referencia FTS-86
+        # Referencia FTS-86
         hora_desde = datetime.time(9, 00)
         hora_hasta = datetime.time(8, 00)
         self.crea_campana_actuacion(5, hora_desde, hora_hasta, campana)
-        #self.assertEqual(Actuacion.objects.all().count(), 4)
+        # self.assertEqual(Actuacion.objects.all().count(), 4)
 
-        #Testeamos que no se solapen dos rangos horarios para una
-        #misma campaña.
+        # Testeamos que no se solapen dos rangos horarios para una
+        # misma campaña.
         #*** Este Test no debería fallar. Ver validación en modelos***
-        #Referencia FTS-86
+        # Referencia FTS-86
         hora_desde = datetime.time(10, 00)
         hora_hasta = datetime.time(17, 00)
         self.crea_campana_actuacion(3, hora_desde, hora_hasta, campana)
-        #self.assertEqual(Actuacion.objects.all().count(), 4)
+        # self.assertEqual(Actuacion.objects.all().count(), 4)
 
     def test_campana_activar(self):
         """
@@ -405,18 +411,18 @@ class CampanaTest(FTSenderBaseTest):
         campanas[0].activar()
         campanas[1].activar()
 
-        #Testeamos que no se active una activa.
+        # Testeamos que no se active una activa.
         self.assertRaises(AssertionError, campanas[0].activar)
 
         campanas[0].pausar()
-        #Testeamos que no se active una pausada.
+        # Testeamos que no se active una pausada.
         self.assertRaises(AssertionError, campanas[0].activar)
 
         campanas[1].finalizar()
-        #Testeamos que no se active una finalizada.
+        # Testeamos que no se active una finalizada.
         self.assertRaises(AssertionError, campanas[1].activar)
 
-        #Testeamos que obtener_activas me devuelva las 2 activas solo.
+        # Testeamos que obtener_activas me devuelva las 2 activas solo.
         campanas[2].activar()
         campanas[3].activar()
         campanas_activas = Campana.objects.obtener_activas()
@@ -436,20 +442,20 @@ class CampanaTest(FTSenderBaseTest):
         campanas[0].pausar()
         campanas[1].pausar()
 
-        #Testeamos que no se pause una pausada.
+        # Testeamos que no se pause una pausada.
         self.assertRaises(AssertionError, campanas[0].pausar)
 
-        #Testeamos que no se active con el activar() una pausada.
+        # Testeamos que no se active con el activar() una pausada.
         self.assertRaises(AssertionError, campanas[0].activar)
 
         campanas[2].finalizar()
-        #Testeamos que no se pause una finalizada.
+        # Testeamos que no se pause una finalizada.
         self.assertRaises(AssertionError, campanas[2].pausar)
 
-        #Testeamos que no se pause una que no esta activa.
+        # Testeamos que no se pause una que no esta activa.
         self.assertRaises(AssertionError, campanas[9].pausar)
 
-        #Testeamos que obtener_pausadas me devuelva las 2 pausadas solo.
+        # Testeamos que obtener_pausadas me devuelva las 2 pausadas solo.
         campanas_pausadas = Campana.objects.obtener_pausadas()
         for c in campanas[:2]:
             self.assertIn(c, campanas_pausadas)
@@ -466,18 +472,18 @@ class CampanaTest(FTSenderBaseTest):
         campanas[1].pausar()
         campanas[2].pausar()
 
-        #Testeamos que no se despause una activa.
+        # Testeamos que no se despause una activa.
         self.assertRaises(AssertionError, campanas[0].despausar)
 
-        #Testeamos que se despause una pausada.
+        # Testeamos que se despause una pausada.
         campanas[1].despausar()
         self.assertEqual(campanas[1].estado, Campana.ESTADO_ACTIVA)
 
-        #Testeamos que no se despause una finalizada.
+        # Testeamos que no se despause una finalizada.
         campanas[2].finalizar()
         self.assertRaises(AssertionError, campanas[2].despausar)
 
-        #Testeamos que no se despause una que no esta activa.
+        # Testeamos que no se despause una que no esta activa.
         self.assertRaises(AssertionError, campanas[9].despausar)
 
     def test_campana_finalizar(self):
@@ -491,20 +497,20 @@ class CampanaTest(FTSenderBaseTest):
         campanas[1].activar()
         campanas[2].activar()
 
-        #Testeamos que no se finalice una en finalizada.
+        # Testeamos que no se finalice una en finalizada.
         campanas[0].finalizar()
         self.assertRaises(AssertionError, campanas[0].finalizar)
         self.assertEqual(campanas[0].estado, Campana.ESTADO_FINALIZADA)
 
-        #Testeamos que se finalice una pausada.
+        # Testeamos que se finalice una pausada.
         campanas[1].pausar()
         campanas[1].finalizar()
         self.assertEqual(campanas[1].estado, Campana.ESTADO_FINALIZADA)
 
-        #Testeamos que no se finalice una que no esta activa.
+        # Testeamos que no se finalice una que no esta activa.
         self.assertRaises(AssertionError, campanas[9].pausar)
 
-        #Testeamos que obtener_pausadas me devuelva las 2 pausadas solo.
+        # Testeamos que obtener_pausadas me devuelva las 2 pausadas solo.
         campanas_finalizadas = Campana.objects.obtener_finalizadas()
         for c in campanas[:2]:
             self.assertIn(c, campanas_finalizadas)
@@ -516,8 +522,8 @@ class CampanaTest(FTSenderBaseTest):
         hoy_ahora = datetime.datetime.today()
         dia_semanal = hoy_ahora.weekday()
 
-        #Establece horario desde y hasta para la actuación en este
-        #momento.
+        # Establece horario desde y hasta para la actuación en este
+        # momento.
         hoy_ahora_menos_1h = hoy_ahora - datetime.timedelta(hours=1)
         hora_desde = datetime.time(
             hoy_ahora_menos_1h.hour, hoy_ahora_menos_1h.minute,
@@ -526,16 +532,16 @@ class CampanaTest(FTSenderBaseTest):
         hora_hasta = datetime.time(
             hoy_ahora_mas_1h.hour, hoy_ahora_mas_1h.minute,
             hoy_ahora_mas_1h.second)
-        #Crea campaña programada para ejecutarse en este momento.
+        # Crea campaña programada para ejecutarse en este momento.
         campana = self.crear_campana()
         campana.activar()
         actuacion = self.crea_campana_actuacion(
             dia_semanal, hora_desde, hora_hasta, campana)
-        #Testea que el método devuelva la actuación creada para este momento.
+        # Testea que el método devuelva la actuación creada para este momento.
         self.assertEqual(campana.obtener_actuacion_actual(), actuacion)
 
-        #Establece horario desde y hasta para otra actuación dentro
-        #de una hora.
+        # Establece horario desde y hasta para otra actuación dentro
+        # de una hora.
         hoy_ahora_mas_1h = hoy_ahora + datetime.timedelta(hours=1)
         hora_desde = datetime.time(
             hoy_ahora_mas_1h.hour, hoy_ahora_mas_1h.minute,
@@ -544,10 +550,10 @@ class CampanaTest(FTSenderBaseTest):
         hora_hasta = datetime.time(
             hoy_ahora_mas_4h.hour, hoy_ahora_mas_4h.minute,
             hoy_ahora_mas_4h.second)
-        #Crea campaña programada para ejecutarse en 1 hora.
+        # Crea campaña programada para ejecutarse en 1 hora.
         self.crea_campana_actuacion(
             dia_semanal, hora_desde, hora_hasta, campana)
-        #Testea que el método siga devolviendo solo la primer actuacion creada.
+        # Testea que el método siga devolviendo solo la primer actuacion creada.
         self.assertEqual(campana.obtener_actuacion_actual(), actuacion)
 
     def test_campana_verifica_fecha(self):
@@ -558,14 +564,14 @@ class CampanaTest(FTSenderBaseTest):
 
         campana = self.crear_campana()
         campana.activar()
-        #Testeamos que devuelva True para una campaña actual.
+        # Testeamos que devuelva True para una campaña actual.
         self.assertTrue(campana.verifica_fecha(hoy_ahora))
 
         manana = hoy_ahora + datetime.timedelta(days=1)
         pasado_manana = hoy_ahora + datetime.timedelta(days=2)
         campana1 = self.crear_campana(manana.date(), pasado_manana.date())
         campana1.activar()
-        #Testeamos que devuelva false para una campaña futura.
+        # Testeamos que devuelva false para una campaña futura.
         self.assertFalse(campana1.verifica_fecha(hoy_ahora))
 
     def test_campana_obtener_ejecucion(self):
@@ -577,60 +583,60 @@ class CampanaTest(FTSenderBaseTest):
         hora_hasta = hoy_ahora + datetime.timedelta(hours=1)
         dia_semanal = hoy_ahora.weekday()
 
-        #Crea campaña programada para ejecutarse en este momento.
+        # Crea campaña programada para ejecutarse en este momento.
         campana = self.crear_campana()
         self.crea_campana_actuacion(
             dia_semanal, hora_desde, hora_hasta, campana)
         campana.activar()
-        #Testea que el método devuelva una campaña y sea la creada.
+        # Testea que el método devuelva una campaña y sea la creada.
         campana_ejecucion = Campana.objects.obtener_ejecucion()
         self.assertEquals(campana_ejecucion.count(), 1)
         self.assertEquals(campana_ejecucion[0], campana)
 
-        #Crea otra campaña programada para ejecutarse en este momento.
+        # Crea otra campaña programada para ejecutarse en este momento.
         campana1 = self.crear_campana()
         self.crea_campana_actuacion(
             dia_semanal, hora_desde, hora_hasta, campana1)
         campana1.activar()
-        #Testea que el método devuelva dos campaña y la última sea la creada.
+        # Testea que el método devuelva dos campaña y la última sea la creada.
         self.assertEquals(campana_ejecucion.count(), 2)
         self.assertEquals(campana_ejecucion[1], campana1)
 
-        #Crea otra campaña programada para ejecutarse horas antes.
+        # Crea otra campaña programada para ejecutarse horas antes.
         hora_desde = hoy_ahora - datetime.timedelta(hours=4)
         hora_hasta = hoy_ahora - datetime.timedelta(hours=1)
         campana2 = self.crear_campana()
         self.crea_campana_actuacion(
             dia_semanal, hora_desde, hora_hasta, campana2)
         campana2.activar()
-        #Testea que el método siga devolviendo dos campaña y
-        #que no esta la última creada en las que devolvió.
+        # Testea que el método siga devolviendo dos campaña y
+        # que no esta la última creada en las que devolvió.
         self.assertEquals(campana_ejecucion.count(), 2)
         self.assertNotIn(campana2, campana_ejecucion)
 
-        #Crea otra campaña programada para ejecutarse un día antes
-        #y en el mismo rango horario.
+        # Crea otra campaña programada para ejecutarse un día antes
+        # y en el mismo rango horario.
         dia_semanal = (hoy_ahora - datetime.timedelta(days=1)).weekday()
         campana3 = self.crear_campana()
         self.crea_campana_actuacion(
             dia_semanal, hora_desde, hora_hasta, campana3)
         campana3.activar()
-        #Testea que el método siga devolviendo dos campaña
+        # Testea que el método siga devolviendo dos campaña
         # que no esta la última creada en las que devolvió.
         self.assertEquals(campana_ejecucion.count(), 2)
         self.assertNotIn(campana3, campana_ejecucion)
 
-        #Crea campaña programada para ejecutarse en este momento
-        #pero no la activa.
+        # Crea campaña programada para ejecutarse en este momento
+        # pero no la activa.
         campana4 = self.crear_campana()
         self.crea_campana_actuacion(
             dia_semanal, hora_desde, hora_hasta, campana4)
-        #Testea que el método siga devolviendo dos campaña
+        # Testea que el método siga devolviendo dos campaña
         # que no esta la última creada en las que devolvió.
         self.assertEquals(campana_ejecucion.count(), 2)
         self.assertNotIn(campana4, campana_ejecucion)
 
-    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_crea_reporte_csv(self):
         import glob
 
@@ -677,7 +683,7 @@ class CampanaTest(FTSenderBaseTest):
         # for f in files:
         #     os.remove(f)
 
-    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_obtener_url_reporte_csv_descargar(self):
         import glob
 
@@ -735,7 +741,7 @@ class CampanaTest(FTSenderBaseTest):
 
         [self.crea_campana_actuacion(dia_semanal, hora_desde, hora_hasta,
             campana) for dia_semanal in range(0, 4)]
-        
+
         campana.activar()
 
         # Testeamos que no se pueda reciclar una campana que nos este
@@ -744,7 +750,7 @@ class CampanaTest(FTSenderBaseTest):
             Campana.objects.reciclar_campana(campana.pk, bd_contacto)
 
         campana.finalizar()
-        
+
         # Testeamos que devuelva error si no encuentra la campana.
         with self.assertRaises(FtsRecicladoCampanaError):
             campana_inexistente = 1500
@@ -773,7 +779,7 @@ class CampanaTest(FTSenderBaseTest):
             campana_reciclada.cantidad_canales)
         self.assertEqual(campana.cantidad_intentos,
             campana_reciclada.cantidad_intentos)
-        self.assertEqual(campana.segundos_ring, 
+        self.assertEqual(campana.segundos_ring,
             campana_reciclada.segundos_ring)
         self.assertFalse(campana.nombre == campana_reciclada.nombre)
 
@@ -933,7 +939,7 @@ class CampanaTest(FTSenderBaseTest):
             evento=EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
             cantidad_eventos=20)
         campana.procesar_finalizada()
-        contactos_llamadas_erroneas =\
+        contactos_llamadas_erroneas = \
             campana.obtener_contactos_llamada_erronea()
         self.assertEqual(len(contactos_llamadas_erroneas), 20)
 
@@ -963,8 +969,8 @@ class ActuacionTests(FTSenderBaseTest):
         hoy_ahora = datetime.datetime.today()
         dia_semanal = hoy_ahora.weekday()
 
-        #Establece horario desde y hasta para la actuación en este
-        #momento.
+        # Establece horario desde y hasta para la actuación en este
+        # momento.
         hoy_ahora_menos_1h = hoy_ahora - datetime.timedelta(hours=1)
         hora_desde = datetime.time(
             hoy_ahora_menos_1h.hour, hoy_ahora_menos_1h.minute,
@@ -973,17 +979,17 @@ class ActuacionTests(FTSenderBaseTest):
         hora_hasta = datetime.time(
             hoy_ahora_mas_1h.hour, hoy_ahora_mas_1h.minute,
             hoy_ahora_mas_1h.second)
-        #Crea campaña programada para ejecutarse en este momento.
+        # Crea campaña programada para ejecutarse en este momento.
         campana = self.crear_campana()
         campana.activar()
         actuacion = self.crea_campana_actuacion(
             dia_semanal, hora_desde, hora_hasta, campana)
-        #Testea que el método devuelva True. La campanaña
-        #esta en rango de actuación.
+        # Testea que el método devuelva True. La campanaña
+        # esta en rango de actuación.
         self.assertTrue(actuacion.verifica_actuacion(hoy_ahora))
 
-        #Establece horario desde y hasta para la actuación dentro
-        #de una hora.
+        # Establece horario desde y hasta para la actuación dentro
+        # de una hora.
         hoy_ahora_mas_1h = hoy_ahora + datetime.timedelta(hours=1)
         hora_desde = datetime.time(
             hoy_ahora_mas_1h.hour, hoy_ahora_mas_1h.minute,
@@ -992,13 +998,13 @@ class ActuacionTests(FTSenderBaseTest):
         hora_hasta = datetime.time(
             hoy_ahora_mas_4h.hour, hoy_ahora_mas_4h.minute,
             hoy_ahora_mas_4h.second)
-        #Crea campaña programada para ejecutarse en 1 hora.
+        # Crea campaña programada para ejecutarse en 1 hora.
         campana1 = self.crear_campana()
         campana1.activar()
         actuacion1 = self.crea_campana_actuacion(
             dia_semanal, hora_desde, hora_hasta, campana1)
-        #Testea que el método devuelva False. La campanaña *NO*
-        #esta en rango de actuación.
+        # Testea que el método devuelva False. La campanaña *NO*
+        # esta en rango de actuación.
         self.assertFalse(actuacion1.verifica_actuacion(hoy_ahora))
 
     def test_dia_concuerda(self):
@@ -1038,7 +1044,7 @@ class ReporteTest(FTSenderBaseTest):
             shutil.rmtree(path_graficos)
 
     def test_detalle_reporte_template(self):
-        #Crea y emula procesamiento de campaña.
+        # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
 
         # Verificamos template detalle reporte campaña.
@@ -1096,10 +1102,10 @@ class ReporteTest(FTSenderBaseTest):
     #         porcentaje_avance)
 
     def test_render_grafico_torta_avance_campana(self):
-        #Crea y emula procesamiento de campaña.
+        # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
 
-        #Obtento el renderizado de gráfico y lo testeo.
+        # Obtento el renderizado de gráfico y lo testeo.
         graficos_estadisticas = \
             campana.obtener_estadisticas_render_graficos_supervision()
 
@@ -1135,7 +1141,7 @@ class ReporteTest(FTSenderBaseTest):
     #     self.assertEqual(url, None)
 
     def test_render_graficos_reporte(self):
-        #Crea y emula procesamiento de campaña.
+        # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
         graficos = campana.obtener_estadisticas_render_graficos_reportes()
 
@@ -1144,7 +1150,7 @@ class ReporteTest(FTSenderBaseTest):
         self.assertTrue(graficos['barra_atendidos_intentos'].render())
 
     def test_obtener_contadores_por_intento(self):
-        #Crea y emula procesamiento de campaña.
+        # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
         contadores = EventoDeContacto.objects_estadisticas.\
             obtener_contadores_por_intento(campana.pk,
@@ -1154,7 +1160,7 @@ class ReporteTest(FTSenderBaseTest):
         self.assertEqual(contadores[1]['cantidad_intentos'], 100)
 
     def test_procesa_agregacion(self):
-        #Crea y emula procesamiento de campaña.
+        # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
         tipo_agregacion = AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE
         dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
