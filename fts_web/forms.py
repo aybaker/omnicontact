@@ -182,11 +182,42 @@ class ConfirmaForm(forms.ModelForm):
 
 
 class TipoRecicladoForm(forms.Form):
-    tipo_reciclado = forms.TypedChoiceField(
-        choices=Campana.TIPO_RECICLADO,
-        widget=forms.RadioSelect,
-        required=True,
+    SELECCIONE = (
+        ('SELECCIONE', 'SELECCIONE'),
     )
+    seleccione = forms.ChoiceField(
+        choices=SELECCIONE,
+        widget=forms.RadioSelect,
+        required=False,
+    )
+
+    tipo_reciclado_unico = forms.ChoiceField(
+        choices=Campana.TIPO_RECICLADO_UNICO,
+        widget=forms.RadioSelect,
+        required=False,
+    )
+    tipo_reciclado_conjunto = forms.MultipleChoiceField(
+        choices=Campana.TIPO_RECICLADO_CONJUNTO,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(TipoRecicladoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+        self.helper.form_id = 'id_guardar'
+        self.helper.form_method = 'post'
+
+        self.helper.add_input(
+            Submit('continuar', 'Continuar',
+                   css_class='btn btn-primary pull-right')
+        )
+
+        self.helper.layout = Layout(
+            Field('tipo_reciclado_unico'),
+            Field('seleccione'),
+            Field('tipo_reciclado_conjunto'))
 
 
 #=========================================================================
