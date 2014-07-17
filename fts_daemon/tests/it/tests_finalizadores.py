@@ -20,10 +20,12 @@ logger = _logging.getLogger(__name__)
 class DepuradorDeCampanaWorkflowTests(FTSenderBaseTest):
     """Integration tests de DepuradorDeCampanaWorkflow"""
 
-    def test_finaliza_campana(self):
-        campana_id = self.crear_campana_activa().id
-        finalizador = DepuradorDeCampanaWorkflow()
-        finalizador.finalizar(campana_id)
+    def test_depura_campana_finalizada(self):
+        campana = self.crear_campana_finalizada()
+        depurador = DepuradorDeCampanaWorkflow()
+        depurada = depurador.depurar(campana.id)
+
+        self.assertTrue(depurada)
 
 
 class EsperadorParaDepuracionSeguraTests(FTSenderBaseTest):

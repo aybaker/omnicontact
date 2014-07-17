@@ -68,6 +68,5 @@ class DepuradorDeCampanaWorkflow(object):
 
         # Fuera de la TX, logueamos OK (por si se produce un error
         # al realizar commit)
-        logger.info("La campana %s fue finalizada correctamente",
-                    campana_id)
+        logger.info("La campana %s fue finalizada correctamente", campana_id)
         return True
