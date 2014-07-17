@@ -939,15 +939,37 @@ class GestionDeLlamadasManager(models.Manager):
 
 
 class RecicladorContactosEventoDeContacto(models.Manager):
-    def _obtener_campana(self, campana_id):
-        return Campana.objects.get(pk=campana_id)
 
-    def obtener_contactos_pendientes(self, campana_id):
+    def obtener_contactos_reciclados(self, campana, tipos_reciclado):
+
+        assert campana.estado == Campana.ESTADO_FINALIZADA,\
+            "Solo se aplica la búsqueda a campanas finalizadas"
+
+        contactos_reciclados = []
+        for tipo_reciclado in tipos_reciclado:
+            if int(tipo_reciclado) == Campana.TIPO_RECICLADO_PENDIENTES:
+                contactos_reciclados +=\
+                    self._obtener_contactos_pendientes(campana)
+            elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_OCUPADOS:
+                contactos_reciclados +=\
+                    self._obtener_contactos_ocupados(campana)
+            elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_NO_CONTESTADOS:
+                contactos_reciclados += \
+                    self._obtener_contactos_no_contestados(campana)
+            elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_NUMERO_ERRONEO:
+                contactos_reciclados += \
+                    self._obtener_contactos_numero_erroneo(campana)
+            elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_LLAMADA_ERRONEA:
+                contactos_reciclados += \
+                    self._obtener_contactos_llamada_erronea(campana)
+        return contactos_reciclados
+
+    def _obtener_contactos_pendientes(self, campana):
         """
         Este método se encarga de devolver los contactos que no tengan el
         evento originate generado, o sea, que están pendientes.
         """
-        campana = self._obtener_campana(campana_id)
+
         assert campana.estado == Campana.ESTADO_FINALIZADA,\
             "Solo se aplica la búsqueda a campanas finalizadas"
 
@@ -973,13 +995,13 @@ class RecicladorContactosEventoDeContacto(models.Manager):
 
         return values
 
-    def obtener_contactos_ocupados(self, campana_id):
+    def _obtener_contactos_ocupados(self, campana):
         """
         Este método se encarga de devolver los contactos que presentan en
         alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_BUSY y
         que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
         """
-        campana = self._obtener_campana(campana_id)
+
         assert campana.estado == Campana.ESTADO_FINALIZADA,\
             "Solo se aplica la búsqueda a campanas finalizadas"
 
@@ -1006,13 +1028,13 @@ class RecicladorContactosEventoDeContacto(models.Manager):
 
         return values
 
-    def obtener_contactos_no_contestados(self, campana_id):
+    def _obtener_contactos_no_contestados(self, campana):
         """
         Este método se encarga de devolver los contactos que presentan en
         alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_NOANSWER y
         que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
         """
-        campana = self._obtener_campana(campana_id)
+
         assert campana.estado == Campana.ESTADO_FINALIZADA,\
             "Solo se aplica la búsqueda a campanas finalizadas"
 
@@ -1040,13 +1062,13 @@ class RecicladorContactosEventoDeContacto(models.Manager):
 
         return values
 
-    def obtener_contactos_numero_erroneo(self, campana_id):
+    def _obtener_contactos_numero_erroneo(self, campana):
         """
         Este método se encarga de devolver los contactos que presentan en
         alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_CONGESTION y
         que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
         """
-        campana = self._obtener_campana(campana_id)
+
         assert campana.estado == Campana.ESTADO_FINALIZADA,\
             "Solo se aplica la búsqueda a campanas finalizadas"
 
@@ -1074,13 +1096,13 @@ class RecicladorContactosEventoDeContacto(models.Manager):
 
         return values
 
-    def obtener_contactos_llamada_erronea(self, campana_id):
+    def _obtener_contactos_llamada_erronea(self, campana):
         """
         Este método se encarga de devolver los contactos que presentan en
         alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL
         y que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
         """
-        campana = self._obtener_campana(campana_id)
+
         assert campana.estado == Campana.ESTADO_FINALIZADA,\
             "Solo se aplica la búsqueda a campanas finalizadas"
 
