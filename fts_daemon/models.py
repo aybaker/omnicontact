@@ -939,8 +939,19 @@ class GestionDeLlamadasManager(models.Manager):
 
 
 class RecicladorContactosEventoDeContacto(models.Manager):
+    """
+    Este manager se encarga de obtener los contactos según el tipo de
+    reciclado de campana que se realice. 
+    """
 
     def obtener_contactos_reciclados(self, campana, tipos_reciclado):
+        """
+        Este método se encarga de iterar sobre los tipos de reciclado que
+        se indiquen aplicar en el reciclado de campana. Según el tipo de
+        reciclado se invoca al método adecuado para llevar a cabo la consulta
+        correspondiente, y en caso de que sea mas de uno se sumarizan las
+        mismas.
+        """
 
         assert campana.estado == Campana.ESTADO_FINALIZADA,\
             "Solo se aplica la búsqueda a campanas finalizadas"
