@@ -639,6 +639,10 @@ class Campana(models.Model):
     """Una campaña del call center"""
 
     objects_default = models.Manager()
+    # Por defecto django utiliza el primer manager instanciado. Se aplica al
+    # admin de django, y no aplica las customizaciones del resto de los
+    # managers que se creen.
+
     objects = CampanaManager()
 
     TIPO_RECICLADO_TOTAL = 1
