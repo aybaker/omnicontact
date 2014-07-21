@@ -416,8 +416,16 @@ class Contacto(models.Model):
 #==============================================================================
 # Campaña
 #==============================================================================
+class CampanasNoBorradasManagerMixin(object):
+    """
+    Manager Mixin de Campana.
+    """
+    def get_queryset(self):
+        return super(CampanasNoBorradasManagerMixin, self).get_queryset().\
+            exclude(estado=Campana.ESTADO_BORRADA)
 
-class CampanaManager(models.Manager):
+
+class CampanaManager(models.Manager, CampanasNoBorradasManagerMixin):
     """Manager para Campanas"""
 
     def obtener_activas(self):
@@ -438,6 +446,10 @@ class CampanaManager(models.Manager):
     def obtener_finalizadas(self):
         """Devuelve queryset para filtrar campañas en estado finalizadas."""
         return self.filter(estado=Campana.ESTADO_FINALIZADA)
+
+    def obtener_depuradas(self):
+        """Devuelve queryset para filtrar campañas en estado depuradas."""
+        return self.filter(estado=Campana.ESTADO_DEPURADA)
 
     def obtener_todas_para_generar_dialplan(self):
         """Devuelve campañas que deben ser tenidas en cuenta
@@ -626,6 +638,11 @@ upload_to_audios_originales = upload_to("audios_reproduccion", 95)
 class Campana(models.Model):
     """Una campaña del call center"""
 
+    objects_default = models.Manager()
+    # Por defecto django utiliza el primer manager instanciado. Se aplica al
+    # admin de django, y no aplica las customizaciones del resto de los
+    # managers que se creen.
+
     objects = CampanaManager()
 
     TIPO_RECICLADO_TOTAL = 1
@@ -694,12 +711,16 @@ class Campana(models.Model):
     ESTADO_DEPURADA = 5
     """La campaña ya fue depurada"""
 
+    ESTADO_BORRADA = 6
+    """La campaña ya fue borrada"""
+
     ESTADOS = (
         (ESTADO_EN_DEFINICION, '(en definicion)'),
         (ESTADO_ACTIVA, 'Activa'),
         (ESTADO_PAUSADA, 'Pausada'),
         (ESTADO_FINALIZADA, 'Finalizada'),
         (ESTADO_DEPURADA, 'Depurada'),
+        (ESTADO_BORRADA, 'Borrada'),
     )
 
     nombre = models.CharField(
@@ -730,6 +751,37 @@ class Campana(models.Model):
         related_name='campanas'
     )
 
+
+    def puede_finalizarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no finalizar.
+
+        Actualmente solo chequea el estado de la campaña.
+
+        :returns: bool - True si la campaña puede finalizarse
+        """
+        return self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
+
+    def puede_depurarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no depurar.
+
+        Actualmente solo chequea el estado de la campaña.
+
+        :returns: bool - True si la campaña puede depurarse
+        """
+        return self.estado == Campana.ESTADO_FINALIZADA
+
+    def puede_borrarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no borrar.
+
+        Actualmente solo chequea el estado de la campaña.
+
+        :returns: bool - True si la campaña puede borrarse.
+        """
+        return self.estado == Campana.ESTADO_DEPURADA
+
     def activar(self):
         """
         Setea la campaña como ACTIVA
@@ -754,25 +806,15 @@ class Campana(models.Model):
                 campana_id=self.pk, numero_intento=numero_intento,
                 timestamp_ultimo_evento=timestamp_ultimo_evento)
 
-    def puede_finalizarse(self):
-        """Metodo que realiza los chequeos necesarios del modelo, y
-        devuelve booleano indincando si se puede o no finalizar.
-
-        Actualmente solo chequea el estado de la campaña.
-
-        :returns: bool - True si la campaña puede finalizarse
+    def borrar(self):
         """
-        return self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
-
-    def puede_depurarse(self):
-        """Metodo que realiza los chequeos necesarios del modelo, y
-        devuelve booleano indincando si se puede o no depurar.
-
-        Actualmente solo chequea el estado de la campaña.
-
-        :returns: bool - True si la campaña puede depurarse
+        Setea la campaña como BORRADA
         """
-        return self.estado == Campana.ESTADO_FINALIZADA
+        logger.info("Seteando campana %s como BORRADA", self.id)
+        assert self.puede_borrarse()
+
+        self.estado = Campana.ESTADO_BORRADA
+        self.save()
 
     def finalizar(self):
         """
@@ -1227,17 +1269,6 @@ class Campana(models.Model):
                         lista_actuaciones_validas.append(actuacion)
         return lista_actuaciones_validas
 
-    # Este metodo ya no existe. La finalizacion fue movida
-    # al controlador/servicio EsperadorParaDepuracionSegura
-    # def procesar_finalizada(self):
-    #     """
-    #     Este método se encarga de invocar los pasos necesarios en el proceso
-    #     de deuración de eventos de contactos de la campaña.
-    #     """
-
-    def __unicode__(self):
-        return self.nombre
-
     def get_nombre_contexto_para_asterisk(self):
         """Devuelve un texto para ser usado en Asterisk,
         para nombrar el contexto asociado a la campana.
@@ -1278,6 +1309,11 @@ class Campana(models.Model):
                         'cantidad_canales': ["La cantidad de canales debe ser\
                             menor a la cantidad de contactos de la base de datos."]
                     })
+
+    def __unicode__(self):
+        return self.nombre
+
+
 
 
 #==============================================================================

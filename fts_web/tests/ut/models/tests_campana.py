@@ -10,6 +10,8 @@ from django.utils.unittest.case import skipIf
 from fts_web.models import Campana, Actuacion
 from fts_web.tests.utiles import FTSenderBaseTest
 
+from mock import Mock, patch
+
 
 class ObtenerVencidasParaFinalizarTest(FTSenderBaseTest):
     """Clase para testear Campana.objects.obtener_vencidas_para_finalizar()"""
@@ -115,3 +117,52 @@ class ObtenerVencidasParaFinalizarTest(FTSenderBaseTest):
     def test_devuelve_de_manana_sin_actuaciones(self):
         # FIXME: implementar tests y funcionalidad!
         pass
+
+
+class EliminarCampanaTest(FTSenderBaseTest):
+
+    def test_campana_puede_borrarse_falla(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+        campana.estado = Campana.ESTADO_FINALIZADA
+
+        # -----
+
+        self.assertEqual(campana.puede_borrarse(), False)
+
+    def test_campana_puede_borrarse(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+        campana.estado = Campana.ESTADO_DEPURADA
+
+        # -----
+
+        self.assertEqual(campana.puede_borrarse(), True)
+
+    def test_campana_borrar_falla_con_estado_finalizada(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+        campana.estado = Campana.ESTADO_FINALIZADA
+
+        # -----
+        self.assertRaises(AssertionError, campana.borrar)
+
+    def test_campana_borrar_con_estado_depurada(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+        campana.estado = Campana.ESTADO_DEPURADA
+
+        # -----
+        campana.borrar()
+        self.assertEqual(campana.estado, Campana.ESTADO_BORRADA)
+
+    def test_campana_filtro_de_borradas(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+        campana.estado = Campana.ESTADO_DEPURADA
+
+        # -----
+        campana.borrar()
+
+        with self.assertRaises(Campana.DoesNotExist):
+            Campana.objects.get(id=1)

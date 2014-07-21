@@ -133,19 +133,46 @@
                                         {{ campana.get_estado_display }}
                                     </td>
                                     <td>
-                                        <a href="{% url 'tipo_reciclado_campana' campana.pk %}">
-                                            <button type="button" class="btn btn-primary btn-sm">
-                                                <span class="glyphicon glyphicon-retweet"></span>
-                                                Reciclar
-                                            </button>
-                                        </a>                                      
+                                        <i>Terminando procesamiento...</i>
                                     </td>                            
                                 </tr>
                             {% empty %}
                                 <tr>
                                     <td colspan="6">
                                         <p class="text-center text-danger">
-                                            <em>No se encontraron Campañas.</em>
+                                            <em>No se encontraron campañas finalizadas sin depurar.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            {% for campana in depuradas %}
+                                <tr>
+                                    <td width="45%">                          
+                                        <a href="{% url 'detalle_campana' campana.id %}">{{ campana.nombre }}</a>
+                                    </td>
+                                    <td>
+                                        Finalizada
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'tipo_reciclado_campana' campana.pk %}">
+                                            <button type="button" class="btn btn-primary btn-sm">
+                                                <span class="glyphicon glyphicon-retweet"></span>
+                                                Reciclar
+                                            </button>
+                                        </a>
+                                        <a href="{% url 'campana_elimina' campana.pk %}">
+                                            <button type="button" class="btn btn-danger btn-sm">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                                Eliminar
+                                            </button>
+                                        </a>                                   
+                                    </td>                            
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron campañas depuradas.</em>
                                         </p>
                                     </td>
                                 </tr>
