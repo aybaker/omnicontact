@@ -416,8 +416,16 @@ class Contacto(models.Model):
 #==============================================================================
 # Campaña
 #==============================================================================
+class CampanasNoBorradasManagerMixin(object):
+    """
+    Manager Mixin de Campana.
+    """
+    def get_queryset(self):
+        return super(CampanaManager, self).get_queryset().\
+            exclude(estado=Campana.ESTADO_BORRADA)
 
-class CampanaManager(models.Manager):
+
+class CampanaManager(models.Manager, CampanasNoBorradasManagerMixin):
     """Manager para Campanas"""
 
     def obtener_activas(self):
@@ -630,6 +638,7 @@ upload_to_audios_originales = upload_to("audios_reproduccion", 95)
 class Campana(models.Model):
     """Una campaña del call center"""
 
+    objects_default = models.Manager()
     objects = CampanaManager()
 
     TIPO_RECICLADO_TOTAL = 1
