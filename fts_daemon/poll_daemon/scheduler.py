@@ -278,11 +278,11 @@ class RoundRobinTracker(object):
         while True:
 
             if self.max_iterations is not None:
-                iter_num += 1
                 if iter_num >= self.max_iterations:
                     raise CantidadMaximaDeIteracionesSuperada("Se supero la "
                         "cantidad maxima de iteraciones: {0}".format(
                             self.max_iterations))
+                iter_num += 1
 
             # Publicamos estadisticas si corresponde
             self.publish_statistics(sleeping=False)
