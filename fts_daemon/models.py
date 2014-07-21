@@ -956,23 +956,26 @@ class RecicladorContactosEventoDeContacto(models.Manager):
         assert campana.estado == Campana.ESTADO_FINALIZADA,\
             "Solo se aplica la búsqueda a campanas finalizadas"
 
-        contactos_reciclados = []
+        contactos_reciclados = set()
         for tipo_reciclado in tipos_reciclado:
             if int(tipo_reciclado) == Campana.TIPO_RECICLADO_PENDIENTES:
-                contactos_reciclados +=\
-                    self._obtener_contactos_pendientes(campana)
+                contactos_reciclados.update(
+                    self._obtener_contactos_pendientes(campana))
             elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_OCUPADOS:
-                contactos_reciclados +=\
-                    self._obtener_contactos_ocupados(campana)
+                contactos_reciclados.update(
+                    self._obtener_contactos_ocupados(campana))
             elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_NO_CONTESTADOS:
-                contactos_reciclados += \
-                    self._obtener_contactos_no_contestados(campana)
+                contactos_reciclados.update(
+                    self._obtener_contactos_no_contestados(campana))
             elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_NUMERO_ERRONEO:
-                contactos_reciclados += \
-                    self._obtener_contactos_numero_erroneo(campana)
+                contactos_reciclados.update(
+                    self._obtener_contactos_numero_erroneo(campana))
             elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_LLAMADA_ERRONEA:
-                contactos_reciclados += \
-                    self._obtener_contactos_llamada_erronea(campana)
+                contactos_reciclados.update(
+                    self._obtener_contactos_llamada_erronea(campana))
+            else:
+                assert False, "El tipo de reciclado es invalido: {0}".format(
+                    tipo_reciclado)
         return contactos_reciclados
 
     def _obtener_contactos_pendientes(self, campana):
@@ -987,7 +990,7 @@ class RecicladorContactosEventoDeContacto(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
+        sql = """SELECT telefono
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
@@ -1019,7 +1022,7 @@ class RecicladorContactosEventoDeContacto(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
+        sql = """SELECT telefono
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
@@ -1052,7 +1055,7 @@ class RecicladorContactosEventoDeContacto(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
+        sql = """SELECT telefono
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
@@ -1086,7 +1089,7 @@ class RecicladorContactosEventoDeContacto(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
+        sql = """SELECT telefono
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
@@ -1120,7 +1123,7 @@ class RecicladorContactosEventoDeContacto(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
+        sql = """SELECT telefono
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
