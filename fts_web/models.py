@@ -788,7 +788,6 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_BORRADA
         self.save()
 
-
     def finalizar(self):
         """
         Setea la campaña como finalizada.
@@ -1246,6 +1245,15 @@ class Campana(models.Model):
         """
         assert self.id
         return 'campania_{0}'.format(self.id)
+
+    def verifica_depurada(self):
+        """
+        Este método verifica si la instancia de la Campana ya fue depurada.
+        Devuelve booleano.
+        """
+        if self.estado == Campana.ESTADO_DEPURADA:
+            return True
+        return False
 
     def clean(self, *args, **kwargs):
         """
