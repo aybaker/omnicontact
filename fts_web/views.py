@@ -69,7 +69,7 @@ class GrupoAtencionMixin(object):
     """
 
     @transaction.atomic
-    def process_all_forms_in_tx(self, form):
+    def process_all_forms_in_tx(self, form, update=False):
         """
         Este método se encarga de validar el
         formularios GrupoAtencionForm y hacer
@@ -93,10 +93,13 @@ class GrupoAtencionMixin(object):
         if is_valid:
             formset_agente_grupo_atencion.save()
 
+            message = '<strong>Operación Exitosa!</strong>\
+            Se llevó a cabo con éxito la operación.'
+
             messages.add_message(
                 self.request,
                 messages.SUCCESS,
-                "El grupo de atencion fue creado exitosamente",
+                message,
             )
 
             try:
@@ -138,7 +141,7 @@ class GrupoAtencionMixin(object):
 
             return redirect(self.get_success_url())
         else:
-            if form.is_valid():
+            if form.is_valid() and not update:
                 self.object.delete()
                 self.object = None
 
@@ -189,49 +192,37 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
         return reverse('lista_grupo_atencion')
 
 
-# class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
-#     """
-#     Esta vista actualiza el objeto GrupoAtencion
-#     seleccionado.
-#     """
+class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
+    """
+    Esta vista actualiza el objeto GrupoAtencion
+    seleccionado.
+    """
 
-#     template_name = 'grupo_atencion/grupo_atencion.html'
-#     model = GrupoAtencion
-#     context_object_name = 'grupo_atencion'
-#     form_class = GrupoAtencionForm
-#     formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
+    template_name = 'grupo_atencion/grupo_atencion.html'
+    model = GrupoAtencion
+    context_object_name = 'grupo_atencion'
+    form_class = GrupoAtencionForm
+    formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
 
-#     def get_context_data(self, **kwargs):
-#         context = super(
-#             GrupoAtencionUpdateView, self).get_context_data(**kwargs)
+    def get_context_data(self, **kwargs):
+        context = super(
+            GrupoAtencionUpdateView, self).get_context_data(**kwargs)
 
-#         if 'formset_agente_grupo_atencion' not in context:
-#             context['formset_agente_grupo_atencion'] = \
-#             self.formset_agente_grupo_atencion(
-#                 instance=self.object
-#             )
-#         return context
+        if 'formset_agente_grupo_atencion' not in context:
+            context['formset_agente_grupo_atencion'] = \
+            self.formset_agente_grupo_atencion(
+                instance=self.object
+            )
+        return context
 
-#     def form_valid(self, form):
-#         return self.process_all_forms(form)
+    def form_valid(self, form):
+        return self.process_all_forms_in_tx(form, update=True)
 
-#     def form_invalid(self, form):
-#         return self.process_all_forms(form)
+    def form_invalid(self, form):
+        return self.process_all_forms_in_tx(form, update=True)
 
-#     def get_success_url(self):
-#         message = '<strong>Operación Exitosa!</strong>\
-#         Se llevó a cabo con éxito la actualización del\
-#         Grupo de Atención.'
-
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             message,
-#         )
-
-#         return reverse(
-#             'edita_grupo_atencion',
-#             kwargs={"pk": self.object.pk})
+    def get_success_url(self):
+        return reverse('lista_grupo_atencion')
 
 
 # class GrupoAtencionDeleteView(DeleteView):
