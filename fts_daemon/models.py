@@ -938,7 +938,7 @@ class GestionDeLlamadasManager(models.Manager):
         return values
 
 
-class RecicladorContactosEventoDeContacto(models.Manager):
+class RecicladorContactosEventoDeContactoManager(models.Manager):
     """
     Este manager se encarga de obtener los contactos según el tipo de
     reciclado de campana que se realice. 
