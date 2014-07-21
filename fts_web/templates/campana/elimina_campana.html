@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel panel-info">
+        <!-- Default panel contents -->
+        <div class="panel-heading">                
+            <h4 class="inline">Campaña</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-8">
+                <form method="post">{% csrf_token %}
+                    <h4>Campaña <strong>{{ object.nombre }}</strong></h4>
+                    <h4>¿Esta seguro que desea eliminar esta Campaña? </h4> 
+                    
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <span class="glyphicon glyphicon-remove"></span> Eliminar
+                    </button>
+                    <a href="{% url 'lista_campana' %}">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
