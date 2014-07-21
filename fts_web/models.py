@@ -626,19 +626,24 @@ class Campana(models.Model):
 
     TIPO_RECICLADO_TOTAL = 1
     TIPO_RECICLADO_PENDIENTES = 2
+
     TIPO_RECICLADO_OCUPADOS = 3
     TIPO_RECICLADO_NO_CONTESTADOS = 4
     TIPO_RECICLADO_NUMERO_ERRONEO = 5
     TIPO_RECICLADO_LLAMADA_ERRONEA = 6
 
-    TIPO_RECICLADO = (
+    TIPO_RECICLADO_UNICO = (
         (TIPO_RECICLADO_TOTAL, 'TOTAL'),
         (TIPO_RECICLADO_PENDIENTES, 'PENDIENTES'),
+    )
+
+    TIPO_RECICLADO_CONJUNTO = (
         (TIPO_RECICLADO_OCUPADOS, 'OCUPADOS'),
         (TIPO_RECICLADO_NO_CONTESTADOS, 'NO CONTESTO'),
         (TIPO_RECICLADO_NUMERO_ERRONEO, 'NUMERO ERRONEO'),
         (TIPO_RECICLADO_LLAMADA_ERRONEA, 'LLAMADA ERRONEA'),
     )
+
     ESTILO_VERDE_ROJO_NARANJA = Style(
         background='transparent',
         plot_background='transparent',
@@ -1183,180 +1188,6 @@ class Campana(models.Model):
     #     Este método se encarga de invocar los pasos necesarios en el proceso
     #     de deuración de eventos de contactos de la campaña.
     #     """
-
-    def obtener_contactos_pendientes(self):
-        """
-        Este método se encarga de devolver los contactos que no tengan el
-        evento originate generado, o sea, que están pendientes.
-        """
-        from fts_daemon.models import EventoDeContacto
-
-        assert self.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
-
-        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
-
-        cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
-            FROM fts_web_contacto INNER JOIN {0}
-            ON fts_web_contacto.id = {0}.contacto_id
-            WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
-            HAVING not( %s = ANY(array_agg(evento)))
-        """.format(nombre_tabla)
-
-        ###
-        # FIXME: Remover el .format() de sql.
-        ###
-
-        params = [self.pk, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL]
-
-        with log_timing(logger,
-                        "obtener_contactos_pendientes() tardo %s seg"):
-            cursor.execute(sql, params)
-            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
-            values = cursor.fetchall()
-
-        return values
-
-    def obtener_contactos_ocupados(self):
-        """
-        Este método se encarga de devolver los contactos que presentan en
-        alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_BUSY y
-        que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
-        """
-        from fts_daemon.models import EventoDeContacto
-
-        assert self.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
-
-        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
-
-        cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
-            FROM fts_web_contacto INNER JOIN {0}
-            ON fts_web_contacto.id = {0}.contacto_id
-            WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
-            HAVING %s = ANY(array_agg(evento))
-            AND not( %s = ANY(array_agg(evento)))
-        """.format(nombre_tabla)
-
-        params = [self.pk, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
-                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
-
-        with log_timing(logger,
-                        "obtener_contactos_ocupados() tardo %s seg"):
-            cursor.execute(sql, params)
-            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
-            values = cursor.fetchall()
-
-        return values
-
-    def obtener_contactos_no_contestados(self):
-        """
-        Este método se encarga de devolver los contactos que presentan en
-        alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_NOANSWER y
-        que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
-        """
-        from fts_daemon.models import EventoDeContacto
-
-        assert self.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
-
-        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
-
-        cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
-            FROM fts_web_contacto INNER JOIN {0}
-            ON fts_web_contacto.id = {0}.contacto_id
-            WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
-            HAVING %s = ANY(array_agg(evento))
-            AND not( %s = ANY(array_agg(evento)))
-        """.format(nombre_tabla)
-
-        params = [self.pk,
-                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
-                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
-
-        with log_timing(logger,
-                        "obtener_contactos_no_contestados() tardo %s seg"):
-            cursor.execute(sql, params)
-            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
-            values = cursor.fetchall()
-
-        return values
-
-    def obtener_contactos_numero_erroneo(self):
-        """
-        Este método se encarga de devolver los contactos que presentan en
-        alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_CONGESTION y
-        que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
-        """
-        from fts_daemon.models import EventoDeContacto
-
-        assert self.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
-
-        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
-
-        cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
-            FROM fts_web_contacto INNER JOIN {0}
-            ON fts_web_contacto.id = {0}.contacto_id
-            WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
-            HAVING %s = ANY(array_agg(evento))
-            AND not( %s = ANY(array_agg(evento)))
-        """.format(nombre_tabla)
-
-        params = [self.pk,
-                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION,
-                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
-
-        with log_timing(logger,
-                        "obtener_contactos_numero_erroneo() tardo %s seg"):
-            cursor.execute(sql, params)
-            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
-            values = cursor.fetchall()
-
-        return values
-
-    def obtener_contactos_llamada_erronea(self):
-        """
-        Este método se encarga de devolver los contactos que presentan en
-        alguno de sus evento el evento EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL
-        y que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
-        """
-        from fts_daemon.models import EventoDeContacto
-
-        assert self.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
-
-        nombre_tabla = "EDC_depurados_{0}".format(int(self.pk))
-
-        cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
-            FROM fts_web_contacto INNER JOIN {0}
-            ON fts_web_contacto.id = {0}.contacto_id
-            WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
-            HAVING %s = ANY(array_agg(evento))
-            AND not( %s = ANY(array_agg(evento)))
-        """.format(nombre_tabla)
-
-        params = [self.pk,
-                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
-                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
-
-        with log_timing(logger,
-                        "obtener_contactos_llamada_erronea() tardo %s seg"):
-            cursor.execute(sql, params)
-            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
-            values = cursor.fetchall()
-
-        return values
 
     def __unicode__(self):
         return self.nombre

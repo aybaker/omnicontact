@@ -21,7 +21,7 @@ from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_web.errors import (FtsAudioConversionError,
     FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
     FtsParserOpenFileError, FtsRecicladoCampanaError,
-    FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError)
+    FtsDepuraBaseDatoContactoError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
@@ -32,6 +32,10 @@ from fts_web.models import (
 from fts_web.parser import autodetectar_parser
 import logging as logging_
 from fts_daemon.tasks import finalizar_campana_async
+from fts_web.reciclador_base_datos_contacto.reciclador import (
+    RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
+    CampanaTipoRecicladoInvalidoError)
+
 
 
 logger = logging_.getLogger(__name__)
@@ -1019,14 +1023,25 @@ class TipoRecicladoCampanaView(FormView):
             kwargs)
 
     def form_valid(self, form):
-        tipo_reciclado = form.cleaned_data['tipo_reciclado']
+        # TODO: Validar y mostrar error si no lo hace.
+        tipo_reciclado_unico = list(form.cleaned_data['tipo_reciclado_unico'])
+        tipo_reciclado_conjunto = form.cleaned_data['tipo_reciclado_conjunto']
+        assert not (len(tipo_reciclado_unico) and len(tipo_reciclado_conjunto))
+        assert (len(tipo_reciclado_unico) or len(tipo_reciclado_conjunto))
+
+        tipos_reciclado = tipo_reciclado_unico
+        if tipo_reciclado_conjunto:
+            tipos_reciclado = tipo_reciclado_conjunto
 
         try:
-            # Intenta generar la base de datos que se usará en la campana
-            # reciclada.
-            bd_contacto_reciclada = BaseDatosContacto.objects.\
-                reciclar_base_datos(self.campana_id, tipo_reciclado)
-        except FtsRecicladoBaseDatosContactoError, error:
+            # Utiliza la capa de servicio para la creación de la base de datos
+            # reciclada que usara la campana que se está reciclando.
+            reciclador_base_datos_contacto = RecicladorBaseDatosContacto()
+            bd_contacto_reciclada = reciclador_base_datos_contacto.reciclar(
+                self.campana_id, tipos_reciclado)
+
+        except (CampanaEstadoInvalidoError,
+                CampanaTipoRecicladoInvalidoError) as error:
             message = '<strong>Operación Errónea!</strong>\
             No se pudo reciclar la Base de Datos de la campana. {0}'.format(
                 error)
