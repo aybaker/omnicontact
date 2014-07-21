@@ -45,12 +45,12 @@ if 'SKIP_SELENIUM' not in os.environ:
                 self.assertTrueSelenium(
                     self.selenium.page_source.find(ga.nombre) >= 0)
 
-            # # Renderizamos pagina de edicion
-            # for ga in grupos:
-            #     url = reverse('edita_grupo_atencion', kwargs={"pk": ga.id})
-            #     self.render_y_chequear(url)
-            #     self.assertTrueSelenium(
-            #         self.selenium.page_source.find(ga.nombre) >= 0)
+            # Renderizamos pagina de edicion
+            for ga in grupos:
+                url = reverse('edita_grupo_atencion', kwargs={"pk": ga.id})
+                self.render_y_chequear(url)
+                self.assertTrueSelenium(
+                    self.selenium.page_source.find(ga.nombre) >= 0)
 
             # El siguiente chequeo va mas alla de lo que tenemos q' hacer
             # (el criterio de aceptacion es testear solo el render de la
