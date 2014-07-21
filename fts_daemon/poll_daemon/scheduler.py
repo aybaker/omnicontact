@@ -9,8 +9,8 @@ import time
 
 from django.conf import settings
 from django.core.cache import get_cache
-from fts_daemon import tasks
 from fts_daemon import llamador_contacto
+from fts_daemon import tasks
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
 from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
@@ -18,6 +18,7 @@ from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
     TodosLosContactosPendientesEstanEnCursoError
 from fts_daemon.poll_daemon.originate_throttler import OriginateThrottler
 from fts_daemon.poll_daemon.statistics import StatisticsService
+from fts_web.errors import FTSOptimisticLockingError
 import logging as _logging
 
 
@@ -31,11 +32,6 @@ BANEO_TODOS_LOS_PENDIENTES_EN_CURSO = "BANEO_TLPEN"
 """Cuando la campaña posee contactos pendientes, pero
 todos estos contactos ya están en curso, se las banea
 con esta 'razon'"""
-
-BANEO_CAMPANA_FINALIZADA = "BANEO_CAMPANA_FINALIZADA"
-"""Luego q' la campaña es baneada con `BANEO_NO_MAS_CONTACTOS`,
-la campaña es finalizada. Para evitar que se siga intentando
-finalizar, el baneo es cambiado a BANEO_CAMPANA_FINALIZADA"""
 
 
 class CantidadMaximaDeIteracionesSuperada(Exception):
@@ -99,9 +95,17 @@ class RoundRobinTracker(object):
 
         self._statistics_service.publish_statistics(stats)
 
-    def _esperar_y_finalizar_campana(self, campana_id):
-        """Lanza tarea asincrona de espera y finalizacion"""
-        tasks.esperar_y_finalizar_campana_async(campana_id)
+    def _finalizar_y_programar_depuracion(self, campana):
+        """Finaliza la campaña, y lanza tarea asíncrona para depurarla"""
+        try:
+            campana.finalizar()
+        except FTSOptimisticLockingError:
+            logger.warn("Se detecto FTSOptimisticLockingError. "
+                        "Ignoraremos este error, y NO se programara "
+                        "la depurcion", exc_info=True)
+            return
+
+        tasks.esperar_y_depurar_campana_async(campana.id)
 
     #
     # Eventos
@@ -141,7 +145,7 @@ class RoundRobinTracker(object):
         self._campana_call_status.banear_campana(campana,
             reason=BANEO_NO_MAS_CONTACTOS)
 
-        self._esperar_y_finalizar_campana(campana.id)
+        self._finalizar_y_programar_depuracion(campana.id)
 
     def onLimiteDeCanalesAlcanzadoError(self, campana):
         """Ejecutado por generator() cuando se detecta
@@ -463,9 +467,6 @@ class RoundRobinTracker(object):
                 except NoMasContactosEnCampana:
                     # Esta excepcion es generada cuando la campaña esta
                     # en curso (el estado), pero ya no tiene pendientes
-                    # FIXME: aca habria q' marcar la campana como finalizada?
-                    # El tema es que puede haber llamadas en curso, pero esto
-                    # no deberia ser problema...
                     self.onNoMasContactosEnCampana(tracker_campana.campana)
                 except LimiteDeCanalesAlcanzadoError:
                     # ESTO NO DEBERIA SUCEDER! No debio ejecutarse

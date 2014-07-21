@@ -26,7 +26,7 @@ class StatisticsServiceTests(FTSenderBaseTest):
         ss = StatisticsService(cache=cache)
         ss.publish_statistics({1: 2})
 
-        self.assertTrue(cache.set.assert_called())
+        self.assertTrue(cache.set.call_count > 0)
 
     def test_get_statistics_calls_get(self):
         """Testea que get_statistics() llama a cache.get()"""
@@ -39,7 +39,7 @@ class StatisticsServiceTests(FTSenderBaseTest):
         ss = StatisticsService(cache=cache)
         ret = ss.get_statistics()
 
-        self.assertTrue(cache.get.assert_called())
+        self.assertTrue(cache.get.call_count > 0)
         self.assertDictEqual(stats, ret)
 
     def test_shoud_update_returns_true(self):

@@ -2,15 +2,14 @@
 
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.cache import get_cache
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
-from django.db import transaction
-from django.http.response import HttpResponse
 from django.utils import timezone
-from django.conf import settings
 from django.views.generic import (
     CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
     RedirectView, TemplateView)
@@ -18,6 +17,7 @@ from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config, create_queue_config_file
 from fts_daemon.audio_conversor import convertir_audio_de_campana
 from fts_daemon.poll_daemon.statistics import StatisticsService
+from fts_daemon.tasks import esperar_y_depurar_campana_async
 from fts_web.errors import (FtsAudioConversionError,
     FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
     FtsParserOpenFileError, FtsRecicladoCampanaError,
@@ -31,11 +31,9 @@ from fts_web.models import (
     BaseDatosContacto, Opcion)
 from fts_web.parser import autodetectar_parser
 import logging as logging_
-from fts_daemon.tasks import finalizar_campana_async
 from fts_web.reciclador_base_datos_contacto.reciclador import (
     RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
     CampanaTipoRecicladoInvalidoError)
-
 
 
 logger = logging_.getLogger(__name__)
@@ -929,10 +927,12 @@ class FinalizaCampanaView(RedirectView):
 
     def post(self, request, *args, **kwargs):
         campana = Campana.objects.get(pk=request.POST['campana_id'])
-        if campana.estado == Campana.ESTADO_PAUSADA:
-            finalizar_campana_async(campana.id)
+
+        if campana.puede_finalizarse():
+            campana.finalizar()
+            esperar_y_depurar_campana_async(campana.id)
             message = '<strong>Operación Exitosa!</strong>\
-            Se ha programado la finalización de la campaña.'
+            La campaña ha sido finalizada.'
 
             messages.add_message(
                 self.request,
@@ -941,8 +941,7 @@ class FinalizaCampanaView(RedirectView):
             )
         else:
             message = '<strong>Operación Errónea!</strong>\
-            No se pudo finalizar la Campaña. Verifique que este pausada\
-            para poder finalizarla.'
+            El estado actual de la campaña no permite su finalización.'
 
             messages.add_message(
                 self.request,

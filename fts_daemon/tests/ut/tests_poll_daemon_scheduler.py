@@ -20,8 +20,8 @@ class FinalizacionDeCampanaTests(FTSenderBaseTest):
     """Testea finalizacion de llamadas por parte del scheduler"""
 
     def test_finaliza_campana_baneada_sin_llamada_en_curso(self):
-        """Testea que se finalicen campañas que ya no posean contactos,
-        cuando dicha campaña no posee llamadas en curso
+        """Testea que se finalicen campanas que ya no posean contactos,
+        cuando dicha campana no posee llamadas en curso
         """
 
         campana = Campana(id=1)
@@ -39,8 +39,8 @@ class FinalizacionDeCampanaTests(FTSenderBaseTest):
 
         scheduler.sleep(20.0)
 
-        scheduler._finalizador_de_campanas.assert_called()
-        scheduler.real_sleep.assert_called()
+        scheduler._finalizador_de_campanas.assert_called_once_with()
+        scheduler.real_sleep.assert_called_once_with()
 
     def test_no_finaliza_campana_baneada_con_llamada_en_curso(self):
         """Testea que NO se finalicen campanas que ya no posean contactos,
@@ -72,6 +72,6 @@ class FinalizacionDeCampanaTests(FTSenderBaseTest):
         scheduler.sleep(20.0)
 
         scheduler._asterisk_call_status._ami_status_tracker.\
-            get_status_por_campana.assert_called()
+            get_status_por_campana.assert_called_once_with()
         self.assertFalse(scheduler._finalizador_de_campanas.called)
-        scheduler.real_sleep.assert_called()
+        scheduler.real_sleep.assert_called_once_with()

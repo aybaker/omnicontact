@@ -18,7 +18,8 @@ from django.db import models, transaction, connection
 from django.db.models import Sum
 from django.utils.timezone import now
 from fts_web.errors import (FtsRecicladoCampanaError,
-    FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError)
+    FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError,
+    FTSOptimisticLockingError)
 from fts_web.utiles import crear_archivo_en_media_root, upload_to, log_timing
 import pygal
 from pygal.style import Style
@@ -483,9 +484,9 @@ class CampanaManager(models.Manager):
 
     def obtener_vencidas_para_finalizar(self):
         """GENERADOR, devuelve las campañas que deberían ser finalizadas.
-        SOLO verifica estado, fechas, actuaciones, etc. pero tomando
-        los datos de la BD. O sea, NO tiene en cuenta si la
-        campana posee llamadas en curso o no.
+        SOLO verifica estado, fechas, actuaciones, etc., tomando
+        los datos de la BD, pero NO tiene en cuenta si la
+        campana posee llamadas en curso, etc.
         """
         # Aca necesitamos *localtime*. Usamos `now_ref` como fecha de
         # referencia para todos los calculos
@@ -558,6 +559,9 @@ class CampanaManager(models.Manager):
                     "pero todas son anteriores a hora actual", campana.id)
                 yield campana
                 continue
+
+            # FIXME: falta devolver campañas que terminan en fechas
+            # futuras, pero NO poseen actuaciones para dichas fechas
 
     def reciclar_campana(self, campana_id, bd_contacto):
         """
@@ -687,11 +691,15 @@ class Campana(models.Model):
     ESTADO_FINALIZADA = 4
     """La campaña fue finalizada, automatica o manualmente"""
 
+    ESTADO_DEPURADA = 5
+    """La campaña ya fue depurada"""
+
     ESTADOS = (
         (ESTADO_EN_DEFINICION, '(en definicion)'),
         (ESTADO_ACTIVA, 'Activa'),
         (ESTADO_PAUSADA, 'Pausada'),
         (ESTADO_FINALIZADA, 'Finalizada'),
+        (ESTADO_DEPURADA, 'Depurada'),
     )
 
     nombre = models.CharField(
@@ -756,15 +764,51 @@ class Campana(models.Model):
         """
         return self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
 
+    def puede_depurarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no depurar.
+
+        Actualmente solo chequea el estado de la campaña.
+
+        :returns: bool - True si la campaña puede depurarse
+        """
+        return self.estado == Campana.ESTADO_FINALIZADA
+
     def finalizar(self):
         """
         Setea la campaña como finalizada.
+
+        Obviamente, este metodo pasa la campaña al estado FINALIZADA,
+        sin hacer ningun tipo de control 'externo' al modelo, como
+        por ejemplo, si hay llamadas en curso para esta Campaña.
+
+        Antes de implementar FTS-248 (cuando se introdujo ESTADO_DEPURADA),
+        ESTADO_FINALIZADA implicaba que la campaña ya estaba depurada.
+        Ahora (post FTS-248) ESTADO_FINALIZADA significa que la campaña está
+        finalizada (o sea, ya no debe procesarse), pero todavia no está
+        depurada.
+
+        :raise FTSOptimisticLockingError: si otro thread/proceso ha actualizado
+                                          la campaña en la BD
         """
         logger.info("Seteando campana %s como ESTADO_FINALIZADA", self.id)
-        # TODO: esta bien generar error si el modo actual es ESTADO_FINALIZADA?
         assert self.puede_finalizarse()
 
+        update_count = Campana.objects.filter(
+            id=self.id, estado=self.estado).update(
+                estado=Campana.ESTADO_FINALIZADA)
+        if update_count != 1:
+            raise(FTSOptimisticLockingError("No se pudo cambiar el estado "
+                                            "de la campana en BD"))
         self.estado = Campana.ESTADO_FINALIZADA
+        # self.save()
+
+    def depurar(self):
+        """Setea la campaña como depurada"""
+        # NO hace falta chequear por optimistick locking, ya que hay
+        # 1 solo proceso que pasa del estado FINALIZADA a DEPURADA
+        # (el depurador, ejceutado en Celery)
+        self.estado = Campana.ESTADO_DEPURADA
         self.save()
 
     def pausar(self):
@@ -961,7 +1005,7 @@ class Campana(models.Model):
         requerimientos de `_plpython_recalcular_aedc_completamente()`
         (ej: transacciones, etc.)
         """
-        assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
+        assert self.estado == Campana.ESTADO_FINALIZADA
         AgregacionDeEventoDeContacto.objects.\
             _plpython_recalcular_aedc_completamente(self)
 
@@ -1182,7 +1226,7 @@ class Campana(models.Model):
         return lista_actuaciones_validas
 
     # Este metodo ya no existe. La finalizacion fue movida
-    # al controlador/servicio EsperadorParaFinalizacionSegura
+    # al controlador/servicio EsperadorParaDepuracionSegura
     # def procesar_finalizada(self):
     #     """
     #     Este método se encarga de invocar los pasos necesarios en el proceso
