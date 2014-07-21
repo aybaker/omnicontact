@@ -808,6 +808,8 @@ class Campana(models.Model):
         # NO hace falta chequear por optimistick locking, ya que hay
         # 1 solo proceso que pasa del estado FINALIZADA a DEPURADA
         # (el depurador, ejceutado en Celery)
+        assert self.puede_depurarse(), \
+            "La campana no cumple los requisitos para poder depurarse"
         self.estado = Campana.ESTADO_DEPURADA
         self.save()
 
