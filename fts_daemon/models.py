@@ -953,8 +953,8 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         mismas.
         """
 
-        assert campana.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
+        assert campana.estado == Campana.ESTADO_DEPURADA,\
+            "Solo se aplica la búsqueda a campanas depuradas"
 
         contactos_reciclados = set()
         for tipo_reciclado in tipos_reciclado:
@@ -984,8 +984,8 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         evento originate generado, o sea, que están pendientes.
         """
 
-        assert campana.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
+        assert campana.estado == Campana.ESTADO_DEPURADA,\
+            "Solo se aplica la búsqueda a campanas depuradas"
 
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
@@ -1016,8 +1016,8 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
         """
 
-        assert campana.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
+        assert campana.estado == Campana.ESTADO_DEPURADA,\
+            "Solo se aplica la búsqueda a campanas depuradas"
 
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
@@ -1049,8 +1049,8 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
         """
 
-        assert campana.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
+        assert campana.estado == Campana.ESTADO_DEPURADA,\
+            "Solo se aplica la búsqueda a campanas depuradas"
 
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
@@ -1083,8 +1083,8 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
         """
 
-        assert campana.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
+        assert campana.estado == Campana.ESTADO_DEPURADA,\
+            "Solo se aplica la búsqueda a campanas depuradas"
 
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
@@ -1117,8 +1117,8 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         y que no tienen el evento EVENTO_ASTERISK_DIALSTATUS_ANSWER.
         """
 
-        assert campana.estado == Campana.ESTADO_FINALIZADA,\
-            "Solo se aplica la búsqueda a campanas finalizadas"
+        assert campana.estado == Campana.ESTADO_DEPURADA,\
+            "Solo se aplica la búsqueda a campanas depuradas"
 
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 

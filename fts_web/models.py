@@ -579,7 +579,7 @@ class CampanaManager(models.Manager, CampanasNoBorradasManagerMixin):
         """
         try:
             campana = self.get(pk=campana_id)
-            assert campana.estado == Campana.ESTADO_FINALIZADA
+            assert campana.estado == Campana.ESTADO_DEPURADA
 
         except Campana.DoesNotExist:
             logger.warn("No se pudo recuperar la Campana: %s", campana_id)
@@ -960,8 +960,8 @@ class Campana(models.Model):
             logger.info("Campana %s NO obtuvo estadísticas.", self.id)
 
     def obtener_estadisticas_render_graficos_reportes(self):
-        assert self.estado == Campana.ESTADO_FINALIZADA, \
-            "Solo se generan reportes de campanas finalizadas"
+        assert self.estado == Campana.ESTADO_DEPURADA, \
+            "Solo se generan reportes de campanas depuradas"
         estadisticas = self.calcular_estadisticas(
             AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE)
 
@@ -1074,7 +1074,7 @@ class Campana(models.Model):
         #Una campana que aún no se activo, no tendria porque devolver
         #estadísticas.
         assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA,
-            Campana.ESTADO_FINALIZADA)
+            Campana.ESTADO_DEPURADA)
 
         dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
             self.pk, self.cantidad_intentos, tipo_agregacion)
@@ -1199,7 +1199,7 @@ class Campana(models.Model):
         return file_url
 
     def obtener_url_reporte_csv_descargar(self):
-        assert self.estado == Campana.ESTADO_FINALIZADA
+        assert self.estado == Campana.ESTADO_DEPURADA
 
         dirname = 'reporte_campana'
         filename = "{0}-reporte.csv".format(self.id)

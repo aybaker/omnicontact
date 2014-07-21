@@ -459,6 +459,9 @@ class RoundRobinTracker(object):
                     yield tracker_campana.next()
                     loop__contactos_procesados += 1
                 except TodosLosContactosPendientesEstanEnCursoError:
+                    logger.debug(
+                        "TodosLosContactosPendientesEstanEnCursoError",
+                        exc_info=True)
                     self.onTodosLosContactosPendientesEstanEnCursoError(
                         tracker_campana.campana)
                     loop__TLCPEECE_detectado = True

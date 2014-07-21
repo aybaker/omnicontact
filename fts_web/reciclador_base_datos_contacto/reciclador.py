@@ -63,10 +63,10 @@ class RecicladorBaseDatosContacto(object):
         # Obtenemos la instancia de Campana que se esta reciclando y validamos
         # que se encuentre en el estado correcto.
         campana = self._obtener_campana(campana_id)
-        if campana.estado != Campana.ESTADO_FINALIZADA:
+        if campana.estado != Campana.ESTADO_DEPURADA:
             raise CampanaEstadoInvalidoError("El estado de la campana que "
                                              "se intenta reciclar no es: "
-                                             "ESTADO_FINALIZADA.")
+                                             "ESTADO_DEPURADA.")
 
         if Campana.TIPO_RECICLADO_TOTAL in tipos_reciclado:
             # Validamos que si el tipo de reciclado es TIPO_RECICLADO_TOTAL,

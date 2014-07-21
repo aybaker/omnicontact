@@ -45,6 +45,9 @@ class DepuradorDeCampanaWorkflow(object):
         EventoDeContacto.objects.depurar_eventos_de_contacto(campana.id)
 
         # Setea la campaña como depurada
+        # AQUI se realiza la transición de estado, de
+        #  FINALIZADA -> DEPURADA. Por lo tanto, mientras se realiza
+        #  la depuracion, la Campana se ve en estado FINALIZADA
         campana.depurar()
 
         return True

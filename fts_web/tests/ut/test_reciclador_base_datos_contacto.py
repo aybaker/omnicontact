@@ -23,7 +23,7 @@ class RecicladorBaseDatosContactoTests(FTSenderBaseTest):
         campana = Campana(id=1)
         campana.save = Mock()
         campana.bd_contacto = BaseDatosContacto(id=1)
-        campana.estado = Campana.ESTADO_FINALIZADA
+        campana.estado = Campana.ESTADO_DEPURADA
 
         reciclador = RecicladorBaseDatosContacto()
         reciclador._obtener_campana = Mock(return_value=campana)
@@ -54,7 +54,7 @@ class RecicladorBaseDatosContactoTests(FTSenderBaseTest):
         campana = Campana(id=1)
         campana.save = Mock()
         campana.bd_contacto = BaseDatosContacto(id=1)
-        campana.estado = Campana.ESTADO_FINALIZADA
+        campana.estado = Campana.ESTADO_DEPURADA
 
         reciclador = RecicladorBaseDatosContacto()
         reciclador._obtener_campana = Mock(return_value=campana)
@@ -75,7 +75,7 @@ class RecicladorBaseDatosContactoTests(FTSenderBaseTest):
         campana = Campana(id=1)
         campana.save = Mock()
         campana.bd_contacto = BaseDatosContacto(id=1)
-        campana.estado = Campana.ESTADO_FINALIZADA
+        campana.estado = Campana.ESTADO_DEPURADA
 
         reciclador = RecicladorBaseDatosContacto()
         reciclador._obtener_campana = Mock(return_value=campana)
@@ -96,7 +96,7 @@ class RecicladorBaseDatosContactoTests(FTSenderBaseTest):
         campana = Campana(id=1)
         campana.save = Mock()
         campana.bd_contacto = BaseDatosContacto(id=1)
-        campana.estado = Campana.ESTADO_FINALIZADA
+        campana.estado = Campana.ESTADO_DEPURADA
 
         reciclador = RecicladorBaseDatosContacto()
         reciclador._obtener_campana = Mock(return_value=campana)
@@ -115,7 +115,7 @@ class RecicladorBaseDatosContactoTests(FTSenderBaseTest):
         campana = Campana(id=1)
         campana.save = Mock()
         campana.bd_contacto = BaseDatosContacto(id=1)
-        campana.estado = Campana.ESTADO_FINALIZADA
+        campana.estado = Campana.ESTADO_DEPURADA
 
         reciclador = RecicladorBaseDatosContacto()
         reciclador._obtener_campana = Mock(return_value=campana)
@@ -131,7 +131,7 @@ class RecicladorBaseDatosContactoTests(FTSenderBaseTest):
         campana = Campana(id=1)
         campana.save = Mock()
         campana.bd_contacto = BaseDatosContacto(id=1)
-        campana.estado = Campana.ESTADO_FINALIZADA
+        campana.estado = Campana.ESTADO_DEPURADA
 
         bd_contacto = Mock()
 
@@ -154,7 +154,7 @@ class RecicladorBaseDatosContactoTests(FTSenderBaseTest):
         campana = Campana(id=1)
         campana.save = Mock()
         campana.bd_contacto = BaseDatosContacto(id=1)
-        campana.estado = Campana.ESTADO_FINALIZADA
+        campana.estado = Campana.ESTADO_DEPURADA
 
         func_mock.return_value = []
 
