@@ -479,6 +479,7 @@ class CampanaListView(ListView):
         context['activas'] = Campana.objects.obtener_activas()
         context['pausadas'] = Campana.objects.obtener_pausadas()
         context['finalizadas'] = Campana.objects.obtener_finalizadas()
+        context['depuradas'] = Campana.objects.obtener_depuradas()
         return context
 
 
