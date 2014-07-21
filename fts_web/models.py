@@ -734,6 +734,27 @@ class Campana(models.Model):
         related_name='campanas'
     )
 
+
+    def puede_finalizarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no finalizar.
+
+        Actualmente solo chequea el estado de la campaña.
+
+        :returns: bool - True si la campaña puede finalizarse
+        """
+        return self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
+
+    def puede_depurarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no depurar.
+
+        Actualmente solo chequea el estado de la campaña.
+
+        :returns: bool - True si la campaña puede depurarse
+        """
+        return self.estado == Campana.ESTADO_FINALIZADA
+
     def activar(self):
         """
         Setea la campaña como ACTIVA
@@ -758,25 +779,15 @@ class Campana(models.Model):
                 campana_id=self.pk, numero_intento=numero_intento,
                 timestamp_ultimo_evento=timestamp_ultimo_evento)
 
-    def puede_finalizarse(self):
-        """Metodo que realiza los chequeos necesarios del modelo, y
-        devuelve booleano indincando si se puede o no finalizar.
-
-        Actualmente solo chequea el estado de la campaña.
-
-        :returns: bool - True si la campaña puede finalizarse
+    def borrar(self):
         """
-        return self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA)
-
-    def puede_depurarse(self):
-        """Metodo que realiza los chequeos necesarios del modelo, y
-        devuelve booleano indincando si se puede o no depurar.
-
-        Actualmente solo chequea el estado de la campaña.
-
-        :returns: bool - True si la campaña puede depurarse
+        Setea la campaña como BORRADA
         """
-        return self.estado == Campana.ESTADO_FINALIZADA
+        logger.info("Seteando campana %s como BORRADA", self.id)
+        assert self.estado == Campana.ESTADO_DEPURADA
+        self.estado = Campana.ESTADO_BORRADA
+        self.save()
+
 
     def finalizar(self):
         """
