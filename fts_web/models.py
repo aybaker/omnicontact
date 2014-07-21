@@ -439,6 +439,10 @@ class CampanaManager(models.Manager):
         """Devuelve queryset para filtrar campañas en estado finalizadas."""
         return self.filter(estado=Campana.ESTADO_FINALIZADA)
 
+    def obtener_depuradas(self):
+        """Devuelve queryset para filtrar campañas en estado depuradas."""
+        return self.filter(estado=Campana.ESTADO_DEPURADA)
+
     def obtener_todas_para_generar_dialplan(self):
         """Devuelve campañas que deben ser tenidas en cuenta
         al generar el dialplan.
