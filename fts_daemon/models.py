@@ -1155,7 +1155,7 @@ class EventoDeContacto(models.Model):
     objects_gestion_llamadas = GestionDeLlamadasManager()
     objects_simulacion = SimuladorEventoDeContactoManager()
     objects_estadisticas = EventoDeContactoEstadisticasManager()
-    objects_reciclador_contactos = RecicladorContactosEventoDeContacto()
+    objects_reciclador_contactos = RecicladorContactosEventoDeContactoManager()
 
     EVENTO_CONTACTO_PROGRAMADO = 1
     """El contacto asociado al evento ha sido programado, o sea,
