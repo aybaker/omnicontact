@@ -1240,17 +1240,6 @@ class Campana(models.Model):
                         lista_actuaciones_validas.append(actuacion)
         return lista_actuaciones_validas
 
-    # Este metodo ya no existe. La finalizacion fue movida
-    # al controlador/servicio EsperadorParaDepuracionSegura
-    # def procesar_finalizada(self):
-    #     """
-    #     Este método se encarga de invocar los pasos necesarios en el proceso
-    #     de deuración de eventos de contactos de la campaña.
-    #     """
-
-    def __unicode__(self):
-        return self.nombre
-
     def get_nombre_contexto_para_asterisk(self):
         """Devuelve un texto para ser usado en Asterisk,
         para nombrar el contexto asociado a la campana.
@@ -1291,6 +1280,11 @@ class Campana(models.Model):
                         'cantidad_canales': ["La cantidad de canales debe ser\
                             menor a la cantidad de contactos de la base de datos."]
                     })
+
+    def __unicode__(self):
+        return self.nombre
+
+
 
 
 #==============================================================================
