@@ -21,7 +21,7 @@ from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_web.errors import (FtsAudioConversionError,
     FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
     FtsParserOpenFileError, FtsRecicladoCampanaError,
-    FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError)
+    FtsDepuraBaseDatoContactoError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
@@ -33,7 +33,8 @@ from fts_web.parser import autodetectar_parser
 import logging as logging_
 from fts_daemon.tasks import finalizar_campana_async
 from fts_web.reciclador_base_datos_contacto.reciclador import (
-    RecicladorBaseDatosContacto)
+    RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
+    CampanaTipoRecicladoInvalidoError)
 
 
 
@@ -1039,7 +1040,8 @@ class TipoRecicladoCampanaView(FormView):
             bd_contacto_reciclada = reciclador_base_datos_contacto.reciclar(
                 self.campana_id, tipos_reciclado)
 
-        except FtsRecicladoBaseDatosContactoError, error:
+        except (CampanaEstadoInvalidoError,
+                CampanaTipoRecicladoInvalidoError) as error:
             message = '<strong>Operación Errónea!</strong>\
             No se pudo reciclar la Base de Datos de la campana. {0}'.format(
                 error)
