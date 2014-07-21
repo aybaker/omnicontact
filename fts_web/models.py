@@ -456,9 +456,6 @@ class CampanaManager(models.Manager, CampanasNoBorradasManagerMixin):
         al generar el dialplan.
         """
         # TODO: renombrar a `obtener_todas_para_generar_config()`
-        # TODO: si estan finalizadas y vencidas con más de 1 día,
-        #  podemos estar tranquilos de que no habra llamadas
-        #  para esas campañas, y podriamos ignorarlas
         return self.filter(estado__in=[Campana.ESTADO_ACTIVA,
             Campana.ESTADO_PAUSADA, Campana.ESTADO_FINALIZADA])
 
@@ -706,7 +703,8 @@ class Campana(models.Model):
     """La capaña fue pausada"""
 
     ESTADO_FINALIZADA = 4
-    """La campaña fue finalizada, automatica o manualmente"""
+    """La campaña fue finalizada, automatica o manualmente.
+    Para mas inforacion, ver `finalizar()`"""
 
     ESTADO_DEPURADA = 5
     """La campaña ya fue depurada"""
@@ -829,6 +827,20 @@ class Campana(models.Model):
         Ahora (post FTS-248) ESTADO_FINALIZADA significa que la campaña está
         finalizada (o sea, ya no debe procesarse), pero todavia no está
         depurada.
+
+        Actualmente, hay 3 procesos que pueden cambiar el estado de la
+        Campaña a FINALIZADA, por eso se implemento el control de
+        concurrencia:
+
+        1) manualmente, desde la administracion web
+        2) el daemon 'llamador', al detectar que ya no hay mas contactos
+        3) el daemon 'finalizador', al detectar que ya no se generaran
+           llamadas
+
+        Mientras la campaña está en estado FINALIZADA, *NO* debe modificarse
+        y debe utilizarse con cuidado, ya que mientras está finalizada,
+        el daemon depurador realizará todos los procesos asincronos
+        (generaré reportes, re-calculará agregacion de EDC, etc.)
 
         :raise FTSOptimisticLockingError: si otro thread/proceso ha actualizado
                                           la campaña en la BD
