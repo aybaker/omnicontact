@@ -694,12 +694,16 @@ class Campana(models.Model):
     ESTADO_DEPURADA = 5
     """La campaña ya fue depurada"""
 
+    ESTADO_BORRADA = 6
+    """La campaña ya fue depurada"""
+
     ESTADOS = (
         (ESTADO_EN_DEFINICION, '(en definicion)'),
         (ESTADO_ACTIVA, 'Activa'),
         (ESTADO_PAUSADA, 'Pausada'),
         (ESTADO_FINALIZADA, 'Finalizada'),
         (ESTADO_DEPURADA, 'Depurada'),
+        (ESTADO_BORRADA, 'Borrada'),
     )
 
     nombre = models.CharField(
