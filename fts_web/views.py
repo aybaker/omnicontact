@@ -495,7 +495,13 @@ class CampanaDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
-        # self.object.delete()
+
+        # Eliminamos la tabla generada en la depuración de la campaña.
+        from fts_daemon.models import EventoDeContacto
+        EventoDeContacto.objects.eliminar_tabla_eventos_de_contacto_depurada(
+            self.object.pk)
+
+        # Marcamos la campaña como borrada.
         self.object.borrar()
 
         message = '<strong>Operación Exitosa!</strong>\
