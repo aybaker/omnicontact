@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout, Submit
+from crispy_forms.layout import Field, Layout, Submit, Div
 from fts_web.models import (
     Actuacion, AgenteGrupoAtencion, BaseDatosContacto,
     Campana, Calificacion, GrupoAtencion, Opcion
@@ -182,11 +182,33 @@ class ConfirmaForm(forms.ModelForm):
 
 
 class TipoRecicladoForm(forms.Form):
-    tipo_reciclado = forms.TypedChoiceField(
-        choices=Campana.TIPO_RECICLADO,
+    tipo_reciclado_unico = forms.ChoiceField(
+        choices=Campana.TIPO_RECICLADO_UNICO,
         widget=forms.RadioSelect,
-        required=True,
+        required=False,
     )
+    tipo_reciclado_conjunto = forms.MultipleChoiceField(
+        choices=Campana.TIPO_RECICLADO_CONJUNTO,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(TipoRecicladoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+        self.helper.form_id = 'id_guardar'
+        self.helper.form_method = 'post'
+
+        self.helper.add_input(
+            Submit('continuar', 'Continuar',
+                   css_class='btn btn-primary pull-right')
+        )
+
+        self.helper.layout = Layout(
+            Field('tipo_reciclado_unico', css_class='radio_reciclado'),
+            Field('tipo_reciclado_conjunto', css_class='checkboxs_reciclado'),
+        )
 
 
 #=========================================================================
