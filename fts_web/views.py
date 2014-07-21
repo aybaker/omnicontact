@@ -483,6 +483,35 @@ class CampanaListView(ListView):
         return context
 
 
+class CampanaDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto Campana.
+    """
+
+    model = Campana
+    template_name = 'campana/elimina_campana.html'
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        # self.object.delete()
+        self.object.borrar()
+
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Campaña.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse('lista_campana')
+
+
 class CampanaCreateView(CreateView):
     """
     Esta vista crea un objeto Campana.
