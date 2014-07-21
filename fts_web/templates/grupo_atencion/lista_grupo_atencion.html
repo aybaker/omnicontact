@@ -24,7 +24,6 @@
                         <th class="text-muted">Ring Strategy</th>
                         <th class="text-muted">Timeout</th>
                         <th class="text-muted">Agentes</th>
-                        <!-- <th class="text-muted">Editar</th> -->
                         <!-- <th class="text-muted">Eliminar</th> -->
                       </tr>
                     </thead>
@@ -32,7 +31,9 @@
                         {% for grupo_atencion in grupos_atencion %}
                             <tr>
                                 <td>                          
-                                    {{ grupo_atencion.nombre }}
+                                     <a href="{% url 'edita_grupo_atencion' grupo_atencion.pk %}">
+                                     {{ grupo_atencion.nombre }}
+                                     </a>
                                 </td>
                                 <td>
                                     {{ grupo_atencion.get_ring_strategy_display }}
@@ -43,13 +44,6 @@
                                 <td>
                                     {{ grupo_atencion.get_cantidad_agentes }}
                                 </td>
-                                <!-- <td>
-                                    <a href="{# url 'edita_grupo_atencion' grupo_atencion.pk #}">
-                                        <button type="button" class="btn btn-primary btn-sm">
-                                            <span class="glyphicon glyphicon-pencil"></span> Editar
-                                        </button>
-                                    </a>
-                                </td> -->
                                 <!-- <td>
                                     <a href="{# url 'elimina_grupo_atencion' grupo_atencion.pk #}">
                                         <button type="button" class="btn btn-danger btn-sm">

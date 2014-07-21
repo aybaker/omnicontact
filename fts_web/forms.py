@@ -24,14 +24,6 @@ from fts_web.models import (
 
 class AgenteGrupoAtencionForm(forms.ModelForm):
 
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.layout = Layout(
-            Field('numero_interno'),
-        )
-        super(AgenteGrupoAtencionForm, self).__init__(*args, **kwargs)
-
     class Meta:
         model = GrupoAtencion
         exclude = ('grupo_atencion',)
@@ -39,10 +31,17 @@ class AgenteGrupoAtencionForm(forms.ModelForm):
             'numero_interno': '',
         }
 
+
+class BaseAgenteGrupoAtencionFormset(forms.models.BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super(BaseAgenteGrupoAtencionFormset, self).__init__(*args, **kwargs)
+        self.forms[0].empty_permitted = False
+
 AgentesGrupoAtencionFormSet = inlineformset_factory(
     GrupoAtencion, AgenteGrupoAtencion,
     form=AgenteGrupoAtencionForm,
-    extra=1,
+    formset=BaseAgenteGrupoAtencionFormset,
+    extra=3,
 )
 
 
