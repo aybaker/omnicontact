@@ -421,7 +421,7 @@ class CampanasNoBorradasManagerMixin(object):
     Manager Mixin de Campana.
     """
     def get_queryset(self):
-        return super(CampanaManager, self).get_queryset().\
+        return super(CampanasNoBorradasManagerMixin, self).get_queryset().\
             exclude(estado=Campana.ESTADO_BORRADA)
 
 
