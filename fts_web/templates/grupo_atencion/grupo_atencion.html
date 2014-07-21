@@ -18,7 +18,7 @@
             <div class="col-lg-4">
                 <form role="form" method="post">
                     {% crispy form %} 
-                   
+
                     {{ formset_agente_grupo_atencion.management_form|crispy }}
                     <table id="formset_agente_grupo_atencion">       
                         <thead>
@@ -38,7 +38,9 @@
                                         </div>
                                     </td>                            
                                     <td>
-                                       {{ form.DELETE }}
+                                    {% if forloop.counter > 1 %}
+                                       {{ form.DELETE }} Eliminar
+                                    {% endif %}
                                     </td>                                 
                                 </tr>    
                                 {{ form.id }}
@@ -56,14 +58,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block bottom_js %} 
-     <script type="text/javascript">
-            $(function() {
-                $('#formset_agente_grupo_atencion tr').formset({
-                    prefix: '{{ formset_agente_grupo_atencion.prefix }}'
-                }); 
-            });
-    </script>
 {% endblock %}
