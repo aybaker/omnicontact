@@ -712,7 +712,7 @@ class Campana(models.Model):
     """La campaña ya fue depurada"""
 
     ESTADO_BORRADA = 6
-    """La campaña ya fue depurada"""
+    """La campaña ya fue borrada"""
 
     ESTADOS = (
         (ESTADO_EN_DEFINICION, '(en definicion)'),
@@ -772,6 +772,16 @@ class Campana(models.Model):
         """
         return self.estado == Campana.ESTADO_FINALIZADA
 
+    def puede_borrarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no borrar.
+
+        Actualmente solo chequea el estado de la campaña.
+
+        :returns: bool - True si la campaña puede borrarse.
+        """
+        return self.estado == Campana.ESTADO_DEPURADA
+
     def activar(self):
         """
         Setea la campaña como ACTIVA
@@ -801,7 +811,8 @@ class Campana(models.Model):
         Setea la campaña como BORRADA
         """
         logger.info("Seteando campana %s como BORRADA", self.id)
-        assert self.estado == Campana.ESTADO_DEPURADA
+        assert self.puede_borrarse()
+
         self.estado = Campana.ESTADO_BORRADA
         self.save()
 
