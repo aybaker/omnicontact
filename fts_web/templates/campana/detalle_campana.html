@@ -57,7 +57,9 @@
                     <h4>Calificaciones</h4>
                     <table class="table table-bordered table-hover">
                         <thead>
-                            <th>Nombre</th>
+                            <tr class="fts-table-bg">
+                                <th>Nombre</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {% for calificacion in campana.calificaciones.all %}
@@ -73,9 +75,11 @@
                     <h4>Opciones</h4>
                     <table class="table table-bordered table-hover">
                         <thead>
-                            <th>Dígito</th>
-                            <th>Acción</th>
-                            <th></th>
+                            <tr class="fts-table-bg">
+                                <th>Dígito</th>
+                                <th>Acción</th>
+                                <th></th>
+                            </tr>
                         </thead>
                         <tbody>
                             {% for opcion in campana.opciones.all %}
@@ -108,9 +112,11 @@
                     <h4>Actuaciones</h4>
                     <table class="table table-bordered table-hover">
                         <thead>
-                            <th>Día</th>
-                            <th>Hora Desde</th>
-                            <th>Hora Hasta</th>
+                            <tr class="fts-table-bg">
+                                <th>Día</th>
+                                <th>Hora Desde</th>
+                                <th>Hora Hasta</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {% for actuacion in campana.actuaciones.all %}
