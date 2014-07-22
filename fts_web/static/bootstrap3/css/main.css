@@ -33,6 +33,20 @@ td, th {
     vertical-align: top;
     padding-right: 5px; 
 }
+.navbar-brand {
+    padding: 0 15px;
+}
+.navbar-brand img {
+    height: 50px;
+    width: auto;
+}
+@media (min-width: 768px) {
+    .navbar-nav>li>a {
+    padding-top: 31px;
+    padding-bottom: 5px;
+    }
+}
+
 
 
 /* Mensajito de Ayuda*/
@@ -154,19 +168,4 @@ td, th {
     background: #c3c3c3 !important;
     color: #222;
     
-}
-
-
-.navbar-brand {
-    padding: 0 15px;
-}
-.navbar-brand img {
-    height: 50px;
-    width: auto;
-}
-@media (min-width: 768px) {
-    .navbar-nav>li>a {
-    padding-top: 31px;
-    padding-bottom: 5px;
-    }
 }
