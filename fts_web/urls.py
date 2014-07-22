@@ -38,10 +38,10 @@ urlpatterns = patterns('',
         views.GrupoAtencionUpdateView.as_view(),
         name='edita_grupo_atencion',
     ),
-    # url(r'^grupo_atencion/elimina/(?P<pk>\d+)/$',
-    #     views.GrupoAtencionDeleteView.as_view(),
-    #     name='elimina_grupo_atencion',
-    # ),
+    url(r'^grupo_atencion/(?P<pk>\d+)/elimina/$',
+        views.GrupoAtencionDeleteView.as_view(),
+        name='grupo_atencion_elimina',
+    ),
 
     #==========================================================================
     # Base Datos Contacto
