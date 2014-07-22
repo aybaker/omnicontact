@@ -28,9 +28,9 @@
         {% include "estado/daemon_status.html" %}
     </div>
 
-    <div class="panel panel-info">
+    <div class="panel fts-border-verde">
         <!-- Default panel contents -->
-        <div class="panel-heading">                
+        <div class="panel-heading fts-bg-verde-gradiente">                
             <h4 class="inline">Supervisión: Campañas en Ejecución</h4>
             <div class="clear-fix"></div>
         </div>
@@ -42,19 +42,19 @@
                         <div class="col-sm-6 col-md-6 col-lg-4">
                             <table class="table table-bordered">
                                 <tbody>                            
-                                    <tr class="active">
+                                    <tr class="fts-table-bg">
                                         <td width="65%">                          
                                             <h4 class="text-primary">{{ campana.nombre }}</h4>
                                         </td>
                                         <td>
-                                            <h5><small>
+                                            <h6>
                                                 <p>{{ campana.fecha_inicio|date:"d/m/Y" }} - {{ campana.fecha_fin|date:"d/m/Y" }}</p>
                                                 <p>
                                                     {{ campana.obtener_actuacion_actual.get_dia_semanal_display }}: 
                                                     {{ campana.obtener_actuacion_actual.hora_desde|time:"H:i" }} -
                                                     {{ campana.obtener_actuacion_actual.hora_hasta|time:"H:i" }} 
                                                 </p>  
-                                            </small></h5>
+                                            </h6>
                                         </td>
                                     </tr>
 

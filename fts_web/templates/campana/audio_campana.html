@@ -4,9 +4,9 @@
 {% load crispy_forms_tags %}
 
 {% block content %}      
-    <div class="panel panel-info">
+    <div class="panel fts-border-verde">
         <!-- Default panel contents -->
-        <div class="panel-heading">                
+        <div class="panel-heading fts-bg-verde-gradiente">                
             <h4 class="inline">Nueva Campaña: Audio</h4>
             <div class="clear-fix"></div>
         </div>
@@ -39,7 +39,7 @@
                         Guardar Audio
                     </button>
                     {% if campana.audio_original %}
-                        <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-primary pull-right" role="button">
+                        <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-default pull-right" role="button">
                             Continuar <span class="glyphicon glyphicon-chevron-right"></span>
                         </a> 
                     {% endif %}

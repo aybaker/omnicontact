@@ -4,9 +4,9 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <div class="panel panel-info">
+    <div class="panel fts-border-verde">
         <!-- Default panel contents -->
-        <div class="panel-heading">                
+        <div class="panel-heading fts-bg-verde-gradiente">                
             <h4 class="inline">Nueva Campaña: Actuación</h4>
             <div class="clear-fix"></div>
         </div>
@@ -32,10 +32,12 @@
                     <h4>Actuaciones</h4>
                     <table class="table table-bordered table-hover">
                         <thead>
+                        <tr class="fts-table-bg">
                             <th>Día</th>
                             <th>Hora Desde</th>
                             <th>Hora Hasta</th>
                             <th></th>
+                        </tr>
                         </thead>
                         <tbody>
                             {% for actuacion in campana.actuaciones.all %}
@@ -72,7 +74,7 @@
                     Guardar Actuación
                 </button>
                 {% if actuaciones_validas %}
-                    <a href="{% url 'confirma_campana' campana.pk %}" class="btn btn-primary pull-right" role="button">
+                    <a href="{% url 'confirma_campana' campana.pk %}" class="btn btn-default pull-right" role="button">
                         Continuar <span class="glyphicon glyphicon-chevron-right"></span>
                     </a>
                 {% endif %}
