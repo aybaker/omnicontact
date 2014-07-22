@@ -33,10 +33,16 @@ class DepurarEventosDeContactoTest(FTSenderBaseTest):
         params = [campana.id]
         cursor.execute(sql, params)
 
+        def check_tabla():
+            sql = "SELECT * FROM {0} LIMIT 1".format(nombre_tabla)
+            cursor.execute(sql)
+
+        check_tabla()
+
         # -----
 
         EventoDeContacto.objects.eliminar_tabla_eventos_de_contacto_depurada(
             campana.pk)
+
         with self.assertRaises(ProgrammingError):
-            sql = "SELECT * FROM {0}".format(nombre_tabla)
-            cursor.execute(sql)
+            check_tabla()
