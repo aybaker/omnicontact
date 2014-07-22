@@ -70,3 +70,14 @@ class EliminarGrupoAtencionTest(FTSenderBaseTest):
 
         grupo_atencion.borrar()
         self.assertEqual(grupo_atencion.borrado, True)
+
+    def test_grupo_atencion_filtro_de_borrados(self):
+        grupo_atencion = GrupoAtencion(id=1)
+        grupo_atencion.save = Mock()
+
+        # -----
+
+        grupo_atencion.borrar()
+
+        with self.assertRaises(GrupoAtencion.DoesNotExist):
+            GrupoAtencion.objects.get(id=1)
