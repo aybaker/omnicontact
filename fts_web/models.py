@@ -1163,9 +1163,10 @@ class Campana(models.Model):
 
         if os.path.exists(file_path):
             # Esto no debería suceder.
-            logger.error("crea_reporte_csv(): Ya existe archivo CSV de "
-                         "descarga para la campana %s", self.pk)
-            assert not os.path.exists(file_path)
+            logger.warn("crea_reporte_csv(): Ya existe archivo CSV de "
+                         "reporte para la campana %s. Archivo: %s. "
+                         "El archivo sera sobreescrito", self.pk, file_path)
+            # assert not os.path.exists(file_path)
 
         dirname, filename = crear_archivo_en_media_root(dirname,
             "{0}-reporte".format(self.id), ".csv")
