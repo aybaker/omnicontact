@@ -24,7 +24,7 @@
                         <th class="text-muted">Ring Strategy</th>
                         <th class="text-muted">Timeout</th>
                         <th class="text-muted">Agentes</th>
-                        <!-- <th class="text-muted">Eliminar</th> -->
+                        <th class="text-muted">Eliminar</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -44,13 +44,13 @@
                                 <td>
                                     {{ grupo_atencion.get_cantidad_agentes }}
                                 </td>
-                                <!-- <td>
-                                    <a href="{# url 'elimina_grupo_atencion' grupo_atencion.pk #}">
+                                <td>
+                                    <a href="{% url 'grupo_atencion_elimina' grupo_atencion.pk %}">
                                         <button type="button" class="btn btn-danger btn-sm">
                                             <span class="glyphicon glyphicon-remove"></span> Eliminar
                                         </button>
                                     </a>
-                                </td> -->
+                                </td>
                             </tr>
                         {% empty %}
                             <tr>

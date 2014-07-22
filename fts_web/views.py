@@ -53,10 +53,7 @@ class GrupoAtencionListView(ListView):
     template_name = 'grupo_atencion/lista_grupo_atencion.html'
     context_object_name = 'grupos_atencion'
     model = GrupoAtencion
-
-    #def get_queryset(self):
-    #    queryset = GrupoAtencion.objects.filtrar_activos()
-    #    return queryset
+    queryset = GrupoAtencion.objects.all()
 
 
 class GrupoAtencionMixin(object):
@@ -201,6 +198,7 @@ class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
     context_object_name = 'grupo_atencion'
     form_class = GrupoAtencionForm
     formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
+    queryset = GrupoAtencion.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super(
@@ -223,27 +221,35 @@ class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
         return reverse('lista_grupo_atencion')
 
 
-# class GrupoAtencionDeleteView(DeleteView):
-#     """
-#     Esta vista se encarga de la eliminación del
-#     objeto GrupAtencion seleccionado.
-#     """
+class GrupoAtencionDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto GrupAtencion seleccionado.
+    """
 
-#     model = GrupoAtencion
-#     template_name = 'grupo_atencion/elimina_grupo_atencion.html'
+    model = GrupoAtencion
+    template_name = 'grupo_atencion/elimina_grupo_atencion.html'
+    queryset = GrupoAtencion.objects.all()
 
-#     def get_success_url(self):
-#         message = '<strong>Operación Exitosa!</strong>\
-#         Se llevó a cabo con éxito la eliminación del\
-#         Grupo de Atención.'
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
 
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             message,
-#         )
+        # Marcamos el grupo de atención como borrado.
+        self.object.borrar()
 
-#         return reverse('lista_grupo_atencion')
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación del Grupo de Atención.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse('lista_grupo_atencion')
 
 
 #==============================================================================

@@ -31,9 +31,24 @@ logger = logging.getLogger(__name__)
 #==============================================================================
 # Grupos de Atención
 #==============================================================================
+class GrupoAtencionNoBorradosManagerMixin(object):
+    """
+    Manager Mixin de GrupoAtencion.
+    """
+    def get_queryset(self):
+        return super(GrupoAtencionNoBorradosManagerMixin, self).\
+            get_queryset().exclude(borrado=True)
+
 
 class GrupoAtencionManager(models.Manager):
     """Manager para GrupoAtencion"""
+
+    # FIXME: Heredando el mixin GrupoAtencionNoBorradosManagerMixin no
+    # funciona sobrescribir el método get_queryset. Manteniéndolo aca en este
+    # manager funciona bien.
+    def get_queryset(self):
+        return super(GrupoAtencionManager, self).\
+            get_queryset().exclude(borrado=True)
 
     def obtener_todos_para_generar_config(self):
         """Devuelve g.a. que deben ser tenidas en cuenta
@@ -50,6 +65,11 @@ class GrupoAtencion(models.Model):
     Se sobreescribe el método `delete()` para implementar
     un borrado lógico.
     """
+
+    objects_default = models.Manager()
+    # Por defecto django utiliza el primer manager instanciado. Se aplica al
+    # admin de django, y no aplica las customizaciones del resto de los
+    # managers que se creen.
 
     objects = GrupoAtencionManager()
 
@@ -73,21 +93,33 @@ class GrupoAtencion(models.Model):
         choices=RING_STRATEGY_CHOICES,
         default=RINGALL,
     )
-    #    active = models.BooleanField(
-    #        default=True,
-    #        editable=False,
-    #    )
+    borrado = models.BooleanField(
+        default=False,
+        editable=False,
+    )
 
     def __unicode__(self):
+        if self.borrado:
+            return '(ELiminado) {0}'.format(self.nombre)
         return self.nombre
-        #    if self.active:
-        #        return self.nombre
-        #    return '(ELiminado) {0}'.format(self.nombre)
 
-    #    def delete(self, *args, **kwargs):
-    #        if self.active:
-    #            self.active = False
-    #            self.save()
+    def puede_borrarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no borrar.
+
+        :returns: bool - True si la GrupoAtencion puede borrarse.
+        """
+        if Opcion.objects.filter(grupo_atencion=self).exclude(
+            campana__estado=Campana.ESTADO_BORRADA).count():
+            return False
+        return True
+
+    def borrar(self, *args, **kwargs):
+        logger.info("Seteando grupo atencion %s como BORRADA", self.id)
+        assert self.puede_borrarse()
+
+        self.borrado = True
+        self.save()
 
     def get_cantidad_agentes(self):
         return self.agentes.all().count()
