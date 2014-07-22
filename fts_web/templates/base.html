@@ -26,14 +26,16 @@
 
 </head>
 <body ng-controller="GlobalController">
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 
         <div class="container-fluid col-lg-12">
             <div class="navbar-header col-lg-2">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
                 </button>
-                <a class="navbar-brand" href="#">FTSender Web</a>
+                <a class="navbar-brand" href="#">
+                     <img src="{% static 'fts_web/img/logo_freetech.png' %}">
+                </a>
             </div>
 
             <div class="navbar-collapse collapse">
