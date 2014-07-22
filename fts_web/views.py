@@ -53,10 +53,7 @@ class GrupoAtencionListView(ListView):
     template_name = 'grupo_atencion/lista_grupo_atencion.html'
     context_object_name = 'grupos_atencion'
     model = GrupoAtencion
-
-    def get_queryset(self):
-        queryset = GrupoAtencion.objects.all()
-        return queryset
+    queryset = GrupoAtencion.objects.all()
 
 
 class GrupoAtencionMixin(object):
@@ -201,6 +198,7 @@ class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
     context_object_name = 'grupo_atencion'
     form_class = GrupoAtencionForm
     formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
+    queryset = GrupoAtencion.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super(
@@ -231,6 +229,7 @@ class GrupoAtencionDeleteView(DeleteView):
 
     model = GrupoAtencion
     template_name = 'grupo_atencion/elimina_grupo_atencion.html'
+    queryset = GrupoAtencion.objects.all()
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
