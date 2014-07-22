@@ -726,6 +726,7 @@ class CampanaTest(FTSenderBaseTest):
         # for f in files:
         #     os.remove(f)
 
+    @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_reciclar_campana(self):
         hora_desde = datetime.time(00, 00)
         hora_hasta = datetime.time(23, 59)
@@ -755,6 +756,9 @@ class CampanaTest(FTSenderBaseTest):
         with self.assertRaises(FtsRecicladoCampanaError):
             campana_inexistente = 1500
             Campana.objects.reciclar_campana(campana_inexistente, bd_contacto)
+
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
+        campana = Campana.objects.get(id=campana.id)
 
         # Reciclamos la campana. Se utiliza la misma base de datos que la
         # original.
