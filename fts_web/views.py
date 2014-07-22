@@ -42,6 +42,30 @@ logger = logging_.getLogger(__name__)
 
 
 #==============================================================================
+# Acerca
+#==============================================================================
+
+
+class AcercaTemplateView(TemplateView):
+    """
+    Esta vista es para generar el Acerca de la app.
+    """
+
+    template_name = 'acerca/acerca.html'
+    context_object_name = 'acerca'
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            AcercaTemplateView, self).get_context_data(**kwargs)
+
+        context['version'] = '1.0.0'
+        context['branch'] = 'master'
+        context['commit'] = 'sda7a95'
+        context['fecha_deploy'] = '12/12/2014'
+        return context
+
+
+#==============================================================================
 # Grupos de Atención
 #==============================================================================
 
