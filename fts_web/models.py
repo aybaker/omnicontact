@@ -93,10 +93,9 @@ class GrupoAtencion(models.Model):
     )
 
     def __unicode__(self):
+        if self.borrado:
+            return '(ELiminado) {0}'.format(self.nombre)
         return self.nombre
-        #    if self.active:
-        #        return self.nombre
-        #    return '(ELiminado) {0}'.format(self.nombre)
 
     def puede_borrarse(self):
         """Metodo que realiza los chequeos necesarios del modelo, y
