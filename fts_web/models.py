@@ -40,9 +40,15 @@ class GrupoAtencionNoBorradosManagerMixin(object):
             get_queryset().exclude(borrado=True)
 
 
-class GrupoAtencionManager(models.Manager,
-                           GrupoAtencionNoBorradosManagerMixin):
+class GrupoAtencionManager(models.Manager):
     """Manager para GrupoAtencion"""
+
+    # FIXME: Heredando el mixin GrupoAtencionNoBorradosManagerMixin no
+    # funciona sobrescribir el método get_queryset. Manteniéndolo aca en este
+    # manager funciona bien.
+    def get_queryset(self):
+        return super(GrupoAtencionManager, self).\
+            get_queryset().exclude(borrado=True)
 
     def obtener_todos_para_generar_config(self):
         """Devuelve g.a. que deben ser tenidas en cuenta
