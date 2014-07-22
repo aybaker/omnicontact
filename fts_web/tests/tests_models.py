@@ -1043,6 +1043,8 @@ class ActuacionTests(FTSenderBaseTest):
 @skipUnless(default_db_is_postgresql(), "Requiere PostgreSql")
 class ReporteTest(FTSenderBaseTest):
 
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir(),
+                       MEDIA_ROOT=_tmpdir())
     def test_detalle_reporte_template(self):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
@@ -1102,6 +1104,8 @@ class ReporteTest(FTSenderBaseTest):
     #     self.assertEqual(estadisticas['porcentaje_avance'],
     #         porcentaje_avance)
 
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir(),
+                       MEDIA_ROOT=_tmpdir())
     def test_render_grafico_torta_avance_campana(self):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
@@ -1142,6 +1146,8 @@ class ReporteTest(FTSenderBaseTest):
     #     url = campana.url_grafico_torta
     #     self.assertEqual(url, None)
 
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir(),
+                       MEDIA_ROOT=_tmpdir())
     def test_render_graficos_reporte(self):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
@@ -1153,6 +1159,8 @@ class ReporteTest(FTSenderBaseTest):
         self.assertTrue(graficos['torta_opcion_x_porcentaje'].render())
         self.assertTrue(graficos['barra_atendidos_intentos'].render())
 
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir(),
+                       MEDIA_ROOT=_tmpdir())
     def test_obtener_contadores_por_intento(self):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
@@ -1163,6 +1171,8 @@ class ReporteTest(FTSenderBaseTest):
         self.assertEqual(len(contadores), 3)
         self.assertEqual(contadores[1]['cantidad_intentos'], 100)
 
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir(),
+                       MEDIA_ROOT=_tmpdir())
     def test_procesa_agregacion(self):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()

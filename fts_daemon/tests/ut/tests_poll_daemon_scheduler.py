@@ -48,4 +48,4 @@ class FinalizacionDeCampanaTests(FTSenderBaseTest):
             next(scheduler.generator())
 
         scheduler._finalizar_y_programar_depuracion.assert_called_once_with(
-            campana.id)
+            campana)
