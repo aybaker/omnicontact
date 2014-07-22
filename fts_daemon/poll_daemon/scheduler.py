@@ -145,7 +145,7 @@ class RoundRobinTracker(object):
         self._campana_call_status.banear_campana(campana,
             reason=BANEO_NO_MAS_CONTACTOS)
 
-        self._finalizar_y_programar_depuracion(campana.id)
+        self._finalizar_y_programar_depuracion(campana)
 
     def onLimiteDeCanalesAlcanzadoError(self, campana):
         """Ejecutado por generator() cuando se detecta
