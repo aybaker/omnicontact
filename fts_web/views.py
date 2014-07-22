@@ -58,6 +58,7 @@ class AcercaTemplateView(TemplateView):
         context = super(
             AcercaTemplateView, self).get_context_data(**kwargs)
 
+        # TODO: Implementar la manera que se obtienen los datos de acerca.
         context['version'] = '1.0.0'
         context['branch'] = 'master'
         context['commit'] = 'sda7a95'
