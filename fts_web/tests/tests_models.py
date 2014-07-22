@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 import csv
 import datetime
 import os
-import shutil
 import tempfile
 
 from django.conf import settings
@@ -272,12 +271,6 @@ class ContactoTest(FTSenderBaseTest):
 
 class CampanaTest(FTSenderBaseTest):
     """Clase para testear Campana y CampanaManager"""
-    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    MEDIA_ROOT = os.path.join(tmp, "test", "media_root")
-
-    # def tearDown(self):
-    #     import shutil
-    #     shutil.rmtree(self.MEDIA_ROOT)
 
     def test_campanas_creadas(self):
         """
@@ -874,7 +867,7 @@ class CampanaTest(FTSenderBaseTest):
             self.assertTrue(type(contacto_opcion[1] == list))
             self.assertTrue(len(contacto_opcion[1]) > 0)
 
-    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_obtener_contactos_pendientes(self):
         # Verifico que devuelva la cantidad de pendientes correctos.
         campana = self._crea_campana_emula_procesamiento(
@@ -891,7 +884,7 @@ class CampanaTest(FTSenderBaseTest):
             self.assertTrue(type(contacto_pendiente[1] == list))
             self.assertTrue(len(contacto_pendiente[1]) > 0)
 
-    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_obtener_contactos_ocupados(self):
         # Verifico que devuelva la cantidad de ocupados correctos.
         campana = self._crea_campana_emula_procesamiento(
@@ -908,7 +901,7 @@ class CampanaTest(FTSenderBaseTest):
             self.assertTrue(type(contacto_ocupado[1] == list))
             self.assertTrue(len(contacto_ocupado[1]) > 0)
 
-    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_obtener_contactos_no_contestados(self):
         # Verifico que devuelva la cantidad de no contestados correctos.
         campana = self._crea_campana_emula_procesamiento(
@@ -925,7 +918,7 @@ class CampanaTest(FTSenderBaseTest):
             self.assertTrue(type(contacto_no_contestado[1] == list))
             self.assertTrue(len(contacto_no_contestado[1]) > 0)
 
-    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_obtener_contactos_numero_erroneo(self):
         # Verifico que devuelva la cantidad de contactos erróneos correctos.
         campana = self._crea_campana_emula_procesamiento(
@@ -942,7 +935,7 @@ class CampanaTest(FTSenderBaseTest):
             self.assertTrue(type(contactos_numero_erroneo[1] == list))
             self.assertTrue(len(contactos_numero_erroneo[1]) > 0)
 
-    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_obtener_contactos_llamada_erronea(self):
         # Verifico que devuelva la cantidad de llamadas erróneas correctas.
         campana = self._crea_campana_emula_procesamiento(
@@ -1049,14 +1042,11 @@ class ActuacionTests(FTSenderBaseTest):
 
 @skipUnless(default_db_is_postgresql(), "Requiere PostgreSql")
 class ReporteTest(FTSenderBaseTest):
-    def setUp(self):
-        path_graficos = '{0}graficos/'.format(settings.MEDIA_ROOT)
-        if os.path.exists(path_graficos):
-            shutil.rmtree(path_graficos)
 
     def test_detalle_reporte_template(self):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
 
         # Verificamos template detalle reporte campaña.
         url = reverse('detalle_campana_reporte', kwargs={"pk": campana.pk})
@@ -1115,6 +1105,7 @@ class ReporteTest(FTSenderBaseTest):
     def test_render_grafico_torta_avance_campana(self):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
 
         # Obtento el renderizado de gráfico y lo testeo.
         graficos_estadisticas = \
@@ -1154,6 +1145,8 @@ class ReporteTest(FTSenderBaseTest):
     def test_render_graficos_reporte(self):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
+
         graficos = campana.obtener_estadisticas_render_graficos_reportes()
 
         self.assertTrue(graficos['torta_general'].render())
