@@ -1395,7 +1395,7 @@ class AgregacionDeEventoDeContactoManager(models.Manager):
 
             with log_timing(logger,
                 "procesa_agregacion(): recalculo de agregacion tardo %s seg"):
-                with transaction.atomic():
+                with transaction.atomic(savepoint=False):
                     cursor = connection.cursor()
                     cursor.execute("SELECT update_agregacion_edc_py_v1(%s)",
                         [campana.id])

@@ -66,7 +66,7 @@ class GrupoAtencionMixin(object):
     de objetos GrupoAtencion.
     """
 
-    @transaction.atomic
+    @transaction.atomic(savepoint=False)
     def process_all_forms_in_tx(self, form, update=False):
         """
         Este método se encarga de validar el
@@ -882,7 +882,7 @@ class ConfirmaCampanaMixin(UpdateView):
             post_proceso_ok = True
             message = ''
 
-            with transaction.atomic():
+            with transaction.atomic(savepoint=False):
 
                 campana.activar()
 

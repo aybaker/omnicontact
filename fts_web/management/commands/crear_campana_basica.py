@@ -61,7 +61,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from django.db import transaction
-        with transaction.atomic():
+        with transaction.atomic(savepoint=False):
             test = Tmp()
             if len(args):
                 numeros_telefonicos = args

@@ -62,7 +62,7 @@ class DepuradorDeCampanaWorkflow(object):
         logger.info("Se iniciara el proceso de depuracion para la camana %s",
                     campana_id)
 
-        with transaction.atomic():
+        with transaction.atomic(savepoint=False):
             campana = self._obtener_campana(campana_id)
             if campana.estado == Campana.ESTADO_DEPURADA:
                 logger.info("Ignorando campana ya depurada: %s", campana.id)
