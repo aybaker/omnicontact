@@ -31,8 +31,17 @@ logger = logging.getLogger(__name__)
 #==============================================================================
 # Grupos de Atención
 #==============================================================================
+class GrupoAtencionNoBorradosManagerMixin(object):
+    """
+    Manager Mixin de GrupoAtencion.
+    """
+    def get_queryset(self):
+        return super(GrupoAtencionNoBorradosManagerMixin, self).\
+            get_queryset().exclude(borrado=True)
 
-class GrupoAtencionManager(models.Manager):
+
+class GrupoAtencionManager(models.Manager,
+                           GrupoAtencionNoBorradosManagerMixin):
     """Manager para GrupoAtencion"""
 
     def obtener_todos_para_generar_config(self):
@@ -50,6 +59,11 @@ class GrupoAtencion(models.Model):
     Se sobreescribe el método `delete()` para implementar
     un borrado lógico.
     """
+
+    objects_default = models.Manager()
+    # Por defecto django utiliza el primer manager instanciado. Se aplica al
+    # admin de django, y no aplica las customizaciones del resto de los
+    # managers que se creen.
 
     objects = GrupoAtencionManager()
 
