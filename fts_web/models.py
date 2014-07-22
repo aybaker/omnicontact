@@ -73,10 +73,10 @@ class GrupoAtencion(models.Model):
         choices=RING_STRATEGY_CHOICES,
         default=RINGALL,
     )
-    #    active = models.BooleanField(
-    #        default=True,
-    #        editable=False,
-    #    )
+    borrado = models.BooleanField(
+        default=False,
+        editable=False,
+    )
 
     def __unicode__(self):
         return self.nombre
