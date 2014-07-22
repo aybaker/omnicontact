@@ -151,7 +151,8 @@ td, th {
     border-color: #54BD00 !important; 
 }
 .fts-table-bg {
-    background: #999 !important
+    background: #c3c3c3 !important;
+    color: #222;
     
 }
 
