@@ -637,7 +637,6 @@ class CampanaTest(FTSenderBaseTest):
 
     @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_crea_reporte_csv(self):
-        import glob
 
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento(finaliza=False)
@@ -684,7 +683,6 @@ class CampanaTest(FTSenderBaseTest):
 
     @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_obtener_url_reporte_csv_descargar(self):
-        import glob
 
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento(finaliza=False)
@@ -715,7 +713,10 @@ class CampanaTest(FTSenderBaseTest):
         self.assertRaises(AssertionError,
                           campana.obtener_url_reporte_csv_descargar)
 
-        campana.crea_reporte_csv()
+        # campana.crea_reporte_csv()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
+        campana = Campana.objects.get(id=campana.id)
+
         self.assertTrue(os.path.exists(file_path))
         self.assertEqual(campana.obtener_url_reporte_csv_descargar(),
                          file_url)
