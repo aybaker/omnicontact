@@ -8,9 +8,9 @@
 {% endblock %}
 
 {% block content %}
-    <div class="panel panel-info">
+    <div class="panel fts-border-verde">
         <!-- Default panel contents -->
-        <div class="panel-heading">                
+        <div class="panel-heading fts-bg-verde-gradiente">                
             <h4 class="inline">Supervisión: Detalle de Opciones Seleccionadas</h4>
             <div class="clear-fix"></div>
         </div>
@@ -18,29 +18,29 @@
             <div class="col-lg-12"> 
                 <table class="table">
                     <tbody>
-                        <tr class="active">
+                        <tr class="fts-table-bg">
                             <td width="45%"> 
                                 <h3 class="text-primary">
                                     {{ campana.nombre }}
                                 </h3>
                             </td>
                             <td>
-                                <h3><small>
+                                <h5>
                                     <b>Desde: </b>{{ campana.fecha_inicio|date:"d/m/Y" }}
-                                </small></h3>
+                                </h5>
                             </td>
                             <td>
-                                <h3><small>
+                                <h5>
                                     <b>Hasta: </b>{{ campana.fecha_fin|date:"d/m/Y" }}
-                                </small></h3>
+                                </h5>
                             </td>
                             
                             <td>
-                                <h3><small>
+                                <h5>
                                     <b>Base Datos: </b>
                                     {{ campana.bd_contacto }} 
                                     ({{ graficos_estadisticas.estadisticas.total_contactos }} Contactos)
-                                </small></h3>
+                                </h5>
                             </td>                        
                         </tr>
                     </tbody>
@@ -53,8 +53,8 @@
                             <td>
                                 <table  class="table table-bordered">
                                     <thead>
-                                        <th class="active">
-                                            <h5 class="text-muted">#{{ detalle_opcion.0.digito }}
+                                        <th class="fts-table-bg">
+                                            #{{ detalle_opcion.0.digito }}
                                                 {% if detalle_opcion.0.calificacion %}
                                                     <small>
                                                         ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.calificacion.nombre }})
@@ -66,7 +66,7 @@
                                                 {% else %}
                                                     <small>({{ detalle_opcion.0.get_accion_display }})</small>
                                                 {% endif %}
-                                            </h5>
+                                            
                                         </th>
                                     </thead>
                                     <tbody>                        
@@ -85,8 +85,8 @@
                     <td>
                         <table class="table table-bordered">
                             <thead>
-                                <th class="active">
-                                    <h5 class="text-muted">Inválidas</h5>
+                                <th class="fts-table-bg">
+                                    Inválidas
                                 </th>
                             </thead>
                             <tbody>                        
