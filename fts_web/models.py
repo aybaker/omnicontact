@@ -84,10 +84,23 @@ class GrupoAtencion(models.Model):
         #        return self.nombre
         #    return '(ELiminado) {0}'.format(self.nombre)
 
-    #    def delete(self, *args, **kwargs):
-    #        if self.active:
-    #            self.active = False
-    #            self.save()
+    def puede_borrarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no borrar.
+
+        :returns: bool - True si la GrupoAtencion puede borrarse.
+        """
+        if Opcion.objects.filter(grupo_atencion=self).exclude(
+            campana__estado=Campana.ESTADO_BORRADA).count():
+            return False
+        return True
+
+    def borrar(self, *args, **kwargs):
+        logger.info("Seteando grupo atencion %s como BORRADA", self.id)
+        assert self.puede_borrarse()
+
+        self.borrado = True
+        self.save()
 
     def get_cantidad_agentes(self):
         return self.agentes.all().count()
