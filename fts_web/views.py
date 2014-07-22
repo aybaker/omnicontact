@@ -1380,7 +1380,7 @@ class CampanaReporteListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(CampanaReporteListView, self).get_context_data(
            **kwargs)
-        context['campanas_finalizadas'] = Campana.objects.obtener_finalizadas()
+        context['campanas_finalizadas'] = Campana.objects.obtener_depuradas()
         return context
 
 
@@ -1394,7 +1394,7 @@ class CampanaReporteDetailView(DetailView):
     model = Campana
 
     def get_queryset(self):
-        return Campana.objects.obtener_finalizadas()
+        return Campana.objects.obtener_depuradas()
 
 
 #==============================================================================

@@ -1049,6 +1049,7 @@ class ReporteTest(FTSenderBaseTest):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
         DepuradorDeCampanaWorkflow().depurar(campana.id)
+        campana = Campana.objects.get(id=campana.id)
 
         # Verificamos template detalle reporte campaña.
         url = reverse('detalle_campana_reporte', kwargs={"pk": campana.pk})
@@ -1110,6 +1111,7 @@ class ReporteTest(FTSenderBaseTest):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
         DepuradorDeCampanaWorkflow().depurar(campana.id)
+        campana = Campana.objects.get(id=campana.id)
 
         # Obtento el renderizado de gráfico y lo testeo.
         graficos_estadisticas = \
@@ -1152,6 +1154,7 @@ class ReporteTest(FTSenderBaseTest):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
         DepuradorDeCampanaWorkflow().depurar(campana.id)
+        campana = Campana.objects.get(id=campana.id)
 
         graficos = campana.obtener_estadisticas_render_graficos_reportes()
 
@@ -1176,6 +1179,9 @@ class ReporteTest(FTSenderBaseTest):
     def test_procesa_agregacion(self):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
+        campana = Campana.objects.get(id=campana.id)
+
         tipo_agregacion = AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE
         dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
             campana.pk, campana.cantidad_intentos, tipo_agregacion)
