@@ -56,11 +56,12 @@ td, th {
     border-left: 3px solid #eee;
 }
 .bs-callout-info {
-    background-color: #f4f8fa;
-    border-color: #5bc0de;
+    background-color: #FFDABA;
+    border-color: #f5831f;
+    color: #222;
 }
 .bs-callout-info h4 {
-    color: #5bc0de;
+    color: #f5831f;
 }
 .bs-callout-danger {
     background-color: #fdf7f7;
