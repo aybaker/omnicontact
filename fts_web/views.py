@@ -617,6 +617,26 @@ class CampanaCreateView(CreateView):
             kwargs={"pk": self.object.pk})
 
 
+class CampanaUpdateView(UpdateView):
+    """
+    Esta vista actualiza un objeto Campana.
+    """
+
+    template_name = 'campana/nueva_edita_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = CampanaForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CampanaUpdateView, self).dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        return reverse(
+            'audio_campana',
+            kwargs={"pk": self.object.pk})
+
+
 class AudioCampanaCreateView(UpdateView):
     """
     Esta vista actuaiza un objeto Campana
@@ -968,12 +988,6 @@ class ConfirmaCampanaMixin(UpdateView):
         return super(ConfirmaCampanaMixin, self).dispatch(
             *args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
-        campana = self.get_object()
-        if not campana.estado == Campana.ESTADO_EN_DEFINICION:
-            return redirect('lista_campana')
-        return super(ConfirmaCampanaMixin, self).get(request, *args, **kwargs)
-
     def form_valid(self, form):
         if 'confirma' in self.request.POST:
             campana = self.object
@@ -1069,6 +1083,25 @@ class ConfirmaCampanaMixin(UpdateView):
 
 class ConfirmaCampanaView(ConfirmaCampanaMixin):
     template_name = 'campana/confirma_campana.html'
+
+    def get(self, request, *args, **kwargs):
+        campana = self.get_object()
+        if not campana.confirma_campana_valida():
+            message = """<strong>¡Cuidado!</strong>
+            La campana posee datos inválidos y no pude ser confirmada.
+            Verifique que todos los datos requeridos sean válidos."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+
+            return HttpResponseRedirect(
+                reverse(
+                    'audio_campana',
+                    kwargs={"pk": campana.pk}))
+        return super(ConfirmaCampanaView, self).get(request, *args, **kwargs)
+
 
 
 class FinalizaCampanaView(RedirectView):
@@ -1414,6 +1447,25 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
 class ConfirmaRecicladoCampanaView(ConfirmaCampanaMixin):
     template_name = 'campana/reciclado/confirma_reciclado_campana.html'
 
+    def get(self, request, *args, **kwargs):
+        campana = self.get_object()
+        if not campana.confirma_campana_valida():
+            message = """<strong>¡Cuidado!</strong>
+            La campana posee datos inválidos y no pude ser confirmada.
+            Verifique que todos los datos requeridos sean válidos."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+
+            return HttpResponseRedirect(
+                reverse(
+                    'actuacion_reciclado_campana',
+                    kwargs={"pk": campana.pk}))
+        return super(ConfirmaRecicladoCampanaView, self).get(
+            request, *args, **kwargs)
+
 
 class DetalleCampanView(DetailView):
     """
@@ -1446,32 +1498,6 @@ class ExportaReporteCampanaView(UpdateView):
         url = self.object.obtener_url_reporte_csv_descargar()
 
         return redirect(url)
-
-
-# class CampanaUpdateView(UpdateView):
-#     """
-#     Esta vista actualiza un objeto Campana.
-#     """
-
-#     template_name = 'campana/nueva_edita_campana.html'
-#     model = Campana
-#     context_object_name = 'campana'
-#     form_class = CampanaForm
-
-#     def get_success_url(self):
-#         message = '<strong>Operación Exitosa!</strong>\
-#         Se llevó a cabo con éxito la actualización de\
-#         la Campaña.'
-
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             message,
-#         )
-
-#         return reverse(
-#             'edita_campana',
-#             kwargs={"pk": self.object.pk})
 
 
 #==============================================================================

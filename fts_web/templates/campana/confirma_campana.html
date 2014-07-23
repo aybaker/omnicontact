@@ -13,11 +13,11 @@
         </div>
         <div class="panel-body">
             <ul class="nav nav-tabs">
-                <li><a>1- Datos Básicos</a></li>
-                <li><a>2- Audio</a></li>
-                <li><a>3- Calificaciones</a></li>
-                <li><a>4- Opciones</a></li>
-                <li><a>5- Actuación</a></li>
+                <li><a href="{% url 'datos_basicos_campana' campana.pk %}">1- Datos Básicos</a></li>
+                <li><a href="{% url 'audio_campana' campana.pk %}">2- Audio</a></li>
+                <li><a href="{% url 'calificacion_campana' campana.pk %}">3- Calificaciones</a></li>
+                <li><a href="{% url 'opcion_campana' campana.pk %}">4- Opciones</a></li>
+                <li><a href="{% url 'actuacion_campana' campana.pk %}">5- Actuación</a></li>
                 <li class="active"><a>6- Confirmar Campaña</a></li>
             </ul>
             <br>
@@ -74,6 +74,14 @@
                             {% for calificacion in campana.calificaciones.all %}
                                 <tr>
                                     <td>{{ calificacion.nombre }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="3">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Calificaciones creadas.</em>
+                                        </p>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>

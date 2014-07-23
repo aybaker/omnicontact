@@ -12,8 +12,8 @@
         </div>
         <div class="panel-body">
         <ul class="nav nav-tabs">
-                <li><a>1- Tipo Reciclado</a></li>
-                <li><a>2- Redefinición</a></li>
+                <li class="disabled"><a>1- Tipo Reciclado</a></li>
+                <li><a href="{% url 'redefinicion_reciclado_campana' campana.pk %}">2- Redefinición</a></li>
                 <li class="active"><a>3- Actuación</a></li>
                 <li class="disabled"><a>4- Confirmar Campaña</a></li>
             </ul>
@@ -71,9 +71,11 @@
                 <button type="submit" id="id_guardar" class="btn btn-success btn-lg">
                     Guardar Actuación
                 </button>
-                <a href="{% url 'confirma_reciclado_campana' campana.pk %}" class="btn btn-default pull-right" role="button">
+                {% if actuaciones_validas %}
+                    <a href="{% url 'confirma_reciclado_campana' campana.pk %}" class="btn btn-default pull-right" role="button">
                     Continuar <span class="glyphicon glyphicon-chevron-right"></span>
-                </a> 
+                    </a> 
+                {% endif %}
             </div>
             </form>        
         </div>

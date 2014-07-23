@@ -170,7 +170,7 @@ class ConfirmaForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.add_input(
-            Submit('confirma', 'Confirmar Nueva Campaña',
+            Submit('confirma', 'Confirmar Campaña',
                    css_class='btn btn-success btn-lg')
         )
         # self.helper.add_input(

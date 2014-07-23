@@ -166,3 +166,92 @@ class EliminarCampanaTest(FTSenderBaseTest):
 
         with self.assertRaises(Campana.DoesNotExist):
             Campana.objects.get(id=1)
+
+
+class ValidacionCampanaTest(FTSenderBaseTest):
+
+    def test_campana_valida_audio_falla(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+        campana.audio_original = None
+        campana.audio_asterisk = None
+
+        # -----
+
+        self.assertEqual(campana.valida_audio(), False)
+
+    def test_campana_valida_audio(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+        campana.audio_original = Mock()
+        campana.audio_asterisk = Mock()
+
+        # -----
+
+        self.assertEqual(campana.valida_audio(), True)
+
+    def test_campana_valida_estado_en_definicion_falla(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+        campana.estado = Campana.ESTADO_ACTIVA
+
+        # -----
+
+        self.assertEqual(campana.valida_estado_en_definicion(), False)
+
+    def test_campana_valida_estado_en_definicion(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+        campana.estado = Campana.ESTADO_EN_DEFINICION
+
+        # -----
+
+        self.assertEqual(campana.valida_estado_en_definicion(), True)
+
+    def test_campana_confirma_campana_valida_falla_en_definicion(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+
+        campana.valida_estado_en_definicion = Mock(return_value=False)
+        campana.valida_audio = Mock(return_value=True)
+        campana.valida_actuaciones = Mock(return_value=True)
+
+        # -----
+
+        self.assertEqual(campana.confirma_campana_valida(), False)
+
+    def test_campana_confirma_campana_valida_falla_audio(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+
+        campana.valida_estado_en_definicion = Mock(return_value=True)
+        campana.valida_audio = Mock(return_value=False)
+        campana.valida_actuaciones = Mock(return_value=True)
+
+        # -----
+
+        self.assertEqual(campana.confirma_campana_valida(), False)
+
+    def test_campana_confirma_campana_valida_falla_actuaciones(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+
+        campana.valida_estado_en_definicion = Mock(return_value=True)
+        campana.valida_audio = Mock(return_value=True)
+        campana.valida_actuaciones = Mock(return_value=False)
+
+        # -----
+
+        self.assertEqual(campana.confirma_campana_valida(), False)
+
+    def test_campana_confirma_campana_valida(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+
+        campana.valida_estado_en_definicion = Mock(return_value=True)
+        campana.valida_audio = Mock(return_value=True)
+        campana.valida_actuaciones = Mock(return_value=True)
+
+        # -----
+
+        self.assertEqual(campana.confirma_campana_valida(), True)
