@@ -766,7 +766,6 @@ class Campana(models.Model):
         related_name='campanas'
     )
 
-
     def puede_finalizarse(self):
         """Metodo que realiza los chequeos necesarios del modelo, y
         devuelve booleano indincando si se puede o no finalizar.
@@ -1269,6 +1268,15 @@ class Campana(models.Model):
                         valida = False
         return valida
 
+    def valida_audio(self):
+        """
+        Este método se encarga de validar que el audio de la campana actual
+        sea válido.
+        """
+        if not self.audio_original or not self.audio_asterisk:
+            return False
+        return True
+
     def obtener_actuaciones_validas(self):
         hoy_ahora = datetime.datetime.today()
         hoy = hoy_ahora.date()
@@ -1305,6 +1313,30 @@ class Campana(models.Model):
         """
         assert self.id
         return 'campania_{0}'.format(self.id)
+
+    def valida_estado_en_definicion(self):
+        """
+        Este método se encarga de validar que el estado de la campana
+        actual sea ESTADO_EN_DEFINICION.
+
+        Devuelve un booleano.
+        """
+        return self.estado == Campana.ESTADO_EN_DEFINICION
+
+    def confirma_campana_valida(self):
+        """
+        Este método se encarga de validar la campana cuando se confirma su
+        creación. Valida que los datos obligatorios estén seteados/creados.
+
+        Devuelve un booleano.
+        """
+        if not self.valida_estado_en_definicion():
+            return False
+        if not self.valida_audio():
+            return False
+        if not self.valida_actuaciones():
+            return False
+        return True
 
     def clean(self, *args, **kwargs):
         """
