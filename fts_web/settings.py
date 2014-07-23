@@ -164,6 +164,8 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 
+LOGIN_REDIRECT_URL = '/'
+
 # Bootstrap friendly
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-info',
