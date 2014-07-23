@@ -12,6 +12,9 @@ from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout, Submit, Div
+
+from bootstrap3_datetime.widgets import DateTimePicker
+
 from fts_web.models import (
     Actuacion, AgenteGrupoAtencion, BaseDatosContacto,
     Campana, Calificacion, GrupoAtencion, Opcion
@@ -89,13 +92,13 @@ class BaseDatosContactoForm(forms.ModelForm):
 
 class CampanaForm(forms.ModelForm):
     fecha_inicio = forms.DateField(
-        widget=forms.DateInput(format='%d/%m/%Y'),
-        help_text='Ejemplo: 10/04/2014'
-    )
+        widget=DateTimePicker(options={"format": "DD/MM/YYYY",
+                                       "pickTime": False}),
+        help_text='Ejemplo: 10/04/2014')
     fecha_fin = forms.DateField(
-        widget=forms.DateInput(format='%d/%m/%Y'),
-        help_text='Ejemplo: 20/04/2014'
-    )
+        widget=DateTimePicker(options={"format": "DD/MM/YYYY",
+                                       "pickTime": False}),
+        help_text='Ejemplo: 20/04/2014')
     bd_contacto = forms.ModelChoiceField(
         queryset=BaseDatosContacto.objects.obtener_definidas(),
     )
@@ -277,12 +280,16 @@ class OpcionForm(forms.ModelForm):
 
 class ActuacionForm(forms.ModelForm):
     hora_desde = forms.TimeField(
-        widget=forms.TimeInput(format='%H:%M'),
-        help_text='Ejemplo: 09:10'
+        help_text='Ejemplo: 09:10',
+        widget=DateTimePicker(options={"format": "HH:mm",
+                                       "pickDate": False},
+                              icon_attrs={'class': 'glyphicon glyphicon-time'})
     )
     hora_hasta = forms.TimeField(
-        widget=forms.TimeInput(format='%H:%M'),
-        help_text='Ejemplo: 20:30'
+        help_text='Ejemplo: 20:30',
+        widget=DateTimePicker(options={"format": "HH:mm",
+                                       "pickDate": False},
+                              icon_attrs={'class': 'glyphicon glyphicon-time'})
     )
 
     def __init__(self, *args, **kwargs):

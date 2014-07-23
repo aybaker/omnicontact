@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'fts_daemon',
     'south',
     'crispy_forms',
+    'bootstrap3_datetime',
 )
 
 MIDDLEWARE_CLASSES = (
