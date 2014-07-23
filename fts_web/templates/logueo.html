@@ -10,8 +10,8 @@
     {% if not user.is_authenticated %}
         <div class="container-fluid">
             <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
-                <div class="col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
-                    <img src="{% static 'fts_web/img/logo_freetech_negro.png' %}">
+                <div class="txt-aling-right border-special">
+                    <img class="logo-logueo" src="{% static 'fts_web/img/logo_freetech_negro.png' %}">
                 </div>
                 <form class="form-signin" role="form" method="post" action="">
                     {% csrf_token %}
