@@ -31,21 +31,10 @@ logger = logging.getLogger(__name__)
 #==============================================================================
 # Grupos de Atención
 #==============================================================================
-class GrupoAtencionNoBorradosManagerMixin(object):
-    """
-    Manager Mixin de GrupoAtencion.
-    """
-    def get_queryset(self):
-        return super(GrupoAtencionNoBorradosManagerMixin, self).\
-            get_queryset().exclude(borrado=True)
-
 
 class GrupoAtencionManager(models.Manager):
     """Manager para GrupoAtencion"""
 
-    # FIXME: Heredando el mixin GrupoAtencionNoBorradosManagerMixin no
-    # funciona sobrescribir el método get_queryset. Manteniéndolo aca en este
-    # manager funciona bien.
     def get_queryset(self):
         return super(GrupoAtencionManager, self).\
             get_queryset().exclude(borrado=True)
@@ -448,17 +437,13 @@ class Contacto(models.Model):
 #==============================================================================
 # Campaña
 #==============================================================================
-class CampanasNoBorradasManagerMixin(object):
-    """
-    Manager Mixin de Campana.
-    """
-    def get_queryset(self):
-        return super(CampanasNoBorradasManagerMixin, self).get_queryset().\
-            exclude(estado=Campana.ESTADO_BORRADA)
 
-
-class CampanaManager(models.Manager, CampanasNoBorradasManagerMixin):
+class CampanaManager(models.Manager):
     """Manager para Campanas"""
+
+    def get_queryset(self):
+        return super(CampanaManager, self).get_queryset().\
+            exclude(estado=Campana.ESTADO_BORRADA)
 
     def obtener_activas(self):
         """Devuelve campañas en estado activas.
