@@ -186,6 +186,22 @@ urlpatterns = patterns('',
     #==========================================================================
     url(r'^test/view/exception/', 'fts_web.views.test_view_exception'),
 
+
+    #==========================================================================
+    # Logueo, Deslogueo
+    #==========================================================================
+    url(r'^logueo/$',
+        'django.contrib.auth.views.login',
+        {'template_name': 'logueo.html'},
+        name="logueo"
+    ),
+    url(r'^deslogueo/$',
+        'django.contrib.auth.views.logout',
+        {'next_page': '/logueo'},
+        name="deslogueo"
+    ),
+
+
     #==========================================================================
     # admin
     #==========================================================================
