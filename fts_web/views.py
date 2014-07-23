@@ -617,6 +617,26 @@ class CampanaCreateView(CreateView):
             kwargs={"pk": self.object.pk})
 
 
+class CampanaUpdateView(UpdateView):
+    """
+    Esta vista actualiza un objeto Campana.
+    """
+
+    template_name = 'campana/nueva_edita_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = CampanaForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CampanaUpdateView, self).dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        return reverse(
+            'audio_campana',
+            kwargs={"pk": self.object.pk})
+
+
 class AudioCampanaCreateView(UpdateView):
     """
     Esta vista actuaiza un objeto Campana
@@ -1446,32 +1466,6 @@ class ExportaReporteCampanaView(UpdateView):
         url = self.object.obtener_url_reporte_csv_descargar()
 
         return redirect(url)
-
-
-# class CampanaUpdateView(UpdateView):
-#     """
-#     Esta vista actualiza un objeto Campana.
-#     """
-
-#     template_name = 'campana/nueva_edita_campana.html'
-#     model = Campana
-#     context_object_name = 'campana'
-#     form_class = CampanaForm
-
-#     def get_success_url(self):
-#         message = '<strong>Operación Exitosa!</strong>\
-#         Se llevó a cabo con éxito la actualización de\
-#         la Campaña.'
-
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             message,
-#         )
-
-#         return reverse(
-#             'edita_campana',
-#             kwargs={"pk": self.object.pk})
 
 
 #==============================================================================
