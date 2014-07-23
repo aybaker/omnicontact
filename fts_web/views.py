@@ -6,6 +6,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.cache import get_cache
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
@@ -54,6 +56,10 @@ class GrupoAtencionListView(ListView):
     context_object_name = 'grupos_atencion'
     model = GrupoAtencion
     queryset = GrupoAtencion.objects.all()
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(GrupoAtencionListView, self).dispatch(*args, **kwargs)
 
 
 class GrupoAtencionMixin(object):
@@ -166,6 +172,10 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
     form_class = GrupoAtencionForm
     formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(GrupoAtencionCreateView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(
             GrupoAtencionCreateView, self).get_context_data(**kwargs)
@@ -200,6 +210,10 @@ class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
     formset_agente_grupo_atencion = AgentesGrupoAtencionFormSet
     queryset = GrupoAtencion.objects.all()
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(GrupoAtencionUpdateView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(
             GrupoAtencionUpdateView, self).get_context_data(**kwargs)
@@ -230,6 +244,10 @@ class GrupoAtencionDeleteView(DeleteView):
     model = GrupoAtencion
     template_name = 'grupo_atencion/elimina_grupo_atencion.html'
     queryset = GrupoAtencion.objects.all()
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(GrupoAtencionDeleteView, self).dispatch(*args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -267,6 +285,10 @@ class BaseDatosContactoListView(ListView):
     context_object_name = 'bases_datos_contacto'
     model = BaseDatosContacto
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(BaseDatosContactoListView, self).dispatch(*args, **kwargs)
+
     def get_queryset(self):
         queryset = BaseDatosContacto.objects.obtener_definidas()
         return queryset
@@ -283,6 +305,11 @@ class BaseDatosContactoCreateView(CreateView):
     model = BaseDatosContacto
     context_object_name = 'base_datos_contacto'
     form_class = BaseDatosContactoForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(BaseDatosContactoCreateView, self).dispatch(
+            *args, **kwargs)
 
     def form_valid(self, form):
         nombre_archivo_importacion =\
@@ -313,6 +340,11 @@ class DefineBaseDatosContactoView(UpdateView):
     template_name = 'base_datos_contacto/define_base_datos_contacto.html'
     model = BaseDatosContacto
     context_object_name = 'base_datos_contacto'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(DefineBaseDatosContactoView, self).dispatch(
+            *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(
@@ -418,6 +450,11 @@ class DepuraBaseDatosContactoView(DeleteView):
     model = BaseDatosContacto
     template_name = 'base_datos_contacto/depura_base_datos_contacto.html'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(DepuraBaseDatosContactoView, self).dispatch(
+            *args, **kwargs)
+
     def get_success_url(self):
         return reverse(
             'lista_base_datos_contacto',
@@ -479,6 +516,10 @@ class CampanaListView(ListView):
     context_object_name = 'campanas'
     model = Campana
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CampanaListView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(CampanaListView, self).get_context_data(
            **kwargs)
@@ -497,6 +538,10 @@ class CampanaDeleteView(DeleteView):
 
     model = Campana
     template_name = 'campana/elimina_campana.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CampanaDeleteView, self).dispatch(*args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -537,6 +582,10 @@ class CampanaCreateView(CreateView):
     context_object_name = 'campana'
     form_class = CampanaForm
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CampanaCreateView, self).dispatch(*args, **kwargs)
+
     def get_success_url(self):
         return reverse(
             'audio_campana',
@@ -553,6 +602,10 @@ class AudioCampanaCreateView(UpdateView):
     model = Campana
     context_object_name = 'campana'
     form_class = AudioForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AudioCampanaCreateView, self).dispatch(*args, **kwargs)
 
     def form_valid(self, form):
         self.object = form.save()
@@ -608,6 +661,11 @@ class CalificacionCampanaCreateView(CreateView):
     context_object_name = 'calificacion'
     form_class = CalificacionForm
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CalificacionCampanaCreateView, self).dispatch(
+            *args, **kwargs)
+
     def get_initial(self):
         initial = super(CalificacionCampanaCreateView, self).get_initial()
         if 'pk' in self.kwargs:
@@ -641,6 +699,11 @@ class CalificacionCampanaDeleteView(DeleteView):
 
     model = Calificacion
     template_name = 'campana/elimina_calificacion_campana.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CalificacionCampanaDeleteView, self).dispatch(
+            *args, **kwargs)
 
     def get_object(self, queryset=None):
         calificacion = super(CalificacionCampanaDeleteView, self).get_object(
@@ -677,6 +740,10 @@ class OpcionCampanaCreateView(CreateView):
     context_object_name = 'opcion'
     form_class = OpcionForm
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(OpcionCampanaCreateView, self).dispatch(*args, **kwargs)
+
     def get_initial(self):
         initial = super(OpcionCampanaCreateView, self).get_initial()
         if 'pk' in self.kwargs:
@@ -710,6 +777,10 @@ class OpcionCampanaDeleteView(DeleteView):
 
     model = Opcion
     template_name = 'campana/elimina_opcion_campana.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(OpcionCampanaDeleteView, self).dispatch(*args, **kwargs)
 
     def get_object(self, queryset=None):
         opcion = super(OpcionCampanaDeleteView, self).get_object(
@@ -745,6 +816,11 @@ class ActuacionCampanaCreateView(CreateView):
     model = Actuacion
     context_object_name = 'actuacion'
     form_class = ActuacionForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ActuacionCampanaCreateView, self).dispatch(
+            *args, **kwargs)
 
     def get_initial(self):
         initial = super(ActuacionCampanaCreateView, self).get_initial()
@@ -802,6 +878,11 @@ class ActuacionCampanaDeleteView(DeleteView):
     model = Actuacion
     template_name = 'campana/elimina_actuacion_campana.html'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ActuacionCampanaDeleteView, self).dispatch(
+            *args, **kwargs)
+
     def get_object(self, queryset=None):
         actuacion = super(ActuacionCampanaDeleteView, self).get_object(
             queryset=None)
@@ -856,6 +937,11 @@ class ConfirmaCampanaMixin(UpdateView):
     model = Campana
     context_object_name = 'campana'
     form_class = ConfirmaForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ConfirmaCampanaMixin, self).dispatch(
+            *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         campana = self.get_object()
@@ -967,6 +1053,10 @@ class FinalizaCampanaView(RedirectView):
 
     pattern_name = 'lista_campana'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FinalizaCampanaView, self).dispatch(*args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         campana = Campana.objects.get(pk=request.POST['campana_id'])
 
@@ -1001,6 +1091,10 @@ class PausaCampanaView(RedirectView):
 
     pattern_name = 'lista_campana'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PausaCampanaView, self).dispatch(*args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         campana = Campana.objects.get(pk=request.POST['campana_id'])
         campana.pausar()
@@ -1023,6 +1117,10 @@ class ActivaCampanaView(RedirectView):
     """
 
     pattern_name = 'lista_campana'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ActivaCampanaView, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         campana = Campana.objects.get(pk=request.POST['campana_id'])
@@ -1048,6 +1146,10 @@ class TipoRecicladoCampanaView(FormView):
 
     template_name = 'campana/reciclado/campana_tipo_reciclado.html'
     form_class = TipoRecicladoForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TipoRecicladoCampanaView, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.campana_id = kwargs['pk']
@@ -1125,6 +1227,11 @@ class RedefinicionRecicladoCampanaView(UpdateView):
     context_object_name = 'campana'
     form_class = CampanaForm
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(RedefinicionRecicladoCampanaView, self).dispatch(
+            *args, **kwargs)
+
     def get(self, request, *args, **kwargs):
         """
         Valida que la campana a redefinir este en definición.
@@ -1169,6 +1276,11 @@ class ActuacionRecicladoCampanaView(CreateView):
     model = Actuacion
     context_object_name = 'actuacion'
     form_class = ActuacionForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ActuacionRecicladoCampanaView, self).dispatch(
+            *args, **kwargs)
 
     def get_initial(self):
         initial = super(ActuacionRecicladoCampanaView, self).get_initial()
@@ -1228,6 +1340,11 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
     template_name = \
         'campana/reciclado/elimina_actuacion_reciclado_campana.html'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ActuacionRecicladoCampanaDeleteView, self).dispatch(
+            *args, **kwargs)
+
     def get_object(self, queryset=None):
         actuacion = super(ActuacionRecicladoCampanaDeleteView, self).\
             get_object(queryset=None)
@@ -1281,6 +1398,10 @@ class DetalleCampanView(DetailView):
     context_object_name = 'campana'
     model = Campana
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(DetalleCampanView, self).dispatch(*args, **kwargs)
+
 
 class ExportaReporteCampanaView(UpdateView):
     """
@@ -1289,6 +1410,10 @@ class ExportaReporteCampanaView(UpdateView):
 
     model = Campana
     context_object_name = 'campana'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ExportaReporteCampanaView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -1341,6 +1466,10 @@ class CampanaPorEstadoListView(ListView):
     context_object_name = 'campanas'
     model = Campana
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CampanaPorEstadoListView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(CampanaPorEstadoListView, self).get_context_data(
            **kwargs)
@@ -1358,6 +1487,11 @@ class CampanaEstadoOpcionesDetailView(DetailView):
     template_name = 'estado/detalle_estado_opciones.html'
     context_object_name = 'campana'
     model = Campana
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CampanaEstadoOpcionesDetailView, self).dispatch(
+            *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(CampanaEstadoOpcionesDetailView,
@@ -1383,6 +1517,10 @@ class CampanaReporteListView(ListView):
     context_object_name = 'campana'
     model = Campana
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CampanaReporteListView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(CampanaReporteListView, self).get_context_data(
            **kwargs)
@@ -1398,6 +1536,10 @@ class CampanaReporteDetailView(DetailView):
     template_name = 'reporte/detalle_reporte.html'
     context_object_name = 'campana'
     model = Campana
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CampanaReporteDetailView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         return Campana.objects.obtener_depuradas()
@@ -1437,6 +1579,10 @@ class DaemonStatusView(TemplateView):
     del Daemon"""
 
     template_name = "estado/daemon_status.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(DaemonStatusView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(DaemonStatusView, self).get_context_data(**kwargs)

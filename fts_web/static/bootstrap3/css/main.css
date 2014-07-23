@@ -29,6 +29,10 @@
 .curson-link {
     cursor: pointer;
 }
+.txt-aling-right {
+    text-align: right;
+}
+
 td, th {
     vertical-align: top;
     padding-right: 5px; 
@@ -45,6 +49,13 @@ td, th {
     padding-top: 31px;
     padding-bottom: 5px;
     }
+}
+
+.border-special {
+    border-bottom: 15px solid #222;
+}
+.logo-logueo {
+    margin-bottom: 10px;
 }
 
 
@@ -167,6 +178,5 @@ td, th {
 }
 .fts-table-bg {
     background: #c3c3c3 !important;
-    color: #222;
-    
+    color: #222;   
 }

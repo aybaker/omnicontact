@@ -164,6 +164,10 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 
+LOGIN_URL = "logueo"
+LOGOUT_URL = "deslogueo"
+LOGIN_REDIRECT_URL = '/'
+
 # Bootstrap friendly
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-info',

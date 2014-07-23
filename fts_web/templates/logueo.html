@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load static %}
+
+{% block title %} Logueo Usuario {% endblock %}
+
+
+{% block logueo %}
+    {{ error }}
+    {% if not user.is_authenticated %}
+        <div class="container-fluid">
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
+                <div class="txt-aling-right border-special">
+                    <img class="logo-logueo" src="{% static 'fts_web/img/logo_freetech_negro.png' %}">
+                </div>
+                <form class="form-signin" role="form" method="post" action="">
+                    {% csrf_token %}
+                    <h2 class="form-signin-heading">Logueo</h2>
+
+                    <div class="form-group">
+                        <label class="control-label">Usuario</label>
+                        <div >
+                            {{ form.username }}
+                            <span class="help-inline text-danger">
+                                {{ form.username.errors }}
+                            </span>
+                        </div>
+                    </div>   
+                    <div class="form-group">
+                        <label class="control-label">Contraseña</label>
+                        <div>
+                            {{ form.password }}
+                            <span class="help-inline text-danger">
+                                {{ form.password.errors }}
+                            </span>
+                        </div>
+                    </div> 
+                    <br> 
+                  
+
+                    <button type="submit" class="btn btn-info btn-lg btn-block fts-bg-gris-osc-gradiente">
+                        Ingresar
+                    </button>
+
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
