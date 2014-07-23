@@ -36,6 +36,7 @@ import logging as logging_
 from fts_web.reciclador_base_datos_contacto.reciclador import (
     RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
     CampanaTipoRecicladoInvalidoError)
+from fts_web import version
 
 
 logger = logging_.getLogger(__name__)
@@ -59,10 +60,9 @@ class AcercaTemplateView(TemplateView):
             AcercaTemplateView, self).get_context_data(**kwargs)
 
         # TODO: Implementar la manera que se obtienen los datos de acerca.
-        context['version'] = '1.0.0'
-        context['branch'] = 'master'
-        context['commit'] = 'sda7a95'
-        context['fecha_deploy'] = '12/12/2014'
+        context['branch'] = version.FTSENDER_BRANCH
+        context['commit'] = version.FTSENDER_COMMIT
+        context['fecha_deploy'] = version.FTSENDER_BUILD_DATE
         return context
 
 
