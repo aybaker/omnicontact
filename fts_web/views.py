@@ -36,9 +36,34 @@ import logging as logging_
 from fts_web.reciclador_base_datos_contacto.reciclador import (
     RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
     CampanaTipoRecicladoInvalidoError)
+from fts_web import version
 
 
 logger = logging_.getLogger(__name__)
+
+
+#==============================================================================
+# Acerca
+#==============================================================================
+
+
+class AcercaTemplateView(TemplateView):
+    """
+    Esta vista es para generar el Acerca de la app.
+    """
+
+    template_name = 'acerca/acerca.html'
+    context_object_name = 'acerca'
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            AcercaTemplateView, self).get_context_data(**kwargs)
+
+        # TODO: Implementar la manera que se obtienen los datos de acerca.
+        context['branch'] = version.FTSENDER_BRANCH
+        context['commit'] = version.FTSENDER_COMMIT
+        context['fecha_deploy'] = version.FTSENDER_BUILD_DATE
+        return context
 
 
 #==============================================================================
