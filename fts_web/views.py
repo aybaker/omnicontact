@@ -990,8 +990,21 @@ class ConfirmaCampanaMixin(UpdateView):
 
     def get(self, request, *args, **kwargs):
         campana = self.get_object()
-        if not campana.estado == Campana.ESTADO_EN_DEFINICION:
-            return redirect('lista_campana')
+        if not campana.confirma_campana_valida():
+            message = """<strong>¡Cuidado!</strong>
+            La campana posee datos inválidos y no pude ser confirmada.
+            Verifique que todos los datos requeridos sean válidos."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+
+            return HttpResponseRedirect(
+                reverse(
+                    'audio_campana',
+                    kwargs={"pk": campana.pk}))
+
         return super(ConfirmaCampanaMixin, self).get(request, *args, **kwargs)
 
     def form_valid(self, form):
