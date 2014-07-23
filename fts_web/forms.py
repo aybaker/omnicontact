@@ -282,11 +282,15 @@ class ActuacionForm(forms.ModelForm):
     hora_desde = forms.TimeField(
         help_text='Ejemplo: 09:10',
         widget=DateTimePicker(options={"format": "HH:mm",
-                                       "pickDate": False}))
+                                       "pickDate": False},
+                              icon_attrs={'class': 'glyphicon glyphicon-time'})
+    )
     hora_hasta = forms.TimeField(
         help_text='Ejemplo: 20:30',
         widget=DateTimePicker(options={"format": "HH:mm",
-                                       "pickDate": False}))
+                                       "pickDate": False},
+                              icon_attrs={'class': 'glyphicon glyphicon-time'})
+    )
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
