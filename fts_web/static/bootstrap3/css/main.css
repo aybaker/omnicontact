@@ -58,6 +58,10 @@ td, th {
     margin-bottom: 10px;
 }
 
+.modal-content .modal-header {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
 
 
 /* Mensajito de Ayuda*/
