@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Sprint 6 - 11 de julio de 2014
+Sprint 7 - 25 de julio de 2014
 ------------------------------
 
 
@@ -12,42 +12,37 @@ Instrucciones de deploy
 .. code::
 
     $ ssh deployer@192.168.99.224
-    $ ./deploy.sh sprint6-fixes <INVENTARIO>
+    $ ./deploy.sh sprint7-fixes <INVENTARIO>
 
 
 
 Nueva funcionalidad
 ...................
 
-* Implementacion de Celery para ejecución de tareas asincronas / en background
-* Finalización manual de campañas en background
-* FTS-212 - Nuevas formas de reciclado de campaña (Ocupados/No contestó/Número erróneo/Llamada errónea)
-* FTS-234 - Validación consistencia de fechas y actuaciones de campañas
-* FTS-231 - Daemon evita finalizar campañas que posean llamadas en curso
-* FTS-152 - Depuración de eventos de contactos
-* FTS-205 - Depuración de BD de contactos
-* FTS-208 - Mejora UI de carga de audio de campaña
-
+* FTS-13 - Eliminar Grupos de Atención
+* FTS-14 - Modificar Grupos de Atención
+* FTS-211 - Agregar 'date picker' para fechas + widget para horarios
+* FTS-240 - Permitir acceso a todos los tabs al crear y reciclar campaña
+* FTS-246 - Reciclado de campañas, filtrando por más de un estado
+* FTS-248 - Implementación de estado DEPURADA para Campaña, evita
+  problemas de acceso concurrente e inconsistencias desde que la campaña
+  es finalizada hasta que es depurada.
+* FTS-252 - Mostrar en web la versión de la aplicación
+* FTS-254 - Usar colores de FreeTech en UI
+* FTS-259 - Borrar campaña
+* FTS-260 - Identificar usuarios del sistema
 
 Deploy
 ......
 
-* Deploy de Redis
-* Deploy de workers Celery
-
+* Generacion de ambiente de desarrollo usando Docker
 
 Bugs solucionados
 .................
 
-* FTS-169 - Reporta problemas con reload de configuracion de Asterisk
-* FTS-206 - Valida y acepta csv con una sola columna (sin delimitador)
-
-
-Otras mejoras
-.............
-
-* Unificación de archivos de dependencias y librerías Python
-* Ajustes a instrucciones de deploy
+* FTS-255 - FIX "error interno" al intentar depurar BD de Contactos
+* FTS-261 - FIX: script de inicio no hace reload desde scripts de deploy
+* FTS-262 - FIX: script de deploy no deploya version más reciente
 
 
 Known issues
@@ -85,9 +80,6 @@ Known issues
   en casos puntuales como ante **cambios de zona horaria**, o ante el ajuste de la hora
   por parte del daemon **ntp**.
 * FTS-245 - Campañas y bases de datos que quedan "en definicion" nunca son borradas
-* FTS-248 - (1) Luego de finalizar manualmente una campaña, el sistema permite ser
-  modificandola (ej: des-pausarla), lo que podría causar problemas en el sistema.
-  Actualmente, el usuario debe recordar NO des-pausar las campañas finalizadas
-  manualmente. (2) Cuando ya no hay llamadas en curso, la campaña continua
-  mostrandose en la pantalla de supervisión (no es un problema grave, pero las campañas
-  que están siendo finalizadas no deberian aparecer en la pantalla de supervision).
+* FTS-264 - Usuario de BD requiere rol de superusuario
+* FTS-265 - Realizar configuracion fina de Celery
+* FTS-266 - Celery: evitar re-programar tareas en curso o encoladas
