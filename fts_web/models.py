@@ -413,10 +413,10 @@ class ContactoManager(models.Manager):
         Este método realiza el dump de los contactos de la base de datos a un
         archivo.
         """
-        dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
-        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
 
-        copy_to = dir_dump_contacto + nombre_archivo_contactos
+        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
+        copy_to = os.path.join(settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH,
+                               nombre_archivo_contactos)
 
         cursor = connection.cursor()
         sql = """COPY (SELECT * FROM fts_web_contacto WHERE
@@ -1188,8 +1188,8 @@ class Campana(models.Model):
 
         dirname = 'reporte_campana'
         filename = "{0}-reporte.csv".format(self.id)
-        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
-                                         filename)
+        file_path = os.path.join(settings.MEDIA_ROOT, dirname, filename)
+
         file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
 
         if os.path.exists(file_path):
@@ -1197,7 +1197,6 @@ class Campana(models.Model):
             logger.warn("crea_reporte_csv(): Ya existe archivo CSV de "
                          "reporte para la campana %s. Archivo: %s. "
                          "El archivo sera sobreescrito", self.pk, file_path)
-            # assert not os.path.exists(file_path)
 
         dirname, filename = crear_archivo_en_media_root(dirname,
             "{0}-reporte".format(self.id), ".csv")
