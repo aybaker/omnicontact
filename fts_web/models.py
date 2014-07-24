@@ -169,59 +169,6 @@ class BaseDatosContactoManager(models.Manager):
         """
         return self.filter(estado=BaseDatosContacto.ESTADO_DEFINIDA)
 
-    def reciclar_base_datos(self, campana_id, tipo_reciclado):
-        """
-        Este método hace el reciclado de la base de datos según el tipo
-        de reciclado seleccionado, devuelve la base de datos que usará la
-        campaña reciclada.
-        Parametros:
-        - campana_id: El id de la campana que se está reciclado.
-        - tipo_reciclado: EL tipo de reciclado que se desea realizar sobre la
-        campana.
-        """
-
-        campana = Campana.objects.get(pk=campana_id)
-
-        if int(tipo_reciclado) == Campana.TIPO_RECICLADO_TOTAL:
-            return campana.bd_contacto
-        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_PENDIENTES:
-            lista_contactos_reciclados = campana.obtener_contactos_pendientes()
-        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_OCUPADOS:
-            lista_contactos_reciclados = campana.obtener_contactos_ocupados()
-        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_NO_CONTESTADOS:
-            lista_contactos_reciclados = \
-                campana.obtener_contactos_no_contestados()
-        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_NUMERO_ERRONEO:
-            lista_contactos_reciclados = \
-                campana.obtener_contactos_numero_erroneo()
-        elif int(tipo_reciclado) == Campana.TIPO_RECICLADO_LLAMADA_ERRONEA:
-            lista_contactos_reciclados = \
-                campana.obtener_contactos_llamada_erronea()
-
-        if not lista_contactos_reciclados:
-            logger.warn("El reciclado de base datos no arrojo contactos.")
-            raise FtsRecicladoBaseDatosContactoError("""No se registraron
-                contactos para reciclar con el tipo de reciclado seleccionado
-                .""")
-        try:
-            bd_contacto = BaseDatosContacto.objects.create(
-                nombre='{0} (reciclada)'.format(
-                    campana.bd_contacto.nombre),
-                archivo_importacion=campana.bd_contacto.\
-                    archivo_importacion,
-                nombre_archivo_importacion=campana.bd_contacto.\
-                    nombre_archivo_importacion,
-            )
-        except Exception, e:
-            logger.warn("Se produjo un error al intentar crear la base de"
-                " datos. Exception: %s", e)
-            raise FtsRecicladoBaseDatosContactoError("""No se pudo crear
-                la base datos contactos reciclada.""")
-        else:
-            bd_contacto.genera_contactos(lista_contactos_reciclados)
-            bd_contacto.define()
-            return bd_contacto
-
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
 

@@ -136,43 +136,6 @@ class BaseDatosContactoTest(FTSenderBaseTest):
 
         self.assertEqual(bd_contacto.get_cantidad_contactos(), 6)
 
-    def test_reciclar_base_datos_total(self):
-        campana = self._crea_campana_emula_procesamiento()
-
-        bd_contacto_reciclada = BaseDatosContacto.objects.reciclar_base_datos(
-            campana.pk, Campana.TIPO_RECICLADO_TOTAL)
-
-        # Verificamos que para TIPO_RECICLADO_TOTAL la base de datos sea la
-        # misma.
-        self.assertEqual(bd_contacto_reciclada.pk, campana.bd_contacto.pk)
-
-    def test_reciclar_base_datos_pendientes_sin_contactos(self):
-        campana = self.crear_campana()
-
-        # Verificamos que para TIPO_RECICLADO_PENDIENTES y sin contactos en
-        # EDC, se genere la excepción FtsRecicladoBaseDatosContactoError.
-
-        with self.assertRaises(FtsRecicladoBaseDatosContactoError):
-            BaseDatosContacto.objects.reciclar_base_datos(campana.pk,
-                Campana.TIPO_RECICLADO_PENDIENTES)
-
-    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir(),
-                       MEDIA_ROOT=_tmpdir())
-    def test_reciclar_base_datos_pendientes(self):
-        campana = self._crea_campana_emula_procesamiento()
-
-        DepuradorDeCampanaWorkflow().depurar(campana.id)
-
-        bd_contacto_reciclada = BaseDatosContacto.objects.reciclar_base_datos(
-            campana.pk, Campana.TIPO_RECICLADO_PENDIENTES)
-
-        # Verificamos que para TIPO_RECICLADO_PENDIENTES no se la misma
-        # base de datos, que se haya generado una nueva con el reciclado.
-
-        self.assertFalse(bd_contacto_reciclada == campana.bd_contacto)
-        self.assertEqual(bd_contacto_reciclada.cantidad_contactos,
-            Contacto.objects.filter(bd_contacto=bd_contacto_reciclada).count())
-
     def test_verifica_en_uso(self):
         """
         Testea el método verifica_en_uso().
