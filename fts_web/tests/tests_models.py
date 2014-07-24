@@ -666,13 +666,12 @@ class CampanaTest(FTSenderBaseTest):
         #     os.remove(f)
 
         filename = "{0}-reporte.csv".format(campana.id)
-        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
-                                         filename)
+        file_path = os.path.join(settings.MEDIA_ROOT, dirname, filename)
+
         file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
 
         # Testeo que si la campana no está finalizada de una excepción.
         self.assertRaises(AssertionError, campana.crea_reporte_csv)
-
         # Finalizamos la campana, acudimos al método que genera el csv para
         # exportar, validamos que exista el archivo y que el método devuelva
         # la url para accederlo.
@@ -681,8 +680,6 @@ class CampanaTest(FTSenderBaseTest):
         self.assertTrue(os.path.exists(file_path))
         self.assertEqual(url_reporte, file_url)
 
-        # Testeo que si ya se generó el reporte de una excepción.
-        self.assertRaises(AssertionError, campana.crea_reporte_csv)
 
         # Abrimos el archivo y contamos que tenga 100 lineas. Una por contacto,
         # y cada linea con 11 columnas.
