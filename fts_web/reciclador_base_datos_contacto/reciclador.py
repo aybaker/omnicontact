@@ -31,17 +31,6 @@ class RecicladorBaseDatosContacto(object):
     def _obtener_campana(self, campana_id):
         return Campana.objects.get(pk=campana_id)
 
-    def _crear_base_datos(self, campana):
-        bd_contacto = BaseDatosContacto.objects.create(
-            nombre='{0} (reciclada)'.format(
-                campana.bd_contacto.nombre),
-            archivo_importacion=campana.bd_contacto.\
-                archivo_importacion,
-            nombre_archivo_importacion=campana.bd_contacto.\
-                nombre_archivo_importacion,
-        )
-        return bd_contacto
-
     def reciclar(self, campana_id, tipos_reciclado):
         logger.info("Se iniciara el proceso de reciclado de base de datos"
                     " para la campana %s", campana_id)
@@ -112,7 +101,7 @@ class RecicladorBaseDatosContacto(object):
                 "seleccionado.")
 
         # Creamos la insancia de BaseDatosContacto para el reciclado.
-        bd_contacto = self._crear_base_datos(campana)
-        bd_contacto.genera_contactos(contactos_reciclados)
-        bd_contacto.define()
-        return bd_contacto
+        bd_contacto_reciclada = campana.bd_contacto.copia_para_reciclar()
+        bd_contacto_reciclada.genera_contactos(contactos_reciclados)
+        bd_contacto_reciclada.define()
+        return bd_contacto_reciclada
