@@ -50,6 +50,22 @@ class GrupoAtencionTest(FTSenderBaseTest):
 class BaseDatosContactoTest(FTSenderBaseTest):
     """Clase para testear Base Datos Contacto"""
 
+    def test_copia_para_reciclar(self):
+        """
+        Testea el método obtener_definidas().
+        """
+        bd_contacto = BaseDatosContacto.objects.create(
+            nombre="base-datos-contactos",
+            archivo_importacion=self.get_test_resource(
+                "planilla-ejemplo-0.xls"),
+            nombre_archivo_importacion='planilla-ejemplo-0.xls',
+            columna_datos=0
+        )
+        bd_contacto.copia_para_reciclar()
+
+        self.assertEqual(BaseDatosContacto.objects.all().count(),
+            2)
+
     def test_obtener_definidas(self):
         """
         Testea el método obtener_definidas().
