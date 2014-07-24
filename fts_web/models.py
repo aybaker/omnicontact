@@ -389,6 +389,21 @@ class BaseDatosContacto(models.Model):
         self.estado = self.ESTADO_DEPURADA
         self.save()
 
+    def copia_para_reciclar(self):
+        """
+        Este método se encarga de duplicar la base de datos de contactos
+        actual.
+        NO realiza la copia de los contactos de la misma.
+        """
+        copia = BaseDatosContacto.objects.create(
+            nombre='{0} (reciclada)'.format(self.nombre),
+            columnas=self.columnas,
+            archivo_importacion=self.archivo_importacion,
+            nombre_archivo_importacion=self.nombre_archivo_importacion,
+            columna_datos=self.columna_datos,
+        )
+        return copia
+
 
 class ContactoManager(models.Manager):
     """Manager para Contacto"""

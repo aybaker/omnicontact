@@ -128,19 +128,20 @@ class RecicladorBaseDatosContactoTests(FTSenderBaseTest):
     @patch('fts_daemon.models.EventoDeContacto.objects_reciclador_contactos.'
            'obtener_contactos_reciclados')
     def test_crea_base_datos_con_reciclado_ocupados(self, func_mock):
+        bd_contacto = Mock()
+
         campana = Campana(id=1)
         campana.save = Mock()
         campana.bd_contacto = BaseDatosContacto(id=1)
         campana.estado = Campana.ESTADO_DEPURADA
-
-        bd_contacto = Mock()
+        campana.bd_contacto.copia_para_reciclar = Mock(
+            return_value=bd_contacto)
 
         func_mock.return_value = [
             Mock(), Mock(), Mock()]
 
         reciclador = RecicladorBaseDatosContacto()
         reciclador._obtener_campana = Mock(return_value=campana)
-        reciclador._crear_base_datos = Mock(return_value=bd_contacto)
 
         # -----
 
