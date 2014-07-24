@@ -20,6 +20,13 @@
     <script src="{% static 'fts_web/js/jquery-1.10.2.min.js' %}"></script>
     <script src="{% static 'fts_web/js/jquery-ui-1.10.4.custom.min.js' %}"></script>
     <script src="{% static 'bootstrap3/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $(".modal_proceso_grande").click(function (){
+                $('#modal_proceso_grande').modal();
+            });
+        });   
+    </script>
 
     {{ form.media }}
 
@@ -88,14 +95,25 @@
                 </div>
             </div>
         </div>
-        <!-- <div id="footer">
-            <div class="container">
-                <p class="text-center">
-                    <small>Freetech Solutions</small><br>
-                    <small><a href="">www.freetechsolutions.com.ar</a></small>
-                </p>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modal_proceso_grande" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header fts-bg-naranja-gradiente">
+                        <button type="button" class="close" data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">
+                        <span class="glyphicon glyphicon-time"></span>  Tiempo Proceso
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                    <h4>El proceso iniciado es grande y puede demorar algunos minutos. <strong>Aguarde Por Favor.</strong></h4>
+                    </div>
+                </div>
             </div>
-        </div> -->
+        </div>
     {% else %}
         {% block logueo %}
         {% endblock %} 
