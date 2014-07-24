@@ -1188,8 +1188,8 @@ class Campana(models.Model):
 
         dirname = 'reporte_campana'
         filename = "{0}-reporte.csv".format(self.id)
-        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
-                                         filename)
+        file_path = os.path.join(settings.MEDIA_ROOT, dirname, filename)
+
         file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
 
         if os.path.exists(file_path):
@@ -1197,7 +1197,6 @@ class Campana(models.Model):
             logger.warn("crea_reporte_csv(): Ya existe archivo CSV de "
                          "reporte para la campana %s. Archivo: %s. "
                          "El archivo sera sobreescrito", self.pk, file_path)
-            # assert not os.path.exists(file_path)
 
         dirname, filename = crear_archivo_en_media_root(dirname,
             "{0}-reporte".format(self.id), ".csv")
