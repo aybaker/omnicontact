@@ -413,10 +413,10 @@ class ContactoManager(models.Manager):
         Este método realiza el dump de los contactos de la base de datos a un
         archivo.
         """
-        dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
-        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
 
-        copy_to = dir_dump_contacto + nombre_archivo_contactos
+        nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
+        copy_to = os.path.join(settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH,
+                               nombre_archivo_contactos)
 
         cursor = connection.cursor()
         sql = """COPY (SELECT * FROM fts_web_contacto WHERE
