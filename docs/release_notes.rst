@@ -14,6 +14,14 @@ Instrucciones de deploy
     $ ssh deployer@192.168.99.224
     $ ./deploy.sh sprint7-fixes <INVENTARIO>
 
+En el presente sprint se implemento la autenticacion de usuarios. Para crear
+el primer usuario, es necesario loguearse en el servidor con el usuario `ftsender`
+y ejecutar:
+
+.. code::
+
+    $ host> ssh ftsender@server-or-ip
+    $ server> /home/ftsender/deploy/bin/manage.sh createsuperuser
 
 
 Nueva funcionalidad
