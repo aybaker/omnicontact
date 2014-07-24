@@ -171,7 +171,7 @@ class ConfirmaForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.add_input(
             Submit('confirma', 'Confirmar Campaña',
-                   css_class='btn btn-success btn-lg')
+                   css_class='btn btn-success btn-lg modal_proceso_grande')
         )
         # self.helper.add_input(
         #     Submit('cancela', 'Cancelar', css_class='btn-danger')
@@ -204,7 +204,7 @@ class TipoRecicladoForm(forms.Form):
 
         self.helper.add_input(
             Submit('continuar', 'Continuar',
-                   css_class='btn btn-primary pull-right')
+                   css_class='btn btn-primary pull-right modal_proceso_grande')
         )
 
         self.helper.layout = Layout(
