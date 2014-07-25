@@ -63,6 +63,9 @@ td, th {
     border-top-right-radius: 6px;
 }
 
+.load {
+    text-align: center;
+}
 
 /* Mensajito de Ayuda*/
 .bs-callout {
