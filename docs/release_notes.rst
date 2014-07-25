@@ -29,6 +29,7 @@ Nueva funcionalidad
 
 * FTS-13 - Eliminar Grupos de Atención
 * FTS-14 - Modificar Grupos de Atención
+* FTS-173 - Procesos largos deben mostrar progreso o mensaje
 * FTS-211 - Agregar 'date picker' para fechas + widget para horarios
 * FTS-240 - Permitir acceso a todos los tabs al crear y reciclar campaña
 * FTS-246 - Reciclado de campañas, filtrando por más de un estado
@@ -48,10 +49,11 @@ Deploy
 Bugs solucionados
 .................
 
+* FTS-249 - FIX: paths concatenados, en vez de generados con os.path.join()
+* FTS-250 - FIX: FTS_BASE_DATO_CONTACTO_DUMP_PATH requiere finalizar con /
 * FTS-255 - FIX "error interno" al intentar depurar BD de Contactos
 * FTS-261 - FIX: script de inicio no hace reload desde scripts de deploy
 * FTS-262 - FIX: script de deploy no deploya version más reciente
-
 
 Known issues
 ------------
