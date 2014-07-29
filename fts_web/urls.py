@@ -34,8 +34,8 @@ urlpatterns = patterns('',
     #==========================================================================
     # Derivación
     #==========================================================================
-    url(r'^grupo_atencion/$',
-        views.GrupoAtencionListView.as_view(),
+    url(r'^derivacion/$',
+        views.DerivacionListView.as_view(),
         name='lista_grupo_atencion',
     ),
 
