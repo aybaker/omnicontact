@@ -105,7 +105,7 @@ class DerivacionExternaCreateView(CreateView):
     form_class = DerivacionExternaForm
 
     def get_success_url(self):
-        return reverse('lista_grupo_atencion')
+        return reverse('lista_derivacion')
 
 
 class DerivacionExternaUpdateView(UpdateView):
@@ -118,7 +118,7 @@ class DerivacionExternaUpdateView(UpdateView):
     form_class = DerivacionExternaForm
 
     def get_success_url(self):
-        return reverse('lista_grupo_atencion')
+        return reverse('lista_derivacion')
 
 
 class DerivacionExternaDeleteView(DeleteView):
@@ -154,7 +154,7 @@ class DerivacionExternaDeleteView(DeleteView):
         return HttpResponseRedirect(success_url)
 
     def get_success_url(self):
-        return reverse('lista_grupo_atencion')
+        return reverse('lista_derivacion')
 
 
 class GrupoAtencionMixin(object):
@@ -289,7 +289,7 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
         return self.process_all_forms_in_tx(form)
 
     def get_success_url(self):
-        return reverse('lista_grupo_atencion')
+        return reverse('lista_derivacion')
 
 
 class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
@@ -327,7 +327,7 @@ class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
         return self.process_all_forms_in_tx(form, update=True)
 
     def get_success_url(self):
-        return reverse('lista_grupo_atencion')
+        return reverse('lista_derivacion')
 
 
 class GrupoAtencionDeleteView(DeleteView):
@@ -362,7 +362,7 @@ class GrupoAtencionDeleteView(DeleteView):
         return HttpResponseRedirect(success_url)
 
     def get_success_url(self):
-        return reverse('lista_grupo_atencion')
+        return reverse('lista_derivacion')
 
 
 #==============================================================================

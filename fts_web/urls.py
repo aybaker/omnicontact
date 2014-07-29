@@ -36,7 +36,7 @@ urlpatterns = patterns('',
     #==========================================================================
     url(r'^derivacion/$',
         views.DerivacionListView.as_view(),
-        name='lista_grupo_atencion',
+        name='lista_derivacion',
     ),
 
     url(r'^derivacion_externa/nueva/$',
