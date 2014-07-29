@@ -258,7 +258,10 @@ class CalificacionForm(forms.ModelForm):
 class OpcionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        CSS_CLASS_GRUPO_ATENCION = 'accion accion-{0}'.format(Opcion.DERIVAR)
+        CSS_CLASS_GRUPO_ATENCION = 'accion accion-{0}'.format(
+            Opcion.DERIVAR_GRUPO_ATENCION)
+        CSS_CLASS_DERIVACION_EXTERNA = 'accion accion-{0}'.format(
+            Opcion.DERIVAR_DERIVACION_EXTERNA)
         CSS_CLASS_CALIFICACION = 'accion accion-{0}'.format(Opcion.CALIFICAR)
 
         self.helper = FormHelper()
@@ -267,6 +270,8 @@ class OpcionForm(forms.ModelForm):
             Field('digito'),
             Field('accion'),
             Field('grupo_atencion', css_class=CSS_CLASS_GRUPO_ATENCION),
+            Field('derivacion_externa',
+                  css_class=CSS_CLASS_DERIVACION_EXTERNA),
             Field('calificacion', css_class=CSS_CLASS_CALIFICACION),
             Field('campana', type="hidden"),
         )
@@ -281,15 +286,17 @@ class OpcionForm(forms.ModelForm):
         cleaned_data = super(OpcionForm, self).clean()
         accion = cleaned_data.get("accion")
         grupo_atencion = cleaned_data.get("grupo_atencion")
+        derivacion_externa = cleaned_data.get("derivacion_externa")
         calificacion = cleaned_data.get("calificacion")
 
         msg = 'Este campo es requerido'
-        if accion == Opcion.DERIVAR and not grupo_atencion:
+        if accion == Opcion.DERIVAR_GRUPO_ATENCION and not grupo_atencion:
             self._errors["grupo_atencion"] = self.error_class([msg])
-
+        elif (accion == Opcion.DERIVAR_DERIVACION_EXTERNA
+              and not derivacion_externa):
+            self._errors["grupo_atencion"] = self.error_class([msg])
         elif accion == Opcion.CALIFICAR and not calificacion:
             self._errors["calificacion"] = self.error_class([msg])
-
         return cleaned_data
 
 
