@@ -32,12 +32,26 @@ urlpatterns = patterns('',
     ),
 
     #==========================================================================
-    # Grupo Atención
+    # Derivación
     #==========================================================================
     url(r'^grupo_atencion/$',
         views.GrupoAtencionListView.as_view(),
         name='lista_grupo_atencion',
     ),
+
+    url(r'^derivacion_externa/nueva/$',
+        views.DerivacionExternaCreateView.as_view(),
+        name='nueva_derivacion_externa',
+    ),
+    url(r'^derivacion_externa/(?P<pk>\d+)/$',
+        views.DerivacionExternaUpdateView.as_view(),
+        name='edita_derivacion_externa',
+    ),
+    url(r'^derivacion_externa/(?P<pk>\d+)/elimina/$',
+        views.DerivacionExternaDeleteView.as_view(),
+        name='derivacion_externa_elimina',
+    ),
+
     url(r'^grupo_atencion/nuevo/$',
         views.GrupoAtencionCreateView.as_view(),
         name='nuevo_grupo_atencion',
