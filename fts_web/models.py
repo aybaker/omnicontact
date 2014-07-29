@@ -29,6 +29,40 @@ logger = logging.getLogger(__name__)
 
 
 #==============================================================================
+# Derivación Externa
+#==============================================================================
+
+class DerivacionExternaManager(models.Manager):
+    """Manager para DerivacionExterna"""
+
+    def get_queryset(self):
+        return super(DerivacionExternaManager, self).\
+            get_queryset().exclude(borrado=True)
+
+
+class DerivacionExterna(models.Model):
+    """
+    Representa una Derivación Externa.
+    """
+
+    nombre = models.CharField(
+        max_length=128,
+    )
+    dial_string = models.CharField(
+        max_length=256,
+    )
+    borrado = models.BooleanField(
+        default=False,
+        editable=False,
+    )
+
+    def __unicode__(self):
+        if self.borrado:
+            return '(ELiminado) {0}'.format(self.nombre)
+        return self.nombre
+
+
+#==============================================================================
 # Grupos de Atención
 #==============================================================================
 
