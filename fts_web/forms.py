@@ -17,8 +17,27 @@ from bootstrap3_datetime.widgets import DateTimePicker
 
 from fts_web.models import (
     Actuacion, AgenteGrupoAtencion, BaseDatosContacto,
-    Campana, Calificacion, GrupoAtencion, Opcion
+    Campana, Calificacion, GrupoAtencion, Opcion, DerivacionExterna
 )
+
+
+#=========================================================================
+# Derivación Externa
+#=========================================================================
+
+class DerivacionExternaForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('nombre'),
+            Field('dial_string'),
+        )
+        super(DerivacionExternaForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = DerivacionExterna
 
 
 #=========================================================================
