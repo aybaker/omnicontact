@@ -264,7 +264,9 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         campana = Campana(id=1)
         campana.save = Mock()
 
-        self.crea_campana_opcion(0, campana, grupo_atencion=grupo_atencion)
+        self.crea_campana_opcion(0, campana,
+                                 accion=Opcion.DERIVAR_GRUPO_ATENCION,
+                                 grupo_atencion=grupo_atencion)
 
         # -----
 
@@ -277,7 +279,9 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         campana = Campana(id=1)
         campana.save = Mock()
 
-        self.crea_campana_opcion(0, campana, grupo_atencion=grupo_atencion)
+        self.crea_campana_opcion(0, campana,
+                                 accion=Opcion.DERIVAR_GRUPO_ATENCION,
+                                 grupo_atencion=grupo_atencion)
 
         # -----
 
@@ -290,6 +294,7 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         campana.save = Mock()
 
         self.crea_campana_opcion(0, campana,
+                                 accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
                                  derivacion_externa=derivacion_externa)
 
         # -----
@@ -304,6 +309,7 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         campana.save = Mock()
 
         self.crea_campana_opcion(0, campana,
+                                 accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
                                  derivacion_externa=derivacion_externa)
 
         # -----

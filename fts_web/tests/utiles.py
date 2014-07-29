@@ -361,7 +361,7 @@ class FTSenderTestUtilsMixin(object):
 
         opcion = Opcion(
             digito=digito,
-            accion=Opcion.REPETIR,
+            accion=accion,
             grupo_atencion=grupo_atencion,
             derivacion_externa=derivacion_externa,
             calificacion=calificacion,
