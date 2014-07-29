@@ -78,7 +78,7 @@ class DerivacionListView(ListView):
     GrupoAtencion y Derivaciones Externas.
     """
 
-    template_name = 'grupo_atencion/lista_derivacion.html'
+    template_name = 'derivacion/lista_derivacion.html'
     queryset = []
 
     @method_decorator(login_required)
@@ -99,7 +99,7 @@ class DerivacionExternaCreateView(CreateView):
     Esta vista crea un objeto DerivaciónExterna.
     """
 
-    template_name = 'grupo_atencion/derivacion_externa.html'
+    template_name = 'derivacion/derivacion_externa.html'
     model = DerivacionExterna
     context_object_name = 'derivacion_externa'
     form_class = DerivacionExternaForm
@@ -112,7 +112,7 @@ class DerivacionExternaUpdateView(UpdateView):
     """
     Esta vista edita un objeto DerivaciónExterna.
     """
-    template_name = 'grupo_atencion/derivacion_externa.html'
+    template_name = 'derivacion/derivacion_externa.html'
     model = DerivacionExterna
     context_object_name = 'derivacion_externa'
     form_class = DerivacionExternaForm
@@ -128,7 +128,7 @@ class DerivacionExternaDeleteView(DeleteView):
     """
 
     model = DerivacionExterna
-    template_name = 'grupo_atencion/elimina_derivacion_externa.html'
+    template_name = 'derivacion/elimina_derivacion_externa.html'
     queryset = DerivacionExterna.objects.all()
 
     @method_decorator(login_required)
@@ -261,7 +261,7 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
     Esta vista crea un objeto GrupoAtencion.
     """
 
-    template_name = 'grupo_atencion/grupo_atencion.html'
+    template_name = 'derivacion/grupo_atencion.html'
     model = GrupoAtencion
     context_object_name = 'grupo_atencion'
     form_class = GrupoAtencionForm
@@ -298,7 +298,7 @@ class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
     seleccionado.
     """
 
-    template_name = 'grupo_atencion/grupo_atencion.html'
+    template_name = 'derivacion/grupo_atencion.html'
     model = GrupoAtencion
     context_object_name = 'grupo_atencion'
     form_class = GrupoAtencionForm
@@ -337,7 +337,7 @@ class GrupoAtencionDeleteView(DeleteView):
     """
 
     model = GrupoAtencion
-    template_name = 'grupo_atencion/elimina_grupo_atencion.html'
+    template_name = 'derivacion/elimina_grupo_atencion.html'
     queryset = GrupoAtencion.objects.all()
 
     @method_decorator(login_required)
