@@ -276,6 +276,9 @@ class OpcionForm(forms.ModelForm):
             Field('campana', type="hidden"),
         )
         super(OpcionForm, self).__init__(*args, **kwargs)
+        self.fields['grupo_atencion'].queryset = GrupoAtencion.objects.all()
+        self.fields['derivacion_externa'].queryset = \
+            DerivacionExterna.objects.all()
         self.fields['calificacion'].queryset = Calificacion.objects.filter(
             campana=self.initial['campana'])
 
