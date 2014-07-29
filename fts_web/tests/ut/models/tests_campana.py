@@ -7,7 +7,9 @@ from __future__ import unicode_literals
 import datetime
 
 from django.utils.unittest.case import skipIf
-from fts_web.models import Campana, Actuacion
+from fts_web.models import (Campana, Actuacion, GrupoAtencion,
+    DerivacionExterna, Opcion)
+
 from fts_web.tests.utiles import FTSenderBaseTest
 
 from mock import Mock, patch
@@ -255,3 +257,61 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         # -----
 
         self.assertEqual(campana.confirma_campana_valida(), True)
+
+    def test_campana_valida_grupo_atencion(self):
+        grupo_atencion = self.crear_grupo_atencion()
+
+        campana = Campana(id=1)
+        campana.save = Mock()
+
+        self.crea_campana_opcion(0, campana,
+                                 accion=Opcion.DERIVAR_GRUPO_ATENCION,
+                                 grupo_atencion=grupo_atencion)
+
+        # -----
+
+        self.assertEqual(campana.valida_grupo_atencion(), True)
+
+    def test_campana_valida_grupo_atencion_falla(self):
+        grupo_atencion = self.crear_grupo_atencion()
+        grupo_atencion.borrar()
+
+        campana = Campana(id=1)
+        campana.save = Mock()
+
+        self.crea_campana_opcion(0, campana,
+                                 accion=Opcion.DERIVAR_GRUPO_ATENCION,
+                                 grupo_atencion=grupo_atencion)
+
+        # -----
+
+        self.assertEqual(campana.valida_grupo_atencion(), False)
+
+    def test_campana_valida_derivacion_externa(self):
+        derivacion_externa = self.crear_derivacion_externa()
+
+        campana = Campana(id=1)
+        campana.save = Mock()
+
+        self.crea_campana_opcion(0, campana,
+                                 accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
+                                 derivacion_externa=derivacion_externa)
+
+        # -----
+
+        self.assertEqual(campana.valida_derivacion_externa(), True)
+
+    def test_campana_valida_derivacion_externa_falla(self):
+        derivacion_externa = self.crear_derivacion_externa()
+        derivacion_externa.borrar()
+
+        campana = Campana(id=1)
+        campana.save = Mock()
+
+        self.crea_campana_opcion(0, campana,
+                                 accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
+                                 derivacion_externa=derivacion_externa)
+
+        # -----
+
+        self.assertEqual(campana.valida_derivacion_externa(), False)

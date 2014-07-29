@@ -1062,6 +1062,30 @@ class ConfirmaCampanaMixin(UpdateView):
         if 'confirma' in self.request.POST:
             campana = self.object
 
+            if not campana.valida_grupo_atencion():
+                message = '<strong>Operación Errónea!</strong> \
+                    EL Grupo Atención seleccionado en el proceso de creación \
+                    de la campana ha sido eliminado. Debe seleccionar uno \
+                    válido.'
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return self.form_invalid(form)
+
+            if not campana.valida_derivacion_externa():
+                message = '<strong>Operación Errónea!</strong> \
+                    La Derivación Externa seleccionado en el proceso de \
+                    creación de la campana ha sido eliminada. Debe \
+                    seleccionar uno válido.'
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return self.form_invalid(form)
+
             if campana.bd_contacto.verifica_depurada():
                 # TODO: Cuando en el proceso de creación de la campana se
                 # pueda ir volviendo de paso, mostrar el error y no
@@ -1171,7 +1195,6 @@ class ConfirmaCampanaView(ConfirmaCampanaMixin):
                     'audio_campana',
                     kwargs={"pk": campana.pk}))
         return super(ConfirmaCampanaView, self).get(request, *args, **kwargs)
-
 
 
 class FinalizaCampanaView(RedirectView):

@@ -326,10 +326,13 @@ class CampanaTest(FTSenderBaseTest):
         # Testeamos que no se cree dos opciones con la misma acción.
         # 1- Mismo Grupo de Atención.
         grupo_atencion = self.crear_grupo_atencion()
-        self.crea_campana_opcion(0, campana, Opcion.DERIVAR, grupo_atencion)
+        self.crea_campana_opcion(0, campana,
+                                 accion=Opcion.DERIVAR_GRUPO_ATENCION,
+                                 grupo_atencion=grupo_atencion)
         with self.assertRaises(IntegrityError):
-            self.crea_campana_opcion(1, campana, Opcion.DERIVAR,
-                grupo_atencion)
+            self.crea_campana_opcion(1, campana,
+                                     accion=Opcion.DERIVAR_GRUPO_ATENCION,
+                                     grupo_atencion=grupo_atencion)
 
     def test_campana_opcion_unique_together_3(self):
         """
@@ -342,11 +345,11 @@ class CampanaTest(FTSenderBaseTest):
         # 2- Misma Calificación.
         self.crea_calificaciones(campana)
         calificacion = Calificacion.objects.all()[1]
-        self.crea_campana_opcion(1, campana, Opcion.CALIFICAR, None,
-            calificacion)
+        self.crea_campana_opcion(1, campana, accion=Opcion.CALIFICAR,
+                                 calificacion=calificacion)
         with self.assertRaises(IntegrityError):
-            self.crea_campana_opcion(1, campana, Opcion.CALIFICAR,
-                None, calificacion)
+            self.crea_campana_opcion(1, campana, accion=Opcion.CALIFICAR,
+                                     calificacion=calificacion)
 
     def test_campana_actuacion(self):
         """

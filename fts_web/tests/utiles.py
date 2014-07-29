@@ -22,7 +22,7 @@ from django.test.runner import DiscoverRunner
 from django.test.testcases import LiveServerTestCase, TransactionTestCase
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
-    Contacto, BaseDatosContacto, Campana, Opcion, Actuacion
+    Contacto, BaseDatosContacto, Campana, Opcion, Actuacion, DerivacionExterna
 
 
 EV_FINALIZADOR = EventoDeContacto.objects.\
@@ -179,6 +179,12 @@ class FTSenderTestUtilsMixin(object):
         """Crea un grupo de atencion"""
         return GrupoAtencion.objects.create(
             nombre="grupo-at-" + ru(), timeout=18)
+
+    def crear_derivacion_externa(self):
+        """Crea una derivacion externa"""
+        return DerivacionExterna.objects.create(
+            nombre="derivacion-externa-" + ru(),
+            dial_string='TIC/200.45.15.145/12345')
 
     def crea_calificaciones(self, campana):
         """Crea conjunto de calificaciones para capana"""
@@ -344,7 +350,7 @@ class FTSenderTestUtilsMixin(object):
         return c
 
     def crea_campana_opcion(self, digito, campana, accion=None,
-        grupo_atencion=None, calificacion=None):
+        grupo_atencion=None, derivacion_externa=None, calificacion=None):
         """
         Crea un opbjeto Opccion relacionado a una
         Campana, la cuál se tiene que tomar como
@@ -355,8 +361,9 @@ class FTSenderTestUtilsMixin(object):
 
         opcion = Opcion(
             digito=digito,
-            accion=Opcion.REPETIR,
+            accion=accion,
             grupo_atencion=grupo_atencion,
+            derivacion_externa=derivacion_externa,
             calificacion=calificacion,
             campana=campana,
         )
@@ -393,7 +400,7 @@ class FTSenderTestUtilsMixin(object):
 
         Opcion(
             digito=2,
-            accion=Opcion.DERIVAR,
+            accion=Opcion.DERIVAR_GRUPO_ATENCION,
             campana=campana,
             grupo_atencion=ga,
         ).save()

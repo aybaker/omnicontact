@@ -67,8 +67,20 @@ class DerivacionExterna(models.Model):
             return '(ELiminado) {0}'.format(self.nombre)
         return self.nombre
 
+    def puede_borrarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no borrar.
+
+        :returns: bool - True si la DerivacionExterna puede borrarse.
+        """
+        if Opcion.objects.filter(derivacion_externa=self).exclude(
+            campana__estado=Campana.ESTADO_BORRADA).count():
+            return False
+        return True
+
     def borrar(self, *args, **kwargs):
         logger.info("Seteando derivacion externa %s como BORRADA", self.id)
+        assert self.puede_borrarse()
 
         self.borrado = True
         self.save()
@@ -1239,6 +1251,28 @@ class Campana(models.Model):
                      " CSV de descarga para la campana %s", self.pk)
         assert os.path.exists(file_path)
 
+    def valida_grupo_atencion(self):
+        """
+        Este método valida, en el caso que para la campana se haya
+        selccionado un grupo de atención, que no este borrado.
+        """
+        for opcion in self.opciones.all():
+            if (opcion.grupo_atencion and
+                opcion.grupo_atencion.borrado is True):
+                return False
+        return True
+
+    def valida_derivacion_externa(self):
+        """
+        Este método valida, en el caso que para la campana se haya
+        selccionado una derivacion externa, que no este borrada.
+        """
+        for opcion in self.opciones.all():
+            if (opcion.derivacion_externa and
+                opcion.derivacion_externa.borrado is True):
+                return False
+        return True
+
     def valida_actuaciones(self):
         """
         Este método verifica que la actuaciones de una campana, sean válidas.
@@ -1582,27 +1616,34 @@ class Opcion(models.Model):
         choices=DIGITO_CHOICES,
     )
 
-    DERIVAR = 0
+    DERIVAR_GRUPO_ATENCION = 0
     """Deriva la llamada. Ejemplo Grupo Atencion."""
 
-    CALIFICAR = 1
+    DERIVAR_DERIVACION_EXTERNA = 1
+    """Deriva la llamada. Ejemplo Grupo Atencion."""
+
+    CALIFICAR = 2
     """Estable una calificación a la llamada."""
 
-    VOICEMAIL = 2
+    VOICEMAIL = 3
     """Habilita para dejar un mensaje de voz."""
 
-    REPETIR = 3
+    REPETIR = 4
     """Repetir el mensaje."""
 
     ACCION_CHOICES = (
-        (DERIVAR, 'DERIVAR'),
+        (DERIVAR_GRUPO_ATENCION, 'DERIVAR GRUPO ATENCION'),
+        (DERIVAR_DERIVACION_EXTERNA, 'DERIVAR DERIVACION EXTERNA'),
         (CALIFICAR, 'CALIFICAR'),
         (REPETIR, 'REPETIR'),
     )
     accion = models.PositiveIntegerField(
         choices=ACCION_CHOICES,
     )
-
+    derivacion_externa = models.ForeignKey(
+        'DerivacionExterna',
+        null=True, blank=True,
+    )
     grupo_atencion = models.ForeignKey(
         'GrupoAtencion',
         null=True, blank=True,
@@ -1623,12 +1664,20 @@ class Opcion(models.Model):
         )
 
     def get_descripcion_de_opcion(self):
-        if self.accion == Opcion.DERIVAR:
+        if self.accion == Opcion.DERIVAR_GRUPO_ATENCION:
             if self.grupo_atencion:
                 return "#{0} - Derivar a '{1}'".format(self.digito,
                     self.grupo_atencion.nombre)
             else:
                 return "#{0} - Derivar".format(self.digito)
+
+        if self.accion == Opcion.DERIVAR_DERIVACION_EXTERNA:
+            if self.grupo_atencion:
+                return "#{0} - Derivar a '{1}'".format(self.digito,
+                    self.derivacion_externa.nombre)
+            else:
+                return "#{0} - Derivar".format(self.digito)
+
         if self.accion == Opcion.CALIFICAR:
             if self.calificacion:
                 return "#{0} - Calificar '{1}'".format(self.digito,
