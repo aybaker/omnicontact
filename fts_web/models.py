@@ -1582,27 +1582,34 @@ class Opcion(models.Model):
         choices=DIGITO_CHOICES,
     )
 
-    DERIVAR = 0
+    DERIVAR_GRUPO_ATENCION = 0
     """Deriva la llamada. Ejemplo Grupo Atencion."""
 
-    CALIFICAR = 1
+    DERIVAR_DERIVACION_EXTERNA = 1
+    """Deriva la llamada. Ejemplo Grupo Atencion."""
+
+    CALIFICAR = 2
     """Estable una calificación a la llamada."""
 
-    VOICEMAIL = 2
+    VOICEMAIL = 3
     """Habilita para dejar un mensaje de voz."""
 
-    REPETIR = 3
+    REPETIR = 4
     """Repetir el mensaje."""
 
     ACCION_CHOICES = (
-        (DERIVAR, 'DERIVAR'),
+        (DERIVAR_GRUPO_ATENCION, 'DERIVAR GRUPO ATENCION'),
+        (DERIVAR_DERIVACION_EXTERNA, 'DERIVAR DERIVACION EXTERNA'),
         (CALIFICAR, 'CALIFICAR'),
         (REPETIR, 'REPETIR'),
     )
     accion = models.PositiveIntegerField(
         choices=ACCION_CHOICES,
     )
-
+    derivacion_externa = models.ForeignKey(
+        'DerivacionExterna',
+        null=True, blank=True,
+    )
     grupo_atencion = models.ForeignKey(
         'GrupoAtencion',
         null=True, blank=True,
