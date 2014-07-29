@@ -344,7 +344,7 @@ class FTSenderTestUtilsMixin(object):
         return c
 
     def crea_campana_opcion(self, digito, campana, accion=None,
-        grupo_atencion=None, calificacion=None):
+        grupo_atencion=None, derivacion_externa=None, calificacion=None):
         """
         Crea un opbjeto Opccion relacionado a una
         Campana, la cuál se tiene que tomar como
@@ -357,6 +357,7 @@ class FTSenderTestUtilsMixin(object):
             digito=digito,
             accion=Opcion.REPETIR,
             grupo_atencion=grupo_atencion,
+            derivacion_externa=derivacion_externa,
             calificacion=calificacion,
             campana=campana,
         )

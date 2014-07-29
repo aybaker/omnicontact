@@ -15,52 +15,55 @@ from mock import Mock, patch
 
 class EliminarDerivacionExternaTest(FTSenderBaseTest):
 
-    # def test_derivacion_externa_puede_borrarse_sin_opciones(self):
-    #     derivacion_externa = DerivacionExterna(id=1)
-    #     derivacion_externa.save = Mock()
+    def test_derivacion_externa_puede_borrarse_sin_opciones(self):
+        derivacion_externa = DerivacionExterna(id=1)
+        derivacion_externa.save = Mock()
 
-    #     # -----
+        # -----
 
-    #     self.assertEqual(derivacion_externa.puede_borrarse(), True)
+        self.assertEqual(derivacion_externa.puede_borrarse(), True)
 
-    # def test_derivacion_externa_puede_borrarse_campana_borrada(self):
-    #     derivacion_externa = DerivacionExterna(id=1)
-    #     derivacion_externa.save = Mock()
+    def test_derivacion_externa_puede_borrarse_campana_borrada(self):
+        derivacion_externa = DerivacionExterna(id=1)
+        derivacion_externa.save = Mock()
 
-    #     campana = self.crear_campana_activa()
-    #     campana.estado = Campana.ESTADO_BORRADA
-    #     campana.save()
+        campana = self.crear_campana_activa()
+        campana.estado = Campana.ESTADO_BORRADA
+        campana.save()
 
-    #     self.crea_campana_opcion(0, campana, derivacion_externa=derivacion_externa)
+        self.crea_campana_opcion(0, campana,
+                                 derivacion_externa=derivacion_externa)
 
-    #     # -----
+        # -----
 
-    #     self.assertEqual(derivacion_externa.puede_borrarse(), True)
+        self.assertEqual(derivacion_externa.puede_borrarse(), True)
 
-    # def test_derivacion_externa_puede_borrarse_falla_finalizada(self):
-    #     derivacion_externa = DerivacionExterna(id=1)
-    #     derivacion_externa.save = Mock()
+    def test_derivacion_externa_puede_borrarse_falla_finalizada(self):
+        derivacion_externa = DerivacionExterna(id=1)
+        derivacion_externa.save = Mock()
 
-    #     campana = self.crear_campana_activa()
-    #     campana.finalizar()
+        campana = self.crear_campana_activa()
+        campana.finalizar()
 
-    #     self.crea_campana_opcion(0, campana, derivacion_externa=derivacion_externa)
+        self.crea_campana_opcion(0, campana, 
+                                 derivacion_externa=derivacion_externa)
 
-    #     # -----
+        # -----
 
-    #     self.assertEqual(derivacion_externa.puede_borrarse(), False)
+        self.assertEqual(derivacion_externa.puede_borrarse(), False)
 
-    # def test_derivacion_externa_puede_borrarse_falla_activa(self):
-    #     derivacion_externa = DerivacionExterna(id=1)
-    #     derivacion_externa.save = Mock()
+    def test_derivacion_externa_puede_borrarse_falla_activa(self):
+        derivacion_externa = DerivacionExterna(id=1)
+        derivacion_externa.save = Mock()
 
-    #     campana = self.crear_campana_activa()
+        campana = self.crear_campana_activa()
 
-    #     self.crea_campana_opcion(0, campana, derivacion_externa=derivacion_externa)
+        self.crea_campana_opcion(0, campana,
+                                 derivacion_externa=derivacion_externa)
 
-    #     # -----
+        # -----
 
-    #     self.assertEqual(derivacion_externa.puede_borrarse(), False)
+        self.assertEqual(derivacion_externa.puede_borrarse(), False)
 
     def test_derivacion_externa_borrar(self):
         derivacion_externa = DerivacionExterna(id=1)
