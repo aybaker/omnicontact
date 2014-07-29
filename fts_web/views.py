@@ -94,7 +94,6 @@ class DerivacionListView(ListView):
         return context
 
 
-
 class DerivacionExternaCreateView(CreateView):
     """
     Esta vista crea un objeto DerivaciónExterna.
