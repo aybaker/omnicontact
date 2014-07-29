@@ -12,6 +12,7 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.utils import timezone
+from django.views.generic.list import BaseListView
 from django.views.generic import (
     CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
     RedirectView, TemplateView)
@@ -71,20 +72,27 @@ class AcercaTemplateView(TemplateView):
 #==============================================================================
 
 
-class GrupoAtencionListView(ListView):
+class DerivacionListView(ListView):
     """
     Esta vista es para generar el listado de
-    GrupoAtencion.
+    GrupoAtencion y Derivaciones Externas.
     """
 
     template_name = 'grupo_atencion/lista_grupo_atencion.html'
-    context_object_name = 'grupos_atencion'
-    model = GrupoAtencion
-    queryset = GrupoAtencion.objects.all()
+    queryset = []
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(GrupoAtencionListView, self).dispatch(*args, **kwargs)
+        return super(DerivacionListView, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            DerivacionListView, self).get_context_data(**kwargs)
+
+        context['grupos_atencion'] = GrupoAtencion.objects.all()
+        context['derivaciones_externa'] = DerivacionExterna.objects.all()
+        return context
+
 
 
 class DerivacionExternaCreateView(CreateView):
