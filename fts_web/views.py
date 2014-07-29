@@ -78,7 +78,7 @@ class DerivacionListView(ListView):
     GrupoAtencion y Derivaciones Externas.
     """
 
-    template_name = 'grupo_atencion/lista_grupo_atencion.html'
+    template_name = 'grupo_atencion/lista_derivacion.html'
     queryset = []
 
     @method_decorator(login_required)
