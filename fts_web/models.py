@@ -1251,6 +1251,28 @@ class Campana(models.Model):
                      " CSV de descarga para la campana %s", self.pk)
         assert os.path.exists(file_path)
 
+    def valida_grupo_atencion(self):
+        """
+        Este método valida, en el caso que para la campana se haya
+        selccionado un grupo de atención, que no este borrado.
+        """
+        for opcion in self.opciones.all():
+            if (opcion.grupo_atencion and
+                opcion.grupo_atencion.borrado is True):
+                return False
+        return True
+
+    def valida_derivacion_externa(self):
+        """
+        Este método valida, en el caso que para la campana se haya
+        selccionado una derivacion externa, que no este borrada.
+        """
+        for opcion in self.opciones.all():
+            if (opcion.derivacion_externa and
+                opcion.derivacion_externa.borrado is True):
+                return False
+        return True
+
     def valida_actuaciones(self):
         """
         Este método verifica que la actuaciones de una campana, sean válidas.
