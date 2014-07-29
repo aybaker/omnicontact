@@ -1630,12 +1630,20 @@ class Opcion(models.Model):
         )
 
     def get_descripcion_de_opcion(self):
-        if self.accion == Opcion.DERIVAR:
+        if self.accion == Opcion.DERIVAR_GRUPO_ATENCION:
             if self.grupo_atencion:
                 return "#{0} - Derivar a '{1}'".format(self.digito,
                     self.grupo_atencion.nombre)
             else:
                 return "#{0} - Derivar".format(self.digito)
+
+        if self.accion == Opcion.DERIVAR_DERIVACION_EXTERNA:
+            if self.grupo_atencion:
+                return "#{0} - Derivar a '{1}'".format(self.digito,
+                    self.derivacion_externa.nombre)
+            else:
+                return "#{0} - Derivar".format(self.digito)
+
         if self.accion == Opcion.CALIFICAR:
             if self.calificacion:
                 return "#{0} - Calificar '{1}'".format(self.digito,
