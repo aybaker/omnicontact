@@ -39,7 +39,7 @@ if 'SKIP_SELENIUM' not in os.environ:
             grupos = [self.crear_grupo_atencion() for _ in range(0, 4)]
 
             # Renderizamos pagina de listado
-            url = reverse('lista_grupo_atencion')
+            url = reverse('lista_derivacion')
             self.render_y_chequear(url)
             for ga in grupos:
                 self.assertTrueSelenium(

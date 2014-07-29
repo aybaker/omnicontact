@@ -44,6 +44,12 @@ class DerivacionExterna(models.Model):
     """
     Representa una Derivación Externa.
     """
+    objects_default = models.Manager()
+    # Por defecto django utiliza el primer manager instanciado. Se aplica al
+    # admin de django, y no aplica las customizaciones del resto de los
+    # managers que se creen.
+
+    objects = DerivacionExternaManager()
 
     nombre = models.CharField(
         max_length=128,
@@ -60,6 +66,12 @@ class DerivacionExterna(models.Model):
         if self.borrado:
             return '(ELiminado) {0}'.format(self.nombre)
         return self.nombre
+
+    def borrar(self, *args, **kwargs):
+        logger.info("Seteando derivacion externa %s como BORRADA", self.id)
+
+        self.borrado = True
+        self.save()
 
 
 #==============================================================================

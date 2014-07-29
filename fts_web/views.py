@@ -12,6 +12,7 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.utils import timezone
+from django.views.generic.list import BaseListView
 from django.views.generic import (
     CreateView, ListView, DeleteView, FormView, UpdateView, DetailView,
     RedirectView, TemplateView)
@@ -27,9 +28,9 @@ from fts_web.errors import (FtsAudioConversionError,
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
-    BaseDatosContactoForm, OpcionForm)
+    BaseDatosContactoForm, OpcionForm, DerivacionExternaForm)
 from fts_web.models import (
-    Actuacion, Calificacion, Campana, GrupoAtencion,
+    Actuacion, Calificacion, Campana, GrupoAtencion, DerivacionExterna,
     BaseDatosContacto, Opcion)
 from fts_web.parser import autodetectar_parser
 import logging as logging_
@@ -67,24 +68,93 @@ class AcercaTemplateView(TemplateView):
 
 
 #==============================================================================
-# Grupos de Atención
+# Derivación
 #==============================================================================
 
 
-class GrupoAtencionListView(ListView):
+class DerivacionListView(ListView):
     """
     Esta vista es para generar el listado de
-    GrupoAtencion.
+    GrupoAtencion y Derivaciones Externas.
     """
 
-    template_name = 'grupo_atencion/lista_grupo_atencion.html'
-    context_object_name = 'grupos_atencion'
-    model = GrupoAtencion
-    queryset = GrupoAtencion.objects.all()
+    template_name = 'derivacion/lista_derivacion.html'
+    queryset = []
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(GrupoAtencionListView, self).dispatch(*args, **kwargs)
+        return super(DerivacionListView, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            DerivacionListView, self).get_context_data(**kwargs)
+
+        context['grupos_atencion'] = GrupoAtencion.objects.all()
+        context['derivaciones_externa'] = DerivacionExterna.objects.all()
+        return context
+
+
+class DerivacionExternaCreateView(CreateView):
+    """
+    Esta vista crea un objeto DerivaciónExterna.
+    """
+
+    template_name = 'derivacion/derivacion_externa.html'
+    model = DerivacionExterna
+    context_object_name = 'derivacion_externa'
+    form_class = DerivacionExternaForm
+
+    def get_success_url(self):
+        return reverse('lista_derivacion')
+
+
+class DerivacionExternaUpdateView(UpdateView):
+    """
+    Esta vista edita un objeto DerivaciónExterna.
+    """
+    template_name = 'derivacion/derivacion_externa.html'
+    model = DerivacionExterna
+    context_object_name = 'derivacion_externa'
+    form_class = DerivacionExternaForm
+
+    def get_success_url(self):
+        return reverse('lista_derivacion')
+
+
+class DerivacionExternaDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto DerivaciónExterna seleccionado.
+    """
+
+    model = DerivacionExterna
+    template_name = 'derivacion/elimina_derivacion_externa.html'
+    queryset = DerivacionExterna.objects.all()
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(DerivacionExternaDeleteView, self).dispatch(
+            *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        # Marcamos el grupo de atención como borrado.
+        self.object.borrar()
+
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Derivación Externa.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse('lista_derivacion')
 
 
 class GrupoAtencionMixin(object):
@@ -191,7 +261,7 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
     Esta vista crea un objeto GrupoAtencion.
     """
 
-    template_name = 'grupo_atencion/grupo_atencion.html'
+    template_name = 'derivacion/grupo_atencion.html'
     model = GrupoAtencion
     context_object_name = 'grupo_atencion'
     form_class = GrupoAtencionForm
@@ -219,7 +289,7 @@ class GrupoAtencionCreateView(CreateView, GrupoAtencionMixin):
         return self.process_all_forms_in_tx(form)
 
     def get_success_url(self):
-        return reverse('lista_grupo_atencion')
+        return reverse('lista_derivacion')
 
 
 class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
@@ -228,7 +298,7 @@ class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
     seleccionado.
     """
 
-    template_name = 'grupo_atencion/grupo_atencion.html'
+    template_name = 'derivacion/grupo_atencion.html'
     model = GrupoAtencion
     context_object_name = 'grupo_atencion'
     form_class = GrupoAtencionForm
@@ -257,7 +327,7 @@ class GrupoAtencionUpdateView(UpdateView, GrupoAtencionMixin):
         return self.process_all_forms_in_tx(form, update=True)
 
     def get_success_url(self):
-        return reverse('lista_grupo_atencion')
+        return reverse('lista_derivacion')
 
 
 class GrupoAtencionDeleteView(DeleteView):
@@ -267,7 +337,7 @@ class GrupoAtencionDeleteView(DeleteView):
     """
 
     model = GrupoAtencion
-    template_name = 'grupo_atencion/elimina_grupo_atencion.html'
+    template_name = 'derivacion/elimina_grupo_atencion.html'
     queryset = GrupoAtencion.objects.all()
 
     @method_decorator(login_required)
@@ -292,7 +362,7 @@ class GrupoAtencionDeleteView(DeleteView):
         return HttpResponseRedirect(success_url)
 
     def get_success_url(self):
-        return reverse('lista_grupo_atencion')
+        return reverse('lista_derivacion')
 
 
 #==============================================================================
