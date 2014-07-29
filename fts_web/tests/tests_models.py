@@ -326,10 +326,11 @@ class CampanaTest(FTSenderBaseTest):
         # Testeamos que no se cree dos opciones con la misma acción.
         # 1- Mismo Grupo de Atención.
         grupo_atencion = self.crear_grupo_atencion()
-        self.crea_campana_opcion(0, campana, Opcion.DERIVAR, grupo_atencion)
+        self.crea_campana_opcion(0, campana, Opcion.DERIVAR_GRUPO_ATENCION,
+                                 grupo_atencion)
         with self.assertRaises(IntegrityError):
-            self.crea_campana_opcion(1, campana, Opcion.DERIVAR,
-                grupo_atencion)
+            self.crea_campana_opcion(1, campana, Opcion.DERIVAR_GRUPO_ATENCION,
+                                     grupo_atencion)
 
     def test_campana_opcion_unique_together_3(self):
         """

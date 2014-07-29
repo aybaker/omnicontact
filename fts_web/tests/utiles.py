@@ -393,7 +393,7 @@ class FTSenderTestUtilsMixin(object):
 
         Opcion(
             digito=2,
-            accion=Opcion.DERIVAR,
+            accion=Opcion.DERIVAR_GRUPO_ATENCION,
             campana=campana,
             grupo_atencion=ga,
         ).save()
