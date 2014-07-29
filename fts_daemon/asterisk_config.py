@@ -200,7 +200,7 @@ def generar_dialplan(campana):
             'fts_opcion_digito': opcion.digito,
         })
 
-        if opcion.accion == Opcion.DERIVAR:
+        if opcion.accion == Opcion.DERIVAR_GRUPO_ATENCION:
             ga = opcion.grupo_atencion
             params_opcion.update({
                 'fts_queue_name': ga.get_nombre_para_asterisk(),
