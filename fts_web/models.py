@@ -67,8 +67,20 @@ class DerivacionExterna(models.Model):
             return '(ELiminado) {0}'.format(self.nombre)
         return self.nombre
 
+    def puede_borrarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no borrar.
+
+        :returns: bool - True si la DerivacionExterna puede borrarse.
+        """
+        if Opcion.objects.filter(derivacion_externa=self).exclude(
+            campana__estado=Campana.ESTADO_BORRADA).count():
+            return False
+        return True
+
     def borrar(self, *args, **kwargs):
         logger.info("Seteando derivacion externa %s como BORRADA", self.id)
+        assert self.puede_borrarse()
 
         self.borrado = True
         self.save()
