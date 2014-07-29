@@ -58,6 +58,8 @@
                                         <td>
                                             {% if opcion.grupo_atencion %}
                                                 Grupo Atención: <strong>{{ opcion.grupo_atencion }}</strong>
+                                            {% elif opcion.derivacion_externa %}
+                                                Derivación Externa: <strong>{{ opcion.derivacion_externa }}</strong>
                                             {% endif %}
 
                                             {% if opcion.calificacion %}
