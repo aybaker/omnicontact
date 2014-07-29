@@ -22,7 +22,7 @@ from django.test.runner import DiscoverRunner
 from django.test.testcases import LiveServerTestCase, TransactionTestCase
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
-    Contacto, BaseDatosContacto, Campana, Opcion, Actuacion
+    Contacto, BaseDatosContacto, Campana, Opcion, Actuacion, DerivacionExterna
 
 
 EV_FINALIZADOR = EventoDeContacto.objects.\
@@ -179,6 +179,12 @@ class FTSenderTestUtilsMixin(object):
         """Crea un grupo de atencion"""
         return GrupoAtencion.objects.create(
             nombre="grupo-at-" + ru(), timeout=18)
+
+    def crear_derivacion_externa(self):
+        """Crea una derivacion externa"""
+        return DerivacionExterna.objects.create(
+            nombre="derivacion-externa-" + ru(),
+            dial_string='TIC/200.45.15.145/12345')
 
     def crea_calificaciones(self, campana):
         """Crea conjunto de calificaciones para capana"""
