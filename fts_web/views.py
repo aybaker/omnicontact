@@ -1173,7 +1173,6 @@ class ConfirmaCampanaView(ConfirmaCampanaMixin):
         return super(ConfirmaCampanaView, self).get(request, *args, **kwargs)
 
 
-
 class FinalizaCampanaView(RedirectView):
     """
     Esta vista actualiza la campañana finalizándola.
