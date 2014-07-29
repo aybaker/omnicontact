@@ -27,9 +27,9 @@ from fts_web.errors import (FtsAudioConversionError,
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
-    BaseDatosContactoForm, OpcionForm)
+    BaseDatosContactoForm, OpcionForm, DerivacionExternaForm)
 from fts_web.models import (
-    Actuacion, Calificacion, Campana, GrupoAtencion,
+    Actuacion, Calificacion, Campana, GrupoAtencion, DerivacionExterna,
     BaseDatosContacto, Opcion)
 from fts_web.parser import autodetectar_parser
 import logging as logging_
@@ -67,7 +67,7 @@ class AcercaTemplateView(TemplateView):
 
 
 #==============================================================================
-# Grupos de Atención
+# Derivación
 #==============================================================================
 
 
@@ -85,6 +85,69 @@ class GrupoAtencionListView(ListView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(GrupoAtencionListView, self).dispatch(*args, **kwargs)
+
+
+class DerivacionExternaCreateView(CreateView):
+    """
+    Esta vista crea un objeto DerivaciónExterna.
+    """
+
+    template_name = 'grupo_atencion/derivacion_externa.html'
+    model = DerivacionExterna
+    context_object_name = 'derivacion_externa'
+    form_class = DerivacionExternaForm
+
+    def get_success_url(self):
+        return reverse('lista_grupo_atencion')
+
+
+class DerivacionExternaUpdateView(UpdateView):
+    """
+    Esta vista edita un objeto DerivaciónExterna.
+    """
+    template_name = 'grupo_atencion/derivacion_externa.html'
+    model = DerivacionExterna
+    context_object_name = 'derivacion_externa'
+    form_class = DerivacionExternaForm
+
+    def get_success_url(self):
+        return reverse('lista_grupo_atencion')
+
+
+class DerivacionExternaDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto DerivaciónExterna seleccionado.
+    """
+
+    model = DerivacionExterna
+    template_name = 'grupo_atencion/elimina_derivacion_externa.html'
+    queryset = DerivacionExterna.objects.all()
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(DerivacionExternaDeleteView, self).dispatch(
+            *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        # Marcamos el grupo de atención como borrado.
+        self.object.borrar()
+
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Derivación Externa.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse('lista_grupo_atencion')
 
 
 class GrupoAtencionMixin(object):
