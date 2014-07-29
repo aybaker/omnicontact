@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Derivación Externa</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-8">
+                <form method="post">{% csrf_token %}
+                    <h4>Derivación Externa <strong>{{ object.nombre }}</strong></h4>
+                    <h4>¿Esta seguro que desea eliminar esta Derivación Externa? </h4> 
+                    
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <span class="glyphicon glyphicon-remove"></span> Eliminar
+                    </button>
+                    <a href="{% url 'lista_grupo_atencion' %}">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
