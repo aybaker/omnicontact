@@ -81,15 +81,25 @@ exten => {fts_opcion_digito},n,Hangup()
 
 """
 
-TEMPLATE_OPCION_DERIVAR = """
+TEMPLATE_OPCION_DERIVAR_GRUPO_ATENCION = """
 
-; TEMPLATE_OPCION_DERIVAR-{fts_opcion_id}-{fts_grup_atencion_id}-{fts_queue_name}
-exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR,llamada=${{ContactoId}},campana={fts_campana_id},queue={fts_queue_name})
+; TEMPLATE_OPCION_DERIVAR_GRUPO_ATENCION-{fts_opcion_id}-{fts_grup_atencion_id}-{fts_queue_name}
+exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_GRUPO_ATENCION,llamada=${{ContactoId}},campana={fts_campana_id},queue={fts_queue_name})
 exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivar/)
 exten => {fts_opcion_digito},n,Queue({fts_queue_name})
 exten => {fts_opcion_digito},n,Hangup()
 
 """
+
+# TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA = """
+# 
+# ; TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA-{fts_opcion_id}-{fts_derivacion_externa_id}-{fts_dial_string}
+# exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_DERIVACION_EXTERNA,llamada=${{ContactoId}},campana={fts_campana_id},dial_string={fts_dial_string})
+# exten => {fts_opcion_digito},n,Dial({fts_dial_string})
+# exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivacion_externa/)
+# exten => {fts_opcion_digito},n(agiok),Hangup()
+# 
+# """
 
 TEMPLATE_OPCION_CALIFICAR = """
 
@@ -142,7 +152,7 @@ TEMPLATE_FAILED = """
 
 
 def generar_dialplan(campana):
-    """Genera el dialplan para una campaña
+    """Genera el dialplan para una campaña.
 
     :param campana: Campana para la cual hay crear el dialplan
     :type campana: fts_web.models.Campana
@@ -206,7 +216,7 @@ def generar_dialplan(campana):
                 'fts_queue_name': ga.get_nombre_para_asterisk(),
                 'fts_grup_atencion_id': ga.id,
             })
-            partes.append(TEMPLATE_OPCION_DERIVAR.format(**params_opcion))
+            partes.append(TEMPLATE_OPCION_DERIVAR_GRUPO_ATENCION.format(**params_opcion))
 
         elif opcion.accion == Opcion.REPETIR:
             partes.append(TEMPLATE_OPCION_REPETIR.format(**params_opcion))
