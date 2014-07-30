@@ -74,7 +74,8 @@ class DerivacionExterna(models.Model):
         :returns: bool - True si la DerivacionExterna puede borrarse.
         """
         if Opcion.objects.filter(derivacion_externa=self).exclude(
-            campana__estado=Campana.ESTADO_BORRADA).count():
+            campana__estado=Campana.ESTADO_BORRADA).exclude(
+            campana__estado=Campana.ESTADO_EN_DEFINICION).count():
             return False
         return True
 
@@ -157,7 +158,8 @@ class GrupoAtencion(models.Model):
         :returns: bool - True si la GrupoAtencion puede borrarse.
         """
         if Opcion.objects.filter(grupo_atencion=self).exclude(
-            campana__estado=Campana.ESTADO_BORRADA).count():
+            campana__estado=Campana.ESTADO_BORRADA).exclude(
+            campana__estado=Campana.ESTADO_EN_DEFINICION).count():
             return False
         return True
 
