@@ -651,8 +651,9 @@ class CampanaManager(models.Manager):
                     digito=opcion.digito,
                     accion=opcion.accion,
                     grupo_atencion=opcion.grupo_atencion,
+                    derivacion_externa=opcion.derivacion_externa,
                     calificacion=calificacion_reciclada,
-                    campana=campana_reciclada,              
+                    campana=campana_reciclada,
                 )
 
             # Replica Actuaciones.
