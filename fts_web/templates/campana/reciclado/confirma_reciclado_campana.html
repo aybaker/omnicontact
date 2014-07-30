@@ -95,6 +95,8 @@
                                     <td>{{ opcion.get_accion_display }}</td>
                                     {% if opcion.grupo_atencion %}
                                         <td> Grupo Atención: <strong>{{ opcion.grupo_atencion }}</strong></td>
+                                     {% elif opcion.derivacion_externa %}
+                                        <td>Derivación Externa: <strong>{{ opcion.derivacion_externa }}</strong></td>
                                     {% endif %}
 
                                     {% if opcion.calificacion %}
