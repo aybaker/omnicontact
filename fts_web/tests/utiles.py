@@ -386,23 +386,28 @@ class FTSenderTestUtilsMixin(object):
             campana=campana,
         ).save()
 
-        #Por el momento no va VOICEMAIL.
-        # Opcion(
-        #     digito=1,
-        #     accion=Opcion.VOICEMAIL,
-        #     campana=campana,
-        # ).save()
-
         try:
             ga = GrupoAtencion.objects.all()[0]
         except IndexError:
             ga = self.crear_grupo_atencion()
 
         Opcion(
-            digito=2,
+            digito=1,
             accion=Opcion.DERIVAR_GRUPO_ATENCION,
             campana=campana,
             grupo_atencion=ga,
+        ).save()
+
+        try:
+            de = DerivacionExterna.objects.all()[0]
+        except IndexError:
+            de = self.crear_derivacion_externa()
+
+        Opcion(
+            digito=2,
+            accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
+            campana=campana,
+            derivacion_externa=de,
         ).save()
 
         digito = 3
