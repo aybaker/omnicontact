@@ -147,31 +147,38 @@ def create_urls():
     """Devuelve listas con expresiones regulares que matechean
     las distintas funciones vistas, ala Django."""
     urls = []
+    # local-channel-pre-dial
     urls.append((
         '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
             '/local-channel-pre-dial/$',
         local_channel_pre_dial
     ))
+    # inicio
     urls.append((
         '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
             '/inicio/$',
         inicio_campana))
+    # fin_campana
     urls.append((
         '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
             '/fin/$',
         fin_campana))
+    # fin_err_t
     urls.append((
         '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
             '/fin_err_t/$',
         fin_err_t))
+    # fin_err_i
     urls.append((
         '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
             '/fin_err_i/$',
         fin_err_i))
+    # opcion/N
     urls.append((
         '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
             '/opcion/(?P<dtmf_number>\d+)/',
         opcion_seleccionada))
+    # dial-status
     urls.append((
         '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
             '/local-channel-post-dial/dial-status/(?P<dial_status>.+)/$',
