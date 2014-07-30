@@ -38,6 +38,21 @@ class EliminarDerivacionExternaTest(FTSenderBaseTest):
 
         self.assertEqual(derivacion_externa.puede_borrarse(), True)
 
+    def test_derivacion_externa_puede_borrarse_campana_en_definicion(self):
+        derivacion_externa = DerivacionExterna(id=1)
+        derivacion_externa.save = Mock()
+
+        campana = self.crear_campana_activa()
+        campana.estado = Campana.ESTADO_EN_DEFINICION
+        campana.save()
+
+        self.crea_campana_opcion(0, campana,
+                                 derivacion_externa=derivacion_externa)
+
+        # -----
+
+        self.assertEqual(derivacion_externa.puede_borrarse(), True)
+
     def test_derivacion_externa_puede_borrarse_falla_finalizada(self):
         derivacion_externa = DerivacionExterna(id=1)
         derivacion_externa.save = Mock()

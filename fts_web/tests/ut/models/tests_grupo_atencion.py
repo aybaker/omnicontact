@@ -37,6 +37,20 @@ class EliminarGrupoAtencionTest(FTSenderBaseTest):
 
         self.assertEqual(grupo_atencion.puede_borrarse(), True)
 
+    def test_grupo_atencion_puede_borrarse_campana_en_definicion(self):
+        grupo_atencion = GrupoAtencion(id=1)
+        grupo_atencion.save = Mock()
+
+        campana = self.crear_campana_activa()
+        campana.estado = Campana.ESTADO_EN_DEFINICION
+        campana.save()
+
+        self.crea_campana_opcion(0, campana, grupo_atencion=grupo_atencion)
+
+        # -----
+
+        self.assertEqual(grupo_atencion.puede_borrarse(), True)
+
     def test_grupo_atencion_puede_borrarse_falla_finalizada(self):
         grupo_atencion = GrupoAtencion(id=1)
         grupo_atencion.save = Mock()
