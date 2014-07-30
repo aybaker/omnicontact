@@ -1,21 +1,10 @@
+# Deploy a container doocker
+
 [ftsender]
 
-#
-# Deploy a container doocker
-#
-# Intentar mantener este archivo lo mas parecido a
-#   deploy/hosts-virtual-freetech-testing
-#
-
-# localhost no funciona bien con rsync -> https://github.com/ansible/ansible/issues/5240
-#  asi que usamos IP de docker0
-# localhost:9022
 172.17.42.1:9022
 
 [ftsender:vars]
-
-# Reseteamos CFLAGS porque falla en container Docker
-BUILD_ASTERISK_CFLAGS=''
 
 OPEN_BR='{'
 CLOSE_BR='}'
@@ -41,3 +30,17 @@ dj_sett_TMPL_FTS_AUDIO_CONVERSOR_EXTENSION='.wav'
 dj_sett_DJANGO_LOG_FILE=/home/ftsender/deploy/log/django.log
 
 dj_sett_FTS_BASE_DATO_CONTACTO_DUMP_PATH='/home/ftsender/deploy/dumps_bd_contacto/'
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Reseteamos CFLAGS porque falla en container Docker
+BUILD_ASTERISK_CFLAGS=''
+
+#
+# Intentar mantener este archivo lo mas parecido a
+#   deploy/hosts-virtual-freetech-*
+#
+# IP DEL HOST A DEPLOYAR:
+#  - localhost no funciona bien con rsync
+#     + https://github.com/ansible/ansible/issues/5240
+#  asi que usamos IP de docker0
