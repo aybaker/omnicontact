@@ -10,6 +10,10 @@
     dest=/etc/supervisord.conf
   sudo: yes
   notify: reload supervisor service
+  tags:
+    - deploy
+    - celery
+    - docker
 
 #----------------------------------------------------------------------
 # Directorios básicos
