@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# Script para deployar en servidores, por si hace falta iniciar
+#  el servicio de FTS manualmente en vez de a travez del script
+#  de inicio.
+#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 /home/ftsender/deploy/virtualenv/bin/uwsgi \
     --module=fts_web.wsgi:application \
     --env DJANGO_SETTINGS_MODULE=fts_web.settings \
