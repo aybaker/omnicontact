@@ -82,11 +82,6 @@ CACHES = {
     }
 }
 
-SELENIUM_WEBDRIVER_BIN = (
-    # Ubuntu 13.04 / Ubuntu 13.10 - Package: 'chromium-chromedriver'
-    '/usr/lib/chromium-browser/chromedriver',
-)
-
 INTERNAL_IPS = (
     "127.0.0.1",
 )
