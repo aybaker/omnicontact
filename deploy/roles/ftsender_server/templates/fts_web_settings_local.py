@@ -1,5 +1,44 @@
 # -*- coding: utf-8 -*-
 #@PydevCodeAnalysisIgnore
+#
+#
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+#
+#
+#              uuuuuuuuuuuuuuuuuuuu
+#            u" uuuuuuuuuuuuuuuuuu "u
+#          u" u$$$$$$$$$$$$$$$$$$$$u "u
+#        u" u$$$$$$$$$$$$$$$$$$$$$$$$u "u
+#      u" u$$$$$$$$$$$$$$$$$$$$$$$$$$$$u "u
+#    u" u$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$u "u
+#  u" u$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$u "u
+#  $ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ $
+#  $ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ $
+#  $ $$$" ... "$...  ...$" ... "$$$  ... "$$$ $
+#  $ $$$u `"$$$$$$$  $$$  $$$$$  $$  $$$  $$$ $
+#  $ $$$$$$u  "$$$$  $$$  $$$$$  $$  """ u$$$ $
+#  $ $$$""$$$  $$$$  $$$u "$$$" u$$  $$$$$$$$ $
+#  $ $$$$....,$$$$$..$$$$$....,$$$$..$$$$$$$$ $
+#  $ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ $
+#  "u "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" u"
+#    "u "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" u"
+#      "u "$$$$$$$$$$$$$$$$$$$$$$$$$$$$" u"
+#        "u "$$$$$$$$$$$$$$$$$$$$$$$$" u"
+#          "u "$$$$$$$$$$$$$$$$$$$$" u"
+#            "u """""""""""""""""" u"
+#              """"""""""""""""""""
+#
+#
+# Este archivo es autogenerado con cada deploy.
+# Cualquier modificacion que se realice aqui sera
+#  sobreescrita sin mayores advertencias que las presentes
+#
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+#
 
 """
 Template para generar ftsw_web_settings_local para deploys.
@@ -121,3 +160,42 @@ LOGGING = {
         },
     }
 }
+
+#
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+#
+#
+#              uuuuuuuuuuuuuuuuuuuu
+#            u" uuuuuuuuuuuuuuuuuu "u
+#          u" u$$$$$$$$$$$$$$$$$$$$u "u
+#        u" u$$$$$$$$$$$$$$$$$$$$$$$$u "u
+#      u" u$$$$$$$$$$$$$$$$$$$$$$$$$$$$u "u
+#    u" u$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$u "u
+#  u" u$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$u "u
+#  $ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ $
+#  $ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ $
+#  $ $$$" ... "$...  ...$" ... "$$$  ... "$$$ $
+#  $ $$$u `"$$$$$$$  $$$  $$$$$  $$  $$$  $$$ $
+#  $ $$$$$$u  "$$$$  $$$  $$$$$  $$  """ u$$$ $
+#  $ $$$""$$$  $$$$  $$$u "$$$" u$$  $$$$$$$$ $
+#  $ $$$$....,$$$$$..$$$$$....,$$$$..$$$$$$$$ $
+#  $ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ $
+#  "u "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" u"
+#    "u "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" u"
+#      "u "$$$$$$$$$$$$$$$$$$$$$$$$$$$$" u"
+#        "u "$$$$$$$$$$$$$$$$$$$$$$$$" u"
+#          "u "$$$$$$$$$$$$$$$$$$$$" u"
+#            "u """""""""""""""""" u"
+#              """"""""""""""""""""
+#
+#
+# Este archivo es autogenerado con cada deploy.
+# Cualquier modificacion que se realice aqui sera
+#  sobreescrita sin mayores advertencias que las presentes
+#
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+# WARNING!!! ATENCION!!! WAARSCHUWING!!! WARNUNG!!! AVIS!!!
+#
