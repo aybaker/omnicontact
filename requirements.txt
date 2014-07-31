@@ -22,7 +22,7 @@ requests==2.3.0
 ## xlrd
 xlrd==0.9.3
 ## uwsgi
-django-uwsgi-cache==0.2
+# django-uwsgi-cache==0.2 # ya no podemos usarlo para cache
 uWSGI==2.0.6
 ## selenium
 selenium==2.40.0
@@ -56,3 +56,5 @@ ordereddict==1.1
 redis==2.10.1
 ## datetime picker
 django-bootstrap3-datetimepicker==2.2.3
+# django-redis & reqs.
+django-redis==3.7.0

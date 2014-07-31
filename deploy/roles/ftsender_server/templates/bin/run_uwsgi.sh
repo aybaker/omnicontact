@@ -20,7 +20,6 @@
     --python-path=/home/ftsender/deploy/app \
     --python-path=/home/ftsender/deploy/local \
     --static-map /static=${BASEDIR_WEB}/fts_web/static \
-    --cache2 name=fts-cache,items=100 \
     --pidfile /home/ftsender/deploy/run/fts-uwsgi.pid \
     --die-on-term \
     --master-fifo /home/ftsender/deploy/run/.uwsgi-fifo \

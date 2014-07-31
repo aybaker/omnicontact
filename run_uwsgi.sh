@@ -20,7 +20,6 @@ uwsgi \
     --uwsgi-socket=0.0.0.0:8099 \
     --python-path=${BASEDIR} \
     --master-fifo=/tmp/.ftsender-uwsgi-fifo \
-    --cache2 name=fts-cache,items=100 \
     $STATIC_MAP \
     --mule=${BASEDIR}/fts_daemon/poll_daemon/main.py \
     --mule=${BASEDIR}/fts_daemon/fastagi_daemon.py \
