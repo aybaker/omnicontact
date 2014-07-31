@@ -64,11 +64,8 @@
 #    (para agilizar el deploy). Esta imagen intermedia tendrá el
 #    nombre 'hgdeoro/fts-base-mas-asterisk'.
 #
-#   $ docker run -d -p 9022:22 -p 9088:8088 --name ftsender-tmp hgdeoro/fts-base
 #   $ ./build.sh -v -i deploy/hosts-virtual-docker -t docker-image
-#   $ docker stop ftsender-tmp
-#   $ docker commit ftsender-tmp hgdeoro/fts-base-mas-asterisk
-#   $ docker rm ftsender-tmp
+#   $ docker commit --pause=true ftsender-dev hgdeoro/fts-base-mas-asterisk
 #
 #   Uso de imagen intermedia en nuevo container
 #
