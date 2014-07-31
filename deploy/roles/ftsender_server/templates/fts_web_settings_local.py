@@ -44,6 +44,7 @@
 Template para generar ftsw_web_settings_local para deploys.
 """
 
+import os
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -115,6 +116,11 @@ TMPL_FTS_AUDIO_CONVERSOR_EXTENSION = '{{dj_sett_TMPL_FTS_AUDIO_CONVERSOR_EXTENSI
 
 FTS_BASE_DATO_CONTACTO_DUMP_PATH = '{{dj_sett_FTS_BASE_DATO_CONTACTO_DUMP_PATH}}'
 
+_logging_output_file = os.environ.get("FTS_LOGFILE", "django.log")
+assert os.path.split(_logging_output_file)[0] == "",\
+    "La variable de entorno FTS_LOGFILE solo debe contener " +\
+    "el nombre del archivo, SIN directorios."
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -139,7 +145,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': '/home/ftsender/deploy/log/django.log',
+            'filename': '/home/ftsender/deploy/log/{0}'.format(_logging_output_file),
             'formatter': 'verbose'
         },
     },
