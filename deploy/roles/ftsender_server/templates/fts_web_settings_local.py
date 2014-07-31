@@ -139,7 +139,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': '{{dj_sett_DJANGO_LOG_FILE}}',
+            'filename': '/home/ftsender/deploy/log/django.log',
             'formatter': 'verbose'
         },
     },
