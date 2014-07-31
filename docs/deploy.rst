@@ -26,6 +26,23 @@ Estos archivos de inventarios se encuentran el el servidor de deploy:
 
 
 
+Customizacion de settings
+-------------------------
+
+Para customizar el sistema, se pueden cargar seteos en el archivo
+**/home/ftsender/deploy/local/fts_web_settings_local_customizations.py**. Este archivo
+debe tener la sintaxis de un módulo Python. Si el sistema encuentra algún problema
+al leerlo, los seteos allí configurados serán ignorados completamente.
+
+
+Para chequear que no existen errores de sintaxis, puede ejecutar dicho archivo con python:
+
+.. code::
+
+    $ python /home/ftsender/deploy/local/fts_web_settings_local_customizations.py
+
+Si el archivo tiene algun problema, éste será reportado. Si no se genera ninguna salida por pantalla,
+esto implica que el archivo es válido.
 
 
 Acceso al servidor de deploy
