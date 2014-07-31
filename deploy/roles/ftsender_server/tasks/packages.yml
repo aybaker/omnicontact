@@ -47,6 +47,7 @@
     - python-devel
     - ntp
     - ntpdate
+    - supervisor
   tags:
     - yum
     - docker-image

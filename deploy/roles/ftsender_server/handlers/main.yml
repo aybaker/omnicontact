@@ -1,0 +1,3 @@
+- name: reload supervisor service
+  service: name=supervisord state=reloaded enabled=yes
+  sudo: yes
