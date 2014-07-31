@@ -231,7 +231,7 @@ urlpatterns = patterns('',
     #==========================================================================
     # admin
     #==========================================================================
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^ftsenderweb/', include(admin.site.urls)),
 
 )
 
