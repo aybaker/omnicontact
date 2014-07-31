@@ -45,6 +45,19 @@ Si el archivo tiene algun problema, éste será reportado. Si no se genera ningu
 esto implica que el archivo es válido.
 
 
+Ejemplos:
+
+.. code-block:: python
+
+    # Para permitir 5 originate por segundo
+    FTS_DAEMON_ORIGINATES_PER_SECOND = 5.0
+
+    # Para permitir 1 originate cada 5 segundos
+    FTS_DAEMON_ORIGINATES_PER_SECOND = 1.0 / 5.0
+
+    # Para generar el archivo de QUEUEs de Asterisk en una ubicacion diferente a la por defalut
+    FTS_QUEUE_FILENAME = '/opt/asterisk/etc/queues.conf'
+
 Acceso al servidor de deploy
 ----------------------------
 
