@@ -223,6 +223,7 @@ def generar_dialplan(campana):
             de = opcion.derivacion_externa
             params_opcion.update({
                 'fts_derivacion_externa_id': de.id,
+                'fts_dial_string': de.dial_string,
             })
             partes.append(TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA.format(
                           **params_opcion))
