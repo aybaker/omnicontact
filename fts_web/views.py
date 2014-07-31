@@ -99,26 +99,24 @@ class DerivacionExternaMixin(object):
     Mixin para DerivacionExterna
     """
 
-    def process_form_valid(self, form):
-        self.object = form.save()
-
-        message = '<strong>Operación Exitosa!</strong>\
-            Se llevó a cabo con éxito la operación.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
+    def crea_y_recarga_dialplan(self):
+        """
+        Este método se encarga de invocar rehacer el dialplan y recargar el
+        mismo.
+        """
         try:
             create_dialplan_config_file()
         except:
             logger.exception("DerivacionExternaMixin: error al intentar "
                              "create_dialplan_config_file()")
             post_proceso_ok = False
-            message += ' Atencion: hubo un inconveniente al generar\
-                la configuracion de Asterisk (dialplan).'
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                "Atencion: hubo un inconveniente al generar "
+                "la configuracion de Asterisk (dialplan). "
+            )
 
         try:
             ret = reload_config()
@@ -143,10 +141,8 @@ class DerivacionExternaMixin(object):
                 "del sistema."
             )
 
-        return redirect(self.get_success_url())
 
-
-class DerivacionExternaCreateView(CreateView, DerivacionExternaMixin):
+class DerivacionExternaCreateView(CreateView):
     """
     Esta vista crea un objeto DerivaciónExterna.
     """
@@ -157,7 +153,16 @@ class DerivacionExternaCreateView(CreateView, DerivacionExternaMixin):
     form_class = DerivacionExternaForm
 
     def form_valid(self, form):
-        return self.process_form_valid(form)
+
+        message = '<strong>Operación Exitosa!</strong>\
+                Se llevó a cabo con éxito la creación de Derivación Externa.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return super(DerivacionExternaCreateView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse('lista_derivacion')
@@ -173,7 +178,21 @@ class DerivacionExternaUpdateView(UpdateView, DerivacionExternaMixin):
     form_class = DerivacionExternaForm
 
     def form_valid(self, form):
-        return self.process_form_valid(form)
+        self.object = form.save()
+
+        message = '<strong>Operación Exitosa!</strong>\
+                Se llevó a cabo con éxito la modificación de Derivación\
+                Externa.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+
+        self.crea_y_recarga_dialplan()
+
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse('lista_derivacion')
