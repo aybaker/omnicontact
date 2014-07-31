@@ -99,6 +99,16 @@
     - update_settings
     - docker
 
+- name: Create fts_web_settings_local_customizations.py if doesnt exists
+  file: >
+    state=touch
+    dest=/home/ftsender/deploy/local/fts_web_settings_local_customizations.py
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
 - name: Run Django syncdb
   django_manage: >
       command=syncdb

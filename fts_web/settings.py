@@ -356,6 +356,17 @@ except ImportError as e:
     print "# "
     raise Exception("No se pudo importar fts_web_settings_local")
 
+#==============================================================================
+# Import de `fts_web_settings_local_customizations`
+#==============================================================================
+
+try:
+    from fts_web_settings_local_customizations import *
+except ImportError as e:
+    print("# WARN: no se pudo importar el modulo "
+        "'fts_web_settings_local_customizations'")
+
+
 # ~~~~~ Check FTS_DIALPLAN_FILENAME
 
 assert FTS_DIALPLAN_FILENAME is not None, \

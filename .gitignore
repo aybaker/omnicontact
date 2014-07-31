@@ -12,3 +12,4 @@ settings_local.py
 /build
 /deploy/hosts-virtual-pruebas
 /deploy/docker/authorized_keys
+/fts_web_settings_local_customizations.py
