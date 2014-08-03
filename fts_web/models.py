@@ -974,7 +974,10 @@ class Campana(models.Model):
                 style=Campana.ESTILO_MULTICOLOR,
                 legend_at_bottom=True,
                 no_data_text=no_data_text,
-                no_data_font_size=32
+                no_data_font_size=32,
+                legend_font_size=25,
+                truncate_legend=10,
+                tooltip_font_size=30,
             )
             torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
 
@@ -1035,14 +1038,16 @@ class Campana(models.Model):
             opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
                 for op in self.opciones.all()])
 
+            porcentaje_invalidas = 0
             for opcion, porcentaje in dic_opcion_x_porcentaje.items():
                 try:
                     torta_opcion_x_porcentaje.add(opciones_dict[opcion],
                         porcentaje)
                 except KeyError:
-                    torta_opcion_x_porcentaje.add(
-                        '#{0} N/A'.format(opcion),
-                            porcentaje)
+                    porcentaje_invalidas += porcentaje
+
+            torta_opcion_x_porcentaje.add(
+                '#Inválidas', porcentaje_invalidas)
 
             #Barra: Total de llamados atendidos en cada intento.
             total_atendidos_intentos = estadisticas['total_atendidos_intentos']
@@ -1669,28 +1674,28 @@ class Opcion(models.Model):
     def get_descripcion_de_opcion(self):
         if self.accion == Opcion.DERIVAR_GRUPO_ATENCION:
             if self.grupo_atencion:
-                return "#{0} - Derivar a '{1}'".format(self.digito,
+                return "Der. {0}".format(
                     self.grupo_atencion.nombre)
             else:
-                return "#{0} - Derivar".format(self.digito)
+                return "Derivar"
 
         if self.accion == Opcion.DERIVAR_DERIVACION_EXTERNA:
             if self.grupo_atencion:
-                return "#{0} - Derivar a '{1}'".format(self.digito,
+                return "Der.. {0}".format(
                     self.derivacion_externa.nombre)
             else:
-                return "#{0} - Derivar".format(self.digito)
+                return "Derivar"
 
         if self.accion == Opcion.CALIFICAR:
             if self.calificacion:
-                return "#{0} - Calificar '{1}'".format(self.digito,
+                return "{0}".format(
                     self.calificacion.nombre)
             else:
-                return "#{0} - Calificar".format(self.digito)
+                return "Calificar"
         if self.accion == Opcion.REPETIR:
-            return "#{0} - Repetir".format(self.digito)
+            return "Repetir"
 
-        return "#{0} - tipo de opcion desconocida".format(self.digito)
+        return "Opcion desconocida"
 
     class Meta:
         #unique_together = ("digito", "campana")
