@@ -279,7 +279,7 @@ class BaseDatosContacto(models.Model):
 
     def __unicode__(self):
         return "{0}: ({1} contactos)".format(self.nombre,
-                                            self.cantidad_contactos)
+                                             self.cantidad_contactos)
 
     def importa_contactos(self, parser_archivo):
         """
