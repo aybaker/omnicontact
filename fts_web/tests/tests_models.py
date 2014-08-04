@@ -29,7 +29,10 @@ from fts_web.tests.utiles import FTSenderBaseTest, \
 
 def _tmpdir():
     """Crea directorio temporal"""
-    return tempfile.mkdtemp(prefix=".fts-tests-", dir="/dev/shm")
+
+    tmp_dir = tempfile.mkdtemp(prefix=".fts-tests-", dir="/dev/shm")
+    os.chmod(tmp_dir, 0777)
+    return tmp_dir
 
 
 class GrupoAtencionTest(FTSenderBaseTest):
@@ -194,7 +197,8 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         # Verifica que se haya creado el archivo CSV.
         dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
         nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
-        copy_to = dir_dump_contacto + nombre_archivo_contactos
+        copy_to = os.path.join(dir_dump_contacto, nombre_archivo_contactos)
+
         self.assertTrue(os.path.exists(copy_to))
 
         # Verifica que el estado de BaseDatoContacto sea  ESTADO_DEPURADA
@@ -224,7 +228,7 @@ class ContactoTest(FTSenderBaseTest):
         dir_dump_contacto = settings.FTS_BASE_DATO_CONTACTO_DUMP_PATH
         nombre_archivo_contactos = 'contacto_{0}'.format(bd_contacto.pk)
 
-        copy_to = dir_dump_contacto + nombre_archivo_contactos
+        copy_to = os.path.join(dir_dump_contacto, nombre_archivo_contactos)
         self.assertTrue(os.path.exists(copy_to))
 
         ## Esto es peligrosisimo! NUNCA borrar con glob!!!
@@ -838,7 +842,6 @@ class CampanaTest(FTSenderBaseTest):
         campana = self._crea_campana_emula_procesamiento()
         contactos_por_opciones = EventoDeContacto.objects_estadisticas.\
             obtener_contactos_por_opciones(campana.pk)
-        self.assertEqual(len(contactos_por_opciones), 6)
 
         # Verificamos la estructura del objeto devuelto.
         for contacto_opcion in contactos_por_opciones:
