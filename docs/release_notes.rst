@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Sprint 7 - 25 de julio de 2014
+Sprint 8 - 4 de agosto de 2014
 ------------------------------
 
 
@@ -12,48 +12,35 @@ Instrucciones de deploy
 .. code::
 
     $ ssh deployer@192.168.99.224
-    $ ./deploy.sh sprint7-fixes <INVENTARIO>
+    $ ./deploy.sh sprint8-fixes <INVENTARIO>
 
-En el presente sprint se implemento la autenticacion de usuarios. Para crear
-el primer usuario, es necesario loguearse en el servidor con el usuario `ftsender`
-y ejecutar:
+Para crear usuarios, es necesario loguearse en el servidor con el usuario `ftsender`
+y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
 
 .. code::
 
     $ host> ssh ftsender@server-or-ip
-    $ server> /home/ftsender/deploy/bin/manage.sh createsuperuser
+    $ server> /home/ftsender/deploy/bin/manage.sh create_ftsender_user
 
 
 Nueva funcionalidad
 ...................
 
-* FTS-13 - Eliminar Grupos de Atención
-* FTS-14 - Modificar Grupos de Atención
-* FTS-173 - Procesos largos deben mostrar progreso o mensaje
-* FTS-211 - Agregar 'date picker' para fechas + widget para horarios
-* FTS-240 - Permitir acceso a todos los tabs al crear y reciclar campaña
-* FTS-246 - Reciclado de campañas, filtrando por más de un estado
-* FTS-248 - Implementación de estado DEPURADA para Campaña, evita
-  problemas de acceso concurrente e inconsistencias desde que la campaña
-  es finalizada hasta que es depurada.
-* FTS-252 - Mostrar en web la versión de la aplicación
-* FTS-254 - Usar colores de FreeTech en UI
-* FTS-259 - Borrar campaña
-* FTS-260 - Identificar usuarios del sistema
+* FTS-268 (y otras)i - Derivación externa de llamadas
+* FTS-279 - Crea comando para crear usuario para sistema web
 
 Deploy
 ......
 
-* Generacion de ambiente de desarrollo usando Docker
+* FTS-274 - Hacer configurables limites de originates y otras settings del sistema
+* FTS-267 - Implementa Supervisor para workers Celery
+* FTS-199 - Separar distintos daemons
 
 Bugs solucionados
 .................
 
-* FTS-249 - FIX: paths concatenados, en vez de generados con os.path.join()
-* FTS-250 - FIX: FTS_BASE_DATO_CONTACTO_DUMP_PATH requiere finalizar con /
-* FTS-255 - FIX "error interno" al intentar depurar BD de Contactos
-* FTS-261 - FIX: script de inicio no hace reload desde scripts de deploy
-* FTS-262 - FIX: script de deploy no deploya version más reciente
+* FTS-207 - Reporte: unificar opciones invalidas en pie chart
+* FTS-42 - Separar frameworks (bootstrap) de las customizaciones
 
 Known issues
 ------------
