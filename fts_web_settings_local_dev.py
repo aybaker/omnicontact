@@ -39,6 +39,8 @@ FTS_ENHANCED_URLS = True
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'dev', 'static_root')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
