@@ -70,12 +70,24 @@ Para acceder al servidor de deploy:
 Es recomendable agregar las claves públicas de quienes accederán en ``/home/deployer/.ssh/authorized_keys`` para evitar que solicite el password.
 
 
+Creacion de usuarios para acceder al sistema
+--------------------------------------------
+
+En el Sprint 7 se implemento la autenticación de ususarios.
+
+Para crear usuarios, es necesario loguearse en el servidor con el usuario `ftsender`
+y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
+
+.. code::
+
+    $ host> ssh ftsender@server-or-ip
+    $ server> /home/ftsender/deploy/bin/manage.sh create_ftsender_user
 
 
 
 
-Procedimiento de deploy para servidor ya deployado
---------------------------------------------------
+Procedimiento de deploy
+-----------------------
 
 Para realizar el deploy del sistema debe utilizar el usuario **deployer**, y ejecutar:
 
