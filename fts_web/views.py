@@ -1923,8 +1923,7 @@ class ConfirmaTemplateView(TemplateMixin, UpdateView):
             #TODO: Implementar la cancelación.
 
     def get_success_url(self):
-        # TODO: reverse('lista_template')
-        return reverse('lista_campana')
+        return reverse('lista_template')
 
 
 
