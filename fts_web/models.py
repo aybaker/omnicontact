@@ -753,6 +753,17 @@ class Campana(models.Model):
     ESTADO_BORRADA = 6
     """La campaña ya fue borrada"""
 
+    ESTADO_TEMPLATE_EN_DEFINICION = 7
+    """La campaña se creo como template y esta en proceso de definición."""
+
+    ESTADO_TEMPLATE_ACTIVO = 8
+    """La campaña se creo como template y esta activa, en condición de usarse
+    como tal."""
+
+    ESTADO_TEMPLATE_BORRADO = 9
+    """La campaña se creo como template y esta borrada, ya no puede usarse
+    como tal."""
+
     ESTADOS = (
         (ESTADO_EN_DEFINICION, '(en definicion)'),
         (ESTADO_ACTIVA, 'Activa'),
@@ -760,6 +771,10 @@ class Campana(models.Model):
         (ESTADO_FINALIZADA, 'Finalizada'),
         (ESTADO_DEPURADA, 'Depurada'),
         (ESTADO_BORRADA, 'Borrada'),
+
+        (ESTADO_TEMPLATE_EN_DEFINICION, '(Template en definicion)'),
+        (ESTADO_TEMPLATE_ACTIVO, 'Template Activo'),
+        (ESTADO_TEMPLATE_BORRADO, 'Template Borrado'),
     )
 
     nombre = models.CharField(
@@ -772,8 +787,8 @@ class Campana(models.Model):
     cantidad_canales = models.PositiveIntegerField()
     cantidad_intentos = models.PositiveIntegerField()
     segundos_ring = models.PositiveIntegerField()
-    fecha_inicio = models.DateField()
-    fecha_fin = models.DateField()
+    fecha_inicio = models.DateField(null=True, blank=True)
+    fecha_fin = models.DateField(null=True, blank=True)
     audio_original = models.FileField(
         upload_to=upload_to_audios_originales,
         max_length=100,
@@ -784,11 +799,12 @@ class Campana(models.Model):
         max_length=100,
         null=True, blank=True,
     )
-
     bd_contacto = models.ForeignKey(
         'BaseDatosContacto',
+        null=True, blank=True,
         related_name='campanas'
     )
+    es_template = models.BooleanField(default=False)
 
     def puede_finalizarse(self):
         """Metodo que realiza los chequeos necesarios del modelo, y
