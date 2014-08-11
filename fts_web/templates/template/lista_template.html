@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Templates</h4>
+            <div class="inline pull-right">
+                <a href="{% url 'nuevo_template' %}">
+                    <button type="button" class="btn btn-info btn-sm fts-bg-gris-osc-gradiente">
+                        <span class="glyphicon glyphicon-plus"></span> Nuevo Template
+                    </button>
+                </a>
+            </div>
+
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <form id="form_estados_campanas" role="form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="campana_id" name="campana_id">
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr class="fts-table-bg">                                
+                            <th width="95%">Templates Activas</th>                    
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for campana in templates_activos %}
+                                <tr >
+                                    <td width="95%">                          
+                                        <a href="{# url 'detalle_campana' campana.id #}">{{ campana.nombre }}</a>
+                                    </td>
+                                    
+                                    <td>
+                                        <button type="button"  class="btn btn-success btn-sm">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                            Crear Campaña de Template
+                                        </button>
+                                    </td>                        
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Templates.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </form>                               
+            </div>
+        </div>
+    </div>
+{% endblock %}
