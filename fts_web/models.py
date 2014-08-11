@@ -477,6 +477,12 @@ class CampanaManager(models.Manager):
         """
         return self.filter(estado=Campana.ESTADO_ACTIVA)
 
+    def obtener_templates_activos(self):
+        """Devuelve campañas-->templates en estado activas.
+        """
+        return self.filter(es_template=True,
+                           estado=Campana.ESTADO_TEMPLATE_ACTIVO)
+
     def obtener_pausadas(self):
         """
         Devuelve campañas en estado pausadas.
