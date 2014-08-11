@@ -5,8 +5,13 @@
 {% block content %}
     <div class="panel fts-border-verde">
         <!-- Default panel contents -->
-        <div class="panel-heading fts-bg-verde-gradiente">                
-            <h4 class="inline">Detalle Campaña</h4>
+        <div class="panel-heading fts-bg-verde-gradiente">
+            {% if es_template %}
+                <h4 class="inline">Detalle Template</h4>
+            {% else %}
+                <h4 class="inline">Detalle Campaña</h4>
+            {% endif %}              
+            
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
@@ -17,11 +22,13 @@
                         <dt>Nombre</dt>
                         <dd>{{ campana.nombre }}</dd>
 
-                        <dt>Fecha Inicio</dt>
-                        <dd>{{ campana.fecha_inicio|date:"d/m/Y" }}</dd>
+                        {% if not es_template %}
+                            <dt>Fecha Inicio</dt>
+                            <dd>{{ campana.fecha_inicio|date:"d/m/Y" }}</dd>
 
-                        <dt>Fecha Fin</dt>
-                        <dd>{{ campana.fecha_fin|date:"d/m/Y"}}</dd>
+                            <dt>Fecha Fin</dt>
+                            <dd>{{ campana.fecha_fin|date:"d/m/Y"}}</dd>
+                        {% endif %}
 
                         <dt>Cantidad Canales</dt>
                         <dd><span class="badge">{{ campana.cantidad_canales }}</span></dd>
@@ -42,15 +49,17 @@
                         </div>
                     {% endif %}
 
-                    <hr>
+                    {% if not es_template %}
+                        <hr>
 
-                    <h4>Base Datos</h4>
-                    <dl class="dl-horizontal">
-                        <dt>Nombre</dt>
-                        <dd>{{ campana.bd_contacto }}</dd>
-                        <dt>Cantidad Contactos</dt>
-                        <dd><span class="badge">{{ campana.bd_contacto.contactos.count }}</span></dd>
-                    <dl>
+                        <h4>Base Datos</h4>
+                        <dl class="dl-horizontal">
+                            <dt>Nombre</dt>
+                            <dd>{{ campana.bd_contacto }}</dd>
+                            <dt>Cantidad Contactos</dt>
+                            <dd><span class="badge">{{ campana.bd_contacto.contactos.count }}</span></dd>
+                        <dl>
+                    {% endif %}
 
                     <hr>
 

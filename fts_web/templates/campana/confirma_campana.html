@@ -41,11 +41,13 @@
                         <dt>Nombre</dt>
                         <dd>{{ campana.nombre }}</dd>
 
-                        <dt>Fecha Inicio</dt>
-                        <dd>{{ campana.fecha_inicio|date:"d/m/Y" }}</dd>
+                        {% if not es_template %}
+                            <dt>Fecha Inicio</dt>
+                            <dd>{{ campana.fecha_inicio|date:"d/m/Y" }}</dd>
 
-                        <dt>Fecha Fin</dt>
-                        <dd>{{ campana.fecha_fin|date:"d/m/Y"}}</dd>
+                            <dt>Fecha Fin</dt>
+                            <dd>{{ campana.fecha_fin|date:"d/m/Y"}}</dd>
+                        {% endif %}
 
                         <dt>Cantidad Canales</dt>
                         <dd><span class="badge">{{ campana.cantidad_canales }}</span></dd>

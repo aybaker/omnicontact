@@ -24,17 +24,24 @@
                     <table class="table table-bordered">
                         <thead>
                           <tr class="fts-table-bg">                                
-                            <th width="95%">Templates Activas</th>                    
+                            <th width="80%">Templates Activas</th>                    
+                            <th></th>
                             <th></th>
                           </tr>
                         </thead>
                         <tbody>
                             {% for campana in templates_activos %}
                                 <tr >
-                                    <td width="95%">                          
-                                        <a href="{# url 'detalle_campana' campana.id #}">{{ campana.nombre }}</a>
+                                    <td width="80%">                          
+                                        <a href="{% url 'detalle_template' campana.id %}">{{ campana.nombre }}</a>
                                     </td>
                                     
+                                    <td>
+                                        <a href="{% url 'template_elimina' campana.pk %}"  class="btn btn-danger btn-sm">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                                Eliminar
+                                        </a> 
+                                    </td>
                                     <td>
                                         <button type="button"  class="btn btn-success btn-sm">
                                             <span class="glyphicon glyphicon-plus"></span>
