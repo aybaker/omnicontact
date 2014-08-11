@@ -88,10 +88,10 @@ urlpatterns = patterns('',
     #==========================================================================
     # Template
     #==========================================================================
-    # url(r'^campanas/$',
-    #     views.CampanaListView.as_view(),
-    #     name='lista_campana',
-    # ),
+    url(r'^templates/$',
+        views.TemplateListView.as_view(),
+        name='lista_template',
+    ),
     # url(r'^campana/(?P<pk>\d+)/$',
     #     views.DetalleCampanView.as_view(),
     #     name='detalle_campana',
