@@ -6,8 +6,12 @@
 {% block content %}      
     <div class="panel fts-border-verde">
         <!-- Default panel contents -->
-        <div class="panel-heading fts-bg-verde-gradiente">                
-            <h4 class="inline">Nueva Campaña: Datos Básicos</h4>
+        <div class="panel-heading fts-bg-verde-gradiente">
+            {% if es_template %}
+                <h4 class="inline">Nuevo Template de Campaña: Datos Básicos</h4>
+            {% else %}
+                <h4 class="inline">Nueva Campaña: Datos Básicos</h4>
+            {% endif %}
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
@@ -17,7 +21,7 @@
                 <li class="disabled"><a>3- Calificaciones</a></li>
                 <li class="disabled"><a>4- Opciones</a></li>
                 <li class="disabled"><a>5- Actuación</a></li>
-                <li class="disabled"><a>6- Confirmar Campaña</a></li>
+                <li class="disabled"><a>6- Confirmar</a></li>
             </ul>
             <br>          
             <form role="form" method="post" >
