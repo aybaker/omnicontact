@@ -851,6 +851,16 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_TEMPLATE_ACTIVO
         self.save()
 
+    def borrar_template(self):
+        """
+        Setea la campaña como BORRADA
+        """
+        logger.info("Seteando campana-->template %s como BORRADA", self.id)
+        assert self.estado == Campana.ESTADO_TEMPLATE_ACTIVO
+
+        self.estado = Campana.ESTADO_BORRADA
+        self.save()
+
     def activar(self):
         """
         Setea la campaña como ACTIVA
