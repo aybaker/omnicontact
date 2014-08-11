@@ -59,6 +59,7 @@ class BaseAgenteGrupoAtencionFormset(forms.models.BaseInlineFormSet):
         super(BaseAgenteGrupoAtencionFormset, self).__init__(*args, **kwargs)
         self.forms[0].empty_permitted = False
 
+
 AgentesGrupoAtencionFormSet = inlineformset_factory(
     GrupoAtencion, AgenteGrupoAtencion,
     form=AgenteGrupoAtencionForm,
@@ -103,6 +104,30 @@ class BaseDatosContactoForm(forms.ModelForm):
         exclude = ('columna_datos', 'sin_definir', 'columnas',
                    'nombre_archivo_importacion', 'cantidad_contactos',
                    'estado')
+
+
+#=========================================================================
+# Template
+#=========================================================================
+
+class TemplateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TemplateForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+        layout = Layout(
+            Field('nombre'),
+            Field('cantidad_canales'),
+            Field('cantidad_intentos'),
+            Field('segundos_ring'),
+        )
+        self.helper.layout = layout
+
+    class Meta:
+        model = Campana
+        exclude = ('estado', 'fecha_inicio', 'fecha_fin', 'bd_contacto',
+                   'es_template')
 
 
 #=========================================================================
@@ -189,7 +214,7 @@ class ConfirmaForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.add_input(
-            Submit('confirma', 'Confirmar Campaña',
+            Submit('confirma', 'Confirmar Creación',
                    css_class='btn btn-success btn-lg modal_proceso_grande')
         )
         # self.helper.add_input(
