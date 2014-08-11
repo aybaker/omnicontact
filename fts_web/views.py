@@ -1703,6 +1703,35 @@ class TemplateListView(TemplateMixin, ListView):
         return context
 
 
+class TemplateDeleteView(TemplateMixin, DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto Campana-->Template.
+    """
+
+    model = Campana
+    template_name = 'campana/elimina_campana.html'
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        self.object.borrar_template()
+
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación del Template.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse('lista_template')
+
+
 class TemplateCreateView(TemplateMixin, CreateView):
     """
     Esta vista crea un objeto Campana-->Template.
@@ -1743,6 +1772,10 @@ class TemplateaUpdateView(TemplateMixin, UpdateView):
         return reverse(
             'audio_template',
             kwargs={"pk": self.object.pk})
+
+
+class DetalleTemplateView(TemplateMixin, DetalleCampanView):
+    pass
 
 
 class AudioTemplateCreateView(TemplateMixin, AudioCampanaCreateView):
