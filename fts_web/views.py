@@ -28,7 +28,7 @@ from fts_web.errors import (FtsAudioConversionError,
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
-    BaseDatosContactoForm, OpcionForm, DerivacionExternaForm)
+    BaseDatosContactoForm, OpcionForm, DerivacionExternaForm, TemplateForm)
 from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion, DerivacionExterna,
     BaseDatosContacto, Opcion)
@@ -1668,6 +1668,216 @@ class ExportaReporteCampanaView(UpdateView):
         url = self.object.obtener_url_reporte_csv_descargar()
 
         return redirect(url)
+
+
+#==============================================================================
+# Templates
+#==============================================================================
+
+
+class TemplateMixin(object):
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TemplateMixin, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(TemplateMixin, self).get_context_data(**kwargs)
+        context['es_template'] = True
+        return context
+
+
+class TemplateCreateView(TemplateMixin, CreateView):
+    """
+    Esta vista crea un objeto Campana-->Template.
+    Por defecto su estado es EN_DEFICNICION,
+    Redirecciona a crear las opciones para esta
+    Campana.
+    """
+    template_name = 'campana/nueva_edita_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = TemplateForm
+
+    def form_valid(self, form):
+        self.object = form.save()
+
+        self.object.es_template = True
+        self.object.estado = Campana.ESTADO_TEMPLATE_EN_DEFINICION
+        self.object.save()
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse(
+            'audio_template',
+            kwargs={"pk": self.object.pk})
+
+
+class TemplateaUpdateView(TemplateMixin, UpdateView):
+    """
+    Esta vista actualiza un objeto Campana-->Template.
+    """
+
+    template_name = 'campana/nueva_edita_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = TemplateForm
+
+    def get_success_url(self):
+        return reverse(
+            'audio_template',
+            kwargs={"pk": self.object.pk})
+
+
+class AudioTemplateCreateView(TemplateMixin, AudioCampanaCreateView):
+
+    def get_success_url(self):
+        return reverse(
+            'audio_template',
+            kwargs={"pk": self.object.pk})
+
+
+class CalificacionTemplateCreateView(TemplateMixin,
+                                     CalificacionCampanaCreateView):
+    def get_success_url(self):
+        return reverse(
+            'calificacion_template',
+            kwargs={"pk": self.kwargs['pk']}
+        )
+
+
+class CalificacionTemplateDeleteView(TemplateMixin,
+                                     CalificacionCampanaDeleteView):
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Calificación.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return reverse(
+            'calificacion_template',
+            kwargs={"pk": self.campana.pk}
+        )
+
+
+class OpcionTemplateCreateView(TemplateMixin, OpcionCampanaCreateView):
+    def get_success_url(self):
+        return reverse(
+            'opcion_template',
+            kwargs={"pk": self.kwargs['pk']}
+        )
+
+
+class OpcionTemplateDeleteView(TemplateMixin, OpcionCampanaDeleteView):
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Opción.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return reverse(
+            'opcion_template',
+            kwargs={"pk": self.campana.pk}
+        )
+
+
+class ActuacionTemplateCreateView(TemplateMixin, ActuacionCampanaCreateView):
+    def get_success_url(self):
+        return reverse(
+            'actuacion_template',
+            kwargs={"pk": self.kwargs['pk']}
+        )
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return redirect(self.get_success_url())
+
+
+class ActuacionTemplateDeleteView(TemplateMixin, ActuacionCampanaDeleteView):
+    def get_success_url(self):
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Actuación.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+
+        return reverse(
+            'actuacion_template',
+            kwargs={"pk": self.campana.pk}
+        )
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.delete()
+
+        return HttpResponseRedirect(success_url)
+
+
+class ConfirmaTemplateView(TemplateMixin, UpdateView):
+    template_name = 'campana/confirma_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = ConfirmaForm
+
+    def form_valid(self, form):
+        if 'confirma' in self.request.POST:
+            campana = self.object
+
+            if not campana.valida_grupo_atencion():
+                message = '<strong>Operación Errónea!</strong> \
+                    EL Grupo Atención seleccionado en el proceso de creación \
+                    del template ha sido eliminado. Debe seleccionar uno \
+                    válido.'
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return self.form_invalid(form)
+
+            if not campana.valida_derivacion_externa():
+                message = '<strong>Operación Errónea!</strong> \
+                    La Derivación Externa seleccionado en el proceso de \
+                    creación del template ha sido eliminada. Debe \
+                    seleccionar uno válido.'
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return self.form_invalid(form)
+
+            campana.activar_template()
+
+            message = '<strong>Operación Exitosa!</strong> \
+                Se llevó a cabo con éxito la creación del Template.'
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                message,
+            )
+
+            return redirect(self.get_success_url())
+
+        elif 'cancela' in self.request.POST:
+            pass
+            #TODO: Implementar la cancelación.
+
+    def get_success_url(self):
+        # TODO: reverse('lista_template')
+        return reverse('lista_campana')
+
+
 
 
 #==============================================================================
