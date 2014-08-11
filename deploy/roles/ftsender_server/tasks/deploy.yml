@@ -193,15 +193,6 @@
     - deploy
     - docker
 
-- name: Reload FTSender services (except FastAGI daemon)
-  command: /home/ftsender/deploy/bin/restart-ftsender.sh
-  sudo: yes
-  tags:
-    - deploy
-    - quick_deploy
-    - update_settings
-    - docker
-
 #----------------------------------------------------------------------
 # Setup supervisor
 #----------------------------------------------------------------------
@@ -216,6 +207,23 @@
     - deploy
     - celery
     - docker
+
+- name: Flush handlers - reload de supervisor
+  meta: flush_handlers
+
+#----------------------------------------------------------------------
+# Con supervisor configurado, hacemos reload
+#----------------------------------------------------------------------
+
+- name: Reload FTSender services (except FastAGI daemon)
+  command: /home/ftsender/deploy/bin/restart-ftsender.sh
+  sudo: yes
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
 
 #----------------------------------------------------------------------
 # Checks

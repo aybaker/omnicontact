@@ -13,3 +13,4 @@ settings_local.py
 /deploy/hosts-virtual-pruebas
 /deploy/docker/authorized_keys
 /fts_web_settings_local_customizations.py
+/dev/static_root
