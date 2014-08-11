@@ -836,6 +836,15 @@ class Campana(models.Model):
         """
         return self.estado == Campana.ESTADO_DEPURADA
 
+    def activar_template(self):
+        """
+        Setea la Campaña -- Template como ESTADO_TEMPLATE_ACTIVO
+        """
+        logger.info("Seteando campana-->template %s como ACTIVO", self.id)
+        assert self.estado == Campana.ESTADO_TEMPLATE_EN_DEFINICION
+        self.estado = Campana.ESTADO_TEMPLATE_ACTIVO
+        self.save()
+
     def activar(self):
         """
         Setea la campaña como ACTIVA
@@ -1344,12 +1353,22 @@ class Campana(models.Model):
         return True
 
     def obtener_actuaciones_validas(self):
+        """
+        Este método devuelve un lista con las actuaciones válidas de una
+        campaña. Teniendo como válidas aquellas que se van a ser procesadas
+        teniendo en cuenta las fechas y horas que se le setearon.
+
+        En caso de que las fecha_iniio y fecha_fin sean nulas, como ser en un
+        template, devuelve una lista vacia.
+        """
         hoy_ahora = datetime.datetime.today()
         hoy = hoy_ahora.date()
         ahora = hoy_ahora.time()
 
         fecha_inicio = self.fecha_inicio
         fecha_fin = self.fecha_fin
+        if not fecha_inicio or not fecha_fin:
+            return []
 
         lista_actuaciones = [actuacion.dia_semanal for actuacion in
                              self.actuaciones.all()]
