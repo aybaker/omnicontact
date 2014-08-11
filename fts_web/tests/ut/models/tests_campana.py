@@ -368,3 +368,28 @@ class ObtieneTemplatesActivosActivaTemplateTest(FTSenderBaseTest):
 
         campana1.activar_template()
         self.assertEqual(campana1.estado, Campana.ESTADO_TEMPLATE_ACTIVO)
+
+
+class DeleteTemplatesTest(FTSenderBaseTest):
+
+    def test_borrar_template_falla_estado_incorrecto(self):
+        campana1 = self.crear_campana()
+        campana1.es_template = True
+        campana1.estado = Campana.ESTADO_TEMPLATE_EN_DEFINICION
+        campana1.save()
+
+        # -----
+
+        with self.assertRaises(AssertionError):
+            campana1.borrar_template()
+
+    def test_borrar_template_no_falla(self):
+        campana1 = self.crear_campana()
+        campana1.es_template = True
+        campana1.estado = Campana.ESTADO_TEMPLATE_ACTIVO
+        campana1.save()
+
+        # -----
+
+        campana1.borrar_template()
+        self.assertEqual(campana1.estado, Campana.ESTADO_BORRADA)
