@@ -315,3 +315,56 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         # -----
 
         self.assertEqual(campana.valida_derivacion_externa(), False)
+
+
+class ObtieneTemplatesActivosActivaTemplateTest(FTSenderBaseTest):
+
+    def test_devuelve_1_activo(self):
+        campana1 = self.crear_campana()
+        campana1.es_template = True
+        campana1.estado = Campana.ESTADO_TEMPLATE_EN_DEFINICION
+        campana1.save()
+
+        campana2 = self.crear_campana()
+        campana2.es_template = True
+        campana2.estado = Campana.ESTADO_TEMPLATE_ACTIVO
+        campana2.save()
+
+        # -----
+
+        templates_activos = list(Campana.objects.obtener_templates_activos())
+        self.assertEqual(len(templates_activos), 1)
+        self.assertEqual(templates_activos[0], campana2)
+
+    def test_no_devuelve_activo(self):
+        campana1 = self.crear_campana()
+        campana1.es_template = True
+        campana1.estado = Campana.ESTADO_TEMPLATE_EN_DEFINICION
+        campana1.save()
+
+        # -----
+
+        templates_activos = list(Campana.objects.obtener_templates_activos())
+        self.assertEqual(len(templates_activos), 0)
+
+    def test_activar_template_falla(self):
+        campana1 = self.crear_campana()
+        campana1.es_template = True
+        campana1.estado = Campana.ESTADO_TEMPLATE_ACTIVO
+        campana1.save()
+
+        # -----
+
+        with self.assertRaises(AssertionError):
+            campana1.activar_template()
+
+    def test_activar_template_no_falla(self):
+        campana1 = self.crear_campana()
+        campana1.es_template = True
+        campana1.estado = Campana.ESTADO_TEMPLATE_EN_DEFINICION
+        campana1.save()
+
+        # -----
+
+        campana1.activar_template()
+        self.assertEqual(campana1.estado, Campana.ESTADO_TEMPLATE_ACTIVO)
