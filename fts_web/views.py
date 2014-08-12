@@ -1091,21 +1091,6 @@ class ActuacionCampanaDeleteView(DeleteView):
         self.campana = actuacion.campana
         return actuacion
 
-    def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la eliminación de la Actuación.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
-        return reverse(
-            'actuacion_campana',
-            kwargs={"pk": self.campana.pk}
-        )
-
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
@@ -1122,7 +1107,21 @@ class ActuacionCampanaDeleteView(DeleteView):
                 message,
             )
 
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Actuación.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
         return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse(
+            'actuacion_campana',
+            kwargs={"pk": self.campana.pk}
+        )
 
 
 class ConfirmaCampanaMixin(UpdateView):
@@ -1843,15 +1842,6 @@ class ActuacionTemplateCreateView(TemplateMixin, ActuacionCampanaCreateView):
 
 class ActuacionTemplateDeleteView(TemplateMixin, ActuacionCampanaDeleteView):
     def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la eliminación de la Actuación.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
         return reverse(
             'actuacion_template',
             kwargs={"pk": self.campana.pk}
@@ -1861,6 +1851,15 @@ class ActuacionTemplateDeleteView(TemplateMixin, ActuacionCampanaDeleteView):
         self.object = self.get_object()
         success_url = self.get_success_url()
         self.object.delete()
+
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Actuación.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
 
         return HttpResponseRedirect(success_url)
 
