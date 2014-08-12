@@ -332,7 +332,8 @@ class ObtieneTemplatesActivosActivaTemplateTest(FTSenderBaseTest):
 
         # -----
 
-        templates_activos = list(Campana.objects.obtener_templates_activos())
+        templates_activos = \
+            list(Campana.objects_template.obtener_activos())
         self.assertEqual(len(templates_activos), 1)
         self.assertEqual(templates_activos[0], campana2)
 
@@ -344,7 +345,8 @@ class ObtieneTemplatesActivosActivaTemplateTest(FTSenderBaseTest):
 
         # -----
 
-        templates_activos = list(Campana.objects.obtener_templates_activos())
+        templates_activos = \
+            list(Campana.objects_template.obtener_activos())
         self.assertEqual(len(templates_activos), 0)
 
     def test_activar_template_falla(self):
@@ -393,3 +395,47 @@ class DeleteTemplatesTest(FTSenderBaseTest):
 
         campana1.borrar_template()
         self.assertEqual(campana1.estado, Campana.ESTADO_BORRADA)
+
+
+class CampanaReplicarCampana(FTSenderBaseTest):
+    def test_replicar_campana_falla_parametro_incorrecto(self):
+        campana = Opcion(pk=1)
+
+        # -----
+
+        with self.assertRaises(AssertionError):
+            Campana.objects.replicar_campana(campana)
+
+    def test_replicar_campana_no_falla(self):
+        hora_desde = datetime.time(00, 00)
+        hora_hasta = datetime.time(23, 59)
+
+        campana = self.crear_campana()
+        self.crea_calificaciones(campana)
+        self.crea_todas_las_opcion_posibles(campana)
+
+        [self.crea_campana_actuacion(dia_semanal, hora_desde, hora_hasta,
+            campana) for dia_semanal in range(0, 4)]
+
+        campana.activar()
+
+        # -----
+
+        campana_replicada = Campana.objects.replicar_campana(campana)
+
+        self.assertEqual(campana_replicada.estado,
+                         Campana.ESTADO_EN_DEFINICION)
+        self.assertEqual(Opcion.objects.filter(
+                         campana=campana_replicada).count(), 8)
+        self.assertEqual(Actuacion.objects.filter(
+                         campana=campana_replicada).count(), 4)
+        self.assertEqual(campana.audio_original,
+                         campana_replicada.audio_original)
+        self.assertEqual(campana.audio_asterisk,
+                         campana_replicada.audio_asterisk)
+        self.assertEqual(campana.cantidad_canales,
+                         campana_replicada.cantidad_canales)
+        self.assertEqual(campana.cantidad_intentos,
+                         campana_replicada.cantidad_intentos)
+        self.assertEqual(campana.segundos_ring,
+                         campana_replicada.segundos_ring)
