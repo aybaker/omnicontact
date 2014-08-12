@@ -1383,7 +1383,8 @@ class Campana(models.Model):
 
         fecha_inicio = self.fecha_inicio
         fecha_fin = self.fecha_fin
-        if not fecha_inicio or not fecha_fin:
+
+        if self.es_template:
             return []
 
         lista_actuaciones = [actuacion.dia_semanal for actuacion in
