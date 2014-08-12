@@ -141,6 +141,11 @@ urlpatterns = patterns('',
         name='confirma_template',
     ),
 
+    url(r'^template/(?P<pk>\d+)/crea_campana/$',
+        views.CreaCampanaTemplateView.as_view(),
+        name='crea_campana_template',
+    ),
+
     #==========================================================================
     # Campaña
     #==========================================================================
