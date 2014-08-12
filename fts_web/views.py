@@ -1917,6 +1917,7 @@ class ConfirmaTemplateView(TemplateMixin, UpdateView):
 
 
 class CreaCampanaTemplateView(TemplateMixin, RedirectView):
+    permanent = False
     url = None
 
     def get(self, request, *args, **kwargs):
