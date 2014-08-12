@@ -476,6 +476,7 @@ class TemplateManager(models.Manager):
         proporcionado.
         """
         assert template.estado == Campana.ESTADO_TEMPLATE_ACTIVO
+        assert template.es_template
 
         campana = Campana.objects.replicar_campana(template)
         return campana
@@ -658,6 +659,8 @@ class CampanaManager(models.Manager):
         Este método se encarga de replicar una campana existente, creando una
         campana nueva de iguales características.
         """
+        assert isinstance(campana, Campana)
+
         # Replica Campana.
         campana_replicada = self.create(
             nombre=campana.nombre,
