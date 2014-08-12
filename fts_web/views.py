@@ -579,11 +579,21 @@ class DefineBaseDatosContactoView(UpdateView):
             self.object.save()
 
             parser_archivo = autodetectar_parser(
-            self.object.nombre_archivo_importacion)
+                self.object.nombre_archivo_importacion)
 
             try:
                 self.object.importa_contactos(parser_archivo)
                 self.object.define()
+
+                message = '<strong>Operación Exitosa!</strong>\
+                Se llevó a cabo con éxito la creación de\
+                la Base de Datos de Contactos.'
+
+                messages.add_message(
+                    self.request,
+                    messages.SUCCESS,
+                    message,
+                )
                 return redirect(self.get_success_url())
             except FtsParserMaxRowError:
                 message = '<strong>Operación Errónea!</strong> \
@@ -600,16 +610,6 @@ class DefineBaseDatosContactoView(UpdateView):
             request, *args, **kwargs)
 
     def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la creación de\
-        la Base de Datos de Contactos.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
         return reverse('lista_base_datos_contacto')
 
 
@@ -1588,21 +1588,6 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
         self.campana = actuacion.campana
         return actuacion
 
-    def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la eliminación de la Actuación.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
-
-        return reverse(
-            'actuacion_reciclado_campana',
-            kwargs={"pk": self.campana.pk}
-        )
-
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
@@ -1618,8 +1603,21 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
                 messages.WARNING,
                 message,
             )
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Actuación.'
 
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
         return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse(
+            'actuacion_reciclado_campana',
+            kwargs={"pk": self.campana.pk}
+        )
 
 
 class ConfirmaRecicladoCampanaView(ConfirmaCampanaMixin):
