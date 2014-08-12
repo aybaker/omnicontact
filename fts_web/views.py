@@ -1705,7 +1705,7 @@ class TemplateListView(TemplateMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(TemplateListView, self).get_context_data(**kwargs)
         context['templates_activos'] = \
-            Campana.objects.obtener_templates_activos()
+            Campana.objects_template.obtener_activos()
         return context
 
 
@@ -1916,6 +1916,19 @@ class ConfirmaTemplateView(TemplateMixin, UpdateView):
         return reverse('lista_template')
 
 
+class CreaCampanaTemplateView(TemplateMixin, RedirectView):
+    url = None
+
+    def get(self, request, *args, **kwargs):
+        template = get_object_or_404(
+            Campana, pk=self.kwargs['pk']
+        )
+        campana = Campana.objects_template.crea_campana_de_template(template)
+
+        self.url = reverse('datos_basicos_campana', kwargs={"pk": campana.pk})
+
+        return super(CreaCampanaTemplateView, self).get(request, *args,
+                                                        **kwargs)
 
 
 #==============================================================================
