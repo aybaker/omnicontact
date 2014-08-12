@@ -1944,3 +1944,36 @@ class Calificacion(models.Model):
 
     class Meta:
         ordering = ['nombre']
+
+
+#==============================================================================
+# ArchivoDeAudio
+#==============================================================================
+
+
+class ArchivoDeAudio(models.Model):
+    """
+    Representa una ArchivoDeAudio
+    """
+    descripcion = models.CharField(
+        max_length=100,
+    )
+    audio_original = models.FileField(
+        upload_to=upload_to_audios_originales,
+        max_length=100,
+        null=True, blank=True,
+    )
+    audio_asterisk = models.FileField(
+        upload_to=upload_to_audios_asterisk,
+        max_length=100,
+        null=True, blank=True,
+    )
+    borrado = models.BooleanField(
+        default=False,
+        editable=False,
+    )
+
+    def __unicode__(self):
+        if self.borrado:
+            return '(ELiminado) {0}'.format(self.descripcion)
+        return self.descripcion
