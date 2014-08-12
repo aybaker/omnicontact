@@ -419,11 +419,17 @@ class TemplatesCreaCampanaDeTemplate(FTSenderBaseTest):
             Campana.objects_template.crea_campana_de_template(template)
 
     def test_no_falla(self):
-        template = Campana(pk=1)
+        hora_desde = datetime.time(00, 00)
+        hora_hasta = datetime.time(23, 59)
+
+        template = self.crear_campana()
+        self.crea_calificaciones(template)
+        self.crea_todas_las_opcion_posibles(template)
+
+        [self.crea_campana_actuacion(dia_semanal, hora_desde, hora_hasta,
+            template) for dia_semanal in range(0, 4)]
         template.es_template = True
         template.estado = Campana.ESTADO_TEMPLATE_ACTIVO
-
-        Campana.objects.replicar_campana = Mock()
 
         # -----
 
