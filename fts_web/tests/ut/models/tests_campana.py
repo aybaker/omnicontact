@@ -317,7 +317,7 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         self.assertEqual(campana.valida_derivacion_externa(), False)
 
 
-class ObtieneTemplatesActivosActivaTemplateTest(FTSenderBaseTest):
+class TemplatesObtieneActivosActivaTemplateTest(FTSenderBaseTest):
 
     def test_devuelve_1_activo(self):
         campana1 = self.crear_campana()
@@ -372,7 +372,7 @@ class ObtieneTemplatesActivosActivaTemplateTest(FTSenderBaseTest):
         self.assertEqual(campana1.estado, Campana.ESTADO_TEMPLATE_ACTIVO)
 
 
-class DeleteTemplatesTest(FTSenderBaseTest):
+class TemplatesDeleteTest(FTSenderBaseTest):
 
     def test_borrar_template_falla_estado_incorrecto(self):
         campana1 = self.crear_campana()
@@ -395,6 +395,39 @@ class DeleteTemplatesTest(FTSenderBaseTest):
 
         campana1.borrar_template()
         self.assertEqual(campana1.estado, Campana.ESTADO_BORRADA)
+
+
+class TemplatesCreaCampanaDeTemplate(FTSenderBaseTest):
+    def test_falla_estado_incorrecto(self):
+        template = Campana(pk=1)
+        template.es_template = True
+        template.estado = Campana.ESTADO_TEMPLATE_EN_DEFINICION
+
+        # -----
+
+        with self.assertRaises(AssertionError):
+            Campana.objects_template.crea_campana_de_template(template)
+
+    def test_falla_no_es_template(self):
+        template = Campana(pk=1)
+        template.es_template = False
+        template.estado = Campana.ESTADO_TEMPLATE_ACTIVO
+
+        # -----
+
+        with self.assertRaises(AssertionError):
+            Campana.objects_template.crea_campana_de_template(template)
+
+    def test_no_falla(self):
+        template = Campana(pk=1)
+        template.es_template = True
+        template.estado = Campana.ESTADO_TEMPLATE_ACTIVO
+
+        Campana.objects.replicar_campana = Mock()
+
+        # -----
+
+        campana = Campana.objects_template.crea_campana_de_template(template)
 
 
 class CampanaReplicarCampana(FTSenderBaseTest):
@@ -439,3 +472,4 @@ class CampanaReplicarCampana(FTSenderBaseTest):
                          campana_replicada.cantidad_intentos)
         self.assertEqual(campana.segundos_ring,
                          campana_replicada.segundos_ring)
+
