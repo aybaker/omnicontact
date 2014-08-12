@@ -461,6 +461,26 @@ class Contacto(models.Model):
 # Campaña
 #==============================================================================
 
+class TemplateManager(models.Manager):
+    """Manager para Campanas-->Template"""
+
+    def obtener_activos(self):
+        """Devuelve campañas-->templates en estado activas.
+        """
+        return self.filter(es_template=True,
+                           estado=Campana.ESTADO_TEMPLATE_ACTIVO)
+
+    def crea_campana_de_template(self, template):
+        """
+        Este método se encarga de crear una campana a partir del template
+        proporcionado.
+        """
+        assert template.estado == Campana.ESTADO_TEMPLATE_ACTIVO
+
+        campana = Campana.objects.replicar_campana(template)
+        return campana
+
+
 class CampanaManager(models.Manager):
     """Manager para Campanas"""
 
@@ -476,12 +496,6 @@ class CampanaManager(models.Manager):
         no se actualizó el estado de dichas campañas en la BD.
         """
         return self.filter(estado=Campana.ESTADO_ACTIVA)
-
-    def obtener_templates_activos(self):
-        """Devuelve campañas-->templates en estado activas.
-        """
-        return self.filter(es_template=True,
-                           estado=Campana.ESTADO_TEMPLATE_ACTIVO)
 
     def obtener_pausadas(self):
         """
@@ -631,49 +645,62 @@ class CampanaManager(models.Manager):
             logger.warn("No se pudo recuperar la Campana: %s", campana_id)
             raise FtsRecicladoCampanaError("No se pudo recuperar la Campaña.")
         else:
-            # Replica Campana.
-            campana_reciclada = self.create(
-                nombre='{0} (reciclada)'.format(campana.nombre),
-                cantidad_canales=campana.cantidad_canales,
-                cantidad_intentos=campana.cantidad_intentos,
-                segundos_ring=campana.segundos_ring,
-                fecha_inicio=campana.fecha_inicio,
-                fecha_fin=campana.fecha_fin,
-                audio_original=campana.audio_original,
-                audio_asterisk=campana.audio_asterisk,
-                bd_contacto=bd_contacto,
-            )
-
-            # Replica Opciones y Calificaciones.
-            opciones = campana.opciones.all()
-            for opcion in opciones:
-                calificacion_reciclada = None
-                if opcion.calificacion:
-                    calificacion_reciclada = Calificacion.objects.create(
-                        nombre=opcion.calificacion.nombre,
-                        campana=campana_reciclada,
-                    )
-
-                Opcion.objects.create(
-                    digito=opcion.digito,
-                    accion=opcion.accion,
-                    grupo_atencion=opcion.grupo_atencion,
-                    derivacion_externa=opcion.derivacion_externa,
-                    calificacion=calificacion_reciclada,
-                    campana=campana_reciclada,
-                )
-
-            # Replica Actuaciones.
-            actuaciones = campana.actuaciones.all()
-            for actuacion in actuaciones:
-                Actuacion.objects.create(
-                    dia_semanal=actuacion.dia_semanal,
-                    hora_desde=actuacion.hora_desde,
-                    hora_hasta=actuacion.hora_hasta,
-                    campana=campana_reciclada,
-                )
+            campana_reciclada = self.replicar_campana(campana)
+            campana_reciclada.nombre = '{0} (reciclada)'.format(
+                campana_reciclada.nombre)
+            campana_reciclada.bd_contacto = bd_contacto
+            campana_reciclada.save()
 
         return campana_reciclada
+
+    def replicar_campana(self, campana):
+        """
+        Este método se encarga de replicar una campana existente, creando una
+        campana nueva de iguales características.
+        """
+        # Replica Campana.
+        campana_replicada = self.create(
+            nombre=campana.nombre,
+            cantidad_canales=campana.cantidad_canales,
+            cantidad_intentos=campana.cantidad_intentos,
+            segundos_ring=campana.segundos_ring,
+            fecha_inicio=campana.fecha_inicio,
+            fecha_fin=campana.fecha_fin,
+            audio_original=campana.audio_original,
+            audio_asterisk=campana.audio_asterisk,
+            bd_contacto=campana.bd_contacto,
+        )
+
+        # Replica Opciones y Calificaciones.
+        opciones = campana.opciones.all()
+        for opcion in opciones:
+            calificacion_replicada = None
+            if opcion.calificacion:
+                calificacion_replicada = Calificacion.objects.create(
+                    nombre=opcion.calificacion.nombre,
+                    campana=campana_replicada,
+                )
+
+            Opcion.objects.create(
+                digito=opcion.digito,
+                accion=opcion.accion,
+                grupo_atencion=opcion.grupo_atencion,
+                derivacion_externa=opcion.derivacion_externa,
+                calificacion=calificacion_replicada,
+                campana=campana_replicada,
+            )
+
+        # Replica Actuaciones.
+        actuaciones = campana.actuaciones.all()
+        for actuacion in actuaciones:
+            Actuacion.objects.create(
+                dia_semanal=actuacion.dia_semanal,
+                hora_desde=actuacion.hora_desde,
+                hora_hasta=actuacion.hora_hasta,
+                campana=campana_replicada,
+            )
+
+        return campana_replicada
 
 upload_to_audios_asterisk = upload_to("audios_asterisk", 95)
 upload_to_audios_originales = upload_to("audios_reproduccion", 95)
@@ -688,6 +715,7 @@ class Campana(models.Model):
     # managers que se creen.
 
     objects = CampanaManager()
+    objects_template = TemplateManager()
 
     TIPO_RECICLADO_TOTAL = 1
     TIPO_RECICLADO_PENDIENTES = 2
