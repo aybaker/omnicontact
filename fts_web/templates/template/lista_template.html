@@ -30,23 +30,24 @@
                           </tr>
                         </thead>
                         <tbody>
-                            {% for campana in templates_activos %}
+                            {% for template in templates_activos %}
                                 <tr >
                                     <td width="80%">                          
-                                        <a href="{% url 'detalle_template' campana.id %}">{{ campana.nombre }}</a>
+                                        <a href="{% url 'detalle_template' template.id %}">{{ template.nombre }}</a>
                                     </td>
                                     
                                     <td>
-                                        <a href="{% url 'template_elimina' campana.pk %}"  class="btn btn-danger btn-sm">
+                                        <a href="{% url 'template_elimina' template.pk %}"  class="btn btn-danger btn-sm">
                                                 <span class="glyphicon glyphicon-remove"></span>
                                                 Eliminar
                                         </a> 
                                     </td>
                                     <td>
-                                        <button type="button"  class="btn btn-success btn-sm">
+                                        <a href="{% url 'crea_campana_template' template.pk %}"  class="btn btn-success btn-sm">
                                             <span class="glyphicon glyphicon-plus"></span>
                                             Crear Campaña de Template
-                                        </button>
+                                        </a> 
+                                        
                                     </td>                        
                                 </tr>
                             {% empty %}
