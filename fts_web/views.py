@@ -904,15 +904,20 @@ class CalificacionCampanaDeleteView(DeleteView):
         self.campana = calificacion.campana
         return calificacion
 
-    def get_success_url(self):
+    def delete(self, request, *args, **kwargs):
         message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la eliminación de la Calificación.'
+            Se llevó a cabo con éxito la eliminación de la Calificación.'
 
         messages.add_message(
             self.request,
             messages.SUCCESS,
             message,
         )
+        return super(CalificacionCampanaDeleteView, self).delete(request,
+                                                                 *args,
+                                                                 **kwargs)
+
+    def get_success_url(self):
         return reverse(
             'calificacion_campana',
             kwargs={"pk": self.campana.pk}
@@ -981,15 +986,19 @@ class OpcionCampanaDeleteView(DeleteView):
         self.campana = opcion.campana
         return opcion
 
-    def get_success_url(self):
+    def delete(self, request, *args, **kwargs):
         message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la eliminación de la Opción.'
+            Se llevó a cabo con éxito la eliminación de la Opción.'
 
         messages.add_message(
             self.request,
             messages.SUCCESS,
             message,
         )
+        return super(OpcionCampanaDeleteView, self).delete(request,
+                                                           *args, **kwargs)
+
+    def get_success_url(self):
         return reverse(
             'opcion_campana',
             kwargs={"pk": self.campana.pk}
@@ -1798,14 +1807,6 @@ class CalificacionTemplateCreateView(TemplateMixin,
 class CalificacionTemplateDeleteView(TemplateMixin,
                                      CalificacionCampanaDeleteView):
     def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la eliminación de la Calificación.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
         return reverse(
             'calificacion_template',
             kwargs={"pk": self.campana.pk}
@@ -1822,14 +1823,6 @@ class OpcionTemplateCreateView(TemplateMixin, OpcionCampanaCreateView):
 
 class OpcionTemplateDeleteView(TemplateMixin, OpcionCampanaDeleteView):
     def get_success_url(self):
-        message = '<strong>Operación Exitosa!</strong>\
-        Se llevó a cabo con éxito la eliminación de la Opción.'
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message,
-        )
         return reverse(
             'opcion_template',
             kwargs={"pk": self.campana.pk}
