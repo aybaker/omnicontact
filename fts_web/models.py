@@ -17,6 +17,7 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction, connection
 from django.db.models import Sum
 from django.utils.timezone import now
+
 from fts_web.errors import (FtsRecicladoCampanaError,
     FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError,
     FTSOptimisticLockingError)
@@ -842,6 +843,10 @@ class Campana(models.Model):
         related_name='campanas'
     )
     es_template = models.BooleanField(default=False)
+
+    def obtener_id_archivo_audio(self):
+        from fts_daemon.audio_conversor import obtener_id_archivo_de_audio_desde_path
+        return obtener_id_archivo_de_audio_desde_path(self.audio_original)
 
     def puede_finalizarse(self):
         """Metodo que realiza los chequeos necesarios del modelo, y
