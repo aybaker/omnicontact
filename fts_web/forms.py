@@ -189,11 +189,12 @@ class AudioForm(forms.ModelForm):
                                       widget=forms.Select())
 
     check_audio_original = forms.BooleanField(label="Especificar Audio",
-                                      required=False,
-                                      widget=forms.CheckboxInput())
+                                              required=False,
+                                              widget=forms.CheckboxInput())
 
-    def __init__(self, *args, **kwargs):
-        super(AudioForm, self).__init__(*args, **kwargs)            
+    def __init__(self, id_archivo_audio=None, *args, **kwargs):
+        super(AudioForm, self).__init__(*args, **kwargs)
+        self.fields['archivo_audio'].initial = id_archivo_audio
         self.fields['audio_original'].widget.attrs['disabled'] = True
 
         self.helper = FormHelper()
