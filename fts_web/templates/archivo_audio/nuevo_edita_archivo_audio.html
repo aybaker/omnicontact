@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}      
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">
+                <h4 class="inline">Nuevo Archivo de Audio</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <form role="form" method="post" enctype="multipart/form-data">
+                <div class="col-lg-4">                
+                    {% crispy form %}                                           
+
+                    {% if object.audio_original %}
+                        <div>
+                            <h4>Archivo de Audio</h4>
+                            <audio src="{{ object.audio_original.url }}" controls></audio>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-lg-12">
+                    <br>
+                    <button type="submit" id="id_guardar" class="btn btn-success btn-lg">
+                        Guardar Archivo Audio
+                    </button>
+                </div>
+            </form>     
+        </div>
+    </div>
+{% endblock %}
