@@ -3,6 +3,26 @@
 
 {% load crispy_forms_tags %}
 
+{% block head_js %}
+    <script type="text/javascript">
+        $(function(){
+            $("#id_check_audio_original").change(function() {
+                if($(this).is(":checked")) {
+                    $("#id_audio_original").removeAttr('disabled');
+
+                    $("#id_archivo_audio option:selected").attr("selected", false);
+                    $("#id_archivo_audio").attr('disabled', true);
+                }else {
+                    $("#id_audio_original").attr('disabled', true);
+                    $("#id_audio_original").val('');
+
+                    $("#id_archivo_audio").removeAttr('disabled');
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block content %}      
     <div class="panel fts-border-verde">
         <!-- Default panel contents -->
