@@ -741,9 +741,17 @@ class AudioCampanaCreateView(UpdateView):
     context_object_name = 'campana'
     form_class = AudioForm
 
+    def get_form(self, form_class):
+        id_archivo_audio = self.object.obtener_id_archivo_audio()
+
+        return form_class(id_archivo_audio=id_archivo_audio,
+                          **self.get_form_kwargs())
+
     def form_valid(self, form):
-        if self.request.POST.get('archivo_audio') and self.request.FILES.get(
-            'audio_original'):
+        archivo_audio = self.request.POST.get('archivo_audio')
+        audio_original = self.request.FILES.get('audio_original')
+
+        if archivo_audio and audio_original:
             message = '<strong>Operación Errónea!</strong> \
                 Seleccione solo un audio para la campana.'
             messages.add_message(
@@ -753,7 +761,7 @@ class AudioCampanaCreateView(UpdateView):
             )
             return redirect(self.get_success_url())
 
-        if self.request.POST.get('archivo_audio'):
+        if archivo_audio:
             archivo_audio = get_object_or_404(
                 ArchivoDeAudio, pk=self.request.POST.get('archivo_audio')
             )
@@ -763,7 +771,7 @@ class AudioCampanaCreateView(UpdateView):
 
             return redirect(self.get_success_url())
 
-        elif self.request.FILES.get('audio_original'):
+        elif audio_original:
             self.object = form.save()
 
             try:
