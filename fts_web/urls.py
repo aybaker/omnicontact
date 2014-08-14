@@ -262,6 +262,26 @@ urlpatterns = patterns('',
     ),
 
     #==========================================================================
+    # Archivo de Audio
+    #==========================================================================
+    url(r'^audios/$',
+        login_required(views.ArchivoAudioListView.as_view()),
+        name='lista_archivo_audio',
+    ),
+    url(r'^audios/nuevo/$',
+        login_required(views.ArchivoAudioCreateView.as_view()),
+        name='nuevo_archivo_audio',
+    ),
+    url(r'^audios/(?P<pk>\d+)/$',
+        login_required(views.ArchivoAudioUpdateView.as_view()),
+        name='edita_archivo_audio',
+    ),
+    url(r'^audios/(?P<pk>\d+)/elimina/$',
+        login_required(views.ArchivoAudioDeleteView.as_view()),
+        name='elimina_archivo_audio',
+    ),
+
+    #==========================================================================
     # Vistas para estadisticas
     #==========================================================================
     url(r'^daemon/status/',
