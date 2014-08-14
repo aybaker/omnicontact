@@ -10,7 +10,7 @@ from django.contrib import admin
 from fts_web import models
 from fts_daemon import models as daemon_models
 
-
+admin.site.register(models.ArchivoDeAudio)
 admin.site.register(models.DerivacionExterna)
 admin.site.register(models.GrupoAtencion)
 admin.site.register(models.AgenteGrupoAtencion)
