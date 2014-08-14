@@ -15,10 +15,9 @@ from crispy_forms.layout import Field, Layout, Submit, Div
 
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from fts_web.models import (
-    Actuacion, AgenteGrupoAtencion, BaseDatosContacto,
-    Campana, Calificacion, GrupoAtencion, Opcion, DerivacionExterna
-)
+from fts_web.models import (Actuacion, AgenteGrupoAtencion, ArchivoDeAudio,
+                            BaseDatosContacto, Campana, Calificacion,
+                            GrupoAtencion, Opcion, DerivacionExterna)
 
 
 #=========================================================================
@@ -359,3 +358,37 @@ class ActuacionForm(forms.ModelForm):
 
     class Meta:
         model = Actuacion
+
+
+#=========================================================================
+# Archivo De Audio
+#=========================================================================
+
+
+class ArchivoAudioForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ArchivoAudioForm, self).__init__(*args, **kwargs)
+        self.fields['audio_original'].required = True
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('descripcion'),
+            Field('audio_original'),
+        )
+
+    class Meta:
+        model = ArchivoDeAudio
+        fields = ('descripcion', 'audio_original',)
+        widgets = {
+            'audio_original': forms.FileInput(),
+        }
+        labels = {
+            'audio_original': 'Audio',
+        }
+        help_texts = {
+            'audio_original': """Seleccione el archivo de audio que desea para
+            la Campaña. Si ya existe uno y guarda otro, el audio será
+            reemplazado.""",
+        }
