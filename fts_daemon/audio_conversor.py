@@ -65,6 +65,19 @@ def convertir_audio_de_archivo_de_audio_globales(archivo_de_audio):
     assert isinstance(archivo_de_audio, ArchivoDeAudio)
 
 
+def obtener_id_archivo_de_audio_desde_path(file_path):
+    """Parsea el path del archivo de audio ya convertido, y
+    devuelve el ID del ArchivoDeAudio al que está asociado,
+    o devuelve None si el path NO correspode a una instancia
+    de ArchivoDeAudio.
+
+    Esta funcion es necesaria para saber si el archivo de
+    audio de una campaña correspodne a un ArchivoDeAudio o
+    fue un audio subido específicamente para la campaña.
+    """
+    pass
+
+
 def convertir_audio(input_file_abs, output_filename_abs):
     """Convierte archivo de audio.
 
