@@ -1950,11 +1950,25 @@ class Calificacion(models.Model):
 # ArchivoDeAudio
 #==============================================================================
 
+class ArchivoDeAudioManager(models.Manager):
+    """Manager para ArchivoDeAudio"""
+
+    def get_queryset(self):
+        return super(ArchivoDeAudioManager, self).get_queryset().exclude(
+            borrado=True)
+
 
 class ArchivoDeAudio(models.Model):
     """
     Representa una ArchivoDeAudio
     """
+    objects_default = models.Manager()
+    # Por defecto django utiliza el primer manager instanciado. Se aplica al
+    # admin de django, y no aplica las customizaciones del resto de los
+    # managers que se creen.
+
+    objects = ArchivoDeAudioManager()
+
     descripcion = models.CharField(
         max_length=100,
     )
@@ -1977,3 +1991,12 @@ class ArchivoDeAudio(models.Model):
         if self.borrado:
             return '(ELiminado) {0}'.format(self.descripcion)
         return self.descripcion
+
+    def borrar(self):
+        """
+        Setea la ArchivoDeAudio como BORRADO.
+        """
+        logger.info("Seteando ArchivoDeAudio %s como BORRADO", self.id)
+
+        self.borrado = True
+        self.save()
