@@ -20,9 +20,9 @@ from fts_web.models import (Actuacion, AgenteGrupoAtencion, ArchivoDeAudio,
                             GrupoAtencion, Opcion, DerivacionExterna)
 
 
-#=========================================================================
+# =============================================================================
 # Derivación Externa
-#=========================================================================
+# =============================================================================
 
 class DerivacionExternaForm(forms.ModelForm):
 
@@ -39,9 +39,9 @@ class DerivacionExternaForm(forms.ModelForm):
         model = DerivacionExterna
 
 
-#=========================================================================
+# =============================================================================
 # Grupos de Atención
-#=========================================================================
+# =============================================================================
 
 class AgenteGrupoAtencionForm(forms.ModelForm):
 
@@ -54,6 +54,7 @@ class AgenteGrupoAtencionForm(forms.ModelForm):
 
 
 class BaseAgenteGrupoAtencionFormset(forms.models.BaseInlineFormSet):
+
     def __init__(self, *args, **kwargs):
         super(BaseAgenteGrupoAtencionFormset, self).__init__(*args, **kwargs)
         self.forms[0].empty_permitted = False
@@ -83,9 +84,9 @@ class GrupoAtencionForm(forms.ModelForm):
         model = GrupoAtencion
 
 
-#=========================================================================
+# =============================================================================
 # Base Datos Contactos
-#=========================================================================
+# =============================================================================
 
 class BaseDatosContactoForm(forms.ModelForm):
 
@@ -105,9 +106,9 @@ class BaseDatosContactoForm(forms.ModelForm):
                    'estado')
 
 
-#=========================================================================
+# =============================================================================
 # Template
-#=========================================================================
+# =============================================================================
 
 class TemplateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -129,9 +130,9 @@ class TemplateForm(forms.ModelForm):
                    'es_template')
 
 
-#=========================================================================
+# =============================================================================
 # Campaña
-#=========================================================================
+# =============================================================================
 
 class CampanaForm(forms.ModelForm):
     fecha_inicio = forms.DateField(
@@ -180,14 +181,26 @@ class CampanaForm(forms.ModelForm):
 
 
 class AudioForm(forms.ModelForm):
+    CHOICES = ((au.id, au.descripcion) for au in ArchivoDeAudio.objects.all())
+    CHOICES = (('', 'Seleccione'),) + tuple(CHOICES)
+    archivo_audio = forms.ChoiceField(label="Archivo de Audio",
+                                      required=False,
+                                      choices=CHOICES,
+                                      widget=forms.Select())
+
+    check_audio_original = forms.BooleanField(label="Especificar Audio",
+                                      required=False,
+                                      widget=forms.CheckboxInput())
 
     def __init__(self, *args, **kwargs):
-        super(AudioForm, self).__init__(*args, **kwargs)
-        self.fields['audio_original'].required = True
+        super(AudioForm, self).__init__(*args, **kwargs)            
+        self.fields['audio_original'].widget.attrs['disabled'] = True
 
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
+            Field('archivo_audio'),
+            Field('check_audio_original'),
             Field('audio_original'),
         )
 
@@ -198,7 +211,7 @@ class AudioForm(forms.ModelForm):
             'audio_original': forms.FileInput(),
         }
         labels = {
-            'audio_original': 'Audio',
+            'audio_original': '',
         }
         help_texts = {
             'audio_original': """Seleccione el archivo de audio que desea para
@@ -256,9 +269,9 @@ class TipoRecicladoForm(forms.Form):
         )
 
 
-#=========================================================================
+# =============================================================================
 # Calificaciones
-#=========================================================================
+# =============================================================================
 
 class CalificacionForm(forms.ModelForm):
 
@@ -275,9 +288,9 @@ class CalificacionForm(forms.ModelForm):
         model = Calificacion
 
 
-#=========================================================================
+# =============================================================================
 # Opciones
-#=========================================================================
+# =============================================================================
 
 class OpcionForm(forms.ModelForm):
 
@@ -327,9 +340,9 @@ class OpcionForm(forms.ModelForm):
         return cleaned_data
 
 
-#=========================================================================
+# =============================================================================
 # Actuación
-#=========================================================================
+# =============================================================================
 
 class ActuacionForm(forms.ModelForm):
     hora_desde = forms.TimeField(
@@ -360,9 +373,9 @@ class ActuacionForm(forms.ModelForm):
         model = Actuacion
 
 
-#=========================================================================
+# =============================================================================
 # Archivo De Audio
-#=========================================================================
+# =============================================================================
 
 
 class ArchivoAudioForm(forms.ModelForm):
