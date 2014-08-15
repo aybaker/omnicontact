@@ -13,7 +13,6 @@ import tempfile
 from django.conf import settings
 from django.core.files.storage import default_storage
 from fts_web.errors import FtsAudioConversionError
-from fts_web.models import Campana, ArchivoDeAudio
 from fts_web.utiles import crear_archivo_en_media_root
 import logging as _logging
 import uuid
@@ -30,6 +29,7 @@ def convertir_audio_de_campana(campana):
     :type campana: fts_web.models.Campana
     :raises: FtsAudioConversionError
     """
+    from fts_web.models import Campana
     assert isinstance(campana, Campana)
 
     # chequea archivo original (a convertir)
@@ -62,6 +62,7 @@ def convertir_audio_de_archivo_de_audio_globales(archivo_de_audio):
     :type archivo_de_audio: fts_web.models.ArchivoDeAudio
     :raises: FtsAudioConversionError
     """
+    from fts_web.models import ArchivoDeAudio
     assert isinstance(archivo_de_audio, ArchivoDeAudio)
 
 
