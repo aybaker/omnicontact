@@ -845,6 +845,14 @@ class Campana(models.Model):
     es_template = models.BooleanField(default=False)
 
     def obtener_id_archivo_audio(self):
+        """
+        Este método se encarga de llamar a la función que obtiene el ID de
+        ArchivoDeAudio en caso que el audio de la campana haya sido
+        seleccionado de uno pre cargado en archivos de audio.
+        En caso que no se haya sleccionado un audio pre cargado en
+        ArchivoDeAudio y se haya subido un audio específico para la campana
+        devolvera None.
+        """
         return obtener_id_archivo_de_audio_desde_path(self.audio_asterisk)
 
     def puede_finalizarse(self):
