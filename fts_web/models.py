@@ -846,7 +846,7 @@ class Campana(models.Model):
 
     def obtener_id_archivo_audio(self):
         from fts_daemon.audio_conversor import obtener_id_archivo_de_audio_desde_path
-        return obtener_id_archivo_de_audio_desde_path(self.audio_original)
+        return obtener_id_archivo_de_audio_desde_path(self.audio_asterisk)
 
     def puede_finalizarse(self):
         """Metodo que realiza los chequeos necesarios del modelo, y
