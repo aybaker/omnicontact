@@ -23,6 +23,7 @@ from django.test.testcases import LiveServerTestCase, TransactionTestCase
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
     Contacto, BaseDatosContacto, Campana, Opcion, Actuacion, DerivacionExterna
+import shutil
 
 
 EV_FINALIZADOR = EventoDeContacto.objects.\
@@ -174,6 +175,18 @@ class FTSenderTestUtilsMixin(object):
         tmp = self.get_test_resource(resource)
         with open(tmp, 'r') as f:
             return f.read()
+
+    def copy_test_resource_to_mediaroot(self, resource):
+        """Copia test-resource a directorio MEDIA_ROOT.
+
+        :returns: path absoluto al archivo en MEDIA_ROOT
+        """
+        tmp = self.get_test_resource(resource)
+        filename = os.path.split(tmp)[1]
+        new_path = os.path.join(settings.MEDIA_ROOT, filename)
+        if not os.path.exists(new_path):
+            shutil.copy(tmp, settings.MEDIA_ROOT)
+        return new_path
 
     def crear_grupo_atencion(self):
         """Crea un grupo de atencion"""
