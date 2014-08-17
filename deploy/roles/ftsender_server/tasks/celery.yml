@@ -13,7 +13,7 @@
 
 - name: Unregister Celery worker (celery-worker-esperar-finaliza-campana)
   service: name=celery-worker-esperar-finaliza-campana enabled=no state=stopped
-  when: init_script_exists.stat.exists is defined and p.stat.exists == true
+  when: init_script_exists.stat.exists is defined and init_script_exists.stat.exists == true
   sudo: yes
   tags:
     - deploy
@@ -29,7 +29,7 @@
 
 - name: Unregister Celery worker (celery-worker-finalizar-campana)
   service: name=celery-worker-finalizar-campana enabled=no state=stopped
-  when: init_script_exists.stat.exists is defined and p.stat.exists == true
+  when: init_script_exists.stat.exists is defined and init_script_exists.stat.exists == true
   sudo: yes
   tags:
     - deploy
