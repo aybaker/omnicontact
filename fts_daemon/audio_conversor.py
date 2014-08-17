@@ -26,6 +26,20 @@ class ConversorDeAudioService(object):
     para poder ser usados por Asterisk
     """
 
+    DIR_AUDIO_PREDEFINIDO = "audio_asterisk_predefinido"
+    """Directorio relativo a MEDIA_ROOT donde se guardan los archivos
+    convertidos para audios globales / predefinidos
+    """
+
+    TEMPLATE_NOMBRE_AUDIO_ASTERISK_PREDEFINIDO = "audio-predefinido-{0}{1}"
+    """Nombre de archivo para audios ya convertidos, de archivos
+    de audios globales / predefinidos.
+
+    Debe poseer 2 placeholders:
+    1. {0} para el ID de ArchivoDeAudio
+    2. {1} para el sufijo del nombre del archivo (ej: '.wav')
+    """
+
     def _crear_directorios(self, directorio, mode=0755):
         """Crea directorio (recursivamente) si no existen. Es el equivalente
         de `mkdir -p`.
@@ -163,12 +177,15 @@ class ConversorDeAudioService(object):
         assert os.path.exists(wav_full_path)
 
         # genera nombre del archivo de salida
-        dirname = "audio_asterisk_predefinido"
-        filename = "audio-predefinido-{0}{1}".format(archivo_de_audio.id,
+        _template = ConversorDeAudioService.\
+            TEMPLATE_NOMBRE_AUDIO_ASTERISK_PREDEFINIDO
+        filename = _template.format(archivo_de_audio.id,
             settings.TMPL_FTS_AUDIO_CONVERSOR_EXTENSION)
 
         # Creamos directorios si no existen
-        abs_output_dir = os.path.join(settings.MEDIA_ROOT, dirname)
+        abs_output_dir = os.path.join(settings.MEDIA_ROOT,
+            ConversorDeAudioService.DIR_AUDIO_PREDEFINIDO)
+
         self._crear_directorios(abs_output_dir)
 
         # Creamos archivo si no existe
@@ -181,7 +198,8 @@ class ConversorDeAudioService(object):
         self._convertir_audio(wav_full_path, abs_output_filename)
 
         # guarda ref. a archivo convertido
-        archivo_de_audio.audio_asterisk = os.path.join(dirname, filename)
+        archivo_de_audio.audio_asterisk = os.path.join(
+            ConversorDeAudioService.DIR_AUDIO_PREDEFINIDO, filename)
         archivo_de_audio.save()
 
 
