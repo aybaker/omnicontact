@@ -79,8 +79,8 @@ def crear_archivo_en_media_root(dirname_template, prefix, suffix=""):
 
     # Creamos directorios si no existen
     abs_output_dir = os.path.join(settings.MEDIA_ROOT, relative_dirname)
-    logger.info("Se crearan directorios: %s", abs_output_dir)
     if not os.path.exists(abs_output_dir):
+        logger.info("Se crearan directorios: %s", abs_output_dir)
         os.makedirs(abs_output_dir)
 
     fd, output_filename = tempfile.mkstemp(dir=abs_output_dir, prefix=prefix,
