@@ -25,6 +25,8 @@ from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
 from fts_web.parser import autodetectar_parser
 from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
+from fts_web.services.estadisticas_campana import EstadisticasCampanaService
+from fts_web.services.reporte_campana import ReporteCampanaService
 
 
 def _tmpdir():
@@ -624,6 +626,8 @@ class CampanaTest(FTSenderBaseTest):
     @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_crea_reporte_csv(self):
 
+        service = ReporteCampanaService()
+
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento(finaliza=False)
 
@@ -641,12 +645,15 @@ class CampanaTest(FTSenderBaseTest):
         file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
 
         # Testeo que si la campana no está finalizada de una excepción.
-        self.assertRaises(AssertionError, campana.crea_reporte_csv)
+        with self.assertRaises(AssertionError):
+            service.crea_reporte_csv(campana)
+
         # Finalizamos la campana, acudimos al método que genera el csv para
         # exportar, validamos que exista el archivo y que el método devuelva
         # la url para accederlo.
         campana.finalizar()
-        url_reporte = campana.crea_reporte_csv()
+        url_reporte = service.crea_reporte_csv(campana)
+
         self.assertTrue(os.path.exists(file_path))
         self.assertEqual(url_reporte, file_url)
 
@@ -667,6 +674,8 @@ class CampanaTest(FTSenderBaseTest):
     @override_settings(MEDIA_ROOT=_tmpdir())
     def test_campana_obtener_url_reporte_csv_descargar(self):
 
+        service = ReporteCampanaService()
+
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento(finaliza=False)
 
@@ -684,8 +693,8 @@ class CampanaTest(FTSenderBaseTest):
         file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
 
         # Testeo que si la campana no está finalizada de una excepción.
-        self.assertRaises(AssertionError,
-                          campana.obtener_url_reporte_csv_descargar)
+        with self.assertRaises(AssertionError):
+            service.obtener_url_reporte_csv_descargar(campana)
 
         # Finalizamos la campana, y verifico que al no haberse generado el
         # reporte, de un excepción.
@@ -693,15 +702,15 @@ class CampanaTest(FTSenderBaseTest):
 
         # Acudimos al método y validamos que genere un excepción porque el
         # reporte aún no fué generado.
-        self.assertRaises(AssertionError,
-                          campana.obtener_url_reporte_csv_descargar)
+        with self.assertRaises(AssertionError):
+            service.obtener_url_reporte_csv_descargar(campana)
 
         # campana.crea_reporte_csv()
         DepuradorDeCampanaWorkflow().depurar(campana.id)
         campana = Campana.objects.get(id=campana.id)
 
         self.assertTrue(os.path.exists(file_path))
-        self.assertEqual(campana.obtener_url_reporte_csv_descargar(),
+        self.assertEqual(service.obtener_url_reporte_csv_descargar(campana),
                          file_url)
 
         ## Esto es peligrosisimo! NUNCA borrar con glob!!!
@@ -1010,10 +1019,11 @@ class ReporteTest(FTSenderBaseTest):
         campana = self._crea_campana_emula_procesamiento()
         DepuradorDeCampanaWorkflow().depurar(campana.id)
         campana = Campana.objects.get(id=campana.id)
+        service = EstadisticasCampanaService()
 
         # Obtento el renderizado de gráfico y lo testeo.
         graficos_estadisticas = \
-            campana.obtener_estadisticas_render_graficos_supervision()
+            service.obtener_estadisticas_render_graficos_supervision(campana)
 
         self.assertTrue(graficos_estadisticas[
             'torta_opcion_x_porcentaje'].render())
@@ -1054,7 +1064,9 @@ class ReporteTest(FTSenderBaseTest):
         DepuradorDeCampanaWorkflow().depurar(campana.id)
         campana = Campana.objects.get(id=campana.id)
 
-        graficos = campana.obtener_estadisticas_render_graficos_reportes()
+        service = EstadisticasCampanaService()
+        graficos = service.obtener_estadisticas_render_graficos_reportes(
+            campana)
 
         self.assertTrue(graficos['torta_general'].render())
         self.assertTrue(graficos['torta_opcion_x_porcentaje'].render())

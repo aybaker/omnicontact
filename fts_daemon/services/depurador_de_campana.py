@@ -13,6 +13,7 @@ from django.db import transaction
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import Campana
 import logging as _logging
+from fts_web.services.reporte_campana import ReporteCampanaService
 
 
 logger = _logging.getLogger(__name__)
@@ -39,7 +40,8 @@ class DepuradorDeCampanaWorkflow(object):
         campana.recalcular_aedc_completamente()
 
         # Genera reporte CSV
-        campana.crea_reporte_csv()
+        reporte_campana_service = ReporteCampanaService()
+        reporte_campana_service.crea_reporte_csv(campana)
 
         # Depura EDC
         EventoDeContacto.objects.depurar_eventos_de_contacto(campana.id)

@@ -40,6 +40,8 @@ from fts_web.reciclador_base_datos_contacto.reciclador import (
     RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
     CampanaTipoRecicladoInvalidoError)
 from fts_web import version
+from fts_web.services.estadisticas_campana import EstadisticasCampanaService
+from fts_web.services.reporte_campana import ReporteCampanaService
 
 
 logger = logging_.getLogger(__name__)
@@ -1571,7 +1573,8 @@ class ExportaReporteCampanaView(UpdateView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
 
-        url = self.object.obtener_url_reporte_csv_descargar()
+        service = ReporteCampanaService()
+        url = service.obtener_url_reporte_csv_descargar(self.object)
 
         return redirect(url)
 
@@ -1848,7 +1851,15 @@ class CampanaPorEstadoListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(CampanaPorEstadoListView, self).get_context_data(
            **kwargs)
-        context['campanas_ejecucion'] = Campana.objects.obtener_ejecucion()
+
+        # obtener_estadisticas_render_graficos_supervision()
+        service = EstadisticasCampanaService()
+        campanas_ejecucion = Campana.objects.obtener_ejecucion()
+        for campana in campanas_ejecucion:
+            campana.hack__graficos_estadisticas = \
+                service.obtener_estadisticas_render_graficos_supervision(
+                    campana)
+        context['campanas_ejecucion'] = campanas_ejecucion
         _update_context_with_statistics(context)
         return context
 
@@ -1905,6 +1916,18 @@ class CampanaReporteDetailView(DetailView):
 
     def get_queryset(self):
         return Campana.objects.obtener_depuradas()
+
+    def get_object(self, *args, **kwargs):
+        service = EstadisticasCampanaService()
+
+        campana = super(CampanaReporteDetailView, self).get_object(
+            *args, **kwargs)
+
+        campana.hack__graficos_estadisticas = \
+            service.obtener_estadisticas_render_graficos_reportes(
+                campana)
+
+        return campana
 
 
 # =============================================================================
