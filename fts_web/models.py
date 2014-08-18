@@ -487,6 +487,7 @@ class CampanaManager(models.Manager):
     """Manager para Campanas"""
 
     def get_queryset(self):
+        # FIXME: aca no deberiamos hacer un `filter(es_template=False)`?
         return super(CampanaManager, self).get_queryset().\
             exclude(estado=Campana.ESTADO_BORRADA)
 
