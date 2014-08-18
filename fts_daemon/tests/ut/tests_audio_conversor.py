@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import tempfile
 
+from django.conf import settings
 from django.test.utils import override_settings
 from fts_daemon.audio_conversor import ConversorDeAudioService
 from fts_web.models import ArchivoDeAudio
@@ -111,3 +112,77 @@ class ConvertirAudioDeArchivoDeAudioGlobalesTests(FTSenderBaseTest):
         self.assertEqual(fc_p2, sc_p2, "En diversas llamadas se generaron "
                          "nombres de archivos destinos (convertidos) "
                          "distintos!")
+
+
+class ObtenerIdArchivoDeAudioDesdePathTests(FTSenderBaseTest):
+    """Testea metodo obtener_id_archivo_de_audio_desde_path() de
+    ConversorDeAudioService
+    """
+
+    def test_devuelve_id_con_path_correcto(self):
+        servicio = ConversorDeAudioService()
+        path = "audio_asterisk_predefinido/audio-predefinido-123{0}".format(
+            settings.TMPL_FTS_AUDIO_CONVERSOR_EXTENSION)
+
+        # -----
+
+        id_archivo = servicio.obtener_id_archivo_de_audio_desde_path(path)
+        self.assertEquals(id_archivo, 123)
+
+    def test_devuelve_none_con_filename_sin_numeros(self):
+        servicio = ConversorDeAudioService()
+
+        # NO TIENE NUMEROS
+        path = "audio_asterisk_predefinido/audio-predefinido-{0}".format(
+            settings.TMPL_FTS_AUDIO_CONVERSOR_EXTENSION)
+
+        # -----
+
+        id_archivo = servicio.obtener_id_archivo_de_audio_desde_path(path)
+        self.assertEquals(id_archivo, None)
+
+    def test_devuelve_none_con_filename_con_letras_no_numeros(self):
+        servicio = ConversorDeAudioService()
+
+        # 'abc' en vez de numero
+        path = "audio_asterisk_predefinido/audio-predefinido-abc{0}".format(
+            settings.TMPL_FTS_AUDIO_CONVERSOR_EXTENSION)
+
+        # -----
+
+        id_archivo = servicio.obtener_id_archivo_de_audio_desde_path(path)
+        self.assertEquals(id_archivo, None)
+
+    def test_devuelve_none_con_filename_sin_guion(self):
+        servicio = ConversorDeAudioService()
+
+        # FALTA '-'
+        path = "audio_asterisk_predefinido/audio-predefinido123{0}".format(
+            settings.TMPL_FTS_AUDIO_CONVERSOR_EXTENSION)
+
+        # -----
+
+        id_archivo = servicio.obtener_id_archivo_de_audio_desde_path(path)
+        self.assertEquals(id_archivo, None)
+
+    def test_devuelve_none_con_filename_invalido(self):
+        servicio = ConversorDeAudioService()
+
+        # NO TIENE NUMEROS
+        path = "audio_asterisk_predefinido/jajaja-jojojo-123{0}".format(
+            settings.TMPL_FTS_AUDIO_CONVERSOR_EXTENSION)
+
+        # -----
+
+        id_archivo = servicio.obtener_id_archivo_de_audio_desde_path(path)
+        self.assertEquals(id_archivo, None)
+
+    def test_devuelve_none_con_dirname_invalido(self):
+        servicio = ConversorDeAudioService()
+        path = "jajaja/audio-predefinido-123{0}".format(
+            settings.TMPL_FTS_AUDIO_CONVERSOR_EXTENSION)
+
+        # -----
+
+        id_archivo = servicio.obtener_id_archivo_de_audio_desde_path(path)
+        self.assertEquals(id_archivo, None)

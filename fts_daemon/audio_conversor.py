@@ -16,6 +16,7 @@ from fts_web.errors import FtsAudioConversionError
 from fts_web.utiles import crear_archivo_en_media_root
 import logging as _logging
 import uuid
+import re
 
 
 logger = _logging.getLogger(__name__)
@@ -39,6 +40,12 @@ class ConversorDeAudioService(object):
     1. {0} para el ID de ArchivoDeAudio
     2. {1} para el sufijo del nombre del archivo (ej: '.wav')
     """
+
+    REGEX_NOMBRE_AUDIO_ASTERISK_PREDEFINIDO = re.compile("^" +
+        DIR_AUDIO_PREDEFINIDO + os.path.sep +
+        TEMPLATE_NOMBRE_AUDIO_ASTERISK_PREDEFINIDO.format(
+            "(\\d+)", settings.TMPL_FTS_AUDIO_CONVERSOR_EXTENSION) +
+        "$")
 
     def _crear_directorios(self, directorio, mode=0755):
         """Crea directorio (recursivamente) si no existen. Es el equivalente
@@ -202,6 +209,24 @@ class ConversorDeAudioService(object):
             ConversorDeAudioService.DIR_AUDIO_PREDEFINIDO, filename)
         archivo_de_audio.save()
 
+    def obtener_id_archivo_de_audio_desde_path(self, file_path):
+        """Parsea el path del archivo de audio ya convertido, y
+        devuelve el ID del ArchivoDeAudio al que está asociado,
+        o devuelve None si el path NO correspode a una instancia
+        de ArchivoDeAudio.
+
+        Esta funcion es necesaria para saber si el archivo de
+        audio de una campaña correspodne a un ArchivoDeAudio o
+        fue un audio subido específicamente para la campaña.
+        """
+
+        regex = ConversorDeAudioService.REGEX_NOMBRE_AUDIO_ASTERISK_PREDEFINIDO
+        match_obj = regex.search(file_path)
+        if match_obj is None:
+            return None
+        archivo_id = match_obj.group(1)
+        return int(archivo_id)
+
 
 def convertir_audio_de_campana(campana):
     """Convierte archivo de audio de campaña,
@@ -264,7 +289,14 @@ def obtener_id_archivo_de_audio_desde_path(file_path):
     audio de una campaña correspodne a un ArchivoDeAudio o
     fue un audio subido específicamente para la campaña.
     """
-    pass
+    #
+    # Este metodo fue movido a ConversorDeAudioService()
+    # TODO: eliminar este metodo y refactorizar quienes lo usan
+    #       para que usen el servicio
+    #
+    service = ConversorDeAudioService()
+    return service.obtener_id_archivo_de_audio_desde_path(
+        file_path)
 
 
 def convertir_audio(input_file_abs, output_filename_abs):
