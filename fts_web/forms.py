@@ -181,9 +181,10 @@ class CampanaForm(forms.ModelForm):
 
 
 class AudioForm(forms.ModelForm):
-    archivo_audio = forms.ChoiceField(label="Archivo de Audio",
-                                      required=False,
-                                      widget=forms.Select())
+    queryset = ArchivoDeAudio.objects.all()
+    archivo_audio = forms.ModelChoiceField(label='Archivo de Audio',
+                                           required=False,
+                                           queryset=queryset)
 
     check_audio_original = forms.BooleanField(label="Especificar Audio",
                                               required=False,
@@ -191,13 +192,7 @@ class AudioForm(forms.ModelForm):
 
     def __init__(self, id_archivo_audio=None, *args, **kwargs):
         super(AudioForm, self).__init__(*args, **kwargs)
-
-        CHOICES = ((au.id, au.descripcion)
-                   for au in ArchivoDeAudio.objects.all())
-        CHOICES = (('', 'Seleccione'),) + tuple(CHOICES)
-        self.fields['archivo_audio'].widget.choices = CHOICES
         self.fields['archivo_audio'].initial = id_archivo_audio
-
         self.fields['audio_original'].widget.attrs['disabled'] = True
 
         self.helper = FormHelper()
