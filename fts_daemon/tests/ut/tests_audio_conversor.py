@@ -13,6 +13,7 @@ from fts_web.models import ArchivoDeAudio
 from fts_web.tests.utiles import FTSenderBaseTest
 import logging as _logging
 from mock import Mock
+from django.db.models.fields.files import FileField
 
 
 logger = _logging.getLogger(__name__)
@@ -37,8 +38,7 @@ class ConvertirAudioDeArchivoDeAudioGlobalesTests(FTSenderBaseTest):
 
         archivo_de_audio = ArchivoDeAudio(id=1,
                                           descripcion="Audio",
-                                          audio_original=original,
-                                          audio_asterisk="")
+                                          audio_original=original)
         archivo_de_audio.save = Mock()
 
         # -----
@@ -61,8 +61,7 @@ class ConvertirAudioDeArchivoDeAudioGlobalesTests(FTSenderBaseTest):
 
         archivo_de_audio = ArchivoDeAudio(id=1,
                                           descripcion="Audio",
-                                          audio_original=original1,
-                                          audio_asterisk="")
+                                          audio_original=original1)
         archivo_de_audio.save = Mock()
 
         self.assertFalse(archivo_de_audio.audio_asterisk)
@@ -128,6 +127,26 @@ class ObtenerIdArchivoDeAudioDesdePathTests(FTSenderBaseTest):
 
         id_archivo = servicio.obtener_id_archivo_de_audio_desde_path(path)
         self.assertEquals(id_archivo, 123)
+
+    def test_devuelve_none_con_path_vacio(self):
+        servicio = ConversorDeAudioService()
+
+        path = ""
+
+        # -----
+
+        id_archivo = servicio.obtener_id_archivo_de_audio_desde_path(path)
+        self.assertEquals(id_archivo, None)
+
+    def test_devuelve_none_con_filefield_vacio(self):
+        servicio = ConversorDeAudioService()
+
+        field = FileField()
+
+        # -----
+
+        with self.assertRaises(TypeError):
+            servicio.obtener_id_archivo_de_audio_desde_path(field)
 
     def test_devuelve_none_con_filename_sin_numeros(self):
         servicio = ConversorDeAudioService()
