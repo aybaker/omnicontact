@@ -8,12 +8,7 @@ import tempfile
 
 from django.test.utils import override_settings
 from fts_daemon.audio_conversor import ConversorDeAudioService
-from fts_daemon.poll_daemon.campana_tracker import CampanaTracker, \
-    NoMasContactosEnCampana
-from fts_daemon.poll_daemon.scheduler import (
-    RoundRobinTracker, BANEO_NO_MAS_CONTACTOS,
-    CantidadMaximaDeIteracionesSuperada)
-from fts_web.models import Campana, ArchivoDeAudio
+from fts_web.models import ArchivoDeAudio
 from fts_web.tests.utiles import FTSenderBaseTest
 import logging as _logging
 from mock import Mock
