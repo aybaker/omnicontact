@@ -784,8 +784,8 @@ class AudioCampanaCreateView(UpdateView):
                 self.object.save()
 
                 message = '<strong>Operación Errónea!</strong> \
-                    Hubo un inconveniente en la conversión del audio. Por favor \
-                    verifique que el archivo subido sea el indicado.'
+                    Hubo un inconveniente en la conversión del audio.\
+                    Por favor verifique que el archivo subido sea el indicado.'
                 messages.add_message(
                     self.request,
                     messages.ERROR,
@@ -797,7 +797,7 @@ class AudioCampanaCreateView(UpdateView):
                 self.object.save()
 
                 logger.warn("convertir_audio_de_campana(): produjo un error "
-                    "inesperado. Detalle: %s", e)
+                            "inesperado. Detalle: %s", e)
 
                 message = '<strong>Operación Errónea!</strong> \
                     Se produjo un error inesperado en la conversión del audio.'
@@ -807,6 +807,15 @@ class AudioCampanaCreateView(UpdateView):
                     message,
                 )
                 return self.form_invalid(form)
+        else:
+            message = '<strong>Operación Errónea!</strong> \
+                       Debe seleccionar un archivo de Audio para la campaña.'
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse(
