@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction, connection
 from django.db.models import Sum
 from django.utils.timezone import now
-from fts_daemon.audio_conversor import obtener_id_archivo_de_audio_desde_path
+from fts_daemon.audio_conversor import ConversorDeAudioService
 from fts_web.errors import (FtsRecicladoCampanaError,
     FTSOptimisticLockingError)
 from fts_web.utiles import upload_to, log_timing
@@ -824,7 +824,9 @@ class Campana(models.Model):
         ArchivoDeAudio y se haya subido un audio específico para la campana
         devolvera None.
         """
-        return obtener_id_archivo_de_audio_desde_path(self.audio_asterisk.name)
+        conversor_audio = ConversorDeAudioService()
+        return conversor_audio.obtener_id_archivo_de_audio_desde_path(
+            self.audio_asterisk.name)
 
     def puede_finalizarse(self):
         """Metodo que realiza los chequeos necesarios del modelo, y
