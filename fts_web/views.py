@@ -18,8 +18,9 @@ from django.views.generic import (
     RedirectView, TemplateView)
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config, create_queue_config_file
+
 from fts_daemon.audio_conversor import (convertir_audio_de_campana,
-    convertir_audio_de_archivo_de_audio_globales)
+    convertir_audio_de_archivo_de_audio_globales, ConversorDeAudioService)
 from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_daemon.tasks import esperar_y_depurar_campana_async
 from fts_web.errors import (FtsAudioConversionError,
@@ -2012,8 +2013,11 @@ class ArchivoAudioCreateView(CreateView):
         self.object = form.save()
 
         try:
-            convertir_audio_de_archivo_de_audio_globales(self.object)
+            conversor_audio = ConversorDeAudioService()
+            conversor_audio.convertir_audio_de_archivo_de_audio_globales(
+                self.object)
             return redirect(self.get_success_url())
+
         except FtsAudioConversionError:
             self.object.audio_original = None
             self.object.save()
@@ -2061,7 +2065,9 @@ class ArchivoAudioUpdateView(UpdateView):
 
         if self.request.FILES.get('audio_original'):
             try:
-                convertir_audio_de_archivo_de_audio_globales(self.object)
+                conversor_audio = ConversorDeAudioService()
+                conversor_audio.convertir_audio_de_archivo_de_audio_globales(
+                    self.object)
                 return redirect(self.get_success_url())
             except FtsAudioConversionError:
                 self.object.audio_original = None
@@ -2081,7 +2087,7 @@ class ArchivoAudioUpdateView(UpdateView):
                 self.object.save()
 
                 logger.warn("convertir_audio_de_archivo_de_audio_globales(): "
-                    "produjo un error inesperado. Detalle: %s", e)
+                            "produjo un error inesperado. Detalle: %s", e)
 
                 message = '<strong>Operación Errónea!</strong> \
                     Se produjo un error inesperado en la conversión del audio.'
