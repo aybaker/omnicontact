@@ -13,9 +13,16 @@ else
 	echo "SIN STATIC MAP"
 fi
 
+if [ -z "$FTS_SIMULADOR_DAEMON" ] ; then
+	EXTRA_ENV=""
+else
+	EXTRA_ENV="--env FTS_SIMULADOR_DAEMON=1"
+fi
+
 uwsgi \
     --module=fts_web.wsgi:application \
     --env DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-fts_web.settings} \
+    $EXTRA_ENV \
     --master \
     --processes=${UWSGI_PROCESSES:-5} --enable-threads \
     --home=${VIRTUAL_ENV} \
