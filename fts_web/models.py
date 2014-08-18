@@ -6,8 +6,6 @@ Modelos de la aplicación
 
 from __future__ import unicode_literals
 
-from collections import defaultdict
-import csv
 import datetime
 import logging
 import os
@@ -19,11 +17,8 @@ from django.db.models import Sum
 from django.utils.timezone import now
 from fts_daemon.audio_conversor import obtener_id_archivo_de_audio_desde_path
 from fts_web.errors import (FtsRecicladoCampanaError,
-    FtsRecicladoBaseDatosContactoError, FtsDepuraBaseDatoContactoError,
     FTSOptimisticLockingError)
-from fts_web.utiles import crear_archivo_en_media_root, upload_to, log_timing
-import pygal
-from pygal.style import Style
+from fts_web.utiles import upload_to, log_timing
 
 
 logger = logging.getLogger(__name__)
@@ -742,31 +737,6 @@ class Campana(models.Model):
         (TIPO_RECICLADO_LLAMADA_ERRONEA, 'LLAMADA ERRONEA'),
     )
 
-    ESTILO_VERDE_ROJO_NARANJA = Style(
-        background='transparent',
-        plot_background='transparent',
-        foreground='#555',
-        foreground_light='#555',
-        foreground_dark='#555',
-        opacity='1',
-        opacity_hover='.6',
-        transition='400ms ease-in',
-        colors=('#5cb85c', '#d9534f', '#f0ad4e')
-    )
-
-    ESTILO_MULTICOLOR = Style(
-        background='transparent',
-        plot_background='transparent',
-        foreground='#555',
-        foreground_light='#555',
-        foreground_dark='#555',
-        opacity='1',
-        opacity_hover='.6',
-        transition='400ms ease-in',
-        colors=('#428bca', '#5cb85c', '#5bc0de', '#f0ad4e', '#d9534f',
-            '#a95cb8', '#5cb8b5', '#caca43', '#96ac43', '#ca43ca')
-    )
-
     ESTADO_EN_DEFINICION = 1
     """La campaña esta siendo definida en el wizard"""
 
@@ -1044,119 +1014,6 @@ class Campana(models.Model):
             return True
         return False
 
-    def obtener_estadisticas_render_graficos_supervision(self):
-        estadisticas = self.calcular_estadisticas(
-            AgregacionDeEventoDeContacto.TIPO_AGREGACION_SUPERVISION)
-
-        if estadisticas:
-            # Torta: porcentajes de opciones selecionadas.
-            opcion_valida_x_porcentaje = estadisticas[
-                'opcion_valida_x_porcentaje']
-            opcion_invalida_x_porcentaje = estadisticas[
-                'opcion_invalida_x_porcentaje']
-
-            no_data_text = "No se han seleccionado opciones"
-            torta_opcion_x_porcentaje = pygal.Pie(  # @UndefinedVariable
-                style=Campana.ESTILO_MULTICOLOR,
-                legend_at_bottom=True,
-                no_data_text=no_data_text,
-                no_data_font_size=32,
-                legend_font_size=25,
-                truncate_legend=10,
-                tooltip_font_size=30,
-            )
-            torta_opcion_x_porcentaje.title = 'Porcentajes de opciones.'
-
-            opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
-                for op in self.opciones.all()])
-            for opcion, porcentaje in opcion_valida_x_porcentaje.items():
-                torta_opcion_x_porcentaje.add(opciones_dict[opcion],
-                    porcentaje)
-
-            porcentaje_opciones_invalidas = 0
-            for porcentaje in opcion_invalida_x_porcentaje.values():
-                porcentaje_opciones_invalidas += porcentaje
-            if porcentaje_opciones_invalidas:
-                torta_opcion_x_porcentaje.add('Inválidas',
-                    porcentaje_opciones_invalidas)
-
-            return {
-                    'estadisticas': estadisticas,
-                    'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
-            }
-        else:
-            logger.info("Campana %s NO obtuvo estadísticas.", self.id)
-
-    def obtener_estadisticas_render_graficos_reportes(self):
-        assert self.estado == Campana.ESTADO_DEPURADA, \
-            "Solo se generan reportes de campanas depuradas"
-        estadisticas = self.calcular_estadisticas(
-            AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE)
-
-        if estadisticas:
-            logger.info("Generando grafico para campana %s", self.id)
-
-            #Torta: porcentajes de contestados, no contestados y no llamados.
-            torta_general = pygal.Pie(  # @UndefinedVariable
-                style=Campana.ESTILO_VERDE_ROJO_NARANJA)
-            #torta_general.title = 'Porcentajes Generales de {0} contactos.'.\
-            #    format(estadisticas['total_contactos'])
-            torta_general.title = "Resultado de llamadas"
-            torta_general.add('Atendidas', estadisticas[
-                'porcentaje_atendidos'])
-
-            torta_general.add('No Atendidas', estadisticas[
-                'porcentaje_no_atendidos'])
-            torta_general.add('Sin Llamar', estadisticas[
-                'porcentaje_no_llamados'])
-
-            # Torta: porcentajes de opciones selecionadas.
-            no_data_text = "No se han seleccionado opciones"
-            dic_opcion_x_porcentaje = estadisticas['opcion_x_porcentaje']
-            torta_opcion_x_porcentaje = pygal.Pie(  # @UndefinedVariable
-                style=Campana.ESTILO_MULTICOLOR,
-                legend_at_bottom=True,
-                no_data_text=no_data_text,
-                no_data_font_size=32
-            )
-            torta_opcion_x_porcentaje.title = 'Opciones seleccionadas'
-
-            opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
-                for op in self.opciones.all()])
-
-            porcentaje_invalidas = 0
-            for opcion, porcentaje in dic_opcion_x_porcentaje.items():
-                try:
-                    torta_opcion_x_porcentaje.add(opciones_dict[opcion],
-                        porcentaje)
-                except KeyError:
-                    porcentaje_invalidas += porcentaje
-
-            torta_opcion_x_porcentaje.add(
-                '#Inválidas', porcentaje_invalidas)
-
-            #Barra: Total de llamados atendidos en cada intento.
-            total_atendidos_intentos = estadisticas['total_atendidos_intentos']
-            intentos = [total_atendidos_intentos[intentos] for intentos, _ in\
-                total_atendidos_intentos.items()]
-            barra_atendidos_intentos = pygal.Bar(  # @UndefinedVariable
-                show_legend=False,
-                style=Campana.ESTILO_MULTICOLOR)
-            barra_atendidos_intentos.title = 'Cantidad de llamadas atendidas en\
-                cada intento.'
-            barra_atendidos_intentos.x_labels = map(str, range(1,
-                len(total_atendidos_intentos) + 1))
-            barra_atendidos_intentos.add('Cantidad', intentos)
-
-            return {
-                'estadisticas': estadisticas,
-                'torta_general': torta_general,
-                'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
-                'barra_atendidos_intentos': barra_atendidos_intentos,
-            }
-        else:
-            logger.info("Campana %s NO obtuvo estadísticas.", self.id)
-
     def obtener_detalle_opciones_seleccionadas(self):
         """
         Este método se encarga de invocar al método de EDC que filtra los
@@ -1194,156 +1051,6 @@ class Campana(models.Model):
         assert self.estado == Campana.ESTADO_FINALIZADA
         AgregacionDeEventoDeContacto.objects.\
             _plpython_recalcular_aedc_completamente(self)
-
-    def calcular_estadisticas(self, tipo_agregacion):
-        """
-        Este método devuelve las estadísticas de
-        la campaña actual.
-        """
-
-        #Una campana que aún no se activo, no tendria porque devolver
-        #estadísticas.
-        assert self.estado in (Campana.ESTADO_ACTIVA, Campana.ESTADO_PAUSADA,
-            Campana.ESTADO_DEPURADA)
-
-        dic_totales = AgregacionDeEventoDeContacto.objects.procesa_agregacion(
-            self.pk, self.cantidad_intentos, tipo_agregacion)
-
-        total_contactos = dic_totales['total_contactos']
-        if not total_contactos > 0:
-            return None
-
-        #Generales
-        total_atentidos = dic_totales['total_atentidos']
-        porcentaje_atendidos = (100.0 * float(total_atentidos) /
-            float(total_contactos))
-
-        total_no_atendidos = dic_totales['total_no_atendidos']
-        porcentaje_no_atendidos = (100.0 * float(total_no_atendidos) /
-            float(total_contactos))
-
-        total_no_llamados = dic_totales['total_no_llamados']
-        porcentaje_no_llamados = (100.0 * float(total_no_llamados) /
-            float(total_contactos))
-
-        # Atendidos en cada intento.
-        total_atendidos_intentos = dic_totales['total_atendidos_intentos']
-
-        # Cantidad por opción.
-        opcion_x_cantidad = defaultdict(lambda: 0)
-        opcion_x_porcentaje = defaultdict(lambda: 0)
-        opcion_invalida_x_cantidad = defaultdict(lambda: 0)
-        opcion_invalida_x_porcentaje = defaultdict(lambda: 0)
-        opcion_valida_x_cantidad = defaultdict(lambda: 0)
-        opcion_valida_x_porcentaje = defaultdict(lambda: 0)
-        if dic_totales['total_opciones'] > 0:
-            opciones_campana = [opcion.digito for opcion in\
-                self.opciones.all()]
-            for opcion in range(10):
-                cantidad_opcion = dic_totales['total_opcion_{0}'.format(
-                    opcion)]
-                opcion_x_cantidad[opcion] = cantidad_opcion
-                opcion_x_porcentaje[opcion] = (100.0 * float(cantidad_opcion) /
-                    float(dic_totales['total_opciones']))
-                if not opcion in opciones_campana:
-                    opcion_invalida_x_cantidad[opcion] = cantidad_opcion
-                    opcion_invalida_x_porcentaje[opcion] = (100.0 *
-                        float(cantidad_opcion) /
-                        float(dic_totales['total_opciones']))
-                else:
-                    opcion_valida_x_cantidad[opcion] = cantidad_opcion
-                    opcion_valida_x_porcentaje[opcion] = (100.0 *
-                        float(cantidad_opcion) /
-                        float(dic_totales['total_opciones']))
-
-        dic_estadisticas = {
-            # Estadísticas Generales.
-            'total_contactos': total_contactos,
-
-            'total_atentidos': total_atentidos,
-            'porcentaje_atendidos': porcentaje_atendidos,
-            'total_no_atentidos': total_no_atendidos,
-            'porcentaje_no_atendidos': porcentaje_no_atendidos,
-            'total_no_llamados': total_no_llamados,
-            'porcentaje_no_llamados': porcentaje_no_llamados,
-            'porcentaje_avance': dic_totales['porcentaje_avance'],
-            'total_atendidos_intentos': total_atendidos_intentos,
-
-            #Estadisticas de las llamadas Contestadas.
-            'opcion_x_cantidad': dict(opcion_x_cantidad),
-            'opcion_x_porcentaje': dict(opcion_x_porcentaje),
-            'opcion_invalida_x_cantidad': dict(opcion_invalida_x_cantidad),
-            'opcion_invalida_x_porcentaje': dict(opcion_invalida_x_porcentaje),
-            'opcion_valida_x_cantidad': dict(opcion_valida_x_cantidad),
-            'opcion_valida_x_porcentaje': dict(opcion_valida_x_porcentaje),
-        }
-
-        return dic_estadisticas
-
-    def crea_reporte_csv(self):
-        from fts_daemon.models import EventoDeContacto
-
-        assert self.estado == Campana.ESTADO_FINALIZADA
-
-        dirname = 'reporte_campana'
-        filename = "{0}-reporte.csv".format(self.id)
-        file_path = os.path.join(settings.MEDIA_ROOT, dirname, filename)
-
-        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
-
-        if os.path.exists(file_path):
-            # Esto no debería suceder.
-            logger.warn("crea_reporte_csv(): Ya existe archivo CSV de "
-                         "reporte para la campana %s. Archivo: %s. "
-                         "El archivo sera sobreescrito", self.pk, file_path)
-
-        dirname, filename = crear_archivo_en_media_root(dirname,
-            "{0}-reporte".format(self.id), ".csv")
-
-        values = EventoDeContacto.objects_estadisticas\
-            .obtener_opciones_por_contacto(self.pk)
-
-        with open(file_path, 'wb') as csvfile:
-            # Creamos encabezado
-            encabezado = ["nro_telefono"]
-            opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
-                for op in self.opciones.all()])
-            for opcion in range(10):
-                try:
-                    encabezado.append(opciones_dict[opcion])
-                except KeyError:
-                    encabezado.append("#{0} - Opcion invalida".format(opcion))
-
-            # Creamos csvwriter y guardamos encabezado y luego datos
-            csvwiter = csv.writer(csvfile)
-            csvwiter.writerow(encabezado)
-            for telefono, lista_eventos in values:
-                lista_opciones = [telefono]
-                for opcion in range(10):
-                    evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
-                    if evento in lista_eventos:
-                        lista_opciones.append(1)
-                    else:
-                        lista_opciones.append(None)
-                csvwiter.writerow(lista_opciones)
-        return file_url
-
-    def obtener_url_reporte_csv_descargar(self):
-        assert self.estado == Campana.ESTADO_DEPURADA
-
-        dirname = 'reporte_campana'
-        filename = "{0}-reporte.csv".format(self.id)
-        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
-                                         filename)
-        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname,
-                                        filename)
-        if os.path.exists(file_path):
-            return file_url
-
-        # Esto no debería suceder.
-        logger.error("obtener_url_reporte_csv_descargar(): NO existe archivo"
-                     " CSV de descarga para la campana %s", self.pk)
-        assert os.path.exists(file_path)
 
     def valida_grupo_atencion(self):
         """
@@ -1515,13 +1222,12 @@ class Campana(models.Model):
             if not self.cantidad_canales < cantidad_contactos:
                 raise ValidationError({
                         'cantidad_canales': ["La cantidad de canales debe ser\
-                            menor a la cantidad de contactos de la base de datos."]
+                            menor a la cantidad de contactos de la base de\
+                            datos."]
                     })
 
     def __unicode__(self):
         return self.nombre
-
-
 
 
 #==============================================================================
