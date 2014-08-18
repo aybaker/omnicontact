@@ -853,7 +853,7 @@ class Campana(models.Model):
         ArchivoDeAudio y se haya subido un audio específico para la campana
         devolvera None.
         """
-        return obtener_id_archivo_de_audio_desde_path(self.audio_asterisk)
+        return obtener_id_archivo_de_audio_desde_path(self.audio_asterisk.name)
 
     def puede_finalizarse(self):
         """Metodo que realiza los chequeos necesarios del modelo, y
