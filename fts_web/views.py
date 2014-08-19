@@ -20,7 +20,7 @@ from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config, create_queue_config_file
 
 from fts_daemon.audio_conversor import (convertir_audio_de_campana,
-    convertir_audio_de_archivo_de_audio_globales, ConversorDeAudioService)
+                                        ConversorDeAudioService)
 from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_daemon.tasks import esperar_y_depurar_campana_async
 from fts_web.errors import (FtsAudioConversionError,
