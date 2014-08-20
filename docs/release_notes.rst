@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Sprint 8 - 4 de agosto de 2014
+Sprint 9 - 20 de agosto de 2014
 ------------------------------
 
 
@@ -12,7 +12,7 @@ Instrucciones de deploy
 .. code::
 
     $ ssh deployer@192.168.99.224
-    $ ./deploy.sh sprint8-fixes <INVENTARIO>
+    $ ./deploy.sh sprint9-fixes <INVENTARIO>
 
 Para crear usuarios, es necesario loguearse en el servidor con el usuario `ftsender`
 y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
@@ -26,21 +26,16 @@ y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
 Nueva funcionalidad
 ...................
 
-* FTS-268 (y otras)i - Derivación externa de llamadas
-* FTS-279 - Crea comando para crear usuario para sistema web
+* FTS-285 FTS-286 - Creacion de templates de campañas
+* FTS-287 FTS-289 - Creación de campañas desde templates de campaña
+* FTS-288 - Listado y borrado de templates de campañas
+* FTS-290 - Daemon: ignorar templates al buscar campañas a ejecutar
+* FTS-291 FTS-292 - Creación de audios predefinidos
+* FTS-292 - ABM y listado de audios predefinidos
+* FTS-293 - Update de campañas y templates de campañas: permite seleccion
+  de audios predefinidos
+* FTS-294 - Conversión de formato de archivos de audios para audios predefinidos
 
-Deploy
-......
-
-* FTS-274 - Hacer configurables limites de originates y otras settings del sistema
-* FTS-267 - Implementa Supervisor para workers Celery
-* FTS-199 - Separar distintos daemons
-
-Bugs solucionados
-.................
-
-* FTS-207 - Reporte: unificar opciones invalidas en pie chart
-* FTS-42 - Separar frameworks (bootstrap) de las customizaciones
 
 Known issues
 ------------

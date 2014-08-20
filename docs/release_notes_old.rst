@@ -106,3 +106,35 @@ Bugs solucionados
 * FTS-261 - FIX: script de inicio no hace reload desde scripts de deploy
 * FTS-262 - FIX: script de deploy no deploya version más reciente
 
+
+
+Sprint 8 - 4 de agosto de 2014
+------------------------------
+
+Instrucciones de deploy
+.......................
+
+.. code::
+
+    $ ssh deployer@192.168.99.224
+    $ ./deploy.sh sprint8-fixes <INVENTARIO>
+
+Nueva funcionalidad
+...................
+
+* FTS-268 (y otras) - Derivación externa de llamadas
+* FTS-279 - Crea comando para crear usuario para sistema web
+
+Deploy
+......
+
+* FTS-274 - Hacer configurables limites de originates y otras settings del sistema
+* FTS-267 - Implementa Supervisor para workers Celery
+* FTS-199 - Separar distintos daemons
+
+Bugs solucionados
+.................
+
+* FTS-207 - Reporte: unificar opciones invalidas en pie chart
+* FTS-42 - Separar frameworks (bootstrap) de las customizaciones
+
