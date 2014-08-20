@@ -23,13 +23,17 @@ y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
     $ server> /home/ftsender/deploy/bin/manage.sh create_ftsender_user
 
 
-Nueva funcionalidad
-...................
+Nueva funcionalidad: Templates de Campañas
+..........................................
 
 * FTS-285 FTS-286 - Creacion de templates de campañas
 * FTS-287 FTS-289 - Creación de campañas desde templates de campaña
 * FTS-288 - Listado y borrado de templates de campañas
 * FTS-290 - Daemon: ignorar templates al buscar campañas a ejecutar
+
+Nueva funcionalidad: Audios predefinidos
+........................................
+
 * FTS-291 FTS-292 - Creación de audios predefinidos
 * FTS-292 - ABM y listado de audios predefinidos
 * FTS-293 - Update de campañas y templates de campañas: permite seleccion
