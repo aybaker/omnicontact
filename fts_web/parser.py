@@ -181,13 +181,12 @@ class ParserCsv(object):
         self.vacias = 0
         self.erroneas = 0
 
-    def read_file(self, columna_datos, file_obj):
+    def read_file(self, columna_con_telefono, file_obj):
         """
         Lee un archivo CSV y devuelve contenidos de la columna
         tomada por parámetro.
 
         Parametros:
-        - columna_datos: Entero que indica la columna con los teléfonos.
         - file_obj: Objeto archivo de la instancia de BaseDatosContactos.
         """
         # Reseteamos estadisticas
@@ -196,24 +195,27 @@ class ParserCsv(object):
 
         workbook = csv.reader(file_obj, self._get_dialect(file_obj))
 
-        value_list = []
+        cantidad_importados = 0
         for i, curr_row in enumerate(workbook):
-            if len(value_list) > settings.FTS_MAX_CANTIDAD_CONTACTOS:
+            if i > settings.FTS_MAX_CANTIDAD_CONTACTOS:
                 raise FtsParserMaxRowError("El archivo CSV "
-                "posee mas registros de los permitidos.")
-
-            if i == 0 and not validate_number(curr_row[columna_datos]):
+                                           "posee mas registros de los "
+                                           "permitidos.")
+            if i == 0 and not validate_number(curr_row[columna_con_telefono]):
                 continue
 
             if not len(curr_row) == 0:
-                value = sanitize_number(curr_row[columna_datos].strip())
+                value = sanitize_number(curr_row[columna_con_telefono].strip())
+
                 if not len(value) == 0:
                     if validate_number(value):
-                        value_list.append(value)
+                        cantidad_importados += 1
+                        yield curr_row
                     else:
                         logger.info("Ignorando número %s, no valida "
-                            "como número telefónico.", value)
+                                    "como número telefónico.", value)
                         self.erroneas += 1
+                        continue
                 else:
                     logger.info("Ignorando valor vacio en fila %s", i)
                     self.vacias += 1
@@ -223,10 +225,8 @@ class ParserCsv(object):
                 self.erroneas += 1
 
         logger.info("%s contactos importados - %s valores ignoradas"
-            " - %s celdas erroneas", len(value_list), self.vacias,
-            self.erroneas)
-
-        return value_list
+                    " - %s celdas erroneas", cantidad_importados, self.vacias,
+                    self.erroneas)
 
     def get_file_structure(self, file_obj):
         """
