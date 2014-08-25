@@ -431,9 +431,7 @@ class ContactoManager(models.Manager):
 class Contacto(models.Model):
     objects = ContactoManager()
 
-    datos = models.TextField(
-        blank=True, null=True,
-    )
+    datos = models.TextField()
     bd_contacto = models.ForeignKey(
         'BaseDatosContacto',
         related_name='contactos'
