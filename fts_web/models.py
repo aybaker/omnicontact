@@ -431,9 +431,6 @@ class ContactoManager(models.Manager):
 class Contacto(models.Model):
     objects = ContactoManager()
 
-    telefono = models.CharField(
-        max_length=64,
-    )
     datos = models.TextField(
         blank=True, null=True,
     )
