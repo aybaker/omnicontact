@@ -260,6 +260,8 @@ class ParserCsv(object):
 
             return dialect
         except csv.Error:
+            file_obj.seek(0, 0)
+
             workbook = csv.reader(file_obj)
             single_column = []
 
