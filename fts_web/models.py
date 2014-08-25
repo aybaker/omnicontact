@@ -250,8 +250,9 @@ class MetadataBaseDatosContacto(object):
     @columna_con_telefono.setter
     def columna_con_telefono(self, columna):
         self._metadata['col_telefono'] = int(columna)
+        self._save()
 
-    def save(self):
+    def _save(self):
         """Guardar los metadatos en la instancia de BaseDatosContacto"""
         self.bd.metadata = json.dumps(self._metadata)
 
