@@ -245,8 +245,7 @@ class MetadataBaseDatosContacto(object):
         try:
             return self._metadata['col_telefono']
         except KeyError:
-            self._metadata['col_telefono'] = None
-            return None
+            raise(ValueError("No se ha seteado 'columna_con_telefono'"))
 
     @columna_con_telefono.setter
     def columna_con_telefono(self, columna):
