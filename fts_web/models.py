@@ -19,6 +19,7 @@ from fts_daemon.audio_conversor import ConversorDeAudioService
 from fts_web.errors import (FtsRecicladoCampanaError,
     FTSOptimisticLockingError)
 from fts_web.utiles import upload_to, log_timing
+import json
 
 
 logger = logging.getLogger(__name__)
@@ -228,6 +229,33 @@ class BaseDatosContactoManager(models.Manager):
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
 
+class MetadataBaseDatosContacto(object):
+    """Encapsula acceso a metadatos de BaseDatosContacto"""
+
+    def __init__(self, bd):
+        self.bd = bd
+        if bd.metadata == '' or bd.metadata is None:
+            self._metadata = {}
+        else:
+            self._metadata = json.loads(bd.metadata)
+
+    @property
+    def columna_con_telefono(self):
+        try:
+            return self._metadata['col_telefono']
+        except KeyError:
+            self._metadata['col_telefono'] = None
+            return None
+
+    @columna_con_telefono.setter
+    def columna_con_telefono(self, columna):
+        self._metadata['col_telefono'] = int(columna)
+
+    def save(self):
+        """Guardar los metadatos en la instancia de BaseDatosContacto"""
+        self.bd.metadata = json.dumps(self._metadata)
+
+
 class BaseDatosContacto(models.Model):
     objects = BaseDatosContactoManager()
 
@@ -270,6 +298,9 @@ class BaseDatosContacto(models.Model):
     def __unicode__(self):
         return "{0}: ({1} contactos)".format(self.nombre,
                                              self.cantidad_contactos)
+
+    def get_metadata(self):
+        return MetadataBaseDatosContacto(self)
 
     def importa_contactos(self, parser_archivo):
         """
