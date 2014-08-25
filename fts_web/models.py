@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 import datetime
 import logging
 import os
+import json
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -313,18 +314,18 @@ class BaseDatosContacto(models.Model):
         tipo de archivo subido.
 
         """
+        columna_con_telefono = self.get_metadata.columna_con_telefono
+        generator = parser_archivo.read_file(columna_con_telefono,
+                                             self.archivo_importacion.file)
+        cantidad_contactos = 0
+        for lista_dato in generator:
+            cantidad_contactos += 1
+            Contacto.objects.create(
+                datos=json.dumps(lista_dato),
+                bd_contacto=self,
+            )
 
-        lista_telefonos = parser_archivo.read_file(self.columna_datos,
-            self.archivo_importacion.file)
-        if lista_telefonos:
-            for telefono in lista_telefonos:
-                Contacto.objects.create(
-                    telefono=telefono,
-                    bd_contacto=self,
-                )
-            self.cantidad_contactos = len(lista_telefonos)
-            return True
-        return False
+        self.cantidad_contactos = cantidad_contactos
 
     def genera_contactos(self, lista_telefonos):
         """
