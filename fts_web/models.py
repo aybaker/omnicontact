@@ -255,6 +255,7 @@ class BaseDatosContacto(models.Model):
     nombre_archivo_importacion = models.CharField(
         max_length=256,
     )
+    metadata = models.TextField()
     sin_definir = models.BooleanField(
         default=True,
     )
