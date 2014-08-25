@@ -248,10 +248,6 @@ class BaseDatosContacto(models.Model):
     fecha_alta = models.DateTimeField(
         auto_now_add=True,
     )
-    columnas = models.CharField(
-        max_length=256,
-        blank=True, null=True,
-    )
     archivo_importacion = models.FileField(
         upload_to=upload_to_archivos_importacion,
         max_length=100,
@@ -261,9 +257,6 @@ class BaseDatosContacto(models.Model):
     )
     sin_definir = models.BooleanField(
         default=True,
-    )
-    columna_datos = models.PositiveIntegerField(
-        blank=True, null=True,
     )
     cantidad_contactos = models.PositiveIntegerField(
         default=0
