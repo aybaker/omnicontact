@@ -10,6 +10,7 @@ import logging
 
 from fts_errors import FtsArchivoImportacionInvalidoError
 from fts_web.models import BaseDatosContacto
+from fts_web.parser import ParserCsv
 
 
 logger = logging.getLogger(__name__)
@@ -41,14 +42,16 @@ class CreacionBaseDatosService(object):
 
         base_datos_contacto.save()
 
-    def guardar_metadata(self, base_datos_contacto, metadata):
+    def guarda_metadata(self, base_datos_contacto, dic_metadata):
         """
         Segundo paso de la creación de una BaseDatosContacto.
 
         Este método se encarga de actualizar el objeto BaseDatoContacto con
         la metadata.
         """
-        pass
+        metadata = base_datos_contacto.get_metadata()
+        metadata.columna_con_telefono = dic_metadata['columna_con_telefono']
+        base_datos_contacto.save()
 
     def importa_contactos(self, base_datos_contacto):
         """
@@ -58,7 +61,23 @@ class CreacionBaseDatosService(object):
         del archivo de importación especificado para la base de datos de
         contactos.
         """
-        pass
+        columna_con_telefono = \
+            base_datos_contacto.get_metadata.columna_con_telefono
+
+        parser = ParserCsv()
+        generador_contactos = parser.read_file(
+            columna_con_telefono, base_datos_contacto.archivo_importacion.file)
+
+        cantidad_contactos = 0
+        for lista_dato in generador_contactos:
+            cantidad_contactos += 1
+            Contacto.objects.create(
+                datos=json.dumps(lista_dato),
+                bd_contacto=base_datos_contacto,
+            )
+
+        base_datos_contacto.cantidad_contactos = cantidad_contactos
+        base_datos_contacto.save()
 
     def define_base_dato_contacto(self, base_datos_contacto):
         """
@@ -67,3 +86,4 @@ class CreacionBaseDatosService(object):
         Este método se encarga de marcar como definida y lista para su uso a
         la BaseDatosContacto.
         """
+        base_datos_contacto.define()
