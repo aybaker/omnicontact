@@ -6,10 +6,12 @@ Servicio encargado de validar y crear las bases de datos.
 
 from __future__ import unicode_literals
 
+import os
+import json
 import logging
 
-from fts_errors import FtsArchivoImportacionInvalidoError
-from fts_web.models import BaseDatosContacto
+from fts_web.errors import FtsArchivoImportacionInvalidoError
+from fts_web.models import BaseDatosContacto, Contacto
 from fts_web.parser import ParserCsv
 
 
@@ -61,8 +63,8 @@ class CreacionBaseDatosService(object):
         del archivo de importación especificado para la base de datos de
         contactos.
         """
-        columna_con_telefono = \
-            base_datos_contacto.get_metadata.columna_con_telefono
+        base_datos_metadata = base_datos_contacto.get_metadata()
+        columna_con_telefono = base_datos_metadata.columna_con_telefono
 
         parser = ParserCsv()
         generador_contactos = parser.read_file(
