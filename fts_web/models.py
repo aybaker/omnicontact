@@ -303,30 +303,6 @@ class BaseDatosContacto(models.Model):
     def get_metadata(self):
         return MetadataBaseDatosContacto(self)
 
-    def importa_contactos(self, parser_archivo):
-        """
-        Este metodo se encarga de realizar la importación de los
-        teléfonos del archivo guardado. Por cada teléfono del
-        archivo crea un objeto Contacto con el teléfono y lo
-        relaciona la instancia actual de BaseDatosContacto.
-        Parametros:
-        - parser_archivo: Instacia del parser adecuado según el
-        tipo de archivo subido.
-
-        """
-        columna_con_telefono = self.get_metadata.columna_con_telefono
-        generator = parser_archivo.read_file(columna_con_telefono,
-                                             self.archivo_importacion.file)
-        cantidad_contactos = 0
-        for lista_dato in generator:
-            cantidad_contactos += 1
-            Contacto.objects.create(
-                datos=json.dumps(lista_dato),
-                bd_contacto=self,
-            )
-
-        self.cantidad_contactos = cantidad_contactos
-
     def genera_contactos(self, lista_telefonos):
         """
         Este metodo se encarga de realizar la generación de contactos
