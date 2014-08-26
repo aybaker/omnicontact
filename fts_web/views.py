@@ -18,15 +18,15 @@ from django.views.generic import (
     RedirectView, TemplateView)
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config, create_queue_config_file
-
 from fts_daemon.audio_conversor import (convertir_audio_de_campana,
                                         ConversorDeAudioService)
 from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_daemon.tasks import esperar_y_depurar_campana_async
 from fts_web.errors import (FtsAudioConversionError,
-    FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
-    FtsParserOpenFileError, FtsRecicladoCampanaError,
-    FtsDepuraBaseDatoContactoError)
+                            FtsParserCsvDelimiterError, FtsParserMinRowError,
+                            FtsParserMaxRowError, FtsParserOpenFileError,
+                            FtsRecicladoCampanaError,
+                            FtsDepuraBaseDatoContactoError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
@@ -43,6 +43,7 @@ from fts_web.reciclador_base_datos_contacto.reciclador import (
 from fts_web import version
 from fts_web.services.estadisticas_campana import EstadisticasCampanaService
 from fts_web.services.reporte_campana import ReporteCampanaService
+from fts_web.services.base_de_datos_contacto import CreacionBaseDatosService
 
 
 logger = logging_.getLogger(__name__)
@@ -464,7 +465,10 @@ class BaseDatosContactoCreateView(CreateView):
 
         self.object = form.save(commit=False)
         self.object.nombre_archivo_importacion = nombre_archivo_importacion
-        self.object.save()
+
+        creacion_base_datos = CreacionBaseDatosService()
+        creacion_base_datos.genera_base_dato_contacto(self.object)
+
         return redirect(self.get_success_url())
 
     def get_success_url(self):
