@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 import logging
 
+from fts_errors import FtsArchivoImportacionInvalidoError
 from fts_web.models import BaseDatosContacto
 
 
@@ -29,13 +30,16 @@ class CreacionBaseDatosService(object):
             Si el archivo es válido, hace el save del objeto y si no los es
             lanza la excepción correspondiente.
         """
-        #     csv_extensions = ['.csv']
-        #     extension = os.path.splitext(filename)[1].lower()
-        #     if extension in csv_extensions:
-        #         return ParserCsv()
-        #     else:
-        #         logger.warn("La extensión %s no es CSV. ", extension)
-        pass
+        csv_extensions = ['.csv']
+
+        filename = base_datos_contacto.nombre_archivo_importacion
+        extension = os.path.splitext(filename)[1].lower()
+        if extension not in csv_extensions:
+            logger.warn("La extensión %s no es CSV. ", extension)
+            raise(FtsArchivoImportacionInvalidoError("El archivo especificado "
+                  "para realizar la importación de contactos no es válido"))
+
+        base_datos_contacto.save()
 
     def guardar_metadata(self, base_datos_contacto, metadata):
         """
