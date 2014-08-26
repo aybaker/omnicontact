@@ -500,12 +500,12 @@ class DefineBaseDatosContactoView(UpdateView):
             BaseDatosContacto, pk=self.kwargs['pk']
         )
 
-        parser_archivo = ParserCsv()
-
+        parser = ParserCsv()
         estructura_archivo = None
         try:
-            estructura_archivo = parser_archivo.get_file_structure(
+            estructura_archivo = parser.get_file_structure(
                 base_datos_contacto.archivo_importacion.file)
+
         except FtsParserCsvDelimiterError:
             message = '<strong>Operación Errónea!</strong> \
             No se pudo determinar el delimitador a ser utilizado \
@@ -547,29 +547,20 @@ class DefineBaseDatosContactoView(UpdateView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
 
+        dic_metadata = {}
         if 'telefono' in self.request.POST:
-            self.object.columna_datos = int(self.request.POST['telefono'])
-            self.object.save()
+            dic_metadata['columna_con_telefono'] = int(self.request.POST[
+                                                       'telefono'])
 
-            parser_archivo = ParserCsv()
+            creacion_base_datos = CreacionBaseDatosService()
+            creacion_base_datos.guarda_metadata(self.object, dic_metadata)
+
             try:
-                self.object.importa_contactos(parser_archivo)
-                self.object.define()
-
-                message = '<strong>Operación Exitosa!</strong>\
-                Se llevó a cabo con éxito la creación de\
-                la Base de Datos de Contactos.'
-
-                messages.add_message(
-                    self.request,
-                    messages.SUCCESS,
-                    message,
-                )
-                return redirect(self.get_success_url())
+                creacion_base_datos.importa_contactos(self.object)
             except FtsParserMaxRowError:
                 message = '<strong>Operación Errónea!</strong> \
-                El archivo que seleccionó posee mas registros de los permitidos\
-                para ser importados.'
+                          El archivo que seleccionó posee mas registros de los\
+                          permitidos para ser importados.'
 
                 messages.add_message(
                     self.request,
@@ -577,6 +568,20 @@ class DefineBaseDatosContactoView(UpdateView):
                     message,
                 )
                 return redirect(reverse('lista_base_datos_contacto'))
+            else:
+                creacion_base_datos.define_base_dato_contacto(self.object)
+
+                message = '<strong>Operación Exitosa!</strong>\
+                          Se llevó a cabo con éxito la creación de\
+                          la Base de Datos de Contactos.'
+
+                messages.add_message(
+                    self.request,
+                    messages.SUCCESS,
+                    message,
+                )
+                return redirect(self.get_success_url())
+
         return super(DefineBaseDatosContactoView, self).post(
             request, *args, **kwargs)
 
