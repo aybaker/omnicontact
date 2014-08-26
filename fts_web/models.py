@@ -447,7 +447,7 @@ class Contacto(models.Model):
 
     def __unicode__(self):
         return '{0} >> {1}'.format(
-            self.bd_contacto, self.telefono)
+            self.bd_contacto, self.datos)
 
 
 #==============================================================================
