@@ -27,7 +27,7 @@ from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
 from fts_web.services.estadisticas_campana import EstadisticasCampanaService
 from fts_web.services.reporte_campana import ReporteCampanaService
-
+from fts_web.services.base_de_datos_contactos import CreacionBaseDatosService
 
 def _tmpdir():
     """Crea directorio temporal"""
@@ -136,8 +136,8 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         )
         self.assertEqual(bd_contacto.get_cantidad_contactos(), 0)
 
-        parser = ParserCsv()
-        bd_contacto.importa_contactos(parser)
+        creacion_base_datos_service = CreacionBaseDatosService()
+        creacion_base_datos_service.importa_contactos(bd_contacto)
 
         self.assertEqual(bd_contacto.get_cantidad_contactos(), 6)
 
