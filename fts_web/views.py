@@ -35,7 +35,7 @@ from fts_web.forms import (
 from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion, DerivacionExterna,
     BaseDatosContacto, Opcion, ArchivoDeAudio)
-from fts_web.parser import autodetectar_parser
+from fts_web.parser import ParserCsv
 import logging as logging_
 from fts_web.reciclador_base_datos_contacto.reciclador import (
     RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
@@ -496,8 +496,7 @@ class DefineBaseDatosContactoView(UpdateView):
             BaseDatosContacto, pk=self.kwargs['pk']
         )
 
-        parser_archivo = autodetectar_parser(
-            base_datos_contacto.nombre_archivo_importacion)
+        parser_archivo = ParserCsv()
 
         estructura_archivo = None
         try:
@@ -548,9 +547,7 @@ class DefineBaseDatosContactoView(UpdateView):
             self.object.columna_datos = int(self.request.POST['telefono'])
             self.object.save()
 
-            parser_archivo = autodetectar_parser(
-                self.object.nombre_archivo_importacion)
-
+            parser_archivo = ParserCsv()
             try:
                 self.object.importa_contactos(parser_archivo)
                 self.object.define()

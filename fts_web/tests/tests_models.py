@@ -22,7 +22,7 @@ from fts_web.errors import (FtsRecicladoCampanaError,
     FtsRecicladoBaseDatosContactoError)
 from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
     BaseDatosContacto, Campana, Contacto, Opcion, Calificacion, Actuacion)
-from fts_web.parser import autodetectar_parser
+from fts_web.parser import ParserCsv
 from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
 from fts_web.services.estadisticas_campana import EstadisticasCampanaService
@@ -136,7 +136,7 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         )
         self.assertEqual(bd_contacto.get_cantidad_contactos(), 0)
 
-        parser = autodetectar_parser(bd_contacto.nombre_archivo_importacion)
+        parser = ParserCsv()
         bd_contacto.importa_contactos(parser)
 
         self.assertEqual(bd_contacto.get_cantidad_contactos(), 6)
