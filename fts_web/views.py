@@ -43,7 +43,7 @@ from fts_web.reciclador_base_datos_contacto.reciclador import (
 from fts_web import version
 from fts_web.services.estadisticas_campana import EstadisticasCampanaService
 from fts_web.services.reporte_campana import ReporteCampanaService
-from fts_web.services.base_de_datos_contacto import CreacionBaseDatosService
+from fts_web.services.base_de_datos_contactos import CreacionBaseDatosService
 
 
 logger = logging_.getLogger(__name__)
