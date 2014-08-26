@@ -26,7 +26,6 @@ class TestMetadataBaseDatosContacto(FTSenderBaseTest):
         metadata = bd.get_metadata()
 
         metadata.columna_con_telefono = 123
-        metadata.save()
 
         self.assertDictEqual(json.loads(bd.metadata), {'col_telefono': 123})
 
