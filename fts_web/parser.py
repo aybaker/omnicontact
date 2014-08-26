@@ -42,6 +42,8 @@ class ParserCsv(object):
         tomada por parámetro.
 
         Parametros:
+        - columna_con_telefono: Número columna donde se encuantran los
+                                teléfonos.
         - file_obj: Objeto archivo de la instancia de BaseDatosContactos.
         """
         # Reseteamos estadisticas
