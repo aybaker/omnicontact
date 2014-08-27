@@ -59,8 +59,8 @@ class ReporteCampanaService(object):
             csvwiter = csv.writer(csvfile)
             csvwiter.writerow(encabezado)
             for contacto, lista_eventos in dic_contacto_opciones:
-                # TODO: Dar formato al imprimir la lista de datos del contacto.
-                datos_contacto = json.loads(contacto)
+                datos_contacto = '-'.join(map(str, json.loads(contacto)))
+
                 lista_opciones = [datos_contacto]
 
                 for opcion in range(10):
