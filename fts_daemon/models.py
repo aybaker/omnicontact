@@ -603,17 +603,19 @@ class EventoDeContactoEstadisticasManager():
 
     def obtener_opciones_por_contacto(self, campana_id):
         """
-        Devuelve un diccionario con el el número de teléfono como clave y
+        Devuelve un diccionario con el valor del atributo datos como clave y
         una lista de los eventos que produjo.
         """
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
+
+        sql = """SELECT datos, array_agg(evento)
             FROM fts_web_contacto INNER JOIN fts_daemon_eventodecontacto
             ON fts_web_contacto.id = fts_daemon_eventodecontacto.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono;
+            GROUP BY contacto_id, datos;
         """
+
         params = [campana.id]
         with log_timing(logger,
             "obtener_opciones_por_contacto() tardo %s seg"):
