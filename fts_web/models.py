@@ -303,21 +303,20 @@ class BaseDatosContacto(models.Model):
     def get_metadata(self):
         return MetadataBaseDatosContacto(self)
 
-    def genera_contactos(self, lista_telefonos):
+    def genera_contactos(self, lista_datos_contacto):
         """
         Este metodo se encarga de realizar la generación de contactos
         a partir de una lista de tuplas de teléfonos.
         Parametros:
-        - lista_telefonos: lista de tuplas con lo números telefónicos
-        que representarán las instancias de contacto.
+        - lista_datos_contacto: lista de tuplas con lo datos del contacto.
         """
 
-        for telefono in lista_telefonos:
+        for datos_contacto in lista_datos_contacto:
             Contacto.objects.create(
-                telefono=telefono[0],
+                datos=datos_contacto[0],
                 bd_contacto=self,
             )
-        self.cantidad_contactos = len(lista_telefonos)
+        self.cantidad_contactos = len(lista_datos_contacto)
 
     def define(self):
         """
@@ -403,10 +402,9 @@ class BaseDatosContacto(models.Model):
         """
         copia = BaseDatosContacto.objects.create(
             nombre='{0} (reciclada)'.format(self.nombre),
-            columnas=self.columnas,
             archivo_importacion=self.archivo_importacion,
             nombre_archivo_importacion=self.nombre_archivo_importacion,
-            columna_datos=self.columna_datos,
+            metadata=self.metadata,
         )
         return copia
 
