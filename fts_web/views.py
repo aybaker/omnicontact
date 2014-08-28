@@ -39,7 +39,7 @@ from fts_web.parser import ParserCsv
 import logging as logging_
 from fts_web.reciclador_base_datos_contacto.reciclador import (
     RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
-    CampanaTipoRecicladoInvalidoError)
+    CampanaTipoRecicladoInvalidoError, FtsRecicladoBaseDatosContactoError)
 from fts_web import version
 from fts_web.services.estadisticas_campana import EstadisticasCampanaService
 from fts_web.services.reporte_campana import ReporteCampanaService
@@ -1352,7 +1352,8 @@ class TipoRecicladoCampanaView(FormView):
                 self.campana_id, tipos_reciclado)
 
         except (CampanaEstadoInvalidoError,
-                CampanaTipoRecicladoInvalidoError) as error:
+                CampanaTipoRecicladoInvalidoError,
+                FtsRecicladoBaseDatosContactoError) as error:
             message = '<strong>Operación Errónea!</strong>\
             No se pudo reciclar la Base de Datos de la campana. {0}'.format(
                 error)
