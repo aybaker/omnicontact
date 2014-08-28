@@ -1021,20 +1021,29 @@ class Campana(models.Model):
         from fts_daemon.models import EventoDeContacto
 
         detalle_opciones = [list(detalle_opcion) for detalle_opcion in
-            EventoDeContacto.objects_estadisticas.\
-            obtener_contactos_por_opciones(self.pk)]
+                            EventoDeContacto.objects_estadisticas.\
+                            obtener_contactos_por_opciones(self.pk)]
 
         opciones = Opcion.objects.filter(campana=self)
 
+        lista_final = []
         for detalle_opcion in detalle_opciones:
+            lista_item = []
+
             digito = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
-                    detalle_opcion[0]]
+                detalle_opcion[0]]
+
             try:
                 opcion = opciones.get(digito=digito)
-                detalle_opcion[0] = opcion
+                lista_item.append(opcion)
             except Opcion.DoesNotExist:
-                detalle_opcion[0] = digito
-        return detalle_opciones
+                lista_item.append(digito)
+
+            lista_item.append(['-'.join(map(str, json.loads(contacto)))
+                               for contacto in detalle_opcion[1]])
+
+            lista_final.append(lista_item)
+        return lista_final
 
     def recalcular_aedc_completamente(self):
         """Recalcula COMPLETAMENTE la agregacion. Este debe
