@@ -1019,15 +1019,14 @@ class Campana(models.Model):
         [[Opcion, [3513368309, 3513368308]], [9, [3513368309, 3513368308]]].
         """
         from fts_daemon.models import EventoDeContacto
-
-        detalle_opciones = [list(detalle_opcion) for detalle_opcion in
-                            EventoDeContacto.objects_estadisticas.\
-                            obtener_contactos_por_opciones(self.pk)]
+        EDC = EventoDeContacto.objects_estadisticas
 
         opciones = Opcion.objects.filter(campana=self)
 
         lista_final = []
-        for detalle_opcion in detalle_opciones:
+        for detalle_opcion in EDC.obtener_contactos_por_opciones(self.pk):
+            print detalle_opcion
+
             lista_item = []
 
             digito = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[

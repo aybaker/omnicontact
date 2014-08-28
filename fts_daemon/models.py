@@ -618,11 +618,10 @@ class EventoDeContactoEstadisticasManager():
 
         params = [campana.id]
         with log_timing(logger,
-            "obtener_opciones_por_contacto() tardo %s seg"):
+                        "obtener_opciones_por_contacto() tardo %s seg"):
             cursor.execute(sql, params)
-            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
-            values = cursor.fetchall()
-        return values
+            yield cursor.fetchone()
+
 
     def obtener_contactos_por_opciones(self, campana_id):
         """
