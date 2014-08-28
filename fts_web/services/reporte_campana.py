@@ -41,14 +41,20 @@ class ReporteCampanaService(object):
         dirname, filename = crear_archivo_en_media_root(
             dirname, "{0}-reporte".format(campana.id), ".csv")
 
-        dic_contacto_opciones = EventoDeContacto.objects_estadisticas\
+        contacto_opciones = EventoDeContacto.objects_estadisticas\
             .obtener_opciones_por_contacto(campana.pk)
 
         with open(file_path, 'wb') as csvfile:
             # Creamos encabezado
-            encabezado = ["Contacto"]
+            encabezado = []
+
+            cantidad_datos = len(json.loads(contacto_opciones[0][0]))
+            for c in range(cantidad_datos):
+                encabezado.append("Extra{0}".format(c+1))
+
             opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
                                  for op in campana.opciones.all()])
+
             for opcion in range(10):
                 try:
                     encabezado.append(opciones_dict[opcion])
@@ -58,10 +64,10 @@ class ReporteCampanaService(object):
             # Creamos csvwriter y guardamos encabezado y luego datos
             csvwiter = csv.writer(csvfile)
             csvwiter.writerow(encabezado)
-            for contacto, lista_eventos in dic_contacto_opciones:
-                datos_contacto = '-'.join(map(str, json.loads(contacto)))
-
-                lista_opciones = [datos_contacto]
+            for contacto, lista_eventos in contacto_opciones:
+                lista_opciones = []
+                for dato in json.loads(contacto):
+                    lista_opciones.append(dato)
 
                 for opcion in range(10):
                     evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
