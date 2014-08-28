@@ -1013,11 +1013,11 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono
+        sql = """SELECT datos
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
+            GROUP BY contacto_id, datos
             HAVING not( %s = ANY(array_agg(evento)))
         """.format(nombre_tabla)
 
@@ -1045,11 +1045,11 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono
+        sql = """SELECT datos
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
+            GROUP BY contacto_id, datos
             HAVING %s = ANY(array_agg(evento))
             AND not( %s = ANY(array_agg(evento)))
         """.format(nombre_tabla)
@@ -1078,11 +1078,11 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono
+        sql = """SELECT datos
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
+            GROUP BY contacto_id, datos
             HAVING %s = ANY(array_agg(evento))
             AND not( %s = ANY(array_agg(evento)))
         """.format(nombre_tabla)
@@ -1112,11 +1112,11 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono
+        sql = """SELECT datos
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
+            GROUP BY contacto_id, datos
             HAVING %s = ANY(array_agg(evento))
             AND not( %s = ANY(array_agg(evento)))
         """.format(nombre_tabla)
@@ -1146,11 +1146,11 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono
+        sql = """SELECT datos
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
+            GROUP BY contacto_id, datos
             HAVING %s = ANY(array_agg(evento))
             AND not( %s = ANY(array_agg(evento)))
         """.format(nombre_tabla)
@@ -1202,7 +1202,7 @@ class EventoDeContacto(models.Model):
     EVENTO_DAEMON_ORIGINATE_SUCCESSFUL = 11
     """El originate se produjo exitosamente.
 
-    *Este evento es registrado por el daemon que realiza las llamadas.*
+    *Este eventofts_web_contacto es registrado por el daemon que realiza las llamadas.*
     """
 
     EVENTO_DAEMON_ORIGINATE_FAILED = 12
