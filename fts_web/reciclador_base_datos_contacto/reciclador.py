@@ -37,33 +37,33 @@ class RecicladorBaseDatosContacto(object):
 
         # Validamos que el parámetro tipos_reciclado contenga datos.
         if not tipos_reciclado:
-            raise CampanaTipoRecicladoInvalidoError("No se selecciono un tipo "
-                "de reciclado.")
+            raise CampanaTipoRecicladoInvalidoError(
+                "No se selecciono un tipo de reciclado.")
 
         # Validamos que los datos de tipos_reciclado sean enteros.
         try:
             tipos_reciclado = [int(tipo_reciclado)
                                for tipo_reciclado in tipos_reciclado]
         except TypeError:
-            raise CampanaTipoRecicladoInvalidoError("Ente los tipo de "
-                    "reciclado seleccionados existe alguno que es invalido "
-                    "para procesar el reciclado de contactos.")
+            raise CampanaTipoRecicladoInvalidoError(
+                "Ente los tipo de reciclado seleccionados existe alguno que "
+                "es invalido para procesar el reciclado de contactos.")
 
         # Obtenemos la instancia de Campana que se esta reciclando y validamos
         # que se encuentre en el estado correcto.
         campana = self._obtener_campana(campana_id)
         if campana.estado != Campana.ESTADO_DEPURADA:
-            raise CampanaEstadoInvalidoError("El estado de la campana que "
-                                             "se intenta reciclar no es: "
-                                             "ESTADO_DEPURADA.")
+            raise CampanaEstadoInvalidoError(
+                "El estado de la campana que se intenta reciclar no es: "
+                "ESTADO_DEPURADA.")
 
         if Campana.TIPO_RECICLADO_TOTAL in tipos_reciclado:
             # Validamos que si el tipo de reciclado es TIPO_RECICLADO_TOTAL,
             # sea el único tipo de reciclado que se procese.
             if len(tipos_reciclado) > 1:
-                raise CampanaTipoRecicladoInvalidoError("Se seleccio mas de un"
-                    " tipo de reciclado, cuando deberia ser solo el tipo:"
-                    " TIPO_RECICLADO_TOTAL.")
+                raise CampanaTipoRecicladoInvalidoError(
+                    "Se selecciono mas de un tipo de reciclado, cuando "
+                    "deberia ser solo el tipo: TIPO_RECICLADO_TOTAL.")
 
             return campana.bd_contacto
 
@@ -72,9 +72,9 @@ class RecicladorBaseDatosContacto(object):
             # TIPO_RECICLADO_PENDIENTES, sea el único tipo de reciclado que se
             # procese.
             if len(tipos_reciclado) > 1:
-                raise CampanaTipoRecicladoInvalidoError("Se seleccio mas de un"
-                    " tipo de reciclado, cuando deberia ser solo el tipo:"
-                    " TIPO_RECICLADO_PENDIENTES.")
+                raise CampanaTipoRecicladoInvalidoError(
+                    "Se selecciono mas de un tipo de reciclado, cuando "
+                    "deberia ser solo el tipo: TIPO_RECICLADO_PENDIENTES.")
 
             contactos_reciclados =\
                 EventoDeContacto.objects_reciclador_contactos.\
@@ -85,9 +85,9 @@ class RecicladorBaseDatosContacto(object):
             if not all(tipo_reciclado in
                        dict(Campana.TIPO_RECICLADO_CONJUNTO)
                        for tipo_reciclado in tipos_reciclado):
-                raise CampanaTipoRecicladoInvalidoError("Ente los tipo de "
-                    "reciclado seleccionados existe alguno que es invalido "
-                    "para procesar el reciclado de contactos.")
+                raise CampanaTipoRecicladoInvalidoError(
+                    "Ente los tipo de reciclado seleccionados existe alguno "
+                    "que es invalido para procesar el reciclado de contactos.")
 
             contactos_reciclados =\
                 EventoDeContacto.objects_reciclador_contactos.\
@@ -96,9 +96,9 @@ class RecicladorBaseDatosContacto(object):
         # Si no se devolvieron contactos reciclados se genera una excepción.
         if not contactos_reciclados:
             logger.warn("El reciclado de base datos no arrojo contactos.")
-            raise FtsRecicladoBaseDatosContactoError("No se registraron "
-                "contactos para reciclar con el tipo de reciclado "
-                "seleccionado.")
+            raise FtsRecicladoBaseDatosContactoError(
+                "No se registraron contactos para reciclar con el tipo de "
+                "reciclado seleccionado.")
 
         # Creamos la insancia de BaseDatosContacto para el reciclado.
         bd_contacto_reciclada = campana.bd_contacto.copia_para_reciclar()
