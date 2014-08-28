@@ -622,7 +622,6 @@ class EventoDeContactoEstadisticasManager():
             cursor.execute(sql, params)
             yield cursor.fetchone()
 
-
     def obtener_contactos_por_opciones(self, campana_id):
         """
         Devuelve un diccionario con el número de opcioón como clave y
