@@ -7,7 +7,7 @@ import os
 from django.test.utils import override_settings
 
 
-from fts_web.parser import ParserCsv, validate_telefono, sanitize_number
+from fts_web.parser import *
 from fts_web.errors import (FtsParserMinRowError, FtsParserMaxRowError,
                             FtsParserOpenFileError, FtsParserCsvDelimiterError)
 from fts_web.tests.utiles import FTSenderBaseTest
@@ -82,10 +82,10 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
 
     def test_datos_sin_fila_de_titulos(self):
 
-        lista_datos = [['3543009865', 'lkasdjlfkaf'],
-                       ['111534509230', 'dkasjflkja'],
-                       ['2830173491', 'alsdkjfieasdf'],
-                       ['3560127341', 'kahvuahdsfasdfa']]
+        lista_datos = [['3543009865', 'lkasdjlfkaf', '10/10/2014', '12:00'],
+                       ['111534509230', 'dkasjflkja', '10/10/2014', '12:00'],
+                       ['2830173491', 'alsdkjfieasdf', '10/10/2014', '12:00'],
+                       ['3560127341', 'kahvuahdsfasdfa', 'fecha', 'hora']]
 
         # -----
 
@@ -140,6 +140,40 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
             for parseados, dato in zip(datos_parseados, lista_datos):
                 self.assertEqual(parseados, dato)
 
+    def test_datos_con_fecha_excluye_invalido(self):
+
+        lista_datos = [['3543009865', 'lkasdjlfkaf', '10/10/2014', '12:00'],
+                       ['111534509230', 'dkasjflkja', '10/10/2014', '12:00'],
+                       ['2830173491', 'alsdkjfieasdf', '10/10/2014', '12:00']]
+        # Excluye:             ]
+        # ['3560127341', 'kahvuahdsfasdfa', 'fecha', 'hora']]
+
+        # -----
+
+        parser = ParserCsv()
+        planilla = self.get_test_resource("planilla-ejemplo-0.csv")
+        datos_parseados = parser.read_file(0, [2], [], open(planilla, 'r'))
+
+        for parseados, dato in zip(datos_parseados, lista_datos):
+            self.assertEqual(parseados, dato)
+
+    def test_datos_con_hora_excluye_invalido(self):
+
+        lista_datos = [['3543009865', 'lkasdjlfkaf', '10/10/2014', '12:00'],
+                       ['111534509230', 'dkasjflkja', '10/10/2014', '12:00'],
+                       ['2830173491', 'alsdkjfieasdf', '10/10/2014', '12:00']]
+        # Excluye:             ]
+        # ['3560127341', 'kahvuahdsfasdfa', 'fecha', 'hora']]
+
+        # -----
+
+        parser = ParserCsv()
+        planilla = self.get_test_resource("planilla-ejemplo-0.csv")
+        datos_parseados = parser.read_file(0, [], [3], open(planilla, 'r'))
+
+        for parseados, dato in zip(datos_parseados, lista_datos):
+            self.assertEqual(parseados, dato)
+
 
 class ValidateTelefonoTest(FTSenderBaseTest):
     def test_validate_number_validos(self):
@@ -160,3 +194,47 @@ class ValidateTelefonoTest(FTSenderBaseTest):
 class SanitizeNumberTest(FTSenderBaseTest):
     def test_sanitize_number(self):
         self.assertEqual(sanitize_number('(0351)15-3368309'), '0351153368309')
+
+
+class ValidateFechasTest(FTSenderBaseTest):
+    def test_validate_fechas_validos(self):
+        datos = ['01/01/2014']
+
+        self.assertTrue(validate_fechas(datos))
+
+    def test_validate_fechas_formato_invalidos(self):
+        datos = ['1/1/2014']
+
+        self.assertFalse(validate_fechas(datos))
+
+    def test_validate_fechas_no_fecha(self):
+        datos = ['test']
+
+        self.assertFalse(validate_fechas(datos))
+
+    def test_validate_fechas_vacias(self):
+        datos = []
+
+        self.assertFalse(validate_fechas(datos))
+
+
+class ValidateHorasTest(FTSenderBaseTest):
+    def test_validate_horas_validos(self):
+        datos = ['16:00']
+
+        self.assertTrue(validate_horas(datos))
+
+    def test_validate_horas_formato_invalidos(self):
+        datos = ['10:00pm']
+
+        self.assertFalse(validate_horas(datos))
+
+    def test_validate_horas_no_hora(self):
+        datos = ['test']
+
+        self.assertFalse(validate_horas(datos))
+
+    def test_validate_horas_vacias(self):
+        datos = []
+
+        self.assertFalse(validate_horas(datos))
