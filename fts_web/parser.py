@@ -181,8 +181,9 @@ def validate_fechas(fechas):
 
     validate = []
     for fecha in fechas:
-        if re.match("^(0[1-9]|1[012])[/](0[1-9]|[12][0-9]|3[01])[/](19|20)?\d\d$",
-                    fecha):
+        if re.match(
+            "^(0[1-9]|1[012])[/](0[1-9]|[12][0-9]|3[01])[/](19|20)?\d\d$",
+                fecha):
             validate.append(True)
         else:
             validate.append(False)
@@ -200,8 +201,9 @@ def validate_horas(horas):
     validate = []
     for hora in horas:
 
-        if re.match("^(([0-1][0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$",
-                    hora):
+        if re.match(
+            "^(([0-1][0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$",
+                hora):
             validate.append(True)
         else:
             validate.append(False)
