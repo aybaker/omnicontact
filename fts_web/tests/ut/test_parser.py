@@ -7,7 +7,7 @@ import os
 from django.test.utils import override_settings
 
 
-from fts_web.parser import ParserCsv, validate_number, sanitize_number
+from fts_web.parser import ParserCsv, validate_telefono, sanitize_number
 from fts_web.errors import (FtsParserMinRowError, FtsParserMaxRowError,
                             FtsParserOpenFileError, FtsParserCsvDelimiterError)
 from fts_web.tests.utiles import FTSenderBaseTest
@@ -141,20 +141,20 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
                 self.assertEqual(parseados, dato)
 
 
-class ValidateNumberTest(FTSenderBaseTest):
+class ValidateTelefonoTest(FTSenderBaseTest):
     def test_validate_number_validos(self):
 
         datos = ['35430098657', '(11)153450923', '28301734914', '356-01273413']
 
         for dato in datos:
-            self.assertTrue(validate_number(dato))
+            self.assertTrue(validate_telefono(dato))
 
     def test_validate_number_invalidos(self):
 
         datos = ['35445', '(11)1534509gt', '5', 'test']
 
         for dato in datos:
-            self.assertFalse(validate_number(dato))
+            self.assertFalse(validate_telefono(dato))
 
 
 class SanitizeNumberTest(FTSenderBaseTest):
