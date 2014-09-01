@@ -24,18 +24,35 @@
                             {% for row, cols in estructura_archivo.items %}
                                 {% if forloop.first %}
                                     <thead>
-                                        
-                                    <th></th>
-                                    {% for col in cols %}
-                                        <th>
-                                            <div class="radio {% if error %}has-error{% endif %}">
-                                                <label class="control-label">
-                                                    <input type="radio" name="telefono" value="{{ forloop.counter0 }}">
-                                                    Columna {{ forloop.counter0 }}
-                                                </label>
-                                            </div>
-                                        </th>       
-                                    {% endfor %}
+                                        <tr> 
+                                            <th></th>
+                                            {% for col in cols %}
+                                                <th class="col-tel-{{ forloop.counter0 }}">
+                                                    <div class="radio {% if error %}has-error{% endif %}">
+                                                        <label class="control-label">
+                                                            <input type="radio" class="telefono" name="telefono" value="{{ forloop.counter0 }}">
+                                                            Columna {{ forloop.counter0 }}
+                                                        </label>
+                                                    </div>
+                                                </th>       
+                                            {% endfor %}
+                                        </tr>
+                                        <tr> 
+                                            <th></th>
+                                            {% for col in cols %}
+                                                <th class="col-dat-{{ forloop.counter0 }}">
+                                                    <div "{% if error %}has-error{% endif %}">
+                                                        <label class="control-label">
+                                                            <select name="datos-extras-{{ forloop.counter0 }}" class="form-control datos-extras">
+                                                                {% for dato_extra in datos_extras %}
+                                                                    <option value="{{ dato_extra.0 }}">{{ dato_extra.1 }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </label>
+                                                    </div>
+                                                </th>       
+                                            {% endfor %}
+                                        </tr>
                                     </thead>
                                     <tbody>
                                 {% endif %}
@@ -56,7 +73,6 @@
                         <button type="submit" id="id_guardar" class="btn btn-success btn-lg modal_proceso_grande">
                             Guardar Base Datos
                         </button>
-                        
                     </form>
                 {% else %}
                     <table class="table table-bordered">
@@ -72,4 +88,12 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".telefono").change(function (){
+                $(".datos-extras").removeAttr('disabled');
+                $(".col-dat-" + $(this).val() + " select").attr('disabled', true);
+            });
+        });
+    </script>
 {% endblock %}
