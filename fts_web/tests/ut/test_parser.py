@@ -43,7 +43,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
 
         parser = ParserCsv()
         planilla = self.get_test_resource("planilla-ejemplo-3.csv")
-        datos_parseados = parser.read_file(0, open(planilla, 'r'))
+        datos_parseados = parser.read_file(0, [], [], open(planilla, 'r'))
 
         self.assertEqual(next(datos_parseados),
                          ['3543009865', 'lkasdjlfkaf', '0351156219387'])
@@ -59,7 +59,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
 
         parser = ParserCsv()
         planilla = self.get_test_resource("planilla-ejemplo-1.csv")
-        datos_parseados = parser.read_file(0, open(planilla, 'r'))
+        datos_parseados = parser.read_file(0, [], [], open(planilla, 'r'))
 
         for parseados, dato in zip(datos_parseados, lista_datos):
             self.assertEqual(parseados, dato)
@@ -75,7 +75,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
 
         parser = ParserCsv()
         planilla = self.get_test_resource("planilla-ejemplo-4.csv")
-        datos_parseados = parser.read_file(0, open(planilla, 'r'))
+        datos_parseados = parser.read_file(0, [], [], open(planilla, 'r'))
 
         for parseados, dato in zip(datos_parseados, lista_datos):
             self.assertEqual(parseados, dato)
@@ -91,7 +91,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
 
         parser = ParserCsv()
         planilla = self.get_test_resource("planilla-ejemplo-0.csv")
-        datos_parseados = parser.read_file(0, open(planilla, 'r'))
+        datos_parseados = parser.read_file(0, [], [], open(planilla, 'r'))
 
         for parseados, dato in zip(datos_parseados, lista_datos):
             self.assertEqual(parseados, dato)
@@ -114,7 +114,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
 
         parser = ParserCsv()
         planilla = self.get_test_resource("planilla-ejemplo-3.csv")
-        datos_parseados = parser.read_file(0, open(planilla, 'r'))
+        datos_parseados = parser.read_file(0, [], [], open(planilla, 'r'))
 
         cantidad_parseados = 0
         for parseados, dato in zip(datos_parseados, lista_datos):
@@ -134,7 +134,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
 
         parser = ParserCsv()
         planilla = self.get_test_resource("planilla-ejemplo-1.csv")
-        datos_parseados = parser.read_file(0, open(planilla, 'r'))
+        datos_parseados = parser.read_file(0, [], [], open(planilla, 'r'))
 
         with self.assertRaises(FtsParserMaxRowError):
             for parseados, dato in zip(datos_parseados, lista_datos):
