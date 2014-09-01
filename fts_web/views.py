@@ -31,7 +31,7 @@ from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
     BaseDatosContactoForm, OpcionForm, DerivacionExternaForm, TemplateForm,
-    ArchivoAudioForm)
+    ArchivoAudioForm, DatosExtrasForm)
 from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion, DerivacionExterna,
     BaseDatosContacto, Opcion, ArchivoDeAudio)
@@ -492,12 +492,10 @@ class DefineBaseDatosContactoView(UpdateView):
     model = BaseDatosContacto
     context_object_name = 'base_datos_contacto'
 
-    def get_context_data(self, **kwargs):
-        context = super(
-            DefineBaseDatosContactoView, self).get_context_data(**kwargs)
 
+    def obtiene_estructura_archivo(self, pk):
         base_datos_contacto = get_object_or_404(
-            BaseDatosContacto, pk=self.kwargs['pk']
+            BaseDatosContacto, pk=pk
         )
 
         parser = ParserCsv()
@@ -505,6 +503,7 @@ class DefineBaseDatosContactoView(UpdateView):
         try:
             estructura_archivo = parser.get_file_structure(
                 base_datos_contacto.archivo_importacion.file)
+            return estructura_archivo
 
         except FtsParserCsvDelimiterError:
             message = '<strong>Operación Errónea!</strong> \
@@ -538,19 +537,42 @@ class DefineBaseDatosContactoView(UpdateView):
                 message,
             )
 
+    def get_context_data(self, **kwargs):
+        context = super(
+            DefineBaseDatosContactoView, self).get_context_data(**kwargs)
+
+        estructura_archivo = self.obtiene_estructura_archivo(self.kwargs['pk'])
         context['estructura_archivo'] = estructura_archivo
+        context['datos_extras'] = BaseDatosContacto.DATOS_EXTRAS
         return context
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(error=True))
 
     def post(self, request, *args, **kwargs):
+
         self.object = self.get_object()
 
         dic_metadata = {}
         if 'telefono' in self.request.POST:
-            dic_metadata['columna_con_telefono'] = int(self.request.POST[
-                                                       'telefono'])
+
+            columan_con_telefono = int(self.request.POST['telefono'])
+            dic_metadata['columna_con_telefono'] = columan_con_telefono
+
+            # TODO: Terminar de implementar el guardado de los metadatos.
+            estructura_archivo = self.obtiene_estructura_archivo(
+                self.kwargs['pk'])
+            for columna in estructura_archivo.keys():
+                dato_extra = self.request.POST.get(
+                    'datos-extras-{0}'.format(columna), None)
+
+                if dato_extra == BaseDatosContacto.DATO_EXTRA_FECHA:
+                    # dic_metadata['columna_con_fecha'] = columna
+                    pass
+                elif dato_extra == BaseDatosContacto.DATO_EXTRA_HORA:
+                    # dic_metadata['columna_con_hora'] = columna
+                    pass
+            #####
 
             creacion_base_datos = CreacionBaseDatosService()
             creacion_base_datos.guarda_metadata(self.object, dic_metadata)
