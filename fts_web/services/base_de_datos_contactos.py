@@ -50,9 +50,18 @@ class CreacionBaseDatosService(object):
 
         Este método se encarga de actualizar el objeto BaseDatoContacto con
         la metadata.
+        Parametros:
+        - base_datos_contacto: La instancia de BaseDatosContacto que se
+                               actualiza.
+        - dic_metadata: Diccionario con los datos extras de la metadata. La
+                        clave es el atributo y el valor, el valor que
+                        corresponde.
         """
         metadata = base_datos_contacto.get_metadata()
-        metadata.columna_con_telefono = dic_metadata['columna_con_telefono']
+
+        for propiedad, valor in dic_metadata.items():
+            setattr(metadata, propiedad, valor)
+
         base_datos_contacto.save()
 
     def importa_contactos(self, base_datos_contacto):
