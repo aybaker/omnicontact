@@ -36,7 +36,8 @@ class ParserCsv(object):
         self.vacias = 0
         self.erroneas = 0
 
-    def read_file(self, columna_con_telefono, file_obj):
+    def read_file(self, columna_con_telefono, columnas_con_fecha,
+                  columnas_con_hora, file_obj):
         """
         Lee un archivo CSV y devuelve contenidos de la columna
         tomada por parámetro.
@@ -46,6 +47,7 @@ class ParserCsv(object):
                                 teléfonos.
         - file_obj: Objeto archivo de la instancia de BaseDatosContactos.
         """
+
         # Reseteamos estadisticas
         self.vacias = 0
         self.erroneas = 0
@@ -54,32 +56,44 @@ class ParserCsv(object):
 
         cantidad_importados = 0
         for i, curr_row in enumerate(workbook):
+            if len(curr_row) == 0:
+                logger.info("Ignorando fila vacia %s", i)
+                self.erroneas += 1
+                continue
+
             if i > settings.FTS_MAX_CANTIDAD_CONTACTOS:
                 raise FtsParserMaxRowError("El archivo CSV "
                                            "posee mas registros de los "
                                            "permitidos.")
-            if i == 0 and not validate_number(curr_row[columna_con_telefono]):
+
+            telefono = sanitize_number(curr_row[columna_con_telefono].strip())
+
+            if not validate_telefono(telefono):
+                if i == 0:
+                    continue
+                logger.info("Ignorando Contacto. Teléfono %s no válido.",
+                            telefono)
+                self.erroneas += 1
                 continue
 
-            if not len(curr_row) == 0:
-                value = sanitize_number(curr_row[columna_con_telefono].strip())
-
-                if not len(value) == 0:
-                    if validate_number(value):
-                        cantidad_importados += 1
-                        yield curr_row
-                    else:
-                        logger.info("Ignorando número %s, no valida "
-                                    "como número telefónico.", value)
-                        self.erroneas += 1
-                        continue
-                else:
-                    logger.info("Ignorando valor vacio en fila %s", i)
-                    self.vacias += 1
+            if columnas_con_fecha:
+                fechas = [curr_row[columna] for columna in columnas_con_fecha]
+                if not validate_fechas(fechas):
+                    logger.info("Ignorando Contacto. Fechas %s no válidas",
+                                fechas)
+                    self.erroneas += 1
                     continue
-            else:
-                logger.info("Ignorando fila vacia %s", i)
-                self.erroneas += 1
+
+            if columnas_con_hora:
+                horas = [curr_row[columna] for columna in columnas_con_hora]
+                if not validate_horas(horas):
+                    logger.info("Ignorando Contacto. Horas %s no válidas",
+                                horas)
+                    self.erroneas += 1
+                    continue
+
+            cantidad_importados += 1
+            yield curr_row
 
         logger.info("%s contactos importados - %s valores ignoradas"
                     " - %s celdas erroneas", cantidad_importados, self.vacias,
@@ -157,7 +171,38 @@ class ParserCsv(object):
 # Funciones utilitarias
 # =============================================================================
 
-def validate_number(number):
+def validate_fechas(fechas):
+    """
+    Esta función en principio, valida el formato de las fechas.
+    Si todas validan devuelve True, sino False.
+    """
+    validate = []
+    for fecha in fechas:
+        if re.match('[0-1][0-9]\/[0-3][0-9]\/[1-2][0-9]{3}', fecha):
+            validate.append(True)
+        else:
+            validate.append(False)
+    return all(validate)
+
+
+def validate_horas(horas):
+    """
+    Esta función en principio, valida el formato de las horas.
+    Si todas validan devuelve True, sino False.
+    """
+    validate = []
+    for hora in horas:
+        if re.match('(([01]\d|2[0-3]):([0-5]\d)|24:00)', hora):
+            validate.append(True)
+        else:
+            validate.append(False)
+    return all(validate)
+
+
+def validate_telefono(number):
+    """
+    Esta función valida el numero telefónico tenga  entre 10 y 13 dígitos.
+    """
     number = re.sub("[^0-9]", "", str(number))
     if re.match("^[0-9]{10,13}$", number):
         return True
