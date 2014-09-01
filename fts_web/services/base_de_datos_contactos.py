@@ -74,10 +74,15 @@ class CreacionBaseDatosService(object):
         """
         base_datos_metadata = base_datos_contacto.get_metadata()
         columna_con_telefono = base_datos_metadata.columna_con_telefono
+        columnas_con_fecha = base_datos_metadata.columnas_con_fecha
+        columnas_con_hora = base_datos_metadata.columnas_con_hora
 
         parser = ParserCsv()
         generador_contactos = parser.read_file(
-            columna_con_telefono, base_datos_contacto.archivo_importacion.file)
+            columna_con_telefono,
+            columnas_con_fecha,
+            columnas_con_hora,
+            base_datos_contacto.archivo_importacion.file)
 
         cantidad_contactos = 0
         for lista_dato in generador_contactos:
