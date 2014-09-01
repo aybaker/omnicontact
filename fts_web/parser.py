@@ -176,9 +176,12 @@ def validate_fechas(fechas):
     Esta función en principio, valida el formato de las fechas.
     Si todas validan devuelve True, sino False.
     """
+    if not fechas:
+        return False
+
     validate = []
     for fecha in fechas:
-        if re.match('[0-1][0-9]\/[0-3][0-9]\/[1-2][0-9]{3}', fecha):
+        if re.match('^[0-1][0-9]\/[0-3][0-9]\/[1-2][0-9]{3}$', fecha):
             validate.append(True)
         else:
             validate.append(False)
@@ -190,9 +193,12 @@ def validate_horas(horas):
     Esta función en principio, valida el formato de las horas.
     Si todas validan devuelve True, sino False.
     """
+    if not horas:
+        return False
+
     validate = []
     for hora in horas:
-        if re.match('(([01]\d|2[0-3]):([0-5]\d)|24:00)', hora):
+        if re.match('^(([01]\d|2[0-3]):([0-5]\d)|24:00)$', hora):
             validate.append(True)
         else:
             validate.append(False)
