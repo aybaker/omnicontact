@@ -31,7 +31,7 @@ from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
     BaseDatosContactoForm, OpcionForm, DerivacionExternaForm, TemplateForm,
-    ArchivoAudioForm, DatosExtrasForm)
+    ArchivoAudioForm)
 from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion, DerivacionExterna,
     BaseDatosContacto, Opcion, ArchivoDeAudio)
@@ -559,20 +559,20 @@ class DefineBaseDatosContactoView(UpdateView):
             columan_con_telefono = int(self.request.POST['telefono'])
             dic_metadata['columna_con_telefono'] = columan_con_telefono
 
-            # TODO: Terminar de implementar el guardado de los metadatos.
             estructura_archivo = self.obtiene_estructura_archivo(
                 self.kwargs['pk'])
+            lista_columnas_fechas = []
+            lista_columnas_horas = []
             for columna in estructura_archivo.keys():
                 dato_extra = self.request.POST.get(
                     'datos-extras-{0}'.format(columna), None)
-
                 if dato_extra == BaseDatosContacto.DATO_EXTRA_FECHA:
-                    # dic_metadata['columna_con_fecha'] = columna
-                    pass
+                    lista_columnas_fechas.append(columna)
                 elif dato_extra == BaseDatosContacto.DATO_EXTRA_HORA:
-                    # dic_metadata['columna_con_hora'] = columna
-                    pass
-            #####
+                    lista_columnas_horas.append(columna)
+
+            dic_metadata['columnas_con_fecha'] = lista_columnas_fechas
+            dic_metadata['columnas_con_hora'] = lista_columnas_horas
 
             creacion_base_datos = CreacionBaseDatosService()
             creacion_base_datos.guarda_metadata(self.object, dic_metadata)
