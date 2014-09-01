@@ -214,8 +214,10 @@ class CampanaTracker(object):
                 contacto_ids_en_curso=list(self._contactos_en_curso))
 
     def _obtener_datos_de_contactos(self, contactos_values):
+        id_contactos = [tmp[1] for tmp in contactos_values]
         return EventoDeContacto.objects_gestion_llamadas.\
-            obtener_datos_de_contactos([tmp[1] for tmp in contactos_values])
+            obtener_datos_de_contactos(id_contactos,
+                                       self.campana.bd_contacto)
 
     def _verifica_fecha_y_hora(self):
         """Verifica q' fecha con datos de campaña, y hora con datos

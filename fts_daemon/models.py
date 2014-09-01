@@ -17,6 +17,7 @@ from django.db.models import Count
 from fts_web.models import Campana, BaseDatosContacto, Contacto
 from fts_web.utiles import log_timing
 import logging as _logging
+import json
 
 
 logger = _logging.getLogger(__name__)
@@ -942,19 +943,32 @@ class GestionDeLlamadasManager(models.Manager):
         values = [(row[0] - 1, row[1],) for row in values]
         return values
 
-    def obtener_datos_de_contactos(self, id_contactos):
+    def obtener_datos_de_contactos(self, id_contactos, bd_contactos):
         """Devuelve los datos necesarios para generar llamadas
         para los contactos pasados por parametros (lista de IDs).
+
+        Lo más importante que devuelve es el numero telefonico.
 
         Devuelve lista de listas, con ((id_contacto, telefono,), ...)
         """
         if len(id_contactos) > 100:
             logger.warn("obtener_datos_de_contactos(): de id_contactos "
                 "contiene muchos elementos, exactamente %s", len(id_contactos))
+
+        metadata = bd_contactos.get_metadata()
+
         with log_timing(logger, "obtener_datos_de_contactos() tardo %s seg"):
             # forzamos query
-            values = list(Contacto.objects.filter(
-                id__in=id_contactos).values_list('id', 'telefono'))
+
+            # values = list(Contacto.objects.filter(
+            #     id__in=id_contactos).values_list('id', 'telefono'))
+
+            qs = Contacto.objects.filter(id__in=id_contactos
+                                        ).values_list('id', 'datos')
+            values = []
+            for pk, datos in qs:
+                telefono = metadata.obtener_telefono_de_dato_de_contacto(datos)
+                values.append((pk, telefono))
 
         return values
 
@@ -962,7 +976,7 @@ class GestionDeLlamadasManager(models.Manager):
 class RecicladorContactosEventoDeContactoManager(models.Manager):
     """
     Este manager se encarga de obtener los contactos según el tipo de
-    reciclado de campana que se realice. 
+    reciclado de campana que se realice.
     """
 
     def obtener_contactos_reciclados(self, campana, tipos_reciclado):
