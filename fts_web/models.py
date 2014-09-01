@@ -252,6 +252,38 @@ class MetadataBaseDatosContacto(object):
         self._metadata['col_telefono'] = int(columna)
         self._save()
 
+    @property
+    def columnas_con_fecha(self):
+        try:
+            return self._metadata['cols_fecha']
+        except KeyError:
+            return []
+
+    @columnas_con_fecha.setter
+    def columnas_con_fecha(self, columnas):
+        """
+        Parametros:
+        - columnas: Lista de enteros que indican las columnas con fechas.
+        """
+        self._metadata['cols_fecha'] = columnas
+        self._save()
+
+    @property
+    def columnas_con_hora(self):
+        try:
+            return self._metadata['cols_hora']
+        except KeyError:
+            return []
+
+    @columnas_con_hora.setter
+    def columnas_con_hora(self, columnas):
+        """
+        Parametros:
+        - columnas: Lista de enteros que indican las columnas con horas.
+        """
+        self._metadata['cols_hora'] = columnas
+        self._save()
+
     def _save(self):
         """Guardar los metadatos en la instancia de BaseDatosContacto"""
         self.bd.metadata = json.dumps(self._metadata)
