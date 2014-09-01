@@ -284,6 +284,14 @@ class MetadataBaseDatosContacto(object):
         self._metadata['cols_hora'] = columnas
         self._save()
 
+    def obtener_telefono_de_dato_de_contacto(self, datos):
+        """Devuelve el numero telefonico del contacto.
+
+        :param datos: atribuito 'datos' del contacto, o sea, valores de
+                      las columnas codificadas con json
+        """
+        return json.loads(datos)[self._metadata['col_telefono']]
+
     def _save(self):
         """Guardar los metadatos en la instancia de BaseDatosContacto"""
         self.bd.metadata = json.dumps(self._metadata)
