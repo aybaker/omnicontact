@@ -260,6 +260,15 @@ class MetadataBaseDatosContacto(object):
 class BaseDatosContacto(models.Model):
     objects = BaseDatosContactoManager()
 
+    DATO_EXTRA_GENERICO = 'GENERICO'
+    DATO_EXTRA_FECHA = 'FECHA'
+    DATO_EXTRA_HORA = 'HORA'
+    DATOS_EXTRAS = (
+        (DATO_EXTRA_GENERICO, 'Dato Genérico'),
+        (DATO_EXTRA_FECHA, 'Fecha'),
+        (DATO_EXTRA_HORA, 'Hora'),
+    )
+
     ESTADO_EN_DEFINICION = 0
     ESTADO_DEFINIDA = 1
     ESTADO_EN_DEPURACION = 2
