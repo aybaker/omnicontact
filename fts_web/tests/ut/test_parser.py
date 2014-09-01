@@ -198,7 +198,7 @@ class SanitizeNumberTest(FTSenderBaseTest):
 
 class ValidateFechasTest(FTSenderBaseTest):
     def test_validate_fechas_validos(self):
-        datos = ['01/01/2014']
+        datos = ['01/01/2014', '01/01/14']
 
         self.assertTrue(validate_fechas(datos))
 
@@ -220,12 +220,22 @@ class ValidateFechasTest(FTSenderBaseTest):
 
 class ValidateHorasTest(FTSenderBaseTest):
     def test_validate_horas_validos(self):
-        datos = ['16:00']
+        datos = ['16:00', '16:00:00', '01:00', '00:00']
 
         self.assertTrue(validate_horas(datos))
 
-    def test_validate_horas_formato_invalidos(self):
+    def test_validate_horas_formato_invalido1(self):
         datos = ['10:00pm']
+
+        self.assertFalse(validate_horas(datos))
+
+    def test_validate_horas_formato_invalido2(self):
+        datos = ['1:00']
+
+        self.assertFalse(validate_horas(datos))
+
+    def test_validate_horas_formato_invalido3(self):
+        datos = ['24:00']
 
         self.assertFalse(validate_horas(datos))
 
