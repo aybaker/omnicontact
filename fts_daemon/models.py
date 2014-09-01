@@ -372,7 +372,6 @@ class SimuladorEventoDeContactoManager():
             archivo_importacion='inexistete.csv',
             nombre_archivo_importacion='inexistete.csv',
             sin_definir=False,
-            columna_datos=1,
             cantidad_contactos=cantidad,
             estado=BaseDatosContacto.ESTADO_DEFINIDA,
         )
@@ -621,7 +620,9 @@ class EventoDeContactoEstadisticasManager():
         with log_timing(logger,
                         "obtener_opciones_por_contacto() tardo %s seg"):
             cursor.execute(sql, params)
-            yield cursor.fetchone()
+            # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
+            values = cursor.fetchall()
+        return values
 
     def obtener_contactos_por_opciones(self, campana_id):
         """
