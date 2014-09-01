@@ -66,11 +66,13 @@ def setup_connection_pool():
     #  globales a un objeto, o elminar las variables globales, de
     #  alguna manera compatible con Twisted
     global CONN_POOL
+    port = settings.DATABASES['default'].get('PORT', None)
     CONN_POOL = pool.ThreadedConnectionPool(5, 20,
         database=settings.DATABASES['default']['NAME'],
         user=settings.DATABASES['default']['USER'],
         password=settings.DATABASES['default']['PASSWORD'],
-        host=settings.DATABASES['default']['HOST']
+        host=settings.DATABASES['default']['HOST'],
+        port=port,
     )
 
 
