@@ -64,7 +64,6 @@ class BaseDatosContactoTest(FTSenderBaseTest):
             archivo_importacion=self.get_test_resource(
                 "planilla-ejemplo-0.xls"),
             nombre_archivo_importacion='planilla-ejemplo-0.xls',
-            columna_datos=0
         )
         bd_contacto.copia_para_reciclar()
 
@@ -80,7 +79,6 @@ class BaseDatosContactoTest(FTSenderBaseTest):
             archivo_importacion=self.get_test_resource(
                 "planilla-ejemplo-0.xls"),
             nombre_archivo_importacion='planilla-ejemplo-0.xls',
-            columna_datos=0
         )
 
         # Verifica que al crear una BaseDatosContacto y no definirla
@@ -103,7 +101,6 @@ class BaseDatosContactoTest(FTSenderBaseTest):
             archivo_importacion=self.get_test_resource(
                 "planilla-ejemplo-0.xls"),
             nombre_archivo_importacion='planilla-ejemplo-0.xls',
-            columna_datos=0
         )
 
         # Verifica que al crear una BaseDatosContacto y no definirla
@@ -132,7 +129,6 @@ class BaseDatosContactoTest(FTSenderBaseTest):
             archivo_importacion=self.get_test_resource(
                 "planilla-ejemplo-0.xls"),
             nombre_archivo_importacion='planilla-ejemplo-0.xls',
-            columna_datos=0
         )
         self.assertEqual(bd_contacto.get_cantidad_contactos(), 0)
 
