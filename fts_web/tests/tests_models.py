@@ -127,15 +127,18 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         bd_contacto = BaseDatosContacto.objects.create(
             nombre="base-datos-contactos",
             archivo_importacion=self.get_test_resource(
-                "planilla-ejemplo-0.xls"),
-            nombre_archivo_importacion='planilla-ejemplo-0.xls',
+                "planilla-ejemplo-0.csv"),
+            nombre_archivo_importacion='planilla-ejemplo-0.csv',
         )
+        bd_contacto.get_metadata().columna_con_telefono = 0
+        bd_contacto.save()
+
         self.assertEqual(bd_contacto.get_cantidad_contactos(), 0)
 
         creacion_base_datos_service = CreacionBaseDatosService()
         creacion_base_datos_service.importa_contactos(bd_contacto)
 
-        self.assertEqual(bd_contacto.get_cantidad_contactos(), 6)
+        self.assertEqual(bd_contacto.get_cantidad_contactos(), 4)
 
     def test_verifica_en_uso(self):
         """
