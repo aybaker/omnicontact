@@ -140,7 +140,7 @@ Bugs solucionados
 
 
 Sprint 9 - 20 de agosto de 2014
-------------------------------
+-------------------------------
 
 
 Instrucciones de deploy

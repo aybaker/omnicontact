@@ -26,26 +26,26 @@ y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
 Nueva funcionalidad: importacion de campos extras de CSV
 ........................................................
 
-* FTS-296 * Modifica BD/clases para soportar guardado de todos los campos del CSV
-* FTS-298 - FTS-299 * Importador de BD desde CSV guarda todos los campos del CSV
-* FTS-300 * Daemon: toma nros. telefonicos de la nueva estructura de datos
-* FTS-301 * Exportador reportes CSV: exporta todos los datos importados del CSV
-* FTS-302 * UI: creación de BD: adaptación a nueva estructura de datos
-* FTS-303 * UI: listado de números que seleccionaron opciones: adaptación a nueva estructura de datos
-* FTS-313 *	Refactorizar reciclado de BD: adaptación a nueva estructura de datos
+* FTS-296 - Modifica BD/clases para soportar guardado de todos los campos del CSV
+* FTS-298 - FTS-299 - Importador de BD desde CSV guarda todos los campos del CSV
+* FTS-300 - Daemon: toma nros. telefonicos de la nueva estructura de datos
+* FTS-301 - Exportador reportes CSV: exporta todos los datos importados del CSV
+* FTS-302 - UI: creación de BD: adaptación a nueva estructura de datos
+* FTS-303 - UI: listado de números que seleccionaron opciones: adaptación a nueva estructura de datos
+* FTS-313 -	Refactorizar reciclado de BD: adaptación a nueva estructura de datos
 
 Nueva funcionalidad: importación de campos fecha/hora
 .....................................................
 
-* FTS-304 *	Importador de BD: agrega funcionalidad para soportar campos fechas/hora
-* FTS-305 *	UI: Creación/importación de BD: permite seleccionar tipos de datos de las columans
+* FTS-304 -	Importador de BD: agrega funcionalidad para soportar campos fechas/hora
+* FTS-305 -	UI: Creación/importación de BD: permite seleccionar tipos de datos de las columans
 
 Diferidos para próximo Sprint
 .............................
 
-FTS-312 * Soportar PostgreSql 8
-FTS-314 * Arreglar UI de "Listado de contactos que seleccionaron opcion"
-FTS-316 * Cancelar importacion de BD de contactos si validacion falla 
+FTS-312 - Soportar PostgreSql 8
+FTS-314 - Arreglar UI de "Listado de contactos que seleccionaron opcion"
+FTS-316 - Cancelar importacion de BD de contactos si validacion falla 
 
 Known BUGs
 ----------
