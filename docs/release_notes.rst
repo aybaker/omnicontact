@@ -43,14 +43,14 @@ Nueva funcionalidad: importación de campos fecha/hora
 Diferidos para próximo Sprint
 .............................
 
-FTS-312 - Soportar PostgreSql 8
-FTS-314 - Arreglar UI de "Listado de contactos que seleccionaron opcion"
-FTS-316 - Cancelar importacion de BD de contactos si validacion falla 
+* FTS-312 - Soportar PostgreSql 8
+* FTS-314 - Arreglar UI de "Listado de contactos que seleccionaron opcion"
+* FTS-316 - Cancelar importacion de BD de contactos si validacion falla 
 
 Known BUGs
 ----------
 
-FTS-315 * ParserCsv abre file pero NO lo cierra
+* FTS-315 - ParserCsv abre file pero NO lo cierra
 
 Known issues
 ------------
