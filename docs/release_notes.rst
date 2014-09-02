@@ -1,8 +1,8 @@
 Release Notes
 =============
 
-Sprint 9 - 20 de agosto de 2014
-------------------------------
+Sprint 10 - 2 de septiembre de 2014
+-----------------------------------
 
 
 Instrucciones de deploy
@@ -12,7 +12,7 @@ Instrucciones de deploy
 .. code::
 
     $ ssh deployer@192.168.99.224
-    $ ./deploy.sh sprint9-fixes <INVENTARIO>
+    $ ./deploy.sh sprint10-fixes <INVENTARIO>
 
 Para crear usuarios, es necesario loguearse en el servidor con el usuario `ftsender`
 y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
@@ -23,23 +23,34 @@ y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
     $ server> /home/ftsender/deploy/bin/manage.sh create_ftsender_user
 
 
-Nueva funcionalidad: Templates de Campañas
-..........................................
+Nueva funcionalidad: importacion de campos extras de CSV
+........................................................
 
-* FTS-285 FTS-286 - Creacion de templates de campañas
-* FTS-287 FTS-289 - Creación de campañas desde templates de campaña
-* FTS-288 - Listado y borrado de templates de campañas
-* FTS-290 - Daemon: ignorar templates al buscar campañas a ejecutar
+* FTS-296 * Modifica BD/clases para soportar guardado de todos los campos del CSV
+* FTS-298 - FTS-299 * Importador de BD desde CSV guarda todos los campos del CSV
+* FTS-300 * Daemon: toma nros. telefonicos de la nueva estructura de datos
+* FTS-301 * Exportador reportes CSV: exporta todos los datos importados del CSV
+* FTS-302 * UI: creación de BD: adaptación a nueva estructura de datos
+* FTS-303 * UI: listado de números que seleccionaron opciones: adaptación a nueva estructura de datos
+* FTS-313 *	Refactorizar reciclado de BD: adaptación a nueva estructura de datos
 
-Nueva funcionalidad: Audios predefinidos
-........................................
+Nueva funcionalidad: importación de campos fecha/hora
+.....................................................
 
-* FTS-291 FTS-292 - Creación de audios predefinidos
-* FTS-292 - ABM y listado de audios predefinidos
-* FTS-293 - Update de campañas y templates de campañas: permite seleccion
-  de audios predefinidos
-* FTS-294 - Conversión de formato de archivos de audios para audios predefinidos
+* FTS-304 *	Importador de BD: agrega funcionalidad para soportar campos fechas/hora
+* FTS-305 *	UI: Creación/importación de BD: permite seleccionar tipos de datos de las columans
 
+Diferidos para próximo Sprint
+.............................
+
+FTS-312 * Soportar PostgreSql 8
+FTS-314 * Arreglar UI de "Listado de contactos que seleccionaron opcion"
+FTS-316 * Cancelar importacion de BD de contactos si validacion falla 
+
+Known BUGs
+----------
+
+FTS-315 * ParserCsv abre file pero NO lo cierra
 
 Known issues
 ------------

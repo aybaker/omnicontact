@@ -138,3 +138,34 @@ Bugs solucionados
 * FTS-207 - Reporte: unificar opciones invalidas en pie chart
 * FTS-42 - Separar frameworks (bootstrap) de las customizaciones
 
+
+Sprint 9 - 20 de agosto de 2014
+------------------------------
+
+
+Instrucciones de deploy
+.......................
+
+
+.. code::
+
+    $ ssh deployer@192.168.99.224
+    $ ./deploy.sh sprint9-fixes <INVENTARIO>
+
+
+Nueva funcionalidad: Templates de Campañas
+..........................................
+
+* FTS-285 FTS-286 - Creacion de templates de campañas
+* FTS-287 FTS-289 - Creación de campañas desde templates de campaña
+* FTS-288 - Listado y borrado de templates de campañas
+* FTS-290 - Daemon: ignorar templates al buscar campañas a ejecutar
+
+Nueva funcionalidad: Audios predefinidos
+........................................
+
+* FTS-291 FTS-292 - Creación de audios predefinidos
+* FTS-292 - ABM y listado de audios predefinidos
+* FTS-293 - Update de campañas y templates de campañas: permite seleccion
+  de audios predefinidos
+* FTS-294 - Conversión de formato de archivos de audios para audios predefinidos
