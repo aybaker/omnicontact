@@ -218,6 +218,7 @@
 - name: Reload FTSender services (except FastAGI daemon)
   command: /home/ftsender/deploy/bin/restart-ftsender.sh
   sudo: yes
+  ignore_errors: True
   tags:
     - deploy
     - quick_deploy
