@@ -17,6 +17,7 @@ from django.db.models import Count
 from fts_web.models import Campana, BaseDatosContacto, Contacto
 from fts_web.utiles import log_timing
 import logging as _logging
+import json
 
 
 logger = _logging.getLogger(__name__)
@@ -371,7 +372,6 @@ class SimuladorEventoDeContactoManager():
             archivo_importacion='inexistete.csv',
             nombre_archivo_importacion='inexistete.csv',
             sin_definir=False,
-            columna_datos=1,
             cantidad_contactos=cantidad,
             estado=BaseDatosContacto.ESTADO_DEFINIDA,
         )
@@ -381,8 +381,7 @@ class SimuladorEventoDeContactoManager():
             INSERT INTO fts_web_contacto
                 SELECT
                     nextval('fts_web_contacto_id_seq') as "id",
-                    (random()*1000000000000)::bigint::text as "telefono",
-                    '' as "datos",
+                    '[' || (random()*1000000000000)::bigint::text || ']' as "datos",
                     %s as "bd_contacto_id"
                 FROM
                     generate_series(1, %s)
@@ -603,20 +602,22 @@ class EventoDeContactoEstadisticasManager():
 
     def obtener_opciones_por_contacto(self, campana_id):
         """
-        Devuelve un diccionario con el el número de teléfono como clave y
+        Devuelve un diccionario con el valor del atributo datos como clave y
         una lista de los eventos que produjo.
         """
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
-        sql = """SELECT telefono, array_agg(evento)
+
+        sql = """SELECT datos, array_agg(evento)
             FROM fts_web_contacto INNER JOIN fts_daemon_eventodecontacto
             ON fts_web_contacto.id = fts_daemon_eventodecontacto.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono;
+            GROUP BY contacto_id, datos;
         """
+
         params = [campana.id]
         with log_timing(logger,
-            "obtener_opciones_por_contacto() tardo %s seg"):
+                        "obtener_opciones_por_contacto() tardo %s seg"):
             cursor.execute(sql, params)
             # FIXME: fetchall levanta todos los datos en memoria. Ver FTS-197.
             values = cursor.fetchall()
@@ -629,7 +630,7 @@ class EventoDeContactoEstadisticasManager():
         """
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
-        sql = """SELECT evento, array_agg(telefono ORDER BY timestamp)
+        sql = """SELECT evento, array_agg(datos ORDER BY timestamp)
             FROM fts_web_contacto INNER JOIN fts_daemon_eventodecontacto
             ON fts_web_contacto.id = fts_daemon_eventodecontacto.contacto_id
             WHERE campana_id = %s AND evento IN %s
@@ -942,19 +943,32 @@ class GestionDeLlamadasManager(models.Manager):
         values = [(row[0] - 1, row[1],) for row in values]
         return values
 
-    def obtener_datos_de_contactos(self, id_contactos):
+    def obtener_datos_de_contactos(self, id_contactos, bd_contactos):
         """Devuelve los datos necesarios para generar llamadas
         para los contactos pasados por parametros (lista de IDs).
+
+        Lo más importante que devuelve es el numero telefonico.
 
         Devuelve lista de listas, con ((id_contacto, telefono,), ...)
         """
         if len(id_contactos) > 100:
             logger.warn("obtener_datos_de_contactos(): de id_contactos "
                 "contiene muchos elementos, exactamente %s", len(id_contactos))
+
+        metadata = bd_contactos.get_metadata()
+
         with log_timing(logger, "obtener_datos_de_contactos() tardo %s seg"):
             # forzamos query
-            values = list(Contacto.objects.filter(
-                id__in=id_contactos).values_list('id', 'telefono'))
+
+            # values = list(Contacto.objects.filter(
+            #     id__in=id_contactos).values_list('id', 'telefono'))
+
+            qs = Contacto.objects.filter(id__in=id_contactos
+                                        ).values_list('id', 'datos')
+            values = []
+            for pk, datos in qs:
+                telefono = metadata.obtener_telefono_de_dato_de_contacto(datos)
+                values.append((pk, telefono))
 
         return values
 
@@ -962,7 +976,7 @@ class GestionDeLlamadasManager(models.Manager):
 class RecicladorContactosEventoDeContactoManager(models.Manager):
     """
     Este manager se encarga de obtener los contactos según el tipo de
-    reciclado de campana que se realice. 
+    reciclado de campana que se realice.
     """
 
     def obtener_contactos_reciclados(self, campana, tipos_reciclado):
@@ -1011,11 +1025,11 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono
+        sql = """SELECT datos
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
+            GROUP BY contacto_id, datos
             HAVING not( %s = ANY(array_agg(evento)))
         """.format(nombre_tabla)
 
@@ -1043,11 +1057,11 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono
+        sql = """SELECT datos
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
+            GROUP BY contacto_id, datos
             HAVING %s = ANY(array_agg(evento))
             AND not( %s = ANY(array_agg(evento)))
         """.format(nombre_tabla)
@@ -1076,11 +1090,11 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono
+        sql = """SELECT datos
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
+            GROUP BY contacto_id, datos
             HAVING %s = ANY(array_agg(evento))
             AND not( %s = ANY(array_agg(evento)))
         """.format(nombre_tabla)
@@ -1110,11 +1124,11 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono
+        sql = """SELECT datos
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
+            GROUP BY contacto_id, datos
             HAVING %s = ANY(array_agg(evento))
             AND not( %s = ANY(array_agg(evento)))
         """.format(nombre_tabla)
@@ -1144,11 +1158,11 @@ class RecicladorContactosEventoDeContactoManager(models.Manager):
         nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT telefono
+        sql = """SELECT datos
             FROM fts_web_contacto INNER JOIN {0}
             ON fts_web_contacto.id = {0}.contacto_id
             WHERE campana_id = %s
-            GROUP BY contacto_id, telefono
+            GROUP BY contacto_id, datos
             HAVING %s = ANY(array_agg(evento))
             AND not( %s = ANY(array_agg(evento)))
         """.format(nombre_tabla)
@@ -1200,7 +1214,7 @@ class EventoDeContacto(models.Model):
     EVENTO_DAEMON_ORIGINATE_SUCCESSFUL = 11
     """El originate se produjo exitosamente.
 
-    *Este evento es registrado por el daemon que realiza las llamadas.*
+    *Este eventofts_web_contacto es registrado por el daemon que realiza las llamadas.*
     """
 
     EVENTO_DAEMON_ORIGINATE_FAILED = 12

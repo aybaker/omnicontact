@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 import csv
 import logging
 import os
+import json
 
 from django.conf import settings
 from fts_web.models import Campana
@@ -34,31 +35,40 @@ class ReporteCampanaService(object):
         if os.path.exists(file_path):
             # Esto no debería suceder.
             logger.warn("crea_reporte_csv(): Ya existe archivo CSV de "
-                         "reporte para la campana %s. Archivo: %s. "
-                         "El archivo sera sobreescrito", campana.pk, file_path)
+                        "reporte para la campana %s. Archivo: %s. "
+                        "El archivo sera sobreescrito", campana.pk, file_path)
 
-        dirname, filename = crear_archivo_en_media_root(dirname,
-            "{0}-reporte".format(campana.id), ".csv")
+        dirname, filename = crear_archivo_en_media_root(
+            dirname, "{0}-reporte".format(campana.id), ".csv")
 
-        values = EventoDeContacto.objects_estadisticas\
+        contacto_opciones = EventoDeContacto.objects_estadisticas\
             .obtener_opciones_por_contacto(campana.pk)
 
         with open(file_path, 'wb') as csvfile:
             # Creamos encabezado
-            encabezado = ["nro_telefono"]
+            encabezado = []
+
+            cantidad_datos = len(json.loads(contacto_opciones[0][0]))
+            for c in range(cantidad_datos):
+                encabezado.append("Extra{0}".format(c+1))
+
             opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
-                for op in campana.opciones.all()])
+                                 for op in campana.opciones.all()])
+
             for opcion in range(10):
                 try:
                     encabezado.append(opciones_dict[opcion])
                 except KeyError:
-                    encabezado.append("#{0} - Opcion invalida".format(opcion))
+                    encabezado.append(u"#{0} - N/A".format(opcion))
 
             # Creamos csvwriter y guardamos encabezado y luego datos
             csvwiter = csv.writer(csvfile)
             csvwiter.writerow(encabezado)
-            for telefono, lista_eventos in values:
-                lista_opciones = [telefono]
+            for contacto, lista_eventos in contacto_opciones:
+                lista_opciones = []
+                for dato in json.loads(contacto):
+                    lista_opciones.append(dato)
+
                 for opcion in range(10):
                     evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
                     if evento in lista_eventos:

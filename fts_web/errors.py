@@ -78,11 +78,13 @@ class FtsParserOpenFileError(FtsError):
     """
     pass
 
+
 class FtsRecicladoBaseDatosContactoError(FtsError):
     """
     No se pudo obtener la base de datos en el reciclado de la campana.
     """
     pass
+
 
 class FtsRecicladoCampanaError(FtsError):
     """
@@ -90,9 +92,17 @@ class FtsRecicladoCampanaError(FtsError):
     """
     pass
 
+
 class FtsDepuraBaseDatoContactoError(FtsError):
     """
     No se pudo depurar la base datos de contactos.
+    """
+    pass
+
+
+class FtsArchivoImportacionInvalidoError(FtsError):
+    """
+    El archivo para realizar la importación de Contactos no es válido.
     """
     pass
 

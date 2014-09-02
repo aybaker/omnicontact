@@ -18,15 +18,15 @@ from django.views.generic import (
     RedirectView, TemplateView)
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config, create_queue_config_file
-
 from fts_daemon.audio_conversor import (convertir_audio_de_campana,
                                         ConversorDeAudioService)
 from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_daemon.tasks import esperar_y_depurar_campana_async
 from fts_web.errors import (FtsAudioConversionError,
-    FtsParserCsvDelimiterError, FtsParserMinRowError, FtsParserMaxRowError,
-    FtsParserOpenFileError, FtsRecicladoCampanaError,
-    FtsDepuraBaseDatoContactoError)
+                            FtsParserCsvDelimiterError, FtsParserMinRowError,
+                            FtsParserMaxRowError, FtsParserOpenFileError,
+                            FtsRecicladoCampanaError,
+                            FtsDepuraBaseDatoContactoError)
 from fts_web.forms import (
     ActuacionForm, AgentesGrupoAtencionFormSet, AudioForm, CampanaForm,
     CalificacionForm, ConfirmaForm, GrupoAtencionForm, TipoRecicladoForm,
@@ -35,14 +35,15 @@ from fts_web.forms import (
 from fts_web.models import (
     Actuacion, Calificacion, Campana, GrupoAtencion, DerivacionExterna,
     BaseDatosContacto, Opcion, ArchivoDeAudio)
-from fts_web.parser import autodetectar_parser
+from fts_web.parser import ParserCsv
 import logging as logging_
 from fts_web.reciclador_base_datos_contacto.reciclador import (
     RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
-    CampanaTipoRecicladoInvalidoError)
+    CampanaTipoRecicladoInvalidoError, FtsRecicladoBaseDatosContactoError)
 from fts_web import version
 from fts_web.services.estadisticas_campana import EstadisticasCampanaService
 from fts_web.services.reporte_campana import ReporteCampanaService
+from fts_web.services.base_de_datos_contactos import CreacionBaseDatosService
 
 
 logger = logging_.getLogger(__name__)
@@ -464,7 +465,10 @@ class BaseDatosContactoCreateView(CreateView):
 
         self.object = form.save(commit=False)
         self.object.nombre_archivo_importacion = nombre_archivo_importacion
-        self.object.save()
+
+        creacion_base_datos = CreacionBaseDatosService()
+        creacion_base_datos.genera_base_dato_contacto(self.object)
+
         return redirect(self.get_success_url())
 
     def get_success_url(self):
@@ -488,21 +492,19 @@ class DefineBaseDatosContactoView(UpdateView):
     model = BaseDatosContacto
     context_object_name = 'base_datos_contacto'
 
-    def get_context_data(self, **kwargs):
-        context = super(
-            DefineBaseDatosContactoView, self).get_context_data(**kwargs)
 
+    def obtiene_estructura_archivo(self, pk):
         base_datos_contacto = get_object_or_404(
-            BaseDatosContacto, pk=self.kwargs['pk']
+            BaseDatosContacto, pk=pk
         )
 
-        parser_archivo = autodetectar_parser(
-            base_datos_contacto.nombre_archivo_importacion)
-
+        parser = ParserCsv()
         estructura_archivo = None
         try:
-            estructura_archivo = parser_archivo.get_file_structure(
+            estructura_archivo = parser.get_file_structure(
                 base_datos_contacto.archivo_importacion.file)
+            return estructura_archivo
+
         except FtsParserCsvDelimiterError:
             message = '<strong>Operación Errónea!</strong> \
             No se pudo determinar el delimitador a ser utilizado \
@@ -535,40 +537,52 @@ class DefineBaseDatosContactoView(UpdateView):
                 message,
             )
 
+    def get_context_data(self, **kwargs):
+        context = super(
+            DefineBaseDatosContactoView, self).get_context_data(**kwargs)
+
+        estructura_archivo = self.obtiene_estructura_archivo(self.kwargs['pk'])
         context['estructura_archivo'] = estructura_archivo
+        context['datos_extras'] = BaseDatosContacto.DATOS_EXTRAS
         return context
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(error=True))
 
     def post(self, request, *args, **kwargs):
+
         self.object = self.get_object()
 
+        dic_metadata = {}
         if 'telefono' in self.request.POST:
-            self.object.columna_datos = int(self.request.POST['telefono'])
-            self.object.save()
 
-            parser_archivo = autodetectar_parser(
-                self.object.nombre_archivo_importacion)
+            columan_con_telefono = int(self.request.POST['telefono'])
+            dic_metadata['columna_con_telefono'] = columan_con_telefono
+
+            estructura_archivo = self.obtiene_estructura_archivo(
+                self.kwargs['pk'])
+            lista_columnas_fechas = []
+            lista_columnas_horas = []
+            for columna in estructura_archivo.keys():
+                dato_extra = self.request.POST.get(
+                    'datos-extras-{0}'.format(columna), None)
+                if dato_extra == BaseDatosContacto.DATO_EXTRA_FECHA:
+                    lista_columnas_fechas.append(columna)
+                elif dato_extra == BaseDatosContacto.DATO_EXTRA_HORA:
+                    lista_columnas_horas.append(columna)
+
+            dic_metadata['columnas_con_fecha'] = lista_columnas_fechas
+            dic_metadata['columnas_con_hora'] = lista_columnas_horas
+
+            creacion_base_datos = CreacionBaseDatosService()
+            creacion_base_datos.guarda_metadata(self.object, dic_metadata)
 
             try:
-                self.object.importa_contactos(parser_archivo)
-                self.object.define()
-
-                message = '<strong>Operación Exitosa!</strong>\
-                Se llevó a cabo con éxito la creación de\
-                la Base de Datos de Contactos.'
-
-                messages.add_message(
-                    self.request,
-                    messages.SUCCESS,
-                    message,
-                )
-                return redirect(self.get_success_url())
+                creacion_base_datos.importa_contactos(self.object)
             except FtsParserMaxRowError:
                 message = '<strong>Operación Errónea!</strong> \
-                El archivo que seleccionó posee mas registros de los permitidos\
-                para ser importados.'
+                          El archivo que seleccionó posee mas registros de los\
+                          permitidos para ser importados.'
 
                 messages.add_message(
                     self.request,
@@ -576,6 +590,20 @@ class DefineBaseDatosContactoView(UpdateView):
                     message,
                 )
                 return redirect(reverse('lista_base_datos_contacto'))
+            else:
+                creacion_base_datos.define_base_dato_contacto(self.object)
+
+                message = '<strong>Operación Exitosa!</strong>\
+                          Se llevó a cabo con éxito la creación de\
+                          la Base de Datos de Contactos.'
+
+                messages.add_message(
+                    self.request,
+                    messages.SUCCESS,
+                    message,
+                )
+                return redirect(self.get_success_url())
+
         return super(DefineBaseDatosContactoView, self).post(
             request, *args, **kwargs)
 
@@ -1346,7 +1374,8 @@ class TipoRecicladoCampanaView(FormView):
                 self.campana_id, tipos_reciclado)
 
         except (CampanaEstadoInvalidoError,
-                CampanaTipoRecicladoInvalidoError) as error:
+                CampanaTipoRecicladoInvalidoError,
+                FtsRecicladoBaseDatosContactoError) as error:
             message = '<strong>Operación Errónea!</strong>\
             No se pudo reciclar la Base de Datos de la campana. {0}'.format(
                 error)
@@ -1886,7 +1915,7 @@ class CampanaEstadoOpcionesDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CampanaEstadoOpcionesDetailView,
-            self).get_context_data(**kwargs)
+                        self).get_context_data(**kwargs)
 
         context['detalle_opciones'] = self.object.\
             obtener_detalle_opciones_seleccionadas()

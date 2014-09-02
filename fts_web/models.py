@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 import datetime
 import logging
 import os
+import json
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -19,6 +20,7 @@ from fts_daemon.audio_conversor import ConversorDeAudioService
 from fts_web.errors import (FtsRecicladoCampanaError,
     FTSOptimisticLockingError)
 from fts_web.utiles import upload_to, log_timing
+import json
 
 
 logger = logging.getLogger(__name__)
@@ -228,8 +230,84 @@ class BaseDatosContactoManager(models.Manager):
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
 
+class MetadataBaseDatosContacto(object):
+    """Encapsula acceso a metadatos de BaseDatosContacto"""
+
+    def __init__(self, bd):
+        self.bd = bd
+        if bd.metadata == '' or bd.metadata is None:
+            self._metadata = {}
+        else:
+            self._metadata = json.loads(bd.metadata)
+
+    @property
+    def columna_con_telefono(self):
+        try:
+            return self._metadata['col_telefono']
+        except KeyError:
+            raise(ValueError("No se ha seteado 'columna_con_telefono'"))
+
+    @columna_con_telefono.setter
+    def columna_con_telefono(self, columna):
+        self._metadata['col_telefono'] = int(columna)
+        self._save()
+
+    @property
+    def columnas_con_fecha(self):
+        try:
+            return self._metadata['cols_fecha']
+        except KeyError:
+            return []
+
+    @columnas_con_fecha.setter
+    def columnas_con_fecha(self, columnas):
+        """
+        Parametros:
+        - columnas: Lista de enteros que indican las columnas con fechas.
+        """
+        self._metadata['cols_fecha'] = columnas
+        self._save()
+
+    @property
+    def columnas_con_hora(self):
+        try:
+            return self._metadata['cols_hora']
+        except KeyError:
+            return []
+
+    @columnas_con_hora.setter
+    def columnas_con_hora(self, columnas):
+        """
+        Parametros:
+        - columnas: Lista de enteros que indican las columnas con horas.
+        """
+        self._metadata['cols_hora'] = columnas
+        self._save()
+
+    def obtener_telefono_de_dato_de_contacto(self, datos):
+        """Devuelve el numero telefonico del contacto.
+
+        :param datos: atribuito 'datos' del contacto, o sea, valores de
+                      las columnas codificadas con json
+        """
+        return json.loads(datos)[self._metadata['col_telefono']]
+
+    def _save(self):
+        """Guardar los metadatos en la instancia de BaseDatosContacto"""
+        self.bd.metadata = json.dumps(self._metadata)
+
+
 class BaseDatosContacto(models.Model):
     objects = BaseDatosContactoManager()
+
+    DATO_EXTRA_GENERICO = 'GENERICO'
+    DATO_EXTRA_FECHA = 'FECHA'
+    DATO_EXTRA_HORA = 'HORA'
+    DATOS_EXTRAS = (
+        (DATO_EXTRA_GENERICO, 'Dato Genérico'),
+        (DATO_EXTRA_FECHA, 'Fecha'),
+        (DATO_EXTRA_HORA, 'Hora'),
+    )
 
     ESTADO_EN_DEFINICION = 0
     ESTADO_DEFINIDA = 1
@@ -248,10 +326,6 @@ class BaseDatosContacto(models.Model):
     fecha_alta = models.DateTimeField(
         auto_now_add=True,
     )
-    columnas = models.CharField(
-        max_length=256,
-        blank=True, null=True,
-    )
     archivo_importacion = models.FileField(
         upload_to=upload_to_archivos_importacion,
         max_length=100,
@@ -259,11 +333,9 @@ class BaseDatosContacto(models.Model):
     nombre_archivo_importacion = models.CharField(
         max_length=256,
     )
+    metadata = models.TextField(null=True, blank=True)
     sin_definir = models.BooleanField(
         default=True,
-    )
-    columna_datos = models.PositiveIntegerField(
-        blank=True, null=True,
     )
     cantidad_contactos = models.PositiveIntegerField(
         default=0
@@ -277,45 +349,23 @@ class BaseDatosContacto(models.Model):
         return "{0}: ({1} contactos)".format(self.nombre,
                                              self.cantidad_contactos)
 
-    def importa_contactos(self, parser_archivo):
-        """
-        Este metodo se encarga de realizar la importación de los
-        teléfonos del archivo guardado. Por cada teléfono del
-        archivo crea un objeto Contacto con el teléfono y lo
-        relaciona la instancia actual de BaseDatosContacto.
-        Parametros:
-        - parser_archivo: Instacia del parser adecuado según el
-        tipo de archivo subido.
+    def get_metadata(self):
+        return MetadataBaseDatosContacto(self)
 
-        """
-
-        lista_telefonos = parser_archivo.read_file(self.columna_datos,
-            self.archivo_importacion.file)
-        if lista_telefonos:
-            for telefono in lista_telefonos:
-                Contacto.objects.create(
-                    telefono=telefono,
-                    bd_contacto=self,
-                )
-            self.cantidad_contactos = len(lista_telefonos)
-            return True
-        return False
-
-    def genera_contactos(self, lista_telefonos):
+    def genera_contactos(self, lista_datos_contacto):
         """
         Este metodo se encarga de realizar la generación de contactos
         a partir de una lista de tuplas de teléfonos.
         Parametros:
-        - lista_telefonos: lista de tuplas con lo números telefónicos
-        que representarán las instancias de contacto.
+        - lista_datos_contacto: lista de tuplas con lo datos del contacto.
         """
 
-        for telefono in lista_telefonos:
+        for datos_contacto in lista_datos_contacto:
             Contacto.objects.create(
-                telefono=telefono[0],
+                datos=datos_contacto[0],
                 bd_contacto=self,
             )
-        self.cantidad_contactos = len(lista_telefonos)
+        self.cantidad_contactos = len(lista_datos_contacto)
 
     def define(self):
         """
@@ -401,10 +451,9 @@ class BaseDatosContacto(models.Model):
         """
         copia = BaseDatosContacto.objects.create(
             nombre='{0} (reciclada)'.format(self.nombre),
-            columnas=self.columnas,
             archivo_importacion=self.archivo_importacion,
             nombre_archivo_importacion=self.nombre_archivo_importacion,
-            columna_datos=self.columna_datos,
+            metadata=self.metadata,
         )
         return copia
 
@@ -437,12 +486,7 @@ class ContactoManager(models.Manager):
 class Contacto(models.Model):
     objects = ContactoManager()
 
-    telefono = models.CharField(
-        max_length=64,
-    )
-    datos = models.TextField(
-        blank=True, null=True,
-    )
+    datos = models.TextField()
     bd_contacto = models.ForeignKey(
         'BaseDatosContacto',
         related_name='contactos'
@@ -450,7 +494,7 @@ class Contacto(models.Model):
 
     def __unicode__(self):
         return '{0} >> {1}'.format(
-            self.bd_contacto, self.telefono)
+            self.bd_contacto, self.datos)
 
 
 #==============================================================================
@@ -1024,22 +1068,30 @@ class Campana(models.Model):
         [[Opcion, [3513368309, 3513368308]], [9, [3513368309, 3513368308]]].
         """
         from fts_daemon.models import EventoDeContacto
-
-        detalle_opciones = [list(detalle_opcion) for detalle_opcion in
-            EventoDeContacto.objects_estadisticas.\
-            obtener_contactos_por_opciones(self.pk)]
+        EDC = EventoDeContacto.objects_estadisticas
 
         opciones = Opcion.objects.filter(campana=self)
 
-        for detalle_opcion in detalle_opciones:
+        lista_final = []
+        for detalle_opcion in EDC.obtener_contactos_por_opciones(self.pk):
+            print detalle_opcion
+
+            lista_item = []
+
             digito = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
-                    detalle_opcion[0]]
+                detalle_opcion[0]]
+
             try:
                 opcion = opciones.get(digito=digito)
-                detalle_opcion[0] = opcion
+                lista_item.append(opcion)
             except Opcion.DoesNotExist:
-                detalle_opcion[0] = digito
-        return detalle_opciones
+                lista_item.append(digito)
+
+            lista_item.append(['-'.join(map(str, json.loads(contacto)))
+                               for contacto in detalle_opcion[1]])
+
+            lista_final.append(lista_item)
+        return lista_final
 
     def recalcular_aedc_completamente(self):
         """Recalcula COMPLETAMENTE la agregacion. Este debe

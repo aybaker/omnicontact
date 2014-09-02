@@ -24,6 +24,7 @@ from fts_daemon.models import EventoDeContacto
 from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
     Contacto, BaseDatosContacto, Campana, Opcion, Actuacion, DerivacionExterna
 import shutil
+import json
 
 
 EV_FINALIZADOR = EventoDeContacto.objects.\
@@ -232,8 +233,8 @@ class FTSenderTestUtilsMixin(object):
             o es None, se genera un numero aleatorio
         """
         nro_telefonico = nro_telefonico or rtel()
-        return Contacto.objects.create(telefono=nro_telefonico,
-            datos="{}", bd_contacto=bd_contacto)
+        return Contacto.objects.create(datos=json.dumps([nro_telefonico]),
+                                       bd_contacto=bd_contacto)
 
     def crear_base_datos_contacto(self, cant_contactos=None,
         numeros_telefonicos=None):
@@ -246,6 +247,7 @@ class FTSenderTestUtilsMixin(object):
         """
         bd_contacto = BaseDatosContacto.objects.create(
             nombre="base-datos-contactos-" + ru())
+        bd_contacto.get_metadata().columna_con_telefono = 0
         if numeros_telefonicos is not None:
             for nro_telefonico in numeros_telefonicos:
                 self.crear_contacto(

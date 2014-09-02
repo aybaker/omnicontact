@@ -22,12 +22,12 @@ from fts_web.errors import (FtsRecicladoCampanaError,
     FtsRecicladoBaseDatosContactoError)
 from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
     BaseDatosContacto, Campana, Contacto, Opcion, Calificacion, Actuacion)
-from fts_web.parser import autodetectar_parser
+from fts_web.parser import ParserCsv
 from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
 from fts_web.services.estadisticas_campana import EstadisticasCampanaService
 from fts_web.services.reporte_campana import ReporteCampanaService
-
+from fts_web.services.base_de_datos_contactos import CreacionBaseDatosService
 
 def _tmpdir():
     """Crea directorio temporal"""
@@ -64,7 +64,6 @@ class BaseDatosContactoTest(FTSenderBaseTest):
             archivo_importacion=self.get_test_resource(
                 "planilla-ejemplo-0.xls"),
             nombre_archivo_importacion='planilla-ejemplo-0.xls',
-            columna_datos=0
         )
         bd_contacto.copia_para_reciclar()
 
@@ -80,7 +79,6 @@ class BaseDatosContactoTest(FTSenderBaseTest):
             archivo_importacion=self.get_test_resource(
                 "planilla-ejemplo-0.xls"),
             nombre_archivo_importacion='planilla-ejemplo-0.xls',
-            columna_datos=0
         )
 
         # Verifica que al crear una BaseDatosContacto y no definirla
@@ -103,7 +101,6 @@ class BaseDatosContactoTest(FTSenderBaseTest):
             archivo_importacion=self.get_test_resource(
                 "planilla-ejemplo-0.xls"),
             nombre_archivo_importacion='planilla-ejemplo-0.xls',
-            columna_datos=0
         )
 
         # Verifica que al crear una BaseDatosContacto y no definirla
@@ -130,16 +127,18 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         bd_contacto = BaseDatosContacto.objects.create(
             nombre="base-datos-contactos",
             archivo_importacion=self.get_test_resource(
-                "planilla-ejemplo-0.xls"),
-            nombre_archivo_importacion='planilla-ejemplo-0.xls',
-            columna_datos=0
+                "planilla-ejemplo-0.csv"),
+            nombre_archivo_importacion='planilla-ejemplo-0.csv',
         )
+        bd_contacto.get_metadata().columna_con_telefono = 0
+        bd_contacto.save()
+
         self.assertEqual(bd_contacto.get_cantidad_contactos(), 0)
 
-        parser = autodetectar_parser(bd_contacto.nombre_archivo_importacion)
-        bd_contacto.importa_contactos(parser)
+        creacion_base_datos_service = CreacionBaseDatosService()
+        creacion_base_datos_service.importa_contactos(bd_contacto)
 
-        self.assertEqual(bd_contacto.get_cantidad_contactos(), 6)
+        self.assertEqual(bd_contacto.get_cantidad_contactos(), 4)
 
     def test_verifica_en_uso(self):
         """
