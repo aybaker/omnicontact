@@ -381,8 +381,7 @@ class SimuladorEventoDeContactoManager():
             INSERT INTO fts_web_contacto
                 SELECT
                     nextval('fts_web_contacto_id_seq') as "id",
-                    (random()*1000000000000)::bigint::text as "telefono",
-                    '' as "datos",
+                    '[' || (random()*1000000000000)::bigint::text || ']' as "datos",
                     %s as "bd_contacto_id"
                 FROM
                     generate_series(1, %s)
