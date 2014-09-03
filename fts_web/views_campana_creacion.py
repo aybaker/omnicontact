@@ -22,12 +22,12 @@ import logging as logging_
 logger = logging_.getLogger(__name__)
 
 
-# __all__ = ["CampanaEnCreacionMixin", "CampanaCreateView",
+# __all__ = ["CheckEstadoCampanaMixin", "CampanaCreateView",
 #            "CampanaUpdateView", "AudioCampanaCreateView",
 #            "CalificacionCampanaCreateView"]
 
 
-class CampanaEnCreacionMixin(object):
+class CheckEstadoCampanaMixin(object):
     """Mixin para utilizar en las vistas de creación de campañas.
     Utiliza `Campana.objects.obtener_en_definicion_para_editar()`
     para obtener la campaña.
@@ -39,7 +39,7 @@ class CampanaEnCreacionMixin(object):
         Campana.objects.obtener_en_definicion_para_editar(
             self.kwargs['pk_campana'])
 
-        return super(CampanaEnCreacionMixin, self).dispatch(request, *args,
+        return super(CheckEstadoCampanaMixin, self).dispatch(request, *args,
                                                             **kwargs)
 
 
@@ -72,7 +72,7 @@ class CampanaCreateView(CreateView):
             kwargs={"pk_campana": self.object.pk})
 
 
-class CampanaUpdateView(CampanaEnCreacionMixin, CampanaEnDefinicionMixin,
+class CampanaUpdateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
                         UpdateView):
     """
     Esta vista actualiza un objeto Campana.
@@ -89,7 +89,7 @@ class CampanaUpdateView(CampanaEnCreacionMixin, CampanaEnDefinicionMixin,
             kwargs={"pk_campana": self.object.pk})
 
 
-class AudioCampanaCreateView(CampanaEnCreacionMixin, CampanaEnDefinicionMixin,
+class AudioCampanaCreateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
                              UpdateView):
     """
     Esta vista actuaiza un objeto Campana
@@ -183,7 +183,7 @@ class AudioCampanaCreateView(CampanaEnCreacionMixin, CampanaEnDefinicionMixin,
             kwargs={"pk_campana": self.object.pk})
 
 
-class CalificacionCampanaCreateView(CampanaEnCreacionMixin, CreateView):
+class CalificacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
     """
     Esta vista crea uno o varios objetos Calificación
     para la Campana que se este creando.
@@ -265,7 +265,7 @@ class CalificacionCampanaDeleteView(DeleteView):
         )
 
 
-class OpcionCampanaCreateView(CampanaEnCreacionMixin, CreateView):
+class OpcionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
     """
     Esta vista crea uno o varios objetos Opcion
     para la Campana que se este creando.
@@ -344,7 +344,7 @@ class OpcionCampanaDeleteView(DeleteView):
         )
 
 
-class ActuacionCampanaCreateView(CampanaEnCreacionMixin, CreateView):
+class ActuacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
     """
     Esta vista crea uno o varios objetos Actuacion
     para la Campana que se este creando.
@@ -458,7 +458,7 @@ class ActuacionCampanaDeleteView(DeleteView):
         )
 
 
-class ConfirmaCampanaMixin(CampanaEnCreacionMixin, CampanaEnDefinicionMixin,
+class ConfirmaCampanaMixin(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
                            UpdateView):
 
     """
