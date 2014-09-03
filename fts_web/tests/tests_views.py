@@ -12,6 +12,9 @@ from django.core.urlresolvers import reverse
 
 
 class CampanaCrearTest(FTSenderBaseTest):
+    """Testea que las vistas usadas para crear campañas NO puedan ser
+    utilizadas con campañas ya definidas
+    """
 
     def setUp(self):
         self.user = User.objects.create_user('user', 'user@e.com', 'user')
@@ -36,3 +39,24 @@ class CampanaCrearTest(FTSenderBaseTest):
 
         self.assertTemplateUsed(response, "campana/nueva_edita_campana.html")
         self.assertContains(response, self.campana.nombre)
+
+
+class TemplateDeCampanaCrearTest(FTSenderBaseTest):
+    """Testea que las vistas usadas para crear templates de campañas NO puedan
+    ser utilizadas con templates de campañas ya definidas
+    """
+    pass
+
+
+class ReciclarCampanaTest(FTSenderBaseTest):
+    """Testea que las vistas usadas para reciclar campanas NO puedan
+    ser utilizadas con campañas ya definidas
+    """
+    pass
+
+
+class CrearBaseDeDatosContactosTest(FTSenderBaseTest):
+    """Testea que las vistas usadas para crear bd de contactos NO puedan
+    ser utilizadas con bd de contactos ya definidas
+    """
+    pass
