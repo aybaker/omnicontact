@@ -22,8 +22,9 @@ import logging as logging_
 logger = logging_.getLogger(__name__)
 
 
-# __all__ = ["CampanaEnCreacionMixin", "CampanaCreateView", "CampanaUpdateView",
-#            "AudioCampanaCreateView", "CalificacionCampanaCreateView"]
+# __all__ = ["CampanaEnCreacionMixin", "CampanaCreateView",
+#            "CampanaUpdateView", "AudioCampanaCreateView",
+#            "CalificacionCampanaCreateView"]
 
 
 class CampanaEnCreacionMixin(object):
