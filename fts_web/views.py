@@ -1407,6 +1407,8 @@ class TipoRecicladoCampanaView(FormView):
     template_name = 'campana/reciclado/campana_tipo_reciclado.html'
     form_class = TipoRecicladoForm
 
+    # @@@@@@@@@@@@@@@@@@@@
+
     def post(self, request, *args, **kwargs):
         self.campana_id = kwargs['pk']
         return super(TipoRecicladoCampanaView, self).post(request, args,
@@ -1484,6 +1486,8 @@ class RedefinicionRecicladoCampanaView(UpdateView):
     context_object_name = 'campana'
     form_class = CampanaForm
 
+    # @@@@@@@@@@@@@@@@@@@@
+
     def get(self, request, *args, **kwargs):
         """
         Valida que la campana a redefinir este en definición.
@@ -1523,6 +1527,8 @@ class ActuacionRecicladoCampanaView(CreateView):
     Inicializa el form con campo campana (hidden)
     con el id de campana que viene en la url.
     """
+
+    # @@@@@@@@@@@@@@@@@@@@
 
     template_name = 'campana/reciclado/actuacion_reciclado_campana.html'
     model = Actuacion
@@ -1587,6 +1593,8 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
     template_name = \
         'campana/reciclado/elimina_actuacion_reciclado_campana.html'
 
+    # @@@@@@@@@@@@@@@@@@@@
+
     def get_object(self, queryset=None):
         actuacion = super(ActuacionRecicladoCampanaDeleteView, self).\
             get_object(queryset=None)
@@ -1628,6 +1636,8 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
 
 class ConfirmaRecicladoCampanaView(ConfirmaCampanaMixin):
     template_name = 'campana/reciclado/confirma_reciclado_campana.html'
+
+    # @@@@@@@@@@@@@@@@@@@@
 
     def get(self, request, *args, **kwargs):
         campana = self.get_object()
@@ -1769,6 +1779,8 @@ class TemplateaUpdateView(TemplateMixin, UpdateView):
     context_object_name = 'campana'
     form_class = TemplateForm
 
+    # @@@@@@@@@@@@@@@@@@@@
+
     def get_success_url(self):
         return reverse(
             'audio_template',
@@ -1781,6 +1793,8 @@ class DetalleTemplateView(TemplateMixin, DetalleCampanView):
 
 class AudioTemplateCreateView(TemplateMixin, AudioCampanaCreateView):
 
+    # @@@@@@@@@@@@@@@@@@@@
+
     def get_success_url(self):
         return reverse(
             'audio_template',
@@ -1789,6 +1803,9 @@ class AudioTemplateCreateView(TemplateMixin, AudioCampanaCreateView):
 
 class CalificacionTemplateCreateView(TemplateMixin,
                                      CalificacionCampanaCreateView):
+
+    # @@@@@@@@@@@@@@@@@@@@
+
     def get_success_url(self):
         return reverse(
             'calificacion_template',
@@ -1798,6 +1815,9 @@ class CalificacionTemplateCreateView(TemplateMixin,
 
 class CalificacionTemplateDeleteView(TemplateMixin,
                                      CalificacionCampanaDeleteView):
+
+    # @@@@@@@@@@@@@@@@@@@@
+
     def get_success_url(self):
         return reverse(
             'calificacion_template',
@@ -1806,6 +1826,9 @@ class CalificacionTemplateDeleteView(TemplateMixin,
 
 
 class OpcionTemplateCreateView(TemplateMixin, OpcionCampanaCreateView):
+
+    # @@@@@@@@@@@@@@@@@@@@
+
     def get_success_url(self):
         return reverse(
             'opcion_template',
@@ -1814,6 +1837,9 @@ class OpcionTemplateCreateView(TemplateMixin, OpcionCampanaCreateView):
 
 
 class OpcionTemplateDeleteView(TemplateMixin, OpcionCampanaDeleteView):
+
+    # @@@@@@@@@@@@@@@@@@@@
+
     def get_success_url(self):
         return reverse(
             'opcion_template',
@@ -1822,6 +1848,9 @@ class OpcionTemplateDeleteView(TemplateMixin, OpcionCampanaDeleteView):
 
 
 class ActuacionTemplateCreateView(TemplateMixin, ActuacionCampanaCreateView):
+
+    # @@@@@@@@@@@@@@@@@@@@
+
     def get_success_url(self):
         return reverse(
             'actuacion_template',
@@ -1834,6 +1863,9 @@ class ActuacionTemplateCreateView(TemplateMixin, ActuacionCampanaCreateView):
 
 
 class ActuacionTemplateDeleteView(TemplateMixin, ActuacionCampanaDeleteView):
+
+    # @@@@@@@@@@@@@@@@@@@@
+
     def get_success_url(self):
         return reverse(
             'actuacion_template',
@@ -1862,6 +1894,8 @@ class ConfirmaTemplateView(TemplateMixin, UpdateView):
     model = Campana
     context_object_name = 'campana'
     form_class = ConfirmaForm
+
+    # @@@@@@@@@@@@@@@@@@@@
 
     def form_valid(self, form):
         if 'confirma' in self.request.POST:
@@ -2146,6 +2180,8 @@ class ArchivoAudioUpdateView(UpdateView):
     model = ArchivoDeAudio
     form_class = ArchivoAudioForm
 
+    # @@@@@@@@@@@@@@@@@@@@
+
     def form_valid(self, form):
         self.object = form.save()
 
@@ -2219,6 +2255,7 @@ class ArchivoAudioDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse('lista_archivo_audio')
+
 
 # =============================================================================
 # Test
