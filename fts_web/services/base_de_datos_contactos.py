@@ -77,6 +77,8 @@ class CreacionBaseDatosService(object):
         columnas_con_fecha = base_datos_metadata.columnas_con_fecha
         columnas_con_hora = base_datos_metadata.columnas_con_hora
 
+        # TODO: Sprint 11 - BORRAR CONTACTOS
+
         parser = ParserCsv()
         generador_contactos = parser.read_file(
             columna_con_telefono,

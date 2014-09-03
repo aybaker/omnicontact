@@ -12,7 +12,7 @@ import os
 import json
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.db import models, transaction, connection
 from django.db.models import Sum
 from django.utils.timezone import now
@@ -552,6 +552,21 @@ class CampanaManager(models.Manager):
     def obtener_depuradas(self):
         """Devuelve queryset para filtrar campañas en estado depuradas."""
         return self.filter(estado=Campana.ESTADO_DEPURADA)
+
+    def obtener_en_definicion_para_editar(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser editar (editada en el proceso de
+        definirla, o sea, en el proceso de "creacion" de la
+        campaña).
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            self.filter(estado=Campana.ESTADO_EN_DEFINICION).get(
+                pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana %s en "
+                                      "estado ESTADO_EN_DEFINICION"))
 
     def obtener_todas_para_generar_dialplan(self):
         """Devuelve campañas que deben ser tenidas en cuenta
