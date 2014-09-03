@@ -49,9 +49,9 @@ from fts_web.services.base_de_datos_contactos import CreacionBaseDatosService
 logger = logging_.getLogger(__name__)
 
 
-# ==============================================================================
+# =============================================================================
 # Acerca
-# ==============================================================================
+# =============================================================================
 
 
 class AcercaTemplateView(TemplateView):
@@ -73,9 +73,9 @@ class AcercaTemplateView(TemplateView):
         return context
 
 
-# ==============================================================================
+# =============================================================================
 # Derivación
-# ==============================================================================
+# =============================================================================
 
 
 class DerivacionListView(ListView):
@@ -492,6 +492,7 @@ class DefineBaseDatosContactoView(UpdateView):
     model = BaseDatosContacto
     context_object_name = 'base_datos_contacto'
 
+    # @@@@@@@@@@@@@@@@@@@@
 
     def obtiene_estructura_archivo(self, pk):
         base_datos_contacto = get_object_or_404(
