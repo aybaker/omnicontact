@@ -562,8 +562,8 @@ class CampanaManager(models.Manager):
         En caso de no encontarse, lanza SuspiciousOperation
         """
         try:
-            self.filter(estado=Campana.ESTADO_EN_DEFINICION).get(
-                pk=campana_id)
+            return self.filter(estado=Campana.ESTADO_EN_DEFINICION).get(
+                               pk=campana_id)
         except Campana.DoesNotExist:
             raise(SuspiciousOperation("No se encontro campana %s en "
                                       "estado ESTADO_EN_DEFINICION"))

@@ -28,16 +28,29 @@ logger = logging_.getLogger(__name__)
 
 
 class CampanaEnCreacionMixin(object):
-    """Mixin para utilizar en las vistas que son del tipo Update.
+    """Mixin para utilizar en las vistas de creación de campañas.
     Utiliza `Campana.objects.obtener_en_definicion_para_editar()`
-    para obtener la campaña a editar. Este metodo falla si la
-    campaña no deberia ser editada. ('editada' en el contexto del
-    proceso de creacion de la campaña)
+    para obtener la campaña.
+    Este metodo falla si la campaña no deberia ser editada.
+    ('editada' en el contexto del proceso de creacion de la campaña)
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        Campana.objects.obtener_en_definicion_para_editar(
+            self.kwargs['pk_campana'])
+
+        return super(CampanaEnCreacionMixin, self).dispatch(request, *args,
+                                                            **kwargs)
+
+
+class CampanaEnDefinicionMixin(object):
+    """Mixin para obtener el objeto campama que valida que siempre este en
+    el estado en definición.
     """
 
     def get_object(self, queryset=None):
         return Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk'])
+            self.kwargs['pk_campana'])
 
 
 class CampanaCreateView(CreateView):
@@ -56,10 +69,11 @@ class CampanaCreateView(CreateView):
     def get_success_url(self):
         return reverse(
             'audio_campana',
-            kwargs={"pk": self.object.pk})
+            kwargs={"pk_campana": self.object.pk})
 
 
-class CampanaUpdateView(CampanaEnCreacionMixin, UpdateView):
+class CampanaUpdateView(CampanaEnCreacionMixin, CampanaEnDefinicionMixin,
+                        UpdateView):
     """
     Esta vista actualiza un objeto Campana.
     """
@@ -72,10 +86,11 @@ class CampanaUpdateView(CampanaEnCreacionMixin, UpdateView):
     def get_success_url(self):
         return reverse(
             'audio_campana',
-            kwargs={"pk": self.object.pk})
+            kwargs={"pk_campana": self.object.pk})
 
 
-class AudioCampanaCreateView(CampanaEnCreacionMixin, UpdateView):
+class AudioCampanaCreateView(CampanaEnCreacionMixin, CampanaEnDefinicionMixin,
+                             UpdateView):
     """
     Esta vista actuaiza un objeto Campana
     con el upload del audio.
@@ -165,10 +180,10 @@ class AudioCampanaCreateView(CampanaEnCreacionMixin, UpdateView):
     def get_success_url(self):
         return reverse(
             'audio_campana',
-            kwargs={"pk": self.object.pk})
+            kwargs={"pk_campana": self.object.pk})
 
 
-class CalificacionCampanaCreateView(CreateView):
+class CalificacionCampanaCreateView(CampanaEnCreacionMixin, CreateView):
     """
     Esta vista crea uno o varios objetos Calificación
     para la Campana que se este creando.
@@ -185,30 +200,25 @@ class CalificacionCampanaCreateView(CreateView):
 
     def get_initial(self):
         initial = super(CalificacionCampanaCreateView, self).get_initial()
-        if 'pk' in self.kwargs:
-            campana = Campana.objects.obtener_en_definicion_para_editar(
-                self.kwargs['pk'])
-            initial.update({
-                'campana': campana.id,
-            })
+
+        campana = Campana.objects.obtener_en_definicion_para_editar(
+            self.kwargs['pk_campana'])
+        initial.update({'campana': campana.id})
         return initial
 
     def get_context_data(self, **kwargs):
         context = super(CalificacionCampanaCreateView,
                         self).get_context_data(**kwargs)
 
-        # self.campana = Campana.objects.obtener_en_definicion_para_editar(
-        #     self.kwargs['pk'])
-
         context['campana'] = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk'])
+            self.kwargs['pk_campana'])
 
         return context
 
     def get_success_url(self):
         return reverse(
             'calificacion_campana',
-            kwargs={"pk": self.kwargs['pk']}
+            kwargs={"pk_campana": self.kwargs['pk_campana']}
         )
 
 
@@ -255,7 +265,7 @@ class CalificacionCampanaDeleteView(DeleteView):
         )
 
 
-class OpcionCampanaCreateView(CreateView):
+class OpcionCampanaCreateView(CampanaEnCreacionMixin, CreateView):
     """
     Esta vista crea uno o varios objetos Opcion
     para la Campana que se este creando.
@@ -272,28 +282,23 @@ class OpcionCampanaCreateView(CreateView):
 
     def get_initial(self):
         initial = super(OpcionCampanaCreateView, self).get_initial()
-        if 'pk' in self.kwargs:
-            campana = Campana.objects.obtener_en_definicion_para_editar(
-                self.kwargs['pk'])
-            initial.update({
-                'campana': campana.id,
-            })
+        campana = Campana.objects.obtener_en_definicion_para_editar(
+            self.kwargs['pk_campana'])
+        initial.update({'campana': campana.id})
         return initial
 
     def get_context_data(self, **kwargs):
         context = super(
             OpcionCampanaCreateView, self).get_context_data(**kwargs)
 
-        self.campana = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk'])
-
-        context['campana'] = self.campana
+        context['campana'] = Campana.objects.obtener_en_definicion_para_editar(
+            self.kwargs['pk_campana'])
         return context
 
     def get_success_url(self):
         return reverse(
             'opcion_campana',
-            kwargs={"pk": self.kwargs['pk']}
+            kwargs={"pk_campana": self.kwargs['pk_campana']}
         )
 
 
@@ -339,7 +344,7 @@ class OpcionCampanaDeleteView(DeleteView):
         )
 
 
-class ActuacionCampanaCreateView(CreateView):
+class ActuacionCampanaCreateView(CampanaEnCreacionMixin, CreateView):
     """
     Esta vista crea uno o varios objetos Actuacion
     para la Campana que se este creando.
@@ -356,33 +361,29 @@ class ActuacionCampanaCreateView(CreateView):
 
     def get_initial(self):
         initial = super(ActuacionCampanaCreateView, self).get_initial()
-        if 'pk' in self.kwargs:
-            campana = Campana.objects.obtener_en_definicion_para_editar(
-                self.kwargs['pk'])
-            initial.update({
-                'campana': campana.id,
-            })
+        campana = Campana.objects.obtener_en_definicion_para_editar(
+            self.kwargs['pk_campana'])
+        initial.update({'campana': campana.id})
         return initial
 
     def get_context_data(self, **kwargs):
         context = super(
             ActuacionCampanaCreateView, self).get_context_data(**kwargs)
 
-        self.campana = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk'])
+        campana = Campana.objects.obtener_en_definicion_para_editar(
+            self.kwargs['pk_campana'])
 
-        context['campana'] = self.campana
-        context['actuaciones_validas'] = \
-            self.campana.obtener_actuaciones_validas()
+        context['campana'] = campana
+        context['actuaciones_validas'] = campana.obtener_actuaciones_validas()
         return context
 
     def form_valid(self, form):
         form_valid = super(ActuacionCampanaCreateView, self).form_valid(form)
 
-        self.campana = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk'])
+        campana = Campana.objects.obtener_en_definicion_para_editar(
+            self.kwargs['pk_campana'])
 
-        if not self.campana.valida_actuaciones():
+        if not campana.valida_actuaciones():
             message = """<strong>¡Cuidado!</strong>
             Los días del rango de fechas seteados en la campaña NO coinciden
             con ningún día de las actuaciones programadas. Por consiguiente
@@ -398,7 +399,7 @@ class ActuacionCampanaCreateView(CreateView):
     def get_success_url(self):
         return reverse(
             'actuacion_campana',
-            kwargs={"pk": self.kwargs['pk']}
+            kwargs={"pk_campana": self.kwargs['pk_campana']}
         )
 
 
@@ -457,7 +458,8 @@ class ActuacionCampanaDeleteView(DeleteView):
         )
 
 
-class ConfirmaCampanaMixin(CampanaEnCreacionMixin, UpdateView):
+class ConfirmaCampanaMixin(CampanaEnCreacionMixin, CampanaEnDefinicionMixin,
+                           UpdateView):
 
     """
     Esta vista confirma la creación de un objeto
@@ -530,7 +532,7 @@ class ConfirmaCampanaMixin(CampanaEnCreacionMixin, UpdateView):
                     create_dialplan_config_file()
                 except:
                     logger.exception("ConfirmaCampanaMixin: error al intentar "
-                        "create_dialplan_config_file()")
+                                     "create_dialplan_config_file()")
                     post_proceso_ok = False
                     message += ' Atencion: hubo un inconveniente al generar\
                         la configuracion de Asterisk (dialplan).'
@@ -541,7 +543,7 @@ class ConfirmaCampanaMixin(CampanaEnCreacionMixin, UpdateView):
                     create_queue_config_file()
                 except:
                     logger.exception("ConfirmaCampanaMixin: error al intentar "
-                        "create_queue_config_file()")
+                                     "create_queue_config_file()")
                     post_proceso_ok = False
                     message += ' Atencion: hubo un inconveniente al generar\
                         la configuracion de Asterisk (queues).'
@@ -554,12 +556,10 @@ class ConfirmaCampanaMixin(CampanaEnCreacionMixin, UpdateView):
                             intentar recargar la configuracion de Asterisk."
                 except:
                     logger.exception("ConfirmaCampanaMixin: error al intentar "
-                        "reload_config()")
+                                     "reload_config()")
                     post_proceso_ok = False
                     message += ' Atencion: hubo un inconveniente al intentar\
                         recargar la configuracion de Asterisk.'
-
-            # END: with transaction.atomic()
 
             if post_proceso_ok:
                 message = '<strong>Operación Exitosa!</strong> \
@@ -606,9 +606,8 @@ class ConfirmaCampanaView(ConfirmaCampanaMixin):
             )
 
             return HttpResponseRedirect(
-                reverse(
-                    'audio_campana',
-                    kwargs={"pk": campana.pk}))
+                reverse('audio_campana', kwargs={"pk_campana": campana.pk}))
+
         return super(ConfirmaCampanaView, self).get(request, *args, **kwargs)
 
     # @@@@@@@@@@@@@@@@@@@@
