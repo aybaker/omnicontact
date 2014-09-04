@@ -212,7 +212,8 @@ class ActuacionTemplateCreateView(CheckEstadoTemplateMixin,
         return redirect(self.get_success_url())
 
 
-class ActuacionTemplateDeleteView(TemplateMixin, ActuacionCampanaDeleteView):
+class ActuacionTemplateDeleteView(CheckEstadoTemplateMixin, TemplateMixin,
+                                  ActuacionCampanaDeleteView):
 
     # @@@@@@@@@@@@@@@@@@@@
 

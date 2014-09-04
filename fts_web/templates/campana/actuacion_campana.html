@@ -68,7 +68,7 @@
                                     <td>{{ actuacion.hora_hasta }} Hs.</td>
                                     <td>
                                         {% if es_template %}
-                                            <a href="{% url 'actuacion_template_elimina' actuacion.pk %}"> Eliminar</a>
+                                            <a href="{% url 'actuacion_template_elimina' campana.pk actuacion.pk %}"> Eliminar</a>
                                         {% else %}
                                             <a href="{% url 'actuacion_campana_elimina' campana.pk actuacion.pk %}"> Eliminar</a>
                                         {% endif %}                        
