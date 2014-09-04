@@ -170,22 +170,16 @@ class ActuacionRecicladoCampanaView(CheckEstadoCampanaMixin, CreateView):
         context = super(
             ActuacionRecicladoCampanaView, self).get_context_data(**kwargs)
 
-        campana = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk_campana'])
-
-        context['campana'] = campana
+        context['campana'] = self.campana
         context['actuaciones_validas'] =\
-            campana.obtener_actuaciones_validas()
+            self.campana.obtener_actuaciones_validas()
         return context
 
     def form_valid(self, form):
         form_valid = super(ActuacionRecicladoCampanaView, self).form_valid(
             form)
 
-        campana = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk_campana'])
-
-        if not campana.valida_actuaciones():
+        if not self.campana.valida_actuaciones():
             message = """<strong>¡Cuidado!</strong>
             Los días del rango de fechas seteados en la campaña NO coinciden
             con ningún día de las actuaciones programadas. Por consiguiente
@@ -220,9 +214,6 @@ class ActuacionRecicladoCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
     def get_object(self, queryset=None):
         actuacion = super(ActuacionRecicladoCampanaDeleteView, self).\
             get_object(queryset=None)
-
-        self.campana = Campana.objects.obtener_en_definicion_para_editar(
-            actuacion.campana.id)
         return actuacion
 
     def delete(self, request, *args, **kwargs):
