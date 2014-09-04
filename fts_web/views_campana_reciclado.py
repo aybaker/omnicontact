@@ -14,7 +14,10 @@ from fts_web.models import Campana, Actuacion
 from fts_web.reciclador_base_datos_contacto.reciclador import (
     RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
     CampanaTipoRecicladoInvalidoError, FtsRecicladoBaseDatosContactoError)
-from fts_web.views_campana_creacion import ConfirmaCampanaMixin
+from fts_web.views_campana_creacion import (ConfirmaCampanaMixin,
+                                            CheckEstadoCampanaMixin,
+                                            CampanaEnDefinicionMixin)
+
 import logging as logging_
 
 
@@ -32,8 +35,17 @@ class TipoRecicladoCampanaView(FormView):
 
     # @@@@@@@@@@@@@@@@@@@@
 
+    def dispatch(self, request, *args, **kwargs):
+        # Valida que la campana este en el estado depurada para renderizar
+        # el template.
+        Campana.objects.obtener_depurada_para_reciclar(
+            self.kwargs['pk_campana'])
+
+        return super(TipoRecicladoCampanaView, self).dispatch(request, *args,
+                                                            **kwargs)
+
     def post(self, request, *args, **kwargs):
-        self.campana_id = kwargs['pk']
+        self.campana_id = kwargs['pk_campana']
         return super(TipoRecicladoCampanaView, self).post(request, args,
                                                           kwargs)
 
@@ -95,11 +107,12 @@ class TipoRecicladoCampanaView(FormView):
     def get_success_url(self):
         return reverse(
             'redefinicion_reciclado_campana',
-            kwargs={"pk": self.campana_reciclada.pk}
+            kwargs={"pk_campana": self.campana_reciclada.pk}
         )
 
 
-class RedefinicionRecicladoCampanaView(UpdateView):
+class RedefinicionRecicladoCampanaView(CheckEstadoCampanaMixin,
+                                       CampanaEnDefinicionMixin, UpdateView):
     """
     Esta vista se encarga de redefinir la campana a reciclar.
     """
@@ -111,15 +124,15 @@ class RedefinicionRecicladoCampanaView(UpdateView):
 
     # @@@@@@@@@@@@@@@@@@@@
 
-    def get(self, request, *args, **kwargs):
-        """
-        Valida que la campana a redefinir este en definición.
-        """
-        campana = self.get_object()
-        if not campana.estado == Campana.ESTADO_EN_DEFINICION:
-            return redirect('lista_campana')
-        return super(RedefinicionRecicladoCampanaView, self).get(
-            request, *args, **kwargs)
+    # def get(self, request, *args, **kwargs):
+    #     """
+    #     Valida que la campana a redefinir este en definición.
+    #     """
+    #     campana = self.get_object()
+    #     if not campana.estado == Campana.ESTADO_EN_DEFINICION:
+    #         return redirect('lista_campana')
+    #     return super(RedefinicionRecicladoCampanaView, self).get(
+    #         request, *args, **kwargs)
 
     def get_form(self, form_class):
         return form_class(reciclado=True, **self.get_form_kwargs())
@@ -139,11 +152,11 @@ class RedefinicionRecicladoCampanaView(UpdateView):
 
         return reverse(
             'actuacion_reciclado_campana',
-            kwargs={"pk": self.object.pk}
+            kwargs={"pk_campana": self.object.pk}
         )
 
 
-class ActuacionRecicladoCampanaView(CreateView):
+class ActuacionRecicladoCampanaView(CheckEstadoCampanaMixin, CreateView):
     """
     Esta vista crea uno o varios objetos Actuacion
     para la Campana reciclada que se este creando.
@@ -160,33 +173,29 @@ class ActuacionRecicladoCampanaView(CreateView):
 
     def get_initial(self):
         initial = super(ActuacionRecicladoCampanaView, self).get_initial()
-        if 'pk' in self.kwargs:
-            initial.update({
-                'campana': self.kwargs['pk'],
-            })
+        initial.update({'campana': self.kwargs['pk_campana']})
         return initial
 
     def get_context_data(self, **kwargs):
         context = super(
             ActuacionRecicladoCampanaView, self).get_context_data(**kwargs)
 
-        self.campana = get_object_or_404(
-            Campana, pk=self.kwargs['pk']
-        )
-        context['campana'] = self.campana
+        campana = Campana.objects.obtener_en_definicion_para_editar(
+            self.kwargs['pk_campana'])
+
+        context['campana'] = campana
         context['actuaciones_validas'] =\
-            self.campana.obtener_actuaciones_validas()
+            campana.obtener_actuaciones_validas()
         return context
 
     def form_valid(self, form):
         form_valid = super(ActuacionRecicladoCampanaView, self).form_valid(
             form)
 
-        self.campana = get_object_or_404(
-            Campana, pk=self.kwargs['pk']
-        )
+        campana = Campana.objects.obtener_en_definicion_para_editar(
+            self.kwargs['pk_campana'])
 
-        if not self.campana.valida_actuaciones():
+        if not campana.valida_actuaciones():
             message = """<strong>¡Cuidado!</strong>
             Los días del rango de fechas seteados en la campaña NO coinciden
             con ningún día de las actuaciones programadas. Por consiguiente
@@ -202,7 +211,7 @@ class ActuacionRecicladoCampanaView(CreateView):
     def get_success_url(self):
         return reverse(
             'actuacion_reciclado_campana',
-            kwargs={"pk": self.kwargs['pk']}
+            kwargs={"pk_campana": self.kwargs['pk_campana']}
         )
 
 
@@ -277,6 +286,6 @@ class ConfirmaRecicladoCampanaView(ConfirmaCampanaMixin):
             return HttpResponseRedirect(
                 reverse(
                     'actuacion_reciclado_campana',
-                    kwargs={"pk": campana.pk}))
+                    kwargs={"pk_campana": campana.pk}))
         return super(ConfirmaRecicladoCampanaView, self).get(
             request, *args, **kwargs)
