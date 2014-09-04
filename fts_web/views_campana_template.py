@@ -183,7 +183,8 @@ class OpcionTemplateCreateView(CheckEstadoTemplateMixin,
         )
 
 
-class OpcionTemplateDeleteView(TemplateMixin, OpcionCampanaDeleteView):
+class OpcionTemplateDeleteView(CheckEstadoTemplateMixin, TemplateMixin,
+                               OpcionCampanaDeleteView):
 
     # @@@@@@@@@@@@@@@@@@@@
 

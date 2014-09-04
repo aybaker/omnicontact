@@ -80,7 +80,7 @@
                                         </td>
                                         <td>
                                             {% if es_template %}
-                                                <a href="{% url 'opcion_template_elimina' opcion.pk %}"> Eliminar</a> 
+                                                <a href="{% url 'opcion_template_elimina' campana.pk opcion.pk %}"> Eliminar</a> 
                                             {% else %}                                            
                                                 <a href="{% url 'opcion_campana_elimina' campana.pk opcion.pk %}"> Eliminar</a> 
                                             {% endif %}
