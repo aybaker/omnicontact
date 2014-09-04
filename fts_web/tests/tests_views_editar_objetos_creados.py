@@ -7,6 +7,7 @@ Tests de vistas
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
+from django.core.files import File
 from django.core.urlresolvers import reverse
 
 from fts_web.models import Campana
@@ -26,7 +27,7 @@ class CampanaCrearTest(FTSenderBaseTest):
         self.crea_todas_las_opcion_posibles(self.campana)
         self.crea_todas_las_actuaciones(self.campana)
 
-    def test_datos_basicos_campana_lanza_error(self):
+    def test_creacion_campana(self):
 
         VISTAS = [
             ('datos_basicos_campana', [self.campana.id]),
@@ -79,7 +80,7 @@ class TemplateDeCampanaCrearTest(FTSenderBaseTest):
         self.crea_todas_las_opcion_posibles(self.campana)
         self.crea_todas_las_actuaciones(self.campana)
 
-    def test_datos_basicos_campana_lanza_error(self):
+    def test_creacion_template(self):
 
         VISTAS = [
             ('datos_basicos_template', [self.campana.id]),
@@ -100,7 +101,7 @@ class TemplateDeCampanaCrearTest(FTSenderBaseTest):
             url = reverse(vista, args=args)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, "No se recibio status "
-                             "200 al realizar el render inicial de la campana "
+                             "200 al realizar el render inicial del template "
                              "en definicion. Vista: {0}. URL: {1}"
                              "".format(vista, url))
 
@@ -110,18 +111,17 @@ class TemplateDeCampanaCrearTest(FTSenderBaseTest):
             url = reverse(vista, args=args)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 400, "No se recibio status "
-                             "400 al realizar el render inicial de la campana "
-                             "cuando la campana ya NO ESTA en definicion. "
+                             "400 al realizar el render inicial del template "
+                             "cuando el template ya NO ESTA en definicion. "
                              "Vista: {0}. URL: {1}"
                              "".format(vista, url))
 
 
 class ReciclarCampanaTest(FTSenderBaseTest):
-    """Testea que las vistas usadas para reciclar campanas NO puedan
-    ser utilizadas con campañas ya definidas
-    """
-    """Testea que las vistas usadas para crear campañas NO puedan ser
-    utilizadas con campañas ya definidas
+    """Testea que las vistas usadas para reciclar una campanas NO puedan
+    ser utilizadas si lamisma no esta en estado depurada.
+    Y testea que las vistas usadas en el proceso de redefinición delreciclado
+    no puedan ser utilizadas una vez terminado el proceso de reciclado.
     """
 
     def setUp(self):
@@ -140,7 +140,7 @@ class ReciclarCampanaTest(FTSenderBaseTest):
         self.crea_todas_las_opcion_posibles(self.campana_reciclada)
         self.crea_todas_las_actuaciones(self.campana_reciclada)
 
-    def test_datos_basicos_campana_lanza_error(self):
+    def test_reciclado_campana(self):
 
         VISTAS = [
             ('tipo_reciclado_campana', [self.campana.id]),
@@ -176,4 +176,36 @@ class CrearBaseDeDatosContactosTest(FTSenderBaseTest):
     """Testea que las vistas usadas para crear bd de contactos NO puedan
     ser utilizadas con bd de contactos ya definidas
     """
-    pass
+    def setUp(self):
+        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.assertTrue(self.client.login(username='user', password='user'))
+
+        self.base_datos_contacto = self.crear_base_datos_contacto()
+        self.base_datos_contacto.archivo_importacion = File(
+            open(self.get_test_resource("planilla-ejemplo-1.csv"), 'r'))
+        self.base_datos_contacto.save()
+
+    def test_creacion_base_datos_contacto(self):
+
+        VISTAS = [
+            ('define_base_datos_contacto', [self.base_datos_contacto.id]),
+        ]
+
+        for vista, args in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, "No se recibio status "
+                             "200 al realizar el render inicial de la BD "
+                             "en definicion. Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+        self.base_datos_contacto.define()
+
+        for url in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 400, "No se recibio status "
+                             "400 al realizar el render inicial de la BD "
+                             "cuando la BD ya NO ESTA en definicion. "
+                             "Vista: {0}. URL: {1}"
+                             "".format(vista, url))
