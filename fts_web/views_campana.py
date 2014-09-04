@@ -174,6 +174,7 @@ class DetalleCampanView(DetailView):
     """
     template_name = 'campana/detalle_campana.html'
     context_object_name = 'campana'
+    pk_url_kwarg = 'pk_campana'
     model = Campana
 
 
