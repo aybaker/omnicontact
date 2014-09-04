@@ -568,6 +568,20 @@ class CampanaManager(models.Manager):
             raise(SuspiciousOperation("No se encontro campana %s en "
                                       "estado ESTADO_EN_DEFINICION"))
 
+    def obtener_depurada_para_reciclar(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser reciclada. Debe haber estar depuarada.
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(estado=Campana.ESTADO_DEPURADA).get(
+                               pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana %s en "
+                                      "estado ESTADO_DEPURADA"))
+
+
     def obtener_todas_para_generar_dialplan(self):
         """Devuelve campañas que deben ser tenidas en cuenta
         al generar el dialplan.
