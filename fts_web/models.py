@@ -227,6 +227,18 @@ class BaseDatosContactoManager(models.Manager):
         """
         return self.filter(estado=BaseDatosContacto.ESTADO_DEFINIDA)
 
+    def obtener_en_definicion_para_editar(self, base_datos_contacto_id):
+        """Devuelve la base datos pasada por ID, siempre que pueda ser editada.
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=BaseDatosContacto.ESTADO_EN_DEFINICION).get(
+                pk=base_datos_contacto_id)
+        except BaseDatosContacto.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro base datos en "
+                                      "estado ESTADO_EN_DEFINICION"))
+
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
 
