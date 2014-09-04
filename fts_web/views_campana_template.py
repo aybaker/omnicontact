@@ -303,7 +303,7 @@ class CreaCampanaTemplateView(TemplateMixin, RedirectView):
 
     def get(self, request, *args, **kwargs):
         template = get_object_or_404(
-            Campana, pk=self.kwargs['pk']
+            Campana, pk=self.kwargs['pk_campana']
         )
         campana = Campana.objects_template.crea_campana_de_template(template)
 
