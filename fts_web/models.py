@@ -521,6 +521,22 @@ class TemplateManager(models.Manager):
         campana = Campana.objects.replicar_campana(template)
         return campana
 
+    def obtener_en_definicion_para_editar(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser editar (editada en el proceso de
+        definirla, o sea, en el proceso de "creacion" de la
+        campaña).
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=Campana.ESTADO_TEMPLATE_EN_DEFINICION).get(
+                pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana/template %s en "
+                                      "estado ESTADO_TEMPLATE_EN_DEFINICION"))
+
 
 class CampanaManager(models.Manager):
     """Manager para Campanas"""
@@ -563,7 +579,7 @@ class CampanaManager(models.Manager):
         """
         try:
             return self.filter(estado=Campana.ESTADO_EN_DEFINICION).get(
-                               pk=campana_id)
+                pk=campana_id)
         except Campana.DoesNotExist:
             raise(SuspiciousOperation("No se encontro campana %s en "
                                       "estado ESTADO_EN_DEFINICION"))
