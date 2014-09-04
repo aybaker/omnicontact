@@ -124,16 +124,6 @@ class RedefinicionRecicladoCampanaView(CheckEstadoCampanaMixin,
 
     # @@@@@@@@@@@@@@@@@@@@
 
-    # def get(self, request, *args, **kwargs):
-    #     """
-    #     Valida que la campana a redefinir este en definición.
-    #     """
-    #     campana = self.get_object()
-    #     if not campana.estado == Campana.ESTADO_EN_DEFINICION:
-    #         return redirect('lista_campana')
-    #     return super(RedefinicionRecicladoCampanaView, self).get(
-    #         request, *args, **kwargs)
-
     def get_form(self, form_class):
         return form_class(reciclado=True, **self.get_form_kwargs())
 
@@ -215,7 +205,7 @@ class ActuacionRecicladoCampanaView(CheckEstadoCampanaMixin, CreateView):
         )
 
 
-class ActuacionRecicladoCampanaDeleteView(DeleteView):
+class ActuacionRecicladoCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
     """
     Esta vista se encarga de la eliminación del
     objeto Actuación seleccionado.
@@ -231,7 +221,8 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
         actuacion = super(ActuacionRecicladoCampanaDeleteView, self).\
             get_object(queryset=None)
 
-        self.campana = actuacion.campana
+        self.campana = Campana.objects.obtener_en_definicion_para_editar(
+            actuacion.campana.id)
         return actuacion
 
     def delete(self, request, *args, **kwargs):
@@ -262,7 +253,7 @@ class ActuacionRecicladoCampanaDeleteView(DeleteView):
     def get_success_url(self):
         return reverse(
             'actuacion_reciclado_campana',
-            kwargs={"pk": self.campana.pk}
+            kwargs={"pk_campana": self.campana.pk}
         )
 
 
