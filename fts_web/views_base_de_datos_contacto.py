@@ -87,16 +87,24 @@ class DefineBaseDatosContactoView(UpdateView):
 
     # @@@@@@@@@@@@@@@@@@@@
 
+    def dispatch(self, request, *args, **kwargs):
+        self.base_datos_contacto = \
+            BaseDatosContacto.objects.obtener_en_definicion_para_editar(
+                self.kwargs['pk'])
+        return super(DefineBaseDatosContactoView, self).dispatch(request,
+                                                                 *args,
+                                                                 **kwargs)
+
     def obtiene_estructura_archivo(self, pk):
-        base_datos_contacto = get_object_or_404(
-            BaseDatosContacto, pk=pk
-        )
+        # base_datos_contacto = get_object_or_404(
+        #     BaseDatosContacto, pk=pk
+        # )
 
         parser = ParserCsv()
         estructura_archivo = None
         try:
             estructura_archivo = parser.get_file_structure(
-                base_datos_contacto.archivo_importacion.file)
+                self.base_datos_contacto.archivo_importacion.file)
             return estructura_archivo
 
         except FtsParserCsvDelimiterError:
@@ -226,7 +234,7 @@ class DepuraBaseDatosContactoView(DeleteView):
         if self.object.verifica_en_uso():
             message = """<strong>¡Cuidado!</strong>
             La Base Datos Contacto que intenta depurar esta siendo utilizada
-            por alguna campaña. No se llevará a cabo la depuración la misma 
+            por alguna campaña. No se llevará a cabo la depuración la misma
             mientras esté siendo utilizada."""
             messages.add_message(
                 self.request,
