@@ -54,7 +54,7 @@
                                             {% if es_template %}
                                                 <p class='col-lg-6 text-right'><a href="{% url 'calificacion_template_elimina' calificacion.pk %}"> Eliminar</a>
                                             {% else %}                                            
-                                                <p class='col-lg-6 text-right'><a href="{% url 'calificacion_campana_elimina' calificacion.pk %}"> Eliminar</a></p>
+                                                <p class='col-lg-6 text-right'><a href="{% url 'calificacion_campana_elimina' campana.pk calificacion.pk %}"> Eliminar</a></p>
                                             {% endif %}  
                                         </td>
                                     </tr>
