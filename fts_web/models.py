@@ -1131,8 +1131,6 @@ class Campana(models.Model):
 
         lista_final = []
         for detalle_opcion in EDC.obtener_contactos_por_opciones(self.pk):
-            print detalle_opcion
-
             lista_item = []
 
             digito = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
