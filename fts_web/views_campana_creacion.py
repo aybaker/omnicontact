@@ -397,7 +397,7 @@ class ActuacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
         )
 
 
-class ActuacionCampanaDeleteView(DeleteView):
+class ActuacionCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
     """
     Esta vista se encarga de la eliminación del
     objeto Actuación seleccionado.
@@ -412,9 +412,7 @@ class ActuacionCampanaDeleteView(DeleteView):
         actuacion = super(ActuacionCampanaDeleteView, self).get_object(
             queryset=None)
 
-        # De alguna manera hay q' validar la campaña! Pero esta CBV entra
-        # por el ID de calificacion, asi q' bueno, lo sigueinte queda
-        # raro, pero hace falta!
+        # Lo sigueinte queda raro, pero hace falta!
         self.campana = Campana.objects.obtener_en_definicion_para_editar(
             actuacion.campana.id)
         return actuacion
@@ -448,7 +446,7 @@ class ActuacionCampanaDeleteView(DeleteView):
     def get_success_url(self):
         return reverse(
             'actuacion_campana',
-            kwargs={"pk": self.campana.pk}
+            kwargs={"pk_campana": self.campana.pk}
         )
 
 
