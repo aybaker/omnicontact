@@ -20,7 +20,6 @@ from fts_daemon.audio_conversor import ConversorDeAudioService
 from fts_web.errors import (FtsRecicladoCampanaError,
     FTSOptimisticLockingError)
 from fts_web.utiles import upload_to, log_timing
-import json
 
 
 logger = logging.getLogger(__name__)
@@ -247,10 +246,37 @@ class MetadataBaseDatosContacto(object):
 
     def __init__(self, bd):
         self.bd = bd
-        if bd.metadata == '' or bd.metadata is None:
+        if bd.metadata is None or bd.metadata == '':
             self._metadata = {}
         else:
-            self._metadata = json.loads(bd.metadata)
+            try:
+                self._metadata = json.loads(bd.metadata)
+            except:
+                logger.exception("Excepcion detectada al desserializar "
+                                 "metadata de la bd {0}".format(bd.id))
+                raise
+
+    # -----
+
+    @property
+    def cantidad_de_columnas(self):
+        try:
+            return self._metadata['cant_col']
+        except KeyError:
+            raise(ValueError("La cantidad de columnas no ha sido seteada"))
+
+    @cantidad_de_columnas.setter
+    def cantidad_de_columnas(self, cant):
+        assert isinstance(cant, int), ("'cantidad_de_columnas' "
+        "debe ser int. Se encontro: {0}".format(type(cant)))
+
+        assert cant > 0, ("'cantidad_de_columnas' "
+                          "debe ser > 0. Se especifico {0}".format(cant))
+
+        self._metadata['cant_col'] = cant
+        self._save()
+
+    # -----
 
     @property
     def columna_con_telefono(self):
@@ -261,8 +287,15 @@ class MetadataBaseDatosContacto(object):
 
     @columna_con_telefono.setter
     def columna_con_telefono(self, columna):
-        self._metadata['col_telefono'] = int(columna)
+        columna = int(columna)
+        assert columna < self.cantidad_de_columnas, ("No se puede setear "
+            "'columna_con_telefono' = {0} porque  la BD solo "
+            "posee {1} columnas"
+            "".format(columna, self.cantidad_de_columnas))
+        self._metadata['col_telefono'] = columna
         self._save()
+
+    # -----
 
     @property
     def columnas_con_fecha(self):
@@ -277,8 +310,21 @@ class MetadataBaseDatosContacto(object):
         Parametros:
         - columnas: Lista de enteros que indican las columnas con fechas.
         """
+        assert isinstance(columnas, (list, tuple)), ("'columnas_con_fecha' "
+            "recibe listas o tuplas. Se recibio: {0}".format(type(columnas)))
+        for col in columnas:
+            assert isinstance(col, int), ("Los elementos de "
+            "'columnas_con_fecha' deben ser int. Se encontro: {0}".format(
+                type(col)))
+            assert col < self.cantidad_de_columnas, ("No se puede setear "
+                "'columnas_con_fecha' = {0} porque  la BD solo "
+                "posee {1} columnas"
+                "".format(col, self.cantidad_de_columnas))
+
         self._metadata['cols_fecha'] = columnas
         self._save()
+
+    # -----
 
     @property
     def columnas_con_hora(self):
@@ -293,8 +339,21 @@ class MetadataBaseDatosContacto(object):
         Parametros:
         - columnas: Lista de enteros que indican las columnas con horas.
         """
+        assert isinstance(columnas, (list, tuple)), ("'columnas_con_hora' "
+            "recibe listas o tuplas. Se recibio: {0}".format(type(columnas)))
+        for col in columnas:
+            assert isinstance(col, int), ("Los elementos de "
+            "'columnas_con_hora' deben ser int. Se encontro: {0}".format(
+                type(col)))
+            assert col < self.cantidad_de_columnas, ("No se puede setear "
+                "'columnas_con_hora' = {0} porque  la BD solo "
+                "posee {1} columnas"
+                "".format(col, self.cantidad_de_columnas))
+
         self._metadata['cols_hora'] = columnas
         self._save()
+
+    # -----
 
     @property
     def nombres_de_columnas(self):
@@ -310,20 +369,45 @@ class MetadataBaseDatosContacto(object):
         - columnas: Lista de strings con nombres de las
                     columnas.
         """
+        assert isinstance(columnas, (list, tuple)), ("'nombres_de_columnas' "
+            "recibe listas o tuplas. Se recibio: {0}".format(type(columnas)))
+        assert len(columnas) == self.cantidad_de_columnas, ("Se intentaron "
+            "setear {0} nombres de columnas, pero la BD posee {1} columnas"
+            "".format(len(columnas), self.cantidad_de_columnas))
+
         self._metadata['nombres_de_columnas'] = columnas
         self._save()
 
-    def obtener_telefono_de_dato_de_contacto(self, datos):
+    # -----
+
+    def obtener_telefono_de_dato_de_contacto(self, datos_json):
         """Devuelve el numero telefonico del contacto.
 
         :param datos: atribuito 'datos' del contacto, o sea, valores de
                       las columnas codificadas con json
         """
-        return json.loads(datos)[self._metadata['col_telefono']]
+        col_telefono = self._metadata['col_telefono']
+        try:
+            datos = json.loads(datos_json)
+        except:
+            logger.exception("Excepcion detectada al desserializar "
+                             "datos extras de la bd {0}. "
+                             "Datos extras: '{1}'".format(self.bd.id,
+                                                          datos_json))
+            raise
+
+        telefono = datos[col_telefono]
+        return telefono
 
     def _save(self):
         """Guardar los metadatos en la instancia de BaseDatosContacto"""
-        self.bd.metadata = json.dumps(self._metadata)
+        # Primero validamos
+        try:
+            self.bd.metadata = json.dumps(self._metadata)
+        except:
+            logger.exception("Excepcion detectada al serializar "
+                             "metadata de la bd {0}".format(self.bd.id))
+            raise
 
 
 class BaseDatosContacto(models.Model):
