@@ -296,6 +296,23 @@ class MetadataBaseDatosContacto(object):
         self._metadata['cols_hora'] = columnas
         self._save()
 
+    @property
+    def nombres_de_columnas(self):
+        try:
+            return self._metadata['nombres_de_columnas']
+        except KeyError:
+            return []
+
+    @nombres_de_columnas.setter
+    def nombres_de_columnas(self, columnas):
+        """
+        Parametros:
+        - columnas: Lista de strings con nombres de las
+                    columnas.
+        """
+        self._metadata['nombres_de_columnas'] = columnas
+        self._save()
+
     def obtener_telefono_de_dato_de_contacto(self, datos):
         """Devuelve el numero telefonico del contacto.
 
