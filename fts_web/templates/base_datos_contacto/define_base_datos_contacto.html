@@ -20,42 +20,32 @@
                             <h4>Columna Teléfono</h4>
                             <p>Debe seleccionar la columna en la que se encuntran los número de teléfono que se deben importar.</p>
                         </div>
+                       
                         <table class="table table-bordered">
+                            <thead>
+                                <tr> 
+                                    <th></th>
+                                    {% for field in form_columna_telefono.telefono %}
+                                        <th>{{ field }} </th>
+                                    {% endfor %}
+                                </tr>
+                                <tr> 
+                                    <th></th>
+                                    {% for field in form_datos_extras %}
+                                        <th>{{ field|as_crispy_field }}</th>
+                                    {% endfor %}
+                                </tr>
+                                <tr> 
+                                    <th></th>
+                                    {% for field in form_nombre_columnas %}
+                                        <th>{{ field|as_crispy_field }}</th>
+                                    {% endfor %}
+                                </tr>
+
+                            </thead>
+                            <tbody>
+
                             {% for row, cols in estructura_archivo.items %}
-                                {% if forloop.first %}
-                                    <thead>
-                                        <tr> 
-                                            <th></th>
-                                            {% for col in cols %}
-                                                <th class="col-tel-{{ forloop.counter0 }}">
-                                                    <div class="radio {% if error %}has-error{% endif %}">
-                                                        <label class="control-label">
-                                                            <input type="radio" class="telefono" name="telefono" value="{{ forloop.counter0 }}">
-                                                            Columna {{ forloop.counter0 }}
-                                                        </label>
-                                                    </div>
-                                                </th>       
-                                            {% endfor %}
-                                        </tr>
-                                        <tr> 
-                                            <th></th>
-                                            {% for col in cols %}
-                                                <th class="col-dat-{{ forloop.counter0 }}">
-                                                    <div "{% if error %}has-error{% endif %}">
-                                                        <label class="control-label">
-                                                            <select name="datos-extras-{{ forloop.counter0 }}" class="form-control datos-extras">
-                                                                {% for dato_extra in datos_extras %}
-                                                                    <option value="{{ dato_extra.0 }}">{{ dato_extra.1 }}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                        </label>
-                                                    </div>
-                                                </th>       
-                                            {% endfor %}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                {% endif %}
                                 <tr>
                                     <td>{{ row }}</td> 
                                     {% for col in cols %}
@@ -92,7 +82,7 @@
         $(document).ready(function() {
             $(".telefono").change(function (){
                 $(".datos-extras").removeAttr('disabled');
-                $(".col-dat-" + $(this).val() + " select").attr('disabled', true);
+                $("#id_datos-extras-" + $(this).val()).attr('disabled', true);
             });
         });
     </script>
