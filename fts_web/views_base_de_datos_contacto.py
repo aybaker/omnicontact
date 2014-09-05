@@ -11,7 +11,8 @@ from django.views.generic.list import ListView
 from fts_web.errors import FtsParserCsvDelimiterError, FtsParserMinRowError, \
     FtsParserOpenFileError, FtsParserMaxRowError, \
     FtsDepuraBaseDatoContactoError
-from fts_web.forms import BaseDatosContactoForm
+from fts_web.forms import (BaseDatosContactoForm, DefineNombreColumnaForm,
+                           DefineColumnaTelefonoForm, DefineDatosExtrasForm)
 from fts_web.models import BaseDatosContacto
 from fts_web.parser import ParserCsv
 from fts_web.services.base_de_datos_contactos import CreacionBaseDatosService
@@ -144,9 +145,22 @@ class DefineBaseDatosContactoView(UpdateView):
             DefineBaseDatosContactoView, self).get_context_data(**kwargs)
 
         estructura_archivo = self.obtiene_estructura_archivo(self.kwargs['pk'])
+        numero_columnas = len(estructura_archivo[0])
+
+        form_columna_telefono = DefineColumnaTelefonoForm(
+            numero_columnas=numero_columnas)
+        form_datos_extras = DefineDatosExtrasForm(
+            numero_columnas=numero_columnas)
+        form_nombre_columnas = DefineNombreColumnaForm(
+            numero_columnas=numero_columnas)
+
+        context['form_columna_telefono'] = form_columna_telefono
+        context['form_datos_extras'] = form_datos_extras
+        context['form_nombre_columnas'] = form_nombre_columnas
         context['estructura_archivo'] = estructura_archivo
         context['datos_extras'] = BaseDatosContacto.DATOS_EXTRAS
         return context
+
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(error=True))
