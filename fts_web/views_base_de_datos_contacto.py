@@ -96,16 +96,18 @@ class DefineBaseDatosContactoView(UpdateView):
                                                                  *args,
                                                                  **kwargs)
 
-    def obtiene_estructura_archivo(self, pk):
-        # base_datos_contacto = get_object_or_404(
-        #     BaseDatosContacto, pk=pk
-        # )
+    def obtiene_estructura_archivo(self):
 
         parser = ParserCsv()
         estructura_archivo = None
         try:
+
+            base_datos_contacto = get_object_or_404(
+                BaseDatosContacto, pk=self.base_datos_contacto.pk
+            )
+            # FIXME: Modificar el pasar por parámetro el archivo abierto.
             estructura_archivo = parser.get_file_structure(
-                self.base_datos_contacto.archivo_importacion.file)
+                base_datos_contacto.archivo_importacion.file)
             return estructura_archivo
 
         except FtsParserCsvDelimiterError:
@@ -144,36 +146,63 @@ class DefineBaseDatosContactoView(UpdateView):
         context = super(
             DefineBaseDatosContactoView, self).get_context_data(**kwargs)
 
-        estructura_archivo = self.obtiene_estructura_archivo(self.kwargs['pk'])
-        numero_columnas = len(estructura_archivo[0])
-
-        form_columna_telefono = DefineColumnaTelefonoForm(
-            numero_columnas=numero_columnas)
-        form_datos_extras = DefineDatosExtrasForm(
-            numero_columnas=numero_columnas)
-        form_nombre_columnas = DefineNombreColumnaForm(
-            numero_columnas=numero_columnas)
-
-        context['form_columna_telefono'] = form_columna_telefono
-        context['form_datos_extras'] = form_datos_extras
-        context['form_nombre_columnas'] = form_nombre_columnas
-        context['estructura_archivo'] = estructura_archivo
         context['datos_extras'] = BaseDatosContacto.DATOS_EXTRAS
+
+        if 'estructura_archivo' not in context:
+
+            estructura_archivo = self.obtiene_estructura_archivo()
+
+            numero_columnas = len(estructura_archivo[0])
+            context['estructura_archivo'] = estructura_archivo
+
+        if 'form_columna_telefono' not in context:
+            form_columna_telefono = DefineColumnaTelefonoForm(
+                numero_columnas=numero_columnas)
+            context['form_columna_telefono'] = form_columna_telefono
+        if 'form_datos_extras' not in context:
+            form_datos_extras = DefineDatosExtrasForm(
+                numero_columnas=numero_columnas)
+            context['form_datos_extras'] = form_datos_extras
+        if 'form_nombre_columnas' not in context:
+            form_nombre_columnas = DefineNombreColumnaForm(
+                numero_columnas=numero_columnas)
+            context['form_nombre_columnas'] = form_nombre_columnas
+
         return context
 
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(error=True))
+    def form_invalid(self, form_columna_telefono, form_datos_extras,
+                     form_nombre_columnas):
+
+        message = '<strong>Operación Errónea!</strong> \
+                  Verifique los datos seleccionados.'
+
+        messages.add_message(
+            self.request,
+            messages.ERROR,
+            message,
+        )
+
+        return self.render_to_response(self.get_context_data(
+            form_columna_telefono=form_columna_telefono,
+            form_datos_extras=form_datos_extras,
+            form_nombre_columnas=form_nombre_columnas))
 
     def post(self, request, *args, **kwargs):
 
         self.object = self.get_object()
 
+        estructura_archivo = self.obtiene_estructura_archivo()
+        numero_columnas = len(estructura_archivo[0])
+
+        form_columna_telefono = DefineColumnaTelefonoForm(
+            numero_columnas, request.POST)
+        form_datos_extras = DefineDatosExtrasForm(
+            numero_columnas, request.POST)
+        form_nombre_columnas = DefineNombreColumnaForm(
+            numero_columnas, request.POST)
+
         if 'telefono' in self.request.POST:
-
             columna_con_telefono = int(self.request.POST['telefono'])
-
-            estructura_archivo = self.obtiene_estructura_archivo(
-                self.kwargs['pk'])
 
             lista_columnas_fechas = []
             lista_columnas_horas = []
@@ -225,8 +254,8 @@ class DefineBaseDatosContactoView(UpdateView):
                 )
                 return redirect(self.get_success_url())
 
-        return super(DefineBaseDatosContactoView, self).post(
-            request, *args, **kwargs)
+        return self.form_invalid(form_columna_telefono, form_datos_extras,
+                                 form_nombre_columnas)
 
     def get_success_url(self):
         return reverse('lista_base_datos_contacto')
