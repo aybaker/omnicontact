@@ -105,6 +105,60 @@ class BaseDatosContactoForm(forms.ModelForm):
                    'cantidad_contactos')
 
 
+class DefineColumnaTelefonoForm(forms.Form):
+
+    def __init__(self, numero_columnas=0, *args, **kwargs):
+        super(DefineColumnaTelefonoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+        COLUMNAS_TELEFONO = []
+        for columna in range(int(numero_columnas)):
+            COLUMNAS_TELEFONO.append((columna, 'Columna{0}'.format(columna)))
+
+        self.fields['telefono'] = forms.ChoiceField(choices=COLUMNAS_TELEFONO,
+                                                    required=False,
+                                                    widget=forms.RadioSelect(
+                                                        attrs={'class':
+                                                               'telefono'}))
+        self.helper.layout = Layout(Field('telefono'))
+
+
+class DefineDatosExtrasForm(forms.Form):
+
+    def __init__(self, numero_columnas=0, *args, **kwargs):
+        super(DefineDatosExtrasForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+        fields = []
+        for columna in range(int(numero_columnas)):
+            self.fields['datos-extras-{0}'.format(columna)] = \
+                forms.ChoiceField(choices=BaseDatosContacto.DATOS_EXTRAS,
+                                  required=False, label="",
+                                  widget=forms.Select(attrs={'class':
+                                                             'datos-extras'}))
+            fields.append(Field('nombre-columna-{0}'.format(columna)))
+        self.helper.layout = Layout(fields)
+
+
+class DefineNombreColumnaForm(forms.Form):
+
+    def __init__(self, numero_columnas=0, *args, **kwargs):
+        super(DefineNombreColumnaForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+        fields = []
+        for columna in range(int(numero_columnas)):
+            self.fields['nombre-columna-{0}'.format(columna)] = \
+                forms.CharField(label="", initial='Columna{0}'.format(columna),
+                                widget=forms.TextInput(attrs={'class':
+                                                       'nombre-columna'}))
+            fields.append(Field('nombre-columna-{0}'.format(columna)))
+        self.helper.layout = Layout(fields)
+
+
 # =============================================================================
 # Template
 # =============================================================================

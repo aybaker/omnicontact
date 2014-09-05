@@ -26,21 +26,51 @@ logger = logging_.getLogger(__name__)
 #            "CampanaUpdateView", "AudioCampanaCreateView",
 #            "CalificacionCampanaCreateView"]
 
+class CheckEstadoTemplateMixin(object):
+    """Mixin para utilizar en las vistas de creación de campañas/template.
+    Utiliza `Campana.objects_template.obtener_en_definicion_para_editar()`
+    para obtener la campañas/template para obtener la campaña pasada por url.
+    Este metodo falla si la campañas/template no deberia ser editada.
+    ('editada' en el contexto del proceso de creacion de la campañas/template.)
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects_template.obtener_en_definicion_para_editar(
+                kwargs['pk_campana'])
+
+        kwargs.update({'_campana_chequeada': True})
+
+        return super(CheckEstadoTemplateMixin, self).dispatch(request, *args,
+                                                              **kwargs)
+
 
 class CheckEstadoCampanaMixin(object):
     """Mixin para utilizar en las vistas de creación de campañas.
     Utiliza `Campana.objects.obtener_en_definicion_para_editar()`
-    para obtener la campaña.
+    para obtener la campaña pasada por url.
     Este metodo falla si la campaña no deberia ser editada.
     ('editada' en el contexto del proceso de creacion de la campaña)
     """
 
     def dispatch(self, request, *args, **kwargs):
-        Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk_campana'])
+        chequeada = kwargs.pop('_campana_chequeada', False)
+        if not chequeada:
+            self.campana = Campana.objects.obtener_en_definicion_para_editar(
+                self.kwargs['pk_campana'])
 
         return super(CheckEstadoCampanaMixin, self).dispatch(request, *args,
-                                                            **kwargs)
+                                                             **kwargs)
+
+
+class TemplateEnDefinicionMixin(object):
+    """Mixin para obtener el objeto campama/template que valida que siempre
+    este en el estado en definición.
+    """
+
+    def get_object(self, queryset=None):
+        return Campana.objects_template.obtener_en_definicion_para_editar(
+            self.kwargs['pk_campana'])
 
 
 class CampanaEnDefinicionMixin(object):
@@ -200,18 +230,13 @@ class CalificacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
 
     def get_initial(self):
         initial = super(CalificacionCampanaCreateView, self).get_initial()
-
-        campana = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk_campana'])
-        initial.update({'campana': campana.id})
+        initial.update({'campana': self.campana.id})
         return initial
 
     def get_context_data(self, **kwargs):
         context = super(CalificacionCampanaCreateView,
                         self).get_context_data(**kwargs)
-
-        context['campana'] = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk_campana'])
+        context['campana'] = self.campana
 
         return context
 
@@ -222,7 +247,7 @@ class CalificacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
         )
 
 
-class CalificacionCampanaDeleteView(DeleteView):
+class CalificacionCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
     """
     Esta vista se encarga de la eliminación del
     objeto Calificación seleccionado.
@@ -234,15 +259,9 @@ class CalificacionCampanaDeleteView(DeleteView):
     # @@@@@@@@@@@@@@@@@@@@
 
     def get_object(self, queryset=None):
+        # FIXME: Esté método no hace nada, se podría remover.
         calificacion = super(CalificacionCampanaDeleteView, self).get_object(
             queryset=None)
-
-        # De alguna manera hay q' validar la campaña! Pero esta CBV entra
-        # por el ID de calificacion, asi q' bueno, lo sigueinte queda
-        # raro, pero hace falta!
-        self.campana = Campana.objects.obtener_en_definicion_para_editar(
-            calificacion.campana.id)
-
         return calificacion
 
     def delete(self, request, *args, **kwargs):
@@ -259,10 +278,8 @@ class CalificacionCampanaDeleteView(DeleteView):
                                                                  **kwargs)
 
     def get_success_url(self):
-        return reverse(
-            'calificacion_campana',
-            kwargs={"pk": self.campana.pk}
-        )
+        return reverse('calificacion_campana',
+                       kwargs={"pk_campana": self.campana.pk})
 
 
 class OpcionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
@@ -282,17 +299,13 @@ class OpcionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
 
     def get_initial(self):
         initial = super(OpcionCampanaCreateView, self).get_initial()
-        campana = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk_campana'])
-        initial.update({'campana': campana.id})
+        initial.update({'campana': self.campana.id})
         return initial
 
     def get_context_data(self, **kwargs):
         context = super(
             OpcionCampanaCreateView, self).get_context_data(**kwargs)
-
-        context['campana'] = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk_campana'])
+        context['campana'] = self.campana
         return context
 
     def get_success_url(self):
@@ -302,7 +315,7 @@ class OpcionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
         )
 
 
-class OpcionCampanaDeleteView(DeleteView):
+class OpcionCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
     """
     Esta vista se encarga de la eliminación del
     objeto Opciión seleccionado.
@@ -314,15 +327,9 @@ class OpcionCampanaDeleteView(DeleteView):
     # @@@@@@@@@@@@@@@@@@@@
 
     def get_object(self, queryset=None):
+        # FIXME: Esté método no hace nada, se podría remover.
         opcion = super(OpcionCampanaDeleteView, self).get_object(
             queryset=None)
-
-        # De alguna manera hay q' validar la campaña! Pero esta CBV entra
-        # por el ID de calificacion, asi q' bueno, lo sigueinte queda
-        # raro, pero hace falta!
-        self.campana = Campana.objects.obtener_en_definicion_para_editar(
-            opcion.campana.id)
-
         return opcion
 
     def delete(self, request, *args, **kwargs):
@@ -340,7 +347,7 @@ class OpcionCampanaDeleteView(DeleteView):
     def get_success_url(self):
         return reverse(
             'opcion_campana',
-            kwargs={"pk": self.campana.pk}
+            kwargs={"pk_campana": self.campana.pk}
         )
 
 
@@ -361,29 +368,21 @@ class ActuacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
 
     def get_initial(self):
         initial = super(ActuacionCampanaCreateView, self).get_initial()
-        campana = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk_campana'])
-        initial.update({'campana': campana.id})
+        initial.update({'campana': self.campana.id})
         return initial
 
     def get_context_data(self, **kwargs):
         context = super(
             ActuacionCampanaCreateView, self).get_context_data(**kwargs)
-
-        campana = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk_campana'])
-
-        context['campana'] = campana
-        context['actuaciones_validas'] = campana.obtener_actuaciones_validas()
+        context['campana'] = self.campana
+        context['actuaciones_validas'] = \
+            self.campana.obtener_actuaciones_validas()
         return context
 
     def form_valid(self, form):
         form_valid = super(ActuacionCampanaCreateView, self).form_valid(form)
 
-        campana = Campana.objects.obtener_en_definicion_para_editar(
-            self.kwargs['pk_campana'])
-
-        if not campana.valida_actuaciones():
+        if not self.campana.valida_actuaciones():
             message = """<strong>¡Cuidado!</strong>
             Los días del rango de fechas seteados en la campaña NO coinciden
             con ningún día de las actuaciones programadas. Por consiguiente
@@ -403,7 +402,7 @@ class ActuacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
         )
 
 
-class ActuacionCampanaDeleteView(DeleteView):
+class ActuacionCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
     """
     Esta vista se encarga de la eliminación del
     objeto Actuación seleccionado.
@@ -415,14 +414,9 @@ class ActuacionCampanaDeleteView(DeleteView):
     # @@@@@@@@@@@@@@@@@@@@
 
     def get_object(self, queryset=None):
+        # FIXME: Esté método no hace nada, se podría remover.
         actuacion = super(ActuacionCampanaDeleteView, self).get_object(
             queryset=None)
-
-        # De alguna manera hay q' validar la campaña! Pero esta CBV entra
-        # por el ID de calificacion, asi q' bueno, lo sigueinte queda
-        # raro, pero hace falta!
-        self.campana = Campana.objects.obtener_en_definicion_para_editar(
-            actuacion.campana.id)
         return actuacion
 
     def delete(self, request, *args, **kwargs):
@@ -454,7 +448,7 @@ class ActuacionCampanaDeleteView(DeleteView):
     def get_success_url(self):
         return reverse(
             'actuacion_campana',
-            kwargs={"pk": self.campana.pk}
+            kwargs={"pk_campana": self.campana.pk}
         )
 
 

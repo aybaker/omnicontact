@@ -46,65 +46,76 @@
                     </tbody>
                 </table>
 
-                <table width="100%">
-                <tbody><tr>
+                <ul class="nav nav-tabs" role="tablist" id="myTab">
                     {% for detalle_opcion in detalle_opciones %}
                         {% if detalle_opcion.0.accion >= 0 %}
-                            <td>
-                                <table  class="table table-bordered">
-                                    <thead>
-                                        <th class="fts-table-bg">
-                                            #{{ detalle_opcion.0.digito }}
-                                                {% if detalle_opcion.0.calificacion %}
-                                                    <small>
-                                                        ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.calificacion.nombre }})
-                                                    </small>
-                                                {% elif detalle_opcion.0.grupo_atencion %}
-                                                    <small>
-                                                        ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.grupo_atencion.nombre }})
-                                                    </small>
-                                                {% else %}
-                                                    <small>({{ detalle_opcion.0.get_accion_display }})</small>
-                                                {% endif %}
-                                            
-                                        </th>
-                                    </thead>
-                                    <tbody>                        
-                                        {% for contacto in detalle_opcion.1 %}
-                                            <tr>
-                                                <td>
-                                                    {{ contacto }}
-                                                </td>
-                                            </tr>
-                                        {%endfor %}
-                                    </tbody>
-                                </table>
-                            </td>
+                            {% if forloop.first %}
+                                <li class="active">
+                            {% else %}
+                                <li>
+                            {% endif %}
+                                <a href="#{{ detalle_opcion.0.digito }}" role="tab" data-toggle="tab">
+                                    #{{ detalle_opcion.0.digito }}
+                                    {% if detalle_opcion.0.calificacion %}
+                                        <small>
+                                            ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.calificacion.nombre }})
+                                        </small>
+                                    {% elif detalle_opcion.0.grupo_atencion %}
+                                        <small>
+                                            ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.grupo_atencion.nombre }})
+                                        </small>
+                                    {% else %}
+                                        <small>({{ detalle_opcion.0.get_accion_display }})</small>
+                                    {% endif %}
+                                </a>
+                            </li>
                         {% endif %}
                     {% endfor %}
-                    <td>
-                        <table class="table table-bordered">
-                            <thead>
-                                <th class="fts-table-bg">
-                                    Inválidas
-                                </th>
-                            </thead>
-                            <tbody>                        
-                                {% for detalle_opcion in detalle_opciones %}
-                                    {% if not detalle_opcion.0.accion %}
-                                        {% for contacto in detalle_opcion.1 %}
-                                            <tr>
-                                                <td>
-                                                    {{ contacto }}
-                                                </td>
-                                            </tr>
-                                        {%endfor %}
-                                    {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </td>
-                </tr></tbody></table>
+                </ul>
+                <div class="tab-content">
+                    {% for detalle_opcion in detalle_opciones %}
+                        {% if detalle_opcion.0.accion >= 0 %}
+                            {% if forloop.first %}
+                                <div class="tab-pane active" id="{{ detalle_opcion.0.digito }}">
+                            {% else %}
+                                <div class="tab-pane" id="{{ detalle_opcion.0.digito }}">
+                            {% endif %}
+                                {% for contacto in detalle_opcion.1 %}
+                                    <p>{{ contacto }}</p>
+                                {%endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <hr>
+
+                <h3>La Otra opción de visualización sin TABS</h3>
+
+                {% for detalle_opcion in detalle_opciones %}
+                    {% if detalle_opcion.0.accion >= 0 %}
+                        <h3>
+                        <span class="text-primary">#{{ detalle_opcion.0.digito }}</span>
+                        {% if detalle_opcion.0.calificacion %}
+                            <small>
+                                ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.calificacion.nombre }})
+                            </small>
+                        {% elif detalle_opcion.0.grupo_atencion %}
+                            <small>
+                                ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.grupo_atencion.nombre }})
+                            </small>
+                        {% else %}
+                            <small>({{ detalle_opcion.0.get_accion_display }})</small>
+                        {% endif %}
+                        </h3>
+                                        
+                                                         
+                        {% for contacto in detalle_opcion.1 %}
+                            <p>{{ contacto }}</p>
+                        {%endfor %}
+  
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
     </div>

@@ -227,6 +227,18 @@ class BaseDatosContactoManager(models.Manager):
         """
         return self.filter(estado=BaseDatosContacto.ESTADO_DEFINIDA)
 
+    def obtener_en_definicion_para_editar(self, base_datos_contacto_id):
+        """Devuelve la base datos pasada por ID, siempre que pueda ser editada.
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=BaseDatosContacto.ESTADO_EN_DEFINICION).get(
+                pk=base_datos_contacto_id)
+        except BaseDatosContacto.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro base datos en "
+                                      "estado ESTADO_EN_DEFINICION"))
+
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
 
@@ -538,6 +550,22 @@ class TemplateManager(models.Manager):
         campana = Campana.objects.replicar_campana(template)
         return campana
 
+    def obtener_en_definicion_para_editar(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser editar (editada en el proceso de
+        definirla, o sea, en el proceso de "creacion" de la
+        campaña).
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=Campana.ESTADO_TEMPLATE_EN_DEFINICION).get(
+                pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana/template %s en "
+                                      "estado ESTADO_TEMPLATE_EN_DEFINICION"))
+
 
 class CampanaManager(models.Manager):
     """Manager para Campanas"""
@@ -580,10 +608,24 @@ class CampanaManager(models.Manager):
         """
         try:
             return self.filter(estado=Campana.ESTADO_EN_DEFINICION).get(
-                               pk=campana_id)
+                pk=campana_id)
         except Campana.DoesNotExist:
             raise(SuspiciousOperation("No se encontro campana %s en "
                                       "estado ESTADO_EN_DEFINICION"))
+
+    def obtener_depurada_para_reciclar(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser reciclada. Debe haber estar depuarada.
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(estado=Campana.ESTADO_DEPURADA).get(
+                               pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana %s en "
+                                      "estado ESTADO_DEPURADA"))
+
 
     def obtener_todas_para_generar_dialplan(self):
         """Devuelve campañas que deben ser tenidas en cuenta
@@ -1106,8 +1148,6 @@ class Campana(models.Model):
 
         lista_final = []
         for detalle_opcion in EDC.obtener_contactos_por_opciones(self.pk):
-            print detalle_opcion
-
             lista_item = []
 
             digito = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
@@ -1119,7 +1159,7 @@ class Campana(models.Model):
             except Opcion.DoesNotExist:
                 lista_item.append(digito)
 
-            lista_item.append(['-'.join(map(str, json.loads(contacto)))
+            lista_item.append([' | '.join(map(str, json.loads(contacto)))
                                for contacto in detalle_opcion[1]])
 
             lista_final.append(lista_item)

@@ -9,14 +9,16 @@ from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from fts_web.forms import TemplateForm, ConfirmaForm
 from fts_web.models import Campana
 from fts_web.views_campana_creacion import AudioCampanaCreateView, \
     CalificacionCampanaCreateView, CalificacionCampanaDeleteView, \
     OpcionCampanaCreateView, OpcionCampanaDeleteView, \
     ActuacionCampanaCreateView, ActuacionCampanaDeleteView
+from fts_web.views_campana_creacion import (CheckEstadoTemplateMixin,
+                                            TemplateEnDefinicionMixin)
 import logging as logging_
-from django.views.generic.detail import DetailView
 
 
 logger = logging_.getLogger(__name__)
@@ -25,7 +27,6 @@ logger = logging_.getLogger(__name__)
 # =============================================================================
 # Templates
 # =============================================================================
-
 
 class TemplateMixin(object):
 
@@ -103,10 +104,11 @@ class TemplateCreateView(TemplateMixin, CreateView):
     def get_success_url(self):
         return reverse(
             'audio_template',
-            kwargs={"pk": self.object.pk})
+            kwargs={"pk_campana": self.object.pk})
 
 
-class TemplateaUpdateView(TemplateMixin, UpdateView):
+class TemplateaUpdateView(CheckEstadoTemplateMixin, TemplateEnDefinicionMixin,
+                          TemplateMixin, UpdateView):
     """
     Esta vista actualiza un objeto Campana-->Template.
     """
@@ -121,30 +123,30 @@ class TemplateaUpdateView(TemplateMixin, UpdateView):
     def get_success_url(self):
         return reverse(
             'audio_template',
-            kwargs={"pk": self.object.pk})
+            kwargs={"pk_campana": self.object.pk})
 
 
 class DetalleTemplateView(TemplateMixin, DetailView):
-
-    # TODO: antes heredaba de DetalleCampanView, lo sacamos
-    # para evitar importacion ciclica
-
     template_name = 'campana/detalle_campana.html'
     context_object_name = 'campana'
+    pk_url_kwarg = 'pk_campana'
     model = Campana
 
 
-class AudioTemplateCreateView(TemplateMixin, AudioCampanaCreateView):
+class AudioTemplateCreateView(CheckEstadoTemplateMixin,
+                              TemplateEnDefinicionMixin, TemplateMixin,
+                              AudioCampanaCreateView):
 
     # @@@@@@@@@@@@@@@@@@@@
 
     def get_success_url(self):
         return reverse(
             'audio_template',
-            kwargs={"pk": self.object.pk})
+            kwargs={"pk_campana": self.object.pk})
 
 
-class CalificacionTemplateCreateView(TemplateMixin,
+class CalificacionTemplateCreateView(CheckEstadoTemplateMixin,
+                                     TemplateEnDefinicionMixin, TemplateMixin,
                                      CalificacionCampanaCreateView):
 
     # @@@@@@@@@@@@@@@@@@@@
@@ -152,11 +154,11 @@ class CalificacionTemplateCreateView(TemplateMixin,
     def get_success_url(self):
         return reverse(
             'calificacion_template',
-            kwargs={"pk": self.kwargs['pk']}
+            kwargs={"pk_campana": self.kwargs['pk_campana']}
         )
 
 
-class CalificacionTemplateDeleteView(TemplateMixin,
+class CalificacionTemplateDeleteView(CheckEstadoTemplateMixin, TemplateMixin,
                                      CalificacionCampanaDeleteView):
 
     # @@@@@@@@@@@@@@@@@@@@
@@ -164,40 +166,45 @@ class CalificacionTemplateDeleteView(TemplateMixin,
     def get_success_url(self):
         return reverse(
             'calificacion_template',
-            kwargs={"pk": self.campana.pk}
+            kwargs={"pk_campana": self.campana.pk}
         )
 
 
-class OpcionTemplateCreateView(TemplateMixin, OpcionCampanaCreateView):
+class OpcionTemplateCreateView(CheckEstadoTemplateMixin,
+                               TemplateEnDefinicionMixin, TemplateMixin,
+                               OpcionCampanaCreateView):
 
     # @@@@@@@@@@@@@@@@@@@@
 
     def get_success_url(self):
         return reverse(
             'opcion_template',
-            kwargs={"pk": self.kwargs['pk']}
+            kwargs={"pk_campana": self.kwargs['pk_campana']}
         )
 
 
-class OpcionTemplateDeleteView(TemplateMixin, OpcionCampanaDeleteView):
+class OpcionTemplateDeleteView(CheckEstadoTemplateMixin, TemplateMixin,
+                               OpcionCampanaDeleteView):
 
     # @@@@@@@@@@@@@@@@@@@@
 
     def get_success_url(self):
         return reverse(
             'opcion_template',
-            kwargs={"pk": self.campana.pk}
+            kwargs={"pk_campana": self.campana.pk}
         )
 
 
-class ActuacionTemplateCreateView(TemplateMixin, ActuacionCampanaCreateView):
+class ActuacionTemplateCreateView(CheckEstadoTemplateMixin,
+                                  TemplateEnDefinicionMixin, TemplateMixin,
+                                  ActuacionCampanaCreateView):
 
     # @@@@@@@@@@@@@@@@@@@@
 
     def get_success_url(self):
         return reverse(
             'actuacion_template',
-            kwargs={"pk": self.kwargs['pk']}
+            kwargs={"pk_campana": self.kwargs['pk_campana']}
         )
 
     def form_valid(self, form):
@@ -205,14 +212,15 @@ class ActuacionTemplateCreateView(TemplateMixin, ActuacionCampanaCreateView):
         return redirect(self.get_success_url())
 
 
-class ActuacionTemplateDeleteView(TemplateMixin, ActuacionCampanaDeleteView):
+class ActuacionTemplateDeleteView(CheckEstadoTemplateMixin, TemplateMixin,
+                                  ActuacionCampanaDeleteView):
 
     # @@@@@@@@@@@@@@@@@@@@
 
     def get_success_url(self):
         return reverse(
             'actuacion_template',
-            kwargs={"pk": self.campana.pk}
+            kwargs={"pk_campana": self.campana.pk}
         )
 
     def delete(self, request, *args, **kwargs):
@@ -232,7 +240,8 @@ class ActuacionTemplateDeleteView(TemplateMixin, ActuacionCampanaDeleteView):
         return HttpResponseRedirect(success_url)
 
 
-class ConfirmaTemplateView(TemplateMixin, UpdateView):
+class ConfirmaTemplateView(CheckEstadoTemplateMixin, TemplateEnDefinicionMixin,
+                           TemplateMixin, UpdateView):
     template_name = 'campana/confirma_campana.html'
     model = Campana
     context_object_name = 'campana'
@@ -294,11 +303,12 @@ class CreaCampanaTemplateView(TemplateMixin, RedirectView):
 
     def get(self, request, *args, **kwargs):
         template = get_object_or_404(
-            Campana, pk=self.kwargs['pk']
+            Campana, pk=self.kwargs['pk_campana']
         )
         campana = Campana.objects_template.crea_campana_de_template(template)
 
-        self.url = reverse('datos_basicos_campana', kwargs={"pk": campana.pk})
+        self.url = reverse('datos_basicos_campana',
+                           kwargs={"pk_campana": campana.pk})
 
         return super(CreaCampanaTemplateView, self).get(request, *args,
                                                         **kwargs)

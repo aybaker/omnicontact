@@ -50,7 +50,7 @@
                                     <td>{{ actuacion.hora_desde }} Hs.</td>
                                     <td>{{ actuacion.hora_hasta }} Hs.</td>
                                     <td>
-                                        <a href="{% url 'actuacion_reciclado_campana_elimina' actuacion.pk %}"> Eliminar</a>
+                                        <a href="{% url 'actuacion_reciclado_campana_elimina' campana.pk actuacion.pk %}"> Eliminar</a>
                                     </td>       
                                 </tr>
                              {% empty %}
