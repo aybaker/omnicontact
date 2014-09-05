@@ -105,3 +105,12 @@ class CreacionBaseDatosService(object):
         la BaseDatosContacto.
         """
         base_datos_contacto.define()
+
+
+class PredictorMetadataService(object):
+    """
+    Obtener/Adivinar/Predecir/Inferir cuál es la columna con el teléfono,
+    fecha, hora.
+    Generar la metadata que representara esto datos de la BDC.
+    """
+    pass
