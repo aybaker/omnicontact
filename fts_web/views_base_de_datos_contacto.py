@@ -161,7 +161,6 @@ class DefineBaseDatosContactoView(UpdateView):
         context['datos_extras'] = BaseDatosContacto.DATOS_EXTRAS
         return context
 
-
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(error=True))
 

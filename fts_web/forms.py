@@ -152,7 +152,7 @@ class DefineNombreColumnaForm(forms.Form):
         fields = []
         for columna in range(int(numero_columnas)):
             self.fields['nombre-columna-{0}'.format(columna)] = \
-                forms.CharField(label="",
+                forms.CharField(label="", initial='Columna{0}'.format(columna),
                                 widget=forms.TextInput(attrs={'class':
                                                        'nombre-columna'}))
             fields.append(Field('nombre-columna-{0}'.format(columna)))
