@@ -198,7 +198,7 @@ class SanitizeNumberTest(FTSenderBaseTest):
 
 class ValidateFechasTest(FTSenderBaseTest):
     def test_validate_fechas_validos(self):
-        datos = ['01/01/2014', '01/01/14']
+        datos = ['01/01/2014', '01/01/14', '16/07/16', '31/07/16']
 
         self.assertTrue(validate_fechas(datos))
 
