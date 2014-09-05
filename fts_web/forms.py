@@ -117,7 +117,6 @@ class DefineColumnaTelefonoForm(forms.Form):
             COLUMNAS_TELEFONO.append((columna, 'Columna{0}'.format(columna)))
 
         self.fields['telefono'] = forms.ChoiceField(choices=COLUMNAS_TELEFONO,
-                                                    required=False,
                                                     widget=forms.RadioSelect(
                                                         attrs={'class':
                                                                'telefono'}))
@@ -131,15 +130,16 @@ class DefineDatosExtrasForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_tag = False
 
-        fields = []
+        crispy_fields = []
         for columna in range(int(numero_columnas)):
-            self.fields['datos-extras-{0}'.format(columna)] = \
-                forms.ChoiceField(choices=BaseDatosContacto.DATOS_EXTRAS,
-                                  required=False, label="",
-                                  widget=forms.Select(attrs={'class':
-                                                             'datos-extras'}))
-            fields.append(Field('nombre-columna-{0}'.format(columna)))
-        self.helper.layout = Layout(fields)
+            value = forms.ChoiceField(choices=BaseDatosContacto.DATOS_EXTRAS,
+                                      required=False, label="",
+                                      widget=forms.Select(
+                                          attrs={'class': 'datos-extras'}))
+            self.fields['datos-extras-{0}'.format(columna)] = value
+
+            crispy_fields.append(Field('nombre-columna-{0}'.format(columna)))
+        self.helper.layout = Layout(crispy_fields)
 
 
 class DefineNombreColumnaForm(forms.Form):
@@ -149,14 +149,14 @@ class DefineNombreColumnaForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_tag = False
 
-        fields = []
+        crispy_fields = []
         for columna in range(int(numero_columnas)):
             self.fields['nombre-columna-{0}'.format(columna)] = \
                 forms.CharField(label="", initial='Columna{0}'.format(columna),
                                 widget=forms.TextInput(attrs={'class':
                                                        'nombre-columna'}))
-            fields.append(Field('nombre-columna-{0}'.format(columna)))
-        self.helper.layout = Layout(fields)
+            crispy_fields.append(Field('nombre-columna-{0}'.format(columna)))
+        self.helper.layout = Layout(crispy_fields)
 
 
 # =============================================================================
