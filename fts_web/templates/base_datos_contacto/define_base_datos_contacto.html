@@ -24,30 +24,30 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr> 
-                                    <th></th>
                                     {% for field in form_columna_telefono.telefono %}
                                         <th>{{ field }} </th>
                                     {% endfor %}
                                 </tr>
                                 <tr> 
-                                    <th></th>
                                     {% for field in form_datos_extras %}
                                         <th>{{ field|as_crispy_field }}</th>
                                     {% endfor %}
                                 </tr>
                                 <tr> 
-                                    <th></th>
                                     {% for field in form_nombre_columnas %}
                                         <th>{{ field|as_crispy_field }}</th>
                                     {% endfor %}
                                 </tr>
-
+                                <tr>
+                                <th colspan="{{ form_columna_telefono.telefono|length }}">
+                                    <input type="checkbox"> Primer fila es encabezado.
+                                </th>
+                                </tr>
                             </thead>
                             <tbody>
 
                             {% for row, cols in estructura_archivo.items %}
                                 <tr>
-                                    <td>{{ row }}</td> 
                                     {% for col in cols %}
                                         <td>{{ col }}</td>       
                                     {% endfor %}            
