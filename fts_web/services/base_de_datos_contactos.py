@@ -44,23 +44,13 @@ class CreacionBaseDatosService(object):
 
         base_datos_contacto.save()
 
-    def guarda_metadata(self, base_datos_contacto, dic_metadata):
+    def guarda_metadata(self, base_datos_contacto):
         """
         Segundo paso de la creación de una BaseDatosContacto.
 
         Este método se encarga de actualizar el objeto BaseDatoContacto con
         la metadata.
-        Parametros:
-        - base_datos_contacto: La instancia de BaseDatosContacto que se
-                               actualiza.
-        - dic_metadata: Diccionario con los datos extras de la metadata. La
-                        clave es el atributo y el valor, el valor que
-                        corresponde.
         """
-        metadata = base_datos_contacto.get_metadata()
-
-        for propiedad, valor in dic_metadata.items():
-            setattr(metadata, propiedad, valor)
 
         base_datos_contacto.save()
 
@@ -105,3 +95,12 @@ class CreacionBaseDatosService(object):
         la BaseDatosContacto.
         """
         base_datos_contacto.define()
+
+
+class PredictorMetadataService(object):
+    """
+    Obtener/Adivinar/Predecir/Inferir cuál es la columna con el teléfono,
+    fecha, hora.
+    Generar la metadata que representara esto datos de la BDC.
+    """
+    pass
