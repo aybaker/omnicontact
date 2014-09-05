@@ -168,17 +168,17 @@ class DefineBaseDatosContactoView(UpdateView):
 
         self.object = self.get_object()
 
-        dic_metadata = {}
         if 'telefono' in self.request.POST:
 
-            columan_con_telefono = int(self.request.POST['telefono'])
-            dic_metadata['columna_con_telefono'] = columan_con_telefono
+            columna_con_telefono = int(self.request.POST['telefono'])
 
             estructura_archivo = self.obtiene_estructura_archivo(
                 self.kwargs['pk'])
+
             lista_columnas_fechas = []
             lista_columnas_horas = []
-            for columna in estructura_archivo.keys():
+            lista_nombre_columnas = []
+            for columna, _ in enumerate(estructura_archivo[0]):
                 dato_extra = self.request.POST.get(
                     'datos-extras-{0}'.format(columna), None)
                 if dato_extra == BaseDatosContacto.DATO_EXTRA_FECHA:
@@ -186,11 +186,17 @@ class DefineBaseDatosContactoView(UpdateView):
                 elif dato_extra == BaseDatosContacto.DATO_EXTRA_HORA:
                     lista_columnas_horas.append(columna)
 
-            dic_metadata['columnas_con_fecha'] = lista_columnas_fechas
-            dic_metadata['columnas_con_hora'] = lista_columnas_horas
+                lista_nombre_columnas.append(self.request.POST.get(
+                    'nombre-columna-{0}'.format(columna), None))
+
+            metadata = self.object.get_metadata()
+            metadata.columna_con_telefono = columna_con_telefono
+            metadata.columnas_con_fecha = lista_columnas_fechas
+            metadata.columnas_con_hora = lista_columnas_horas
+            metadata.nombres_de_columnas = lista_nombre_columnas
 
             creacion_base_datos = CreacionBaseDatosService()
-            creacion_base_datos.guarda_metadata(self.object, dic_metadata)
+            creacion_base_datos.guarda_metadata(self.object)
 
             try:
                 creacion_base_datos.importa_contactos(self.object)
