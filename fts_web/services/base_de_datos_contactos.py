@@ -99,6 +99,23 @@ class CreacionBaseDatosService(object):
         """
         base_datos_contacto.define()
 
+    def inferir_metadata(self, base_datos_contacto):
+        """Devuelve instancia de MetadataBaseDatosContactoDTO que describe
+        la metadata del archivo desde el cual se creará la BD.
+
+        :raises: NoSePuedeInferirMetadata: si no se pudo inferir. Esto
+                 es algo grave, ya que si se lanza es porque no se encontro
+                 ninguna columan con datos que validen como telefono!
+        """
+        lineas = [
+                  ["Nombre", "Contacto", "Email"],
+                  ["juan", "549351444444", "juan@example.com"],
+                  ["juan", "549351444444", "juan@example.com"],
+                  ["juan", "549351444444", "juan@example.com"],
+                  ]
+        service = PredictorMetadataService()
+        return service.inferir_metadata_desde_lineas(lineas)
+
 
 class NoSePuedeInferirMetadata(FtsError):
     """Indica que no se puede inferir los metadatos"""

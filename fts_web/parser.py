@@ -8,15 +8,12 @@ from __future__ import unicode_literals
 
 import csv
 import logging
-import os
 import re
-import xlrd
 
 from django.conf import settings
-
 from fts_web.errors import (FtsParserCsvDelimiterError,
-                            FtsParserMinRowError, FtsParserMaxRowError,
-                            FtsParserOpenFileError)
+                            FtsParserMinRowError, FtsParserMaxRowError)
+
 
 logger = logging.getLogger('ParserCsv')
 
