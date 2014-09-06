@@ -241,20 +241,15 @@ class BaseDatosContactoManager(models.Manager):
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
 
-class MetadataBaseDatosContacto(object):
+class MetadataBaseDatosContactoDTO(object):
     """Encapsula acceso a metadatos de BaseDatosContacto"""
 
-    def __init__(self, bd):
-        self.bd = bd
-        if bd.metadata is None or bd.metadata == '':
-            self._metadata = {}
-        else:
-            try:
-                self._metadata = json.loads(bd.metadata)
-            except:
-                logger.exception("Excepcion detectada al desserializar "
-                                 "metadata de la bd {0}".format(bd.id))
-                raise
+    def __init__(self):
+        self._metadata = {}
+
+    def _save(self):
+        """Implementacion por default no hace nada"""
+        pass
 
     # -----
 
@@ -377,6 +372,36 @@ class MetadataBaseDatosContacto(object):
 
         self._metadata['nombres_de_columnas'] = columnas
         self._save()
+
+    @property
+    def primer_fila_es_encabezado(self):
+        try:
+            return self._metadata['prim_fila_enc']
+        except KeyError:
+            raise(ValueError("No se ha seteado si primer "
+                             "fila es encabezado"))
+
+    @primer_fila_es_encabezado.setter
+    def primer_fila_es_encabezado(self, es_encabezado):
+        assert isinstance(es_encabezado, bool)
+
+        self._metadata['prim_fila_enc'] = es_encabezado
+        self._save()
+
+
+class MetadataBaseDatosContacto(MetadataBaseDatosContactoDTO):
+    """Encapsula acceso a metadatos de BaseDatosContacto"""
+
+    def __init__(self, bd):
+        super(MetadataBaseDatosContacto, self).__init__()
+        self.bd = bd
+        if bd.metadata is not None and bd.metadata != '':
+            try:
+                self._metadata = json.loads(bd.metadata)
+            except:
+                logger.exception("Excepcion detectada al desserializar "
+                                 "metadata de la bd {0}".format(bd.id))
+                raise
 
     # -----
 
