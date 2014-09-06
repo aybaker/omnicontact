@@ -10,9 +10,12 @@ import os
 import json
 import logging
 
-from fts_web.errors import FtsArchivoImportacionInvalidoError
-from fts_web.models import BaseDatosContacto, Contacto
-from fts_web.parser import ParserCsv
+from fts_web.errors import FtsArchivoImportacionInvalidoError, FtsError
+from fts_web.models import BaseDatosContacto, Contacto, \
+    MetadataBaseDatosContactoDTO
+from fts_web.parser import ParserCsv, validate_telefono, validate_fechas, \
+    validate_horas
+from __builtin__ import callable, enumerate
 
 
 logger = logging.getLogger(__name__)
@@ -97,10 +100,170 @@ class CreacionBaseDatosService(object):
         base_datos_contacto.define()
 
 
+class NoSePuedeInferirMetadata(FtsError):
+    """Indica que no se puede inferir los metadatos"""
+    pass
+
+
 class PredictorMetadataService(object):
     """
     Obtener/Adivinar/Predecir/Inferir cuál es la columna con el teléfono,
     fecha, hora.
     Generar la metadata que representara esto datos de la BDC.
     """
-    pass
+
+    def _inferir_columnas(self, lineas, func_validadora):
+        assert callable(func_validadora)
+
+        matriz = []
+        for linea in lineas:
+            matriz.append([
+                           func_validadora(celda)
+                           for celda in linea
+                           ])
+
+        # https://stackoverflow.com/questions/4937491/\
+        #    matrix-transpose-in-python
+        matriz_transpuesta = zip(*matriz)
+        resultado_validacion_por_columna = [all(lista)
+                                            for lista in matriz_transpuesta]
+
+        return [index
+                for index, value in enumerate(resultado_validacion_por_columna)
+                if value]
+
+    def inferir_metadata_desde_lineas(self, lineas):
+        assert isinstance(lineas, (list, tuple))
+
+        logger.debug("inferir_metadata_desde_lineas(): %s", lineas)
+
+        if len(lineas) < 2:
+            logger.debug("Se deben proveer al menos 2 lineas: %s", lineas)
+            raise(NoSePuedeInferirMetadata("Se deben proveer al menos 2 "
+                                           "lineas para poder inferir los "
+                                           "metadatos"))
+
+        # Primero chequeamos q' haya igual cant. de columnas
+        set_cant_columnas = set([len(linea) for linea in lineas])
+        if len(set_cant_columnas) != 1:
+            logger.debug("Distintas cantidades "
+                         "de columnas: %s", set_cant_columnas)
+            raise(NoSePuedeInferirMetadata("Las lineas recibidas "
+                                           "poseen distintas cantidades "
+                                           "de columnas"))
+
+        primer_linea = lineas[0]
+        otras_lineas = lineas[1:]
+        metadata = MetadataBaseDatosContactoDTO()
+
+        # Ahora chequeamos que haya al menos 1 columna
+        if len(primer_linea) == 0:
+            logger.debug("Las lineas no poseen ninguna "
+                         "columna: %s", primer_linea)
+            raise(NoSePuedeInferirMetadata("Las lineas no poseen ninguna "
+                                           "columna"))
+
+        metadata.cantidad_de_columnas = len(primer_linea)
+
+        #======================================================================
+        # Primero detectamos columnas de datos
+        #======================================================================
+
+        columnas_con_telefonos = self._inferir_columnas(
+            otras_lineas, validate_telefono)
+
+        logger.debug("columnas_con_telefonos: %s", columnas_con_telefonos)
+
+        columnas_con_fechas = self._inferir_columnas(
+            otras_lineas, lambda x: validate_fechas([x]))
+
+        logger.debug("columnas_con_fechas: %s", columnas_con_fechas)
+
+        columnas_con_horas = self._inferir_columnas(
+            otras_lineas, lambda x: validate_horas([x]))
+
+        logger.debug("columnas_con_horas: %s", columnas_con_horas)
+
+        columna_con_telefono = None
+        if len(columnas_con_telefonos) == 0:
+            logger.debug("No se encontro columna con telefono")
+
+        else:
+            # Se detecto 1 o mas columnas con telefono. Usamos la 1ra.
+            logger.debug("Se detecto: columnas_con_telefonos: %s",
+                         columnas_con_telefonos)
+
+            if columnas_con_telefonos[0] in columnas_con_fechas:
+                logger.warn("La columna con telefono tambien esta entre "
+                            "las columnas detectadas como fecha")
+
+            elif columnas_con_telefonos[0] in columnas_con_horas:
+                logger.warn("La columna con telefono tambien esta entre "
+                            "las columnas detectadas como hora")
+            else:
+                columna_con_telefono = columnas_con_telefonos[0]
+
+        if columna_con_telefono is not None:
+            metadata.columna_con_telefono = columna_con_telefono
+
+        metadata.columnas_con_fecha = columnas_con_fechas
+        metadata.columnas_con_hora = columnas_con_horas
+
+        # Si no hemos inferido nada, salimos
+        if columna_con_telefono is None and not columnas_con_fechas \
+                                        and not columnas_con_horas:
+            # En realidad, al menos el numero de columans debio ser
+            # inferido. Pero si ni siquiera se detecto numero de
+            # telefono, se debe a que (a) hay un bug en esta logica
+            # (b) la BD es invalida. Asi que, de cualquire manera,
+            # no creo q' valga la pena devolver la instancia de mentadata,
+            # me parece mas significativo reportar el hecho de que
+            # no se pudo inferir el metadato.
+            raise(NoSePuedeInferirMetadata("No se pudo inferir ningun "
+                                           "tipo de dato"))
+
+        #======================================================================
+        # Si detectamos telefono, fecha u hora podemos verificar si la
+        #  primer linea es encabezado o dato
+        #======================================================================
+
+        validaciones_primer_linea = []
+
+        if columna_con_telefono is not None:
+            validaciones_primer_linea.append(
+                validate_telefono(primer_linea[columna_con_telefono]))
+
+        for col_fecha in metadata.columnas_con_fecha:
+            validaciones_primer_linea.append(
+                validate_fechas([
+                                 primer_linea[col_fecha]
+                                 ]))
+
+        for col_hora in metadata.columnas_con_hora:
+            validaciones_primer_linea.append(
+                validate_horas([
+                                primer_linea[col_hora]
+                                ]))
+
+        assert validaciones_primer_linea
+        logger.debug("validaciones_primer_linea: %s",
+                     validaciones_primer_linea)
+
+        primera_fila_es_dato = all(validaciones_primer_linea)
+        metadata.primer_fila_es_encabezado = not primera_fila_es_dato
+
+        nombres = []
+        if metadata.primer_fila_es_encabezado:
+            # FIXME: falta validar nombres de columnas
+            nombres_orig = [x.strip() for x in primer_linea]
+            for num, col in enumerate(nombres_orig):
+                if not col:
+                    col = "Columna {0}".format(num + 1)
+                nombres.append(col)
+        else:
+            nombres = ["Columna {0}".format(num + 1)
+                       for num in range(metadata.cantidad_de_columnas)]
+
+        metadata.nombres_de_columnas = nombres
+
+        return metadata
