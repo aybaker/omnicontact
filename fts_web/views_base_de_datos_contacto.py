@@ -152,20 +152,20 @@ class DefineBaseDatosContactoView(UpdateView):
 
             estructura_archivo = self.obtiene_estructura_archivo()
 
-            numero_columnas = len(estructura_archivo[0])
+            cantidad_columnas = len(estructura_archivo[0])
             context['estructura_archivo'] = estructura_archivo
 
         if 'form_columna_telefono' not in context:
             form_columna_telefono = DefineColumnaTelefonoForm(
-                numero_columnas=numero_columnas)
+                cantidad_columnas=numero_columnas)
             context['form_columna_telefono'] = form_columna_telefono
         if 'form_datos_extras' not in context:
             form_datos_extras = DefineDatosExtrasForm(
-                numero_columnas=numero_columnas)
+                cantidad_columnas=numero_columnas)
             context['form_datos_extras'] = form_datos_extras
         if 'form_nombre_columnas' not in context:
             form_nombre_columnas = DefineNombreColumnaForm(
-                numero_columnas=numero_columnas)
+                cantidad_columnas=numero_columnas)
             context['form_nombre_columnas'] = form_nombre_columnas
 
         return context
@@ -192,16 +192,18 @@ class DefineBaseDatosContactoView(UpdateView):
         self.object = self.get_object()
 
         estructura_archivo = self.obtiene_estructura_archivo()
-        numero_columnas = len(estructura_archivo[0])
+        cantidad_columnas = len(estructura_archivo[0])
 
         form_columna_telefono = DefineColumnaTelefonoForm(
-            numero_columnas, request.POST)
+            cantidad_columnas, request.POST)
         form_datos_extras = DefineDatosExtrasForm(
-            numero_columnas, request.POST)
+            cantidad_columnas, request.POST)
         form_nombre_columnas = DefineNombreColumnaForm(
-            numero_columnas, request.POST)
+            cantidad_columnas, request.POST)
 
-        if 'telefono' in self.request.POST:
+        if (form_columna_telefono.is_valid() and
+                form_nombre_columnas.is_valid()):
+
             columna_con_telefono = int(self.request.POST['telefono'])
 
             lista_columnas_fechas = []
@@ -219,6 +221,7 @@ class DefineBaseDatosContactoView(UpdateView):
                     'nombre-columna-{0}'.format(columna), None))
 
             metadata = self.object.get_metadata()
+            metadata.cantidad_de_columnas = cantidad_columnas
             metadata.columna_con_telefono = columna_con_telefono
             metadata.columnas_con_fecha = lista_columnas_fechas
             metadata.columnas_con_hora = lista_columnas_horas
