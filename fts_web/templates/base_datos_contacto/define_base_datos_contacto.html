@@ -46,12 +46,11 @@
                                 </tr>
                                 <tr>
                                 <th colspan="{{ form_columna_telefono.telefono|length }}">
-                                    <input type="checkbox"> Primer fila es encabezado.
+                                    {{ form_primer_linea_encabezado.es_encabezado|as_crispy_field }}
                                 </th>
                                 </tr>
                             </thead>
                             <tbody>
-
                             {% for cols in estructura_archivo %}
                                 <tr>
                                     {% for col in cols %}
