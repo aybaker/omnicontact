@@ -80,9 +80,22 @@
                             {% else %}
                                 <div class="tab-pane" id="{{ detalle_opcion.0.digito }}">
                             {% endif %}
-                                {% for contacto in detalle_opcion.1 %}
-                                    <p>{{ contacto }}</p>
-                                {%endfor %}
+                                <table class="table table-bordered">
+                                    <thead>
+                                        {% for nombre_columna in nombres_columnas %}
+                                            <th>{{ nombre_columna }}</th>
+                                        {% endfor %}
+                                    </thead>
+                                    <tbody>
+                                        {% for datos_contacto in detalle_opcion.1 %}
+                                            <tr>
+                                                {% for dato_contacto in datos_contacto %}
+                                                    <td>{{ dato_contacto }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -108,12 +121,23 @@
                             <small>({{ detalle_opcion.0.get_accion_display }})</small>
                         {% endif %}
                         </h3>
-                                        
-                                                         
-                        {% for contacto in detalle_opcion.1 %}
-                            <p>{{ contacto }}</p>
-                        {%endfor %}
-  
+
+                        <table class="table table-bordered">
+                            <thead>
+                            {% for nombre_columna in nombres_columnas %}
+                                <th>{{ nombre_columna }}</th>
+                            {% endfor %}  
+                            </thead>
+                            <tbody>
+                                {% for datos_contacto in detalle_opcion.1 %}
+                                    <tr>
+                                        {% for dato_contacto in datos_contacto %}
+                                            <td>{{ dato_contacto }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     {% endif %}
                 {% endfor %}
             </div>

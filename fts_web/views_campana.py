@@ -242,6 +242,8 @@ class CampanaEstadoOpcionesDetailView(DetailView):
         context = super(CampanaEstadoOpcionesDetailView,
                         self).get_context_data(**kwargs)
 
+        base_dato_metadata = self.object.bd_contacto.get_metadata()
+        context['nombres_columnas'] = base_dato_metadata.nombres_de_columnas
         context['detalle_opciones'] = self.object.\
             obtener_detalle_opciones_seleccionadas()
         return context

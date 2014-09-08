@@ -1268,7 +1268,7 @@ class Campana(models.Model):
             except Opcion.DoesNotExist:
                 lista_item.append(digito)
 
-            lista_item.append([' | '.join(map(str, json.loads(contacto)))
+            lista_item.append([map(str, json.loads(contacto))
                                for contacto in detalle_opcion[1]])
 
             lista_final.append(lista_item)
