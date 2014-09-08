@@ -15,7 +15,8 @@ from fts_web.forms import (BaseDatosContactoForm, DefineNombreColumnaForm,
                            DefineColumnaTelefonoForm, DefineDatosExtrasForm)
 from fts_web.models import BaseDatosContacto
 from fts_web.parser import ParserCsv
-from fts_web.services.base_de_datos_contactos import CreacionBaseDatosService
+from fts_web.services.base_de_datos_contactos import (CreacionBaseDatosService,
+                                                      PredictorMetadataService)
 import logging as logging_
 
 
@@ -151,21 +152,45 @@ class DefineBaseDatosContactoView(UpdateView):
         if 'estructura_archivo' not in context:
 
             estructura_archivo = self.obtiene_estructura_archivo()
-
-            cantidad_columnas = len(estructura_archivo[0])
             context['estructura_archivo'] = estructura_archivo
+
+            predictor_metadata = PredictorMetadataService()
+            metadata = predictor_metadata.inferir_metadata_desde_lineas(
+                estructura_archivo)
+
+            initial_predecido_columna_telefono = \
+                {'telefono': metadata.columna_con_telefono}
+
+            initial_predecido_datos_extras = dict(
+                [('datos-extras-{0}'.format(col),
+                    BaseDatosContacto.DATO_EXTRA_FECHA)
+                    for col in metadata.columnas_con_fecha])
+
+            initial_predecido_datos_extras.update(dict(
+                [('datos-extras-{0}'.format(col),
+                    BaseDatosContacto.DATO_EXTRA_HORA)
+                    for col in metadata.columnas_con_hora]))
+
+            initial_predecido_nombre_columnas = dict(
+                [('nombre-columna-{0}'.format(i), nombre)
+                    for i, nombre in enumerate(metadata.nombres_de_columnas)])
 
         if 'form_columna_telefono' not in context:
             form_columna_telefono = DefineColumnaTelefonoForm(
-                cantidad_columnas=numero_columnas)
+                cantidad_columnas=metadata.cantidad_de_columnas,
+                initial=initial_predecido_columna_telefono)
             context['form_columna_telefono'] = form_columna_telefono
+
         if 'form_datos_extras' not in context:
             form_datos_extras = DefineDatosExtrasForm(
-                cantidad_columnas=numero_columnas)
+                cantidad_columnas=metadata.cantidad_de_columnas,
+                initial=initial_predecido_datos_extras)
             context['form_datos_extras'] = form_datos_extras
+
         if 'form_nombre_columnas' not in context:
             form_nombre_columnas = DefineNombreColumnaForm(
-                cantidad_columnas=numero_columnas)
+                cantidad_columnas=metadata.cantidad_de_columnas,
+                initial=initial_predecido_nombre_columnas)
             context['form_nombre_columnas'] = form_nombre_columnas
 
         return context
