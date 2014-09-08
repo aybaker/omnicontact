@@ -260,6 +260,11 @@ class DefineBaseDatosContactoView(UpdateView):
             metadata.columnas_con_hora = lista_columnas_horas
             metadata.nombres_de_columnas = lista_nombre_columnas
 
+            es_encabezado = False
+            if self.request.POST.get('es_encabezado', False):
+                es_encabezado = True
+            metadata.primer_fila_es_encabezado = es_encabezado
+
             creacion_base_datos = CreacionBaseDatosService()
             creacion_base_datos.guarda_metadata(self.object)
 
