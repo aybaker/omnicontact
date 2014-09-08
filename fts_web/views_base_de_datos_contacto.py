@@ -173,7 +173,7 @@ class DefineBaseDatosContactoView(UpdateView):
 
         if 'form_columna_telefono' not in context:
             form_columna_telefono = DefineColumnaTelefonoForm(
-                cantidad_columnas=metadata.cantidad_de_columnas,)
+                cantidad_columnas=metadata.cantidad_de_columnas,
                 initial=initial_predecido_columna_telefono)
             context['form_columna_telefono'] = form_columna_telefono
 
