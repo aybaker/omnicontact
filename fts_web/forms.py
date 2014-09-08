@@ -107,13 +107,13 @@ class BaseDatosContactoForm(forms.ModelForm):
 
 class DefineColumnaTelefonoForm(forms.Form):
 
-    def __init__(self, numero_columnas=0, *args, **kwargs):
+    def __init__(self, cantidad_columnas=0, *args, **kwargs):
         super(DefineColumnaTelefonoForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
 
         COLUMNAS_TELEFONO = []
-        for columna in range(int(numero_columnas)):
+        for columna in range(int(cantidad_columnas)):
             COLUMNAS_TELEFONO.append((columna, 'Columna{0}'.format(columna)))
 
         self.fields['telefono'] = forms.ChoiceField(choices=COLUMNAS_TELEFONO,
@@ -125,13 +125,13 @@ class DefineColumnaTelefonoForm(forms.Form):
 
 class DefineDatosExtrasForm(forms.Form):
 
-    def __init__(self, numero_columnas=0, *args, **kwargs):
+    def __init__(self, cantidad_columnas=0, *args, **kwargs):
         super(DefineDatosExtrasForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
 
         crispy_fields = []
-        for columna in range(int(numero_columnas)):
+        for columna in range(int(cantidad_columnas)):
             value = forms.ChoiceField(choices=BaseDatosContacto.DATOS_EXTRAS,
                                       required=False, label="",
                                       widget=forms.Select(
@@ -144,13 +144,13 @@ class DefineDatosExtrasForm(forms.Form):
 
 class DefineNombreColumnaForm(forms.Form):
 
-    def __init__(self, numero_columnas=0, *args, **kwargs):
+    def __init__(self, cantidad_columnas=0, *args, **kwargs):
         super(DefineNombreColumnaForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
 
         crispy_fields = []
-        for columna in range(int(numero_columnas)):
+        for columna in range(int(cantidad_columnas)):
             self.fields['nombre-columna-{0}'.format(columna)] = \
                 forms.CharField(label="", initial='Columna{0}'.format(columna),
                                 widget=forms.TextInput(attrs={'class':
