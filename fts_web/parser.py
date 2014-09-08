@@ -104,11 +104,10 @@ class ParserCsv(object):
 
         workbook = csv.reader(file_obj, self._get_dialect(file_obj))
 
-        i = 0
-        structure_dic = {}
+        structure_dic = []
         for i, row in enumerate(workbook):
             if row:
-                structure_dic.update({i: row})
+                structure_dic.append(row)
 
             if i == 3:
                 break
