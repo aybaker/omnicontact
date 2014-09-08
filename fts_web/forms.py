@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout, Submit, Div
+from crispy_forms.layout import Field, Layout, Submit, Div, MultiField
 
 from bootstrap3_datetime.widgets import DateTimePicker
 
@@ -120,7 +120,7 @@ class DefineColumnaTelefonoForm(forms.Form):
                                                     widget=forms.RadioSelect(
                                                         attrs={'class':
                                                                'telefono'}))
-        self.helper.layout = Layout(Field('telefono'))
+        self.helper.layout = Layout(MultiField('telefono'))
 
 
 class DefineDatosExtrasForm(forms.Form):
@@ -153,6 +153,7 @@ class DefineNombreColumnaForm(forms.Form):
         for columna in range(int(cantidad_columnas)):
             self.fields['nombre-columna-{0}'.format(columna)] = \
                 forms.CharField(label="", initial='Columna{0}'.format(columna),
+                                error_messages={'required': ''},
                                 widget=forms.TextInput(attrs={'class':
                                                        'nombre-columna'}))
             crispy_fields.append(Field('nombre-columna-{0}'.format(columna)))
