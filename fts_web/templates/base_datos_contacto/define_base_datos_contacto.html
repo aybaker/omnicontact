@@ -25,7 +25,13 @@
                             <thead>
                                 <tr> 
                                     {% for field in form_columna_telefono.telefono %}
-                                        <th>{{ field }} </th>
+                                        <th>
+                                            <div class="radio {% if form_columna_telefono.errors %}has-error{% endif %}">
+                                               <label class="control-label">
+                                                {{ field }}
+                                               </label>
+                                            </div>
+                                        </th>
                                     {% endfor %}
                                 </tr>
                                 <tr> 
