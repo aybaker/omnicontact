@@ -247,7 +247,12 @@ class FTSenderTestUtilsMixin(object):
         """
         bd_contacto = BaseDatosContacto.objects.create(
             nombre="base-datos-contactos-" + ru())
-        bd_contacto.get_metadata().columna_con_telefono = 0
+
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 1
+        metadata.columna_con_telefono = 0
+        metadata.nombres_de_columnas = ['telefono']
+
         if numeros_telefonicos is not None:
             for nro_telefonico in numeros_telefonicos:
                 self.crear_contacto(
