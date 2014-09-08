@@ -161,7 +161,8 @@ class DefineNombreColumnaForm(forms.Form):
 
 
 class PrimerLineaEncabezadoForm(forms.Form):
-    es_encabezado = forms.BooleanField(label="Primer fila es encabezado.")
+    es_encabezado = forms.BooleanField(label="Primer fila es encabezado.",
+                                       required=False)
 
     def __init__(self, *args, **kwargs):
         super(PrimerLineaEncabezadoForm, self).__init__(*args, **kwargs)
