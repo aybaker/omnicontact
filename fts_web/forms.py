@@ -160,6 +160,16 @@ class DefineNombreColumnaForm(forms.Form):
         self.helper.layout = Layout(crispy_fields)
 
 
+class PrimerLineaEncabezadoForm(forms.Form):
+    es_encabezado = forms.BooleanField(label="Primer fila es encabezado.")
+
+    def __init__(self, *args, **kwargs):
+        super(PrimerLineaEncabezadoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(Field('es_encabezado'))
+
+
 # =============================================================================
 # Template
 # =============================================================================
