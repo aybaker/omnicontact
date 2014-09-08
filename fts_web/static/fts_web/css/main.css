@@ -187,3 +187,25 @@ td, th {
     background: #c3c3c3 !important;
     color: #222;   
 }
+
+
+.over-x-scroll {
+    overflow-x: auto; 
+}
+
+.tb-x-scroll tr th,
+.tb-x-scroll tr td {
+    min-width: 170px;
+}
+
+.border-osc {
+    border: 1px solid #ACACAC;
+}
+
+.mg-bt-10 {
+    margin-bottom: 10px;
+}
+
+.pd-tp-15 {
+    padding-top: 15px;
+}
