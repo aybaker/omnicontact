@@ -12,7 +12,8 @@ from fts_web.errors import FtsParserCsvDelimiterError, FtsParserMinRowError, \
     FtsParserOpenFileError, FtsParserMaxRowError, \
     FtsDepuraBaseDatoContactoError
 from fts_web.forms import (BaseDatosContactoForm, DefineNombreColumnaForm,
-                           DefineColumnaTelefonoForm, DefineDatosExtrasForm)
+                           DefineColumnaTelefonoForm, DefineDatosExtrasForm,
+                           PrimerLineaEncabezadoForm)
 from fts_web.models import BaseDatosContacto
 from fts_web.parser import ParserCsv
 from fts_web.services.base_de_datos_contactos import (CreacionBaseDatosService,
@@ -171,6 +172,9 @@ class DefineBaseDatosContactoView(UpdateView):
             [('nombre-columna-{0}'.format(i), nombre)
                 for i, nombre in enumerate(metadata.nombres_de_columnas)])
 
+        initial_predecido_encabezado = {'es_encabezado':
+                                        metadata.primer_fila_es_encabezado}
+
         if 'form_columna_telefono' not in context:
             form_columna_telefono = DefineColumnaTelefonoForm(
                 cantidad_columnas=metadata.cantidad_de_columnas,
@@ -189,10 +193,16 @@ class DefineBaseDatosContactoView(UpdateView):
                 initial=initial_predecido_nombre_columnas)
             context['form_nombre_columnas'] = form_nombre_columnas
 
+        if 'form_primer_linea_encabezado' not in context:
+            form_primer_linea_encabezado = PrimerLineaEncabezadoForm(
+                initial=initial_predecido_encabezado)
+            context['form_primer_linea_encabezado'] =\
+                form_primer_linea_encabezado
+
         return context
 
     def form_invalid(self, form_columna_telefono, form_datos_extras,
-                     form_nombre_columnas):
+                     form_nombre_columnas, form_primer_linea_encabezado):
 
         message = '<strong>Operación Errónea!</strong> \
                   Verifique los datos seleccionados.'
@@ -206,7 +216,8 @@ class DefineBaseDatosContactoView(UpdateView):
         return self.render_to_response(self.get_context_data(
             form_columna_telefono=form_columna_telefono,
             form_datos_extras=form_datos_extras,
-            form_nombre_columnas=form_nombre_columnas))
+            form_nombre_columnas=form_nombre_columnas,
+            form_primer_linea_encabezado=form_primer_linea_encabezado))
 
     def post(self, request, *args, **kwargs):
 
@@ -221,6 +232,7 @@ class DefineBaseDatosContactoView(UpdateView):
             cantidad_columnas, request.POST)
         form_nombre_columnas = DefineNombreColumnaForm(
             cantidad_columnas, request.POST)
+        form_primer_linea_encabezado = PrimerLineaEncabezadoForm(request.POST)
 
         if (form_columna_telefono.is_valid() and
                 form_nombre_columnas.is_valid()):
@@ -279,7 +291,8 @@ class DefineBaseDatosContactoView(UpdateView):
                 return redirect(self.get_success_url())
 
         return self.form_invalid(form_columna_telefono, form_datos_extras,
-                                 form_nombre_columnas)
+                                 form_nombre_columnas,
+                                 form_primer_linea_encabezado)
 
     def get_success_url(self):
         return reverse('lista_base_datos_contacto')
