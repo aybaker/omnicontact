@@ -271,12 +271,23 @@ class PredictorMetadataService(object):
 
         nombres = []
         if metadata.primer_fila_es_encabezado:
-            # FIXME: falta validar nombres de columnas
             nombres_orig = [x.strip() for x in primer_linea]
             for num, col in enumerate(nombres_orig):
                 if not col:
                     col = "Columna {0}".format(num + 1)
+                    nombres.append(col)
+                    continue
+
+                col = col.strip()
+                if col in nombres:
+                    # FIXME: Esperar respuesta de Horace para ver que hacemos
+                    # en este caso. Por ahora, le agrego 'loquesea-repetido'
+                    col = '{0}-repetido'.format(col)
                 nombres.append(col)
+
+
+
+
         else:
             nombres = ["Columna {0}".format(num + 1)
                        for num in range(metadata.cantidad_de_columnas)]
