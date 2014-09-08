@@ -138,7 +138,7 @@ class DefineDatosExtrasForm(forms.Form):
                                           attrs={'class': 'datos-extras'}))
             self.fields['datos-extras-{0}'.format(columna)] = value
 
-            crispy_fields.append(Field('nombre-columna-{0}'.format(columna)))
+            crispy_fields.append(Field('datos-extras-{0}'.format(columna)))
         self.helper.layout = Layout(crispy_fields)
 
 
