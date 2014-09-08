@@ -98,7 +98,7 @@ class DefineBaseDatosContactoView(UpdateView):
                                                                  *args,
                                                                  **kwargs)
 
-    def obtiene_estructura_archivo(self):
+    def obtiene_previsualizacion_archivo(self):
 
         parser = ParserCsv()
         estructura_archivo = None
@@ -108,9 +108,8 @@ class DefineBaseDatosContactoView(UpdateView):
                 BaseDatosContacto, pk=self.base_datos_contacto.pk
             )
             # FIXME: Modificar el pasar por parámetro el archivo abierto.
-            estructura_archivo = parser.get_file_structure(
+            return parser.previsualiza_archivo(
                 base_datos_contacto.archivo_importacion.file)
-            return estructura_archivo
 
         except FtsParserCsvDelimiterError:
             message = '<strong>Operación Errónea!</strong> \
@@ -148,7 +147,7 @@ class DefineBaseDatosContactoView(UpdateView):
         context = super(
             DefineBaseDatosContactoView, self).get_context_data(**kwargs)
 
-        estructura_archivo = self.obtiene_estructura_archivo()
+        estructura_archivo = self.obtiene_previsualizacion_archivo()
         context['estructura_archivo'] = estructura_archivo
 
         predictor_metadata = PredictorMetadataService()
@@ -223,7 +222,7 @@ class DefineBaseDatosContactoView(UpdateView):
 
         self.object = self.get_object()
 
-        estructura_archivo = self.obtiene_estructura_archivo()
+        estructura_archivo = self.obtiene_previsualizacion_archivo()
         cantidad_columnas = len(estructura_archivo[0])
 
         form_columna_telefono = DefineColumnaTelefonoForm(

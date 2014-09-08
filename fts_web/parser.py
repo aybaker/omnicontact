@@ -96,7 +96,7 @@ class ParserCsv(object):
                     " - %s celdas erroneas", cantidad_importados, self.vacias,
                     self.erroneas)
 
-    def get_file_structure(self, file_obj):
+    def previsualiza_archivo(self, file_obj):
         """
         Lee un archivo CSV y devuelve contenidos de
         las primeras tres filas.
