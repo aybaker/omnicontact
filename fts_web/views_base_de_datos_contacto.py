@@ -147,37 +147,33 @@ class DefineBaseDatosContactoView(UpdateView):
         context = super(
             DefineBaseDatosContactoView, self).get_context_data(**kwargs)
 
-        context['datos_extras'] = BaseDatosContacto.DATOS_EXTRAS
+        estructura_archivo = self.obtiene_estructura_archivo()
+        context['estructura_archivo'] = estructura_archivo
 
-        if 'estructura_archivo' not in context:
+        predictor_metadata = PredictorMetadataService()
+        metadata = predictor_metadata.inferir_metadata_desde_lineas(
+            estructura_archivo)
 
-            estructura_archivo = self.obtiene_estructura_archivo()
-            context['estructura_archivo'] = estructura_archivo
+        initial_predecido_columna_telefono = \
+            {'telefono': metadata.columna_con_telefono}
 
-            predictor_metadata = PredictorMetadataService()
-            metadata = predictor_metadata.inferir_metadata_desde_lineas(
-                estructura_archivo)
+        initial_predecido_datos_extras = dict(
+            [('datos-extras-{0}'.format(col),
+                BaseDatosContacto.DATO_EXTRA_FECHA)
+                for col in metadata.columnas_con_fecha])
 
-            initial_predecido_columna_telefono = \
-                {'telefono': metadata.columna_con_telefono}
+        initial_predecido_datos_extras.update(dict(
+            [('datos-extras-{0}'.format(col),
+                BaseDatosContacto.DATO_EXTRA_HORA)
+                for col in metadata.columnas_con_hora]))
 
-            initial_predecido_datos_extras = dict(
-                [('datos-extras-{0}'.format(col),
-                    BaseDatosContacto.DATO_EXTRA_FECHA)
-                    for col in metadata.columnas_con_fecha])
-
-            initial_predecido_datos_extras.update(dict(
-                [('datos-extras-{0}'.format(col),
-                    BaseDatosContacto.DATO_EXTRA_HORA)
-                    for col in metadata.columnas_con_hora]))
-
-            initial_predecido_nombre_columnas = dict(
-                [('nombre-columna-{0}'.format(i), nombre)
-                    for i, nombre in enumerate(metadata.nombres_de_columnas)])
+        initial_predecido_nombre_columnas = dict(
+            [('nombre-columna-{0}'.format(i), nombre)
+                for i, nombre in enumerate(metadata.nombres_de_columnas)])
 
         if 'form_columna_telefono' not in context:
             form_columna_telefono = DefineColumnaTelefonoForm(
-                cantidad_columnas=metadata.cantidad_de_columnas,
+                cantidad_columnas=metadata.cantidad_de_columnas,)
                 initial=initial_predecido_columna_telefono)
             context['form_columna_telefono'] = form_columna_telefono
 
