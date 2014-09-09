@@ -252,8 +252,7 @@ class PredictorMetadataService(object):
         metadata.columnas_con_hora = columnas_con_horas
 
         # Si no hemos inferido nada, salimos
-        if columna_con_telefono is None and not columnas_con_fechas \
-                                        and not columnas_con_horas:
+        if columna_con_telefono is None:
             # En realidad, al menos el numero de columans debio ser
             # inferido. Pero si ni siquiera se detecto numero de
             # telefono, se debe a que (a) hay un bug en esta logica
