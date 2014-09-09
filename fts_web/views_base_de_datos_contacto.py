@@ -8,9 +8,10 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from fts_web.errors import FtsParserCsvDelimiterError, FtsParserMinRowError, \
-    FtsParserOpenFileError, FtsParserMaxRowError, \
-    FtsDepuraBaseDatoContactoError
+from fts_web.errors import (FtsParserCsvDelimiterError, FtsParserMinRowError,
+                            FtsParserOpenFileError, FtsParserMaxRowError,
+                            FtsDepuraBaseDatoContactoError,
+                            FtsParserCsvImportacionError)
 from fts_web.forms import (BaseDatosContactoForm, DefineNombreColumnaForm,
                            DefineColumnaTelefonoForm, DefineDatosExtrasForm,
                            PrimerLineaEncabezadoForm)
@@ -266,6 +267,29 @@ class DefineBaseDatosContactoView(UpdateView):
 
         try:
             creacion_base_datos.importa_contactos(self.object)
+        except FtsParserCsvImportacionError as e:
+            # TODO: Acudir al método que limpie los contactos que se alcanzaron
+            # a crear.
+            message = '<strong>Operación Errónea!</strong>\
+                      El archivo que seleccionó posee registros inválidos.<br>\
+                      <u>Línea Inválida:</u> {0}<br> <u>Contenido Línea:</u>\
+                      {1}<br><u>Contenido Inválido:</u> {2}'.format(
+                      e.numero_fila, e.fila, e.valor_celda)
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            # FIXME: Ver bien que hacer acá.
+            estructura_archivo = self.obtiene_previsualizacion_archivo()
+            return self.render_to_response(self.get_context_data(
+                estructura_archivo=estructura_archivo,
+                form_columna_telefono=form_columna_telefono,
+                form_datos_extras=form_datos_extras,
+                form_nombre_columnas=form_nombre_columnas,
+                form_primer_linea_encabezado=form_primer_linea_encabezado))
+
         except FtsParserMaxRowError:
             message = '<strong>Operación Errónea!</strong> \
                       El archivo que seleccionó posee mas registros de los\
