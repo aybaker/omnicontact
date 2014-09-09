@@ -50,6 +50,19 @@ class FtsAudioConversionError(FtsError):
     pass
 
 
+class FtsParserCsvImportacionError(FtsError):
+    """
+    Error en la importación de los datos del archivo csv.
+    No valida alguno de los datos.
+    """
+    def __init__(self, numero_fila, numero_columna, fila, valor_celda):
+        super(DerivacionExternaForm, self).__init__()
+        self.numero_fila = numero_fila
+        self.numero_columna = numero_columna
+        self.fila = fila
+        self.valor_celda = valor_celda
+
+
 class FtsParserCsvDelimiterError(FtsError):
     """
     Error al intentar determinar el delimitador en
