@@ -55,11 +55,12 @@ class FtsParserCsvImportacionError(FtsError):
     Error en la importación de los datos del archivo csv.
     No valida alguno de los datos.
     """
-    def __init__(self, numero_fila, numero_columna, fila, valor_celda):
+    def __init__(self, numero_fila, numero_columna, fila, valor_celda, *args,
+                 **kwargs):
         super(FtsParserCsvImportacionError, self).__init__(*args, **kwargs)
         self.numero_fila = numero_fila
         self.numero_columna = numero_columna
-        self.fila = fila
+        self.fila = ', '.join(map(str, fila))
         self.valor_celda = valor_celda
 
 
