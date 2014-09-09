@@ -130,7 +130,11 @@ class BaseDatosContactoTest(FTSenderBaseTest):
                 "planilla-ejemplo-0.csv"),
             nombre_archivo_importacion='planilla-ejemplo-0.csv',
         )
-        bd_contacto.get_metadata().columna_con_telefono = 0
+
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 4
+        metadata.columna_con_telefono = 0
+        metadata.nombres_de_columnas = ['Teléfono', 'Nombre', 'Fecha', 'Hora']
         bd_contacto.save()
 
         self.assertEqual(bd_contacto.get_cantidad_contactos(), 0)
