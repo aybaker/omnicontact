@@ -149,7 +149,21 @@ class PredictorMetadataService(object):
                 for index, value in enumerate(resultado_validacion_por_columna)
                 if value]
 
+    def sanear_nombre_de_columna(self, nombre):
+        # 1. strip()
+        # 2. upper()
+        # 3. reemplazar multiples espacios por 1 solo "_"
+        # FIXME: IMPLEMENTAR!
+        return nombre.strip().replace(" ", "_")
+
+    def validar_nombre_de_columna(self, nombre):
+        """Devuelve True si es valido"""
+        # FIXME: IMPLEMENTAR!
+        return True
+
     def inferir_metadata_desde_lineas(self, lineas):
+        """
+        """
         assert isinstance(lineas, (list, tuple))
 
         logger.debug("inferir_metadata_desde_lineas(): %s", lineas)
@@ -272,23 +286,26 @@ class PredictorMetadataService(object):
         nombres = []
         if metadata.primer_fila_es_encabezado:
             nombres_orig = [x.strip() for x in primer_linea]
-            for num, col in enumerate(nombres_orig):
-                if not col:
-                    col = "Columna {0}".format(num + 1)
-                    nombres.append(col)
-                    continue
+            for num, nombre_columna in enumerate(nombres_orig):
+                nombre_columna = self.sanear_nombre_de_columna(nombre_columna)
 
-                col = col.strip()
-                if col not in nombres:
-                    nombres.append(col)
-                    continue
+                # si no hay nombre, le asignamos un nombre generico
+                if not nombre_columna:
+                    nombre_columna = self.sanear_nombre_de_columna(
+                        "COLUMNA_{0}".format(num + 1))
 
-                raise(NoSePuedeInferirMetadataError("Existe columnas con "
-                                                    "el mismo nombre en el "
-                                                    "archivo csv."))
+                # revisamos q' no se repita con los preexistentes
+                while nombre_columna in nombres:
+                    nombre_columna = self.sanear_nombre_de_columna(
+                        nombre_columna + "_REPETIDO")
+
+                nombres.append(nombre_columna)
+
         else:
-            nombres = ["Columna {0}".format(num + 1)
-                       for num in range(metadata.cantidad_de_columnas)]
+            nombres = [
+                self.sanear_nombre_de_columna("Columna {0}".format(num + 1))
+                for num in range(metadata.cantidad_de_columnas)
+            ]
 
         metadata.nombres_de_columnas = nombres
 
