@@ -18,6 +18,7 @@ from fts_web.tests.utiles import FTSenderBaseTest
 
 
 class TestGeneraBaseDatosContacto(FTSenderBaseTest):
+
     def test_genera_base_datos_falla_archivo_xls(self):
         bd = BaseDatosContacto(id=1)
         bd.nombre_archivo_importacion = "planilla-ejemplo-0.xls"
@@ -182,3 +183,63 @@ class TestInfiereMetadata(FTSenderBaseTest):
         service = PredictorMetadataService()
         with self.assertRaises(NoSePuedeInferirMetadataError):
             service.inferir_metadata_desde_lineas(lineas)
+
+
+class TestSaneadorValidadorNombreDeCampo(FTSenderBaseTest):
+
+    def test_valida_nombres_validos(self):
+        service = PredictorMetadataService()
+        NOMBRES_VALIDOS = [
+                           "NOMBRE",
+                           "EMAIL_PERSONA",
+                           "EMAIL_2",
+                           "X",
+                           ]
+        for nombre_columna in NOMBRES_VALIDOS:
+            self.assertTrue(service.validar_nombre_de_columna(nombre_columna),
+                            "validar_nombre_de_columna() ha reportado como "
+                            "invalido el nombre de columna '{0}', que en "
+                            "realidad es VALIDO".format(nombre_columna))
+
+    def test_detecta_nombres_invalidos(self):
+        service = PredictorMetadataService()
+        NOMBRES_INVALIDOS = [
+                           "NOMBRE ",
+                           " NOMBRE",
+                           " NOMBRE ",
+                           "EMAIL PERSONA",
+                           "FACTURA_EN_$",
+                           "",
+                           ]
+        for nombre_columna in NOMBRES_INVALIDOS:
+            self.assertFalse(service.validar_nombre_de_columna(nombre_columna),
+                             "validar_nombre_de_columna() ha reportado como "
+                             "VALIDO el nombre de columna '{0}', que en "
+                             "realidad es INVALIDO".format(nombre_columna))
+
+    def test_sanea_correctamente(self):
+        service = PredictorMetadataService()
+        NOMBRES = [
+            ["NOMBRE", "NOMBRE"],
+            ["EMAIL_PERSONA", "EMAIL_PERSONA"],
+            ["EMAIL_2", "EMAIL_2"],
+            ["X", "X"],
+            ["NOMBRE ", "NOMBRE"],
+            [" NOMBRE", "NOMBRE"],
+            [" NOMBRE ", "NOMBRE"],
+            ["EMAIL PERSONA", "EMAIL_PERSONA"],
+            ["EMAIL    PERSONA", "EMAIL_PERSONA"],
+            ["FACTURA EN $", "FACTURA_EN_$"],
+            ["", ""],
+        ]
+
+        for nombre_original, nombre_saneado_esperado in NOMBRES:
+            resultado = service.sanear_nombre_de_columna(nombre_original)
+            self.assertEquals(resultado,
+                              nombre_saneado_esperado,
+                              "sanear_nombre_de_columna() ha devuelto un "
+                              "valor inesperado al sanear '{0}'. "
+                              "Devolvio: '{1}', se esperaba '{2}'"
+                              "".format(nombre_original,
+                                        resultado,
+                                        nombre_saneado_esperado))

@@ -16,6 +16,7 @@ from fts_web.models import BaseDatosContacto, Contacto, \
 from fts_web.parser import ParserCsv, validate_telefono, validate_fechas, \
     validate_horas
 from __builtin__ import callable, enumerate
+import re
 
 
 logger = logging.getLogger(__name__)
@@ -122,6 +123,11 @@ class NoSePuedeInferirMetadataError(FtsError):
     pass
 
 
+DOUBLE_SPACES = re.compile(r' +')
+
+REGEX_NOMBRE_DE_COLUMNA_VALIDO = re.compile(r'^[A-Z0-9_]+$')
+
+
 class PredictorMetadataService(object):
     """
     Obtener/Adivinar/Predecir/Inferir cuál es la columna con el teléfono,
@@ -150,16 +156,21 @@ class PredictorMetadataService(object):
                 if value]
 
     def sanear_nombre_de_columna(self, nombre):
-        # 1. strip()
-        # 2. upper()
-        # 3. reemplazar multiples espacios por 1 solo "_"
-        # FIXME: IMPLEMENTAR!
-        return nombre.strip().replace(" ", "_")
+        """Realiza saneamiento básico del nombre de la columna. Con basico
+        se refiere a:
+        - eliminar trailing spaces
+        - pasar a mayusculas
+        - reemplazar espacios por '_'
+
+        Los caracteres invalidos NO son borrados.
+        """
+        nombre = nombre.strip().upper()
+        nombre = DOUBLE_SPACES.sub("_", nombre)
+        return nombre
 
     def validar_nombre_de_columna(self, nombre):
-        """Devuelve True si es valido"""
-        # FIXME: IMPLEMENTAR!
-        return True
+        """Devuelve True si el nombre de columna es valido"""
+        return REGEX_NOMBRE_DE_COLUMNA_VALIDO.match(nombre)
 
     def inferir_metadata_desde_lineas(self, lineas):
         """
