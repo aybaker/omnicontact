@@ -56,7 +56,7 @@ class FtsParserCsvImportacionError(FtsError):
     No valida alguno de los datos.
     """
     def __init__(self, numero_fila, numero_columna, fila, valor_celda):
-        super(DerivacionExternaForm, self).__init__(*args, **kwargs)
+        super(FtsParserCsvImportacionError, self).__init__(*args, **kwargs)
         self.numero_fila = numero_fila
         self.numero_columna = numero_columna
         self.fila = fila
