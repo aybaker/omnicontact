@@ -148,7 +148,9 @@ class DefineBaseDatosContactoView(UpdateView):
         self.object = self.get_object()
 
         estructura_archivo = self.obtiene_previsualizacion_archivo()
+        cantidad_de_columnas = len(estructura_archivo[0])
 
+        error_predictor = False
         try:
             predictor_metadata = PredictorMetadataService()
             metadata = predictor_metadata.inferir_metadata_desde_lineas(
@@ -160,14 +162,7 @@ class DefineBaseDatosContactoView(UpdateView):
             initial_predecido_nombre_columnas = {}
             initial_predecido_encabezado = {}
 
-            message = '<strong>Operación Errónea!</strong> \
-                Verifique los datos del archivo csv. {0}'.format(e)
-
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                message,
-            )
+            error_predictor = True
         else:
 
             initial_predecido_columna_telefono = \
@@ -191,21 +186,22 @@ class DefineBaseDatosContactoView(UpdateView):
                                             metadata.primer_fila_es_encabezado}
 
         form_columna_telefono = DefineColumnaTelefonoForm(
-            cantidad_columnas=metadata.cantidad_de_columnas,
+            cantidad_columnas=cantidad_de_columnas,
             initial=initial_predecido_columna_telefono)
 
         form_datos_extras = DefineDatosExtrasForm(
-            cantidad_columnas=metadata.cantidad_de_columnas,
+            cantidad_columnas=cantidad_de_columnas,
             initial=initial_predecido_datos_extras)
 
         form_nombre_columnas = DefineNombreColumnaForm(
-            cantidad_columnas=metadata.cantidad_de_columnas,
+            cantidad_columnas=cantidad_de_columnas,
             initial=initial_predecido_nombre_columnas)
 
         form_primer_linea_encabezado = PrimerLineaEncabezadoForm(
             initial=initial_predecido_encabezado)
 
         return self.render_to_response(self.get_context_data(
+            error_predictor=error_predictor,
             estructura_archivo=estructura_archivo,
             form_columna_telefono=form_columna_telefono,
             form_datos_extras=form_datos_extras,
