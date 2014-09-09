@@ -17,9 +17,16 @@
                         {% csrf_token %}
                         
                         <div class="bs-callout bs-callout-info">
-                            <h4>Columna Teléfono</h4>
+                            <h4>Columna Teléfono.</h4>
                             <p>Debe seleccionar la columna en la que se encuntran los número de teléfono que se deben importar.</p>
                         </div>
+
+                        {% if error_predictor %}
+                            <div class="bs-callout bs-callout-danger">
+                                <h4>Falló predictor de CSV.</h4>
+                                <p>No se pudo predecir el formato del archivo csv subido.</p>
+                            </div>
+                        {% endif %}
                        
                        <div class="col-lg-12 over-x-scroll border-osc mg-bt-10 pd-tp-15">
                             <table class="table table-bordered tb-x-scroll">

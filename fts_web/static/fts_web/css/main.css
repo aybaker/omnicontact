@@ -69,14 +69,14 @@ td, th {
 
 /* Mensajito de Ayuda*/
 .bs-callout {
-    margin: 20px 0;
-    padding: 20px;
+    margin: 10px 0;
+    padding: 10px;
     border-left: 3px solid #eee;
 }
 .bs-callout-info {
-    background-color: #FFDABA;
+    background-color: #fff5ed;
     border-color: #f5831f;
-    color: #222;
+    color: #f5831f;
 }
 .bs-callout-info h4 {
     color: #f5831f;
@@ -84,6 +84,7 @@ td, th {
 .bs-callout-danger {
     background-color: #fdf7f7;
     border-color: #d9534f;
+    color: #d9534f;
 }
 .bs-callout-danger h4 {
     color: #d9534f;
