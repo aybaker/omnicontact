@@ -144,12 +144,10 @@ class DefineBaseDatosContactoView(UpdateView):
                 message,
             )
 
-    def get_context_data(self, **kwargs):
-        context = super(
-            DefineBaseDatosContactoView, self).get_context_data(**kwargs)
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
 
         estructura_archivo = self.obtiene_previsualizacion_archivo()
-        context['estructura_archivo'] = estructura_archivo
 
         try:
             predictor_metadata = PredictorMetadataService()
@@ -157,6 +155,11 @@ class DefineBaseDatosContactoView(UpdateView):
                 estructura_archivo)
 
         except NoSePuedeInferirMetadataError as e:
+            initial_predecido_columna_telefono = {}
+            initial_predecido_datos_extras = {}
+            initial_predecido_nombre_columnas = {}
+            initial_predecido_encabezado = {}
+
             message = '<strong>Operación Errónea!</strong> \
                 Verifique los datos del archivo csv. {0}'.format(e)
 
@@ -165,59 +168,53 @@ class DefineBaseDatosContactoView(UpdateView):
                 messages.ERROR,
                 message,
             )
+        else:
 
-            # ¿Se eliminaría la base de datos que se creo, y volvería empezar?
+            initial_predecido_columna_telefono = \
+                {'telefono': metadata.columna_con_telefono}
 
-            return redirect(reverse('nueva_base_datos_contacto'))
+            initial_predecido_datos_extras = dict(
+                [('datos-extras-{0}'.format(col),
+                    BaseDatosContacto.DATO_EXTRA_FECHA)
+                    for col in metadata.columnas_con_fecha])
 
-        initial_predecido_columna_telefono = \
-            {'telefono': metadata.columna_con_telefono}
+            initial_predecido_datos_extras.update(dict(
+                [('datos-extras-{0}'.format(col),
+                    BaseDatosContacto.DATO_EXTRA_HORA)
+                    for col in metadata.columnas_con_hora]))
 
-        initial_predecido_datos_extras = dict(
-            [('datos-extras-{0}'.format(col),
-                BaseDatosContacto.DATO_EXTRA_FECHA)
-                for col in metadata.columnas_con_fecha])
+            initial_predecido_nombre_columnas = dict(
+                [('nombre-columna-{0}'.format(i), nombre)
+                    for i, nombre in enumerate(metadata.nombres_de_columnas)])
 
-        initial_predecido_datos_extras.update(dict(
-            [('datos-extras-{0}'.format(col),
-                BaseDatosContacto.DATO_EXTRA_HORA)
-                for col in metadata.columnas_con_hora]))
+            initial_predecido_encabezado = {'es_encabezado':
+                                            metadata.primer_fila_es_encabezado}
 
-        initial_predecido_nombre_columnas = dict(
-            [('nombre-columna-{0}'.format(i), nombre)
-                for i, nombre in enumerate(metadata.nombres_de_columnas)])
+        form_columna_telefono = DefineColumnaTelefonoForm(
+            cantidad_columnas=metadata.cantidad_de_columnas,
+            initial=initial_predecido_columna_telefono)
 
-        initial_predecido_encabezado = {'es_encabezado':
-                                        metadata.primer_fila_es_encabezado}
+        form_datos_extras = DefineDatosExtrasForm(
+            cantidad_columnas=metadata.cantidad_de_columnas,
+            initial=initial_predecido_datos_extras)
 
-        if 'form_columna_telefono' not in context:
-            form_columna_telefono = DefineColumnaTelefonoForm(
-                cantidad_columnas=metadata.cantidad_de_columnas,
-                initial=initial_predecido_columna_telefono)
-            context['form_columna_telefono'] = form_columna_telefono
+        form_nombre_columnas = DefineNombreColumnaForm(
+            cantidad_columnas=metadata.cantidad_de_columnas,
+            initial=initial_predecido_nombre_columnas)
 
-        if 'form_datos_extras' not in context:
-            form_datos_extras = DefineDatosExtrasForm(
-                cantidad_columnas=metadata.cantidad_de_columnas,
-                initial=initial_predecido_datos_extras)
-            context['form_datos_extras'] = form_datos_extras
+        form_primer_linea_encabezado = PrimerLineaEncabezadoForm(
+            initial=initial_predecido_encabezado)
 
-        if 'form_nombre_columnas' not in context:
-            form_nombre_columnas = DefineNombreColumnaForm(
-                cantidad_columnas=metadata.cantidad_de_columnas,
-                initial=initial_predecido_nombre_columnas)
-            context['form_nombre_columnas'] = form_nombre_columnas
+        return self.render_to_response(self.get_context_data(
+            estructura_archivo=estructura_archivo,
+            form_columna_telefono=form_columna_telefono,
+            form_datos_extras=form_datos_extras,
+            form_nombre_columnas=form_nombre_columnas,
+            form_primer_linea_encabezado=form_primer_linea_encabezado))
 
-        if 'form_primer_linea_encabezado' not in context:
-            form_primer_linea_encabezado = PrimerLineaEncabezadoForm(
-                initial=initial_predecido_encabezado)
-            context['form_primer_linea_encabezado'] =\
-                form_primer_linea_encabezado
-
-        return context
-
-    def form_invalid(self, form_columna_telefono, form_datos_extras,
-                     form_nombre_columnas, form_primer_linea_encabezado):
+    def form_invalid(self, estructura_archivo, form_columna_telefono,
+                     form_datos_extras, form_nombre_columnas,
+                     form_primer_linea_encabezado):
 
         message = '<strong>Operación Errónea!</strong> \
                   Verifique los datos seleccionados.'
@@ -229,10 +226,74 @@ class DefineBaseDatosContactoView(UpdateView):
         )
 
         return self.render_to_response(self.get_context_data(
+            estructura_archivo=estructura_archivo,
             form_columna_telefono=form_columna_telefono,
             form_datos_extras=form_datos_extras,
             form_nombre_columnas=form_nombre_columnas,
             form_primer_linea_encabezado=form_primer_linea_encabezado))
+
+    def form_valid(self, form_columna_telefono, form_datos_extras,
+                   form_nombre_columnas, form_primer_linea_encabezado):
+        columna_con_telefono = int(form_columna_telefono.cleaned_data.get(
+                                   'telefono', None))
+        lista_columnas_fechas = []
+        lista_columnas_horas = []
+        lista_nombre_columnas = []
+
+        cantidad_columnas = len(form_nombre_columnas.fields)
+
+        for numero_columna in range(cantidad_columnas):
+            dato_extra = form_datos_extras.cleaned_data.get(
+                'datos-extras-{0}'.format(numero_columna), None)
+            if dato_extra == BaseDatosContacto.DATO_EXTRA_FECHA:
+                lista_columnas_fechas.append(numero_columna)
+            elif dato_extra == BaseDatosContacto.DATO_EXTRA_HORA:
+                lista_columnas_horas.append(numero_columna)
+
+            lista_nombre_columnas.append(form_nombre_columnas.cleaned_data.get(
+                'nombre-columna-{0}'.format(numero_columna), None))
+
+        metadata = self.object.get_metadata()
+        metadata.cantidad_de_columnas = cantidad_columnas
+        metadata.columna_con_telefono = columna_con_telefono
+        metadata.columnas_con_fecha = lista_columnas_fechas
+        metadata.columnas_con_hora = lista_columnas_horas
+        metadata.nombres_de_columnas = lista_nombre_columnas
+
+        es_encabezado = False
+        if self.request.POST.get('es_encabezado', False):
+            es_encabezado = True
+        metadata.primer_fila_es_encabezado = es_encabezado
+
+        creacion_base_datos = CreacionBaseDatosService()
+        creacion_base_datos.guarda_metadata(self.object)
+
+        try:
+            creacion_base_datos.importa_contactos(self.object)
+        except FtsParserMaxRowError:
+            message = '<strong>Operación Errónea!</strong> \
+                      El archivo que seleccionó posee mas registros de los\
+                      permitidos para ser importados.'
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return redirect(reverse('lista_base_datos_contacto'))
+        else:
+            creacion_base_datos.define_base_dato_contacto(self.object)
+
+            message = '<strong>Operación Exitosa!</strong>\
+                      Se llevó a cabo con éxito la creación de\
+                      la Base de Datos de Contactos.'
+
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                message,
+            )
+            return redirect(self.get_success_url())
 
     def post(self, request, *args, **kwargs):
 
@@ -249,70 +310,18 @@ class DefineBaseDatosContactoView(UpdateView):
             cantidad_columnas, request.POST)
         form_primer_linea_encabezado = PrimerLineaEncabezadoForm(request.POST)
 
-        if (form_columna_telefono.is_valid() and
-                form_nombre_columnas.is_valid()):
+        if (form_columna_telefono.is_valid()
+                and form_datos_extras.is_valid()
+                and form_nombre_columnas.is_valid()
+                and form_primer_linea_encabezado.is_valid()):
 
-            columna_con_telefono = int(self.request.POST['telefono'])
-
-            lista_columnas_fechas = []
-            lista_columnas_horas = []
-            lista_nombre_columnas = []
-            for columna, _ in enumerate(estructura_archivo[0]):
-                dato_extra = self.request.POST.get(
-                    'datos-extras-{0}'.format(columna), None)
-                if dato_extra == BaseDatosContacto.DATO_EXTRA_FECHA:
-                    lista_columnas_fechas.append(columna)
-                elif dato_extra == BaseDatosContacto.DATO_EXTRA_HORA:
-                    lista_columnas_horas.append(columna)
-
-                lista_nombre_columnas.append(self.request.POST.get(
-                    'nombre-columna-{0}'.format(columna), None))
-
-            metadata = self.object.get_metadata()
-            metadata.cantidad_de_columnas = cantidad_columnas
-            metadata.columna_con_telefono = columna_con_telefono
-            metadata.columnas_con_fecha = lista_columnas_fechas
-            metadata.columnas_con_hora = lista_columnas_horas
-            metadata.nombres_de_columnas = lista_nombre_columnas
-
-            es_encabezado = False
-            if self.request.POST.get('es_encabezado', False):
-                es_encabezado = True
-            metadata.primer_fila_es_encabezado = es_encabezado
-
-            creacion_base_datos = CreacionBaseDatosService()
-            creacion_base_datos.guarda_metadata(self.object)
-
-            try:
-                creacion_base_datos.importa_contactos(self.object)
-            except FtsParserMaxRowError:
-                message = '<strong>Operación Errónea!</strong> \
-                          El archivo que seleccionó posee mas registros de los\
-                          permitidos para ser importados.'
-
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    message,
-                )
-                return redirect(reverse('lista_base_datos_contacto'))
-            else:
-                creacion_base_datos.define_base_dato_contacto(self.object)
-
-                message = '<strong>Operación Exitosa!</strong>\
-                          Se llevó a cabo con éxito la creación de\
-                          la Base de Datos de Contactos.'
-
-                messages.add_message(
-                    self.request,
-                    messages.SUCCESS,
-                    message,
-                )
-                return redirect(self.get_success_url())
-
-        return self.form_invalid(form_columna_telefono, form_datos_extras,
-                                 form_nombre_columnas,
-                                 form_primer_linea_encabezado)
+            return self.form_valid(form_columna_telefono, form_datos_extras,
+                                   form_nombre_columnas,
+                                   form_primer_linea_encabezado)
+        else:
+            return self.form_invalid(estructura_archivo, form_columna_telefono,
+                                     form_datos_extras, form_nombre_columnas,
+                                     form_primer_linea_encabezado)
 
     def get_success_url(self):
         return reverse('lista_base_datos_contacto')
