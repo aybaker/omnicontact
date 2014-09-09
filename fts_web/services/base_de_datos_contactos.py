@@ -76,7 +76,7 @@ class CreacionBaseDatosService(object):
 
         parser = ParserCsv()
         generador_contactos = parser.read_file(
-            primer_fila_es_encabezado
+            primer_fila_es_encabezado,
             columna_con_telefono,
             columnas_con_fecha,
             columnas_con_hora,
