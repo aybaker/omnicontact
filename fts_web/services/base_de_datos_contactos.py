@@ -103,7 +103,7 @@ class CreacionBaseDatosService(object):
         """Devuelve instancia de MetadataBaseDatosContactoDTO que describe
         la metadata del archivo desde el cual se creará la BD.
 
-        :raises: NoSePuedeInferirMetadata: si no se pudo inferir. Esto
+        :raises: NoSePuedeInferirMetadataError: si no se pudo inferir. Esto
                  es algo grave, ya que si se lanza es porque no se encontro
                  ninguna columan con datos que validen como telefono!
         """
@@ -117,7 +117,7 @@ class CreacionBaseDatosService(object):
         return service.inferir_metadata_desde_lineas(lineas)
 
 
-class NoSePuedeInferirMetadata(FtsError):
+class NoSePuedeInferirMetadataError(FtsError):
     """Indica que no se puede inferir los metadatos"""
     pass
 
@@ -156,18 +156,18 @@ class PredictorMetadataService(object):
 
         if len(lineas) < 2:
             logger.debug("Se deben proveer al menos 2 lineas: %s", lineas)
-            raise(NoSePuedeInferirMetadata("Se deben proveer al menos 2 "
-                                           "lineas para poder inferir los "
-                                           "metadatos"))
+            raise(NoSePuedeInferirMetadataError("Se deben proveer al menos 2 "
+                                                "lineas para poder inferir "
+                                                "los metadatos"))
 
         # Primero chequeamos q' haya igual cant. de columnas
         set_cant_columnas = set([len(linea) for linea in lineas])
         if len(set_cant_columnas) != 1:
             logger.debug("Distintas cantidades "
                          "de columnas: %s", set_cant_columnas)
-            raise(NoSePuedeInferirMetadata("Las lineas recibidas "
-                                           "poseen distintas cantidades "
-                                           "de columnas"))
+            raise(NoSePuedeInferirMetadataError("Las lineas recibidas "
+                                                "poseen distintas cantidades "
+                                                "de columnas"))
 
         primer_linea = lineas[0]
         otras_lineas = lineas[1:]
@@ -177,8 +177,8 @@ class PredictorMetadataService(object):
         if len(primer_linea) == 0:
             logger.debug("Las lineas no poseen ninguna "
                          "columna: %s", primer_linea)
-            raise(NoSePuedeInferirMetadata("Las lineas no poseen ninguna "
-                                           "columna"))
+            raise(NoSePuedeInferirMetadataError("Las lineas no poseen ninguna "
+                                                "columna"))
 
         metadata.cantidad_de_columnas = len(primer_linea)
 
@@ -236,8 +236,8 @@ class PredictorMetadataService(object):
             # no creo q' valga la pena devolver la instancia de mentadata,
             # me parece mas significativo reportar el hecho de que
             # no se pudo inferir el metadato.
-            raise(NoSePuedeInferirMetadata("No se pudo inferir ningun "
-                                           "tipo de dato"))
+            raise(NoSePuedeInferirMetadataError("No se pudo inferir ningun "
+                                                "tipo de dato"))
 
         #======================================================================
         # Si detectamos telefono, fecha u hora podemos verificar si la
@@ -279,15 +279,13 @@ class PredictorMetadataService(object):
                     continue
 
                 col = col.strip()
-                if col in nombres:
-                    # FIXME: Esperar respuesta de Horace para ver que hacemos
-                    # en este caso. Por ahora, le agrego 'loquesea-repetido'
-                    col = '{0}-repetido'.format(col)
-                nombres.append(col)
+                if col not in nombres:
+                    nombres.append(col)
+                    continue
 
-
-
-
+                raise(NoSePuedeInferirMetadataError("Existe columnas con "
+                                                    "el mismo nombre en el "
+                                                    "archivo csv."))
         else:
             nombres = ["Columna {0}".format(num + 1)
                        for num in range(metadata.cantidad_de_columnas)]

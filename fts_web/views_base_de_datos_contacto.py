@@ -16,8 +16,9 @@ from fts_web.forms import (BaseDatosContactoForm, DefineNombreColumnaForm,
                            PrimerLineaEncabezadoForm)
 from fts_web.models import BaseDatosContacto
 from fts_web.parser import ParserCsv
-from fts_web.services.base_de_datos_contactos import (CreacionBaseDatosService,
-                                                      PredictorMetadataService)
+from fts_web.services.base_de_datos_contactos import (
+    CreacionBaseDatosService, PredictorMetadataService,
+    NoSePuedeInferirMetadataError)
 import logging as logging_
 
 
@@ -150,9 +151,24 @@ class DefineBaseDatosContactoView(UpdateView):
         estructura_archivo = self.obtiene_previsualizacion_archivo()
         context['estructura_archivo'] = estructura_archivo
 
-        predictor_metadata = PredictorMetadataService()
-        metadata = predictor_metadata.inferir_metadata_desde_lineas(
-            estructura_archivo)
+        try:
+            predictor_metadata = PredictorMetadataService()
+            metadata = predictor_metadata.inferir_metadata_desde_lineas(
+                estructura_archivo)
+
+        except NoSePuedeInferirMetadataError as e:
+            message = '<strong>Operación Errónea!</strong> \
+                Verifique los datos del archivo csv. {0}'.format(e)
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+
+            # ¿Se eliminaría la base de datos que se creo, y volvería empezar?
+
+            return redirect(reverse('nueva_base_datos_contacto'))
 
         initial_predecido_columna_telefono = \
             {'telefono': metadata.columna_con_telefono}

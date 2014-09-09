@@ -13,7 +13,7 @@ from mock import Mock
 from fts_web.errors import FtsArchivoImportacionInvalidoError
 from fts_web.models import BaseDatosContacto
 from fts_web.services.base_de_datos_contactos import CreacionBaseDatosService, \
-    PredictorMetadataService, NoSePuedeInferirMetadata
+    PredictorMetadataService, NoSePuedeInferirMetadataError
 from fts_web.tests.utiles import FTSenderBaseTest
 
 
@@ -100,11 +100,11 @@ class TestInfiereMetadata(FTSenderBaseTest):
         service = PredictorMetadataService()
 
         # Ninguna linea
-        with self.assertRaises(NoSePuedeInferirMetadata):
+        with self.assertRaises(NoSePuedeInferirMetadataError):
             service.inferir_metadata_desde_lineas([])
 
         # Una linea
-        with self.assertRaises(NoSePuedeInferirMetadata):
+        with self.assertRaises(NoSePuedeInferirMetadataError):
             service.inferir_metadata_desde_lineas([
                                                    [TELEFONO_OK],
                                                    ])
@@ -180,5 +180,5 @@ class TestInfiereMetadata(FTSenderBaseTest):
         ]
 
         service = PredictorMetadataService()
-        with self.assertRaises(NoSePuedeInferirMetadata):
+        with self.assertRaises(NoSePuedeInferirMetadataError):
             service.inferir_metadata_desde_lineas(lineas)
