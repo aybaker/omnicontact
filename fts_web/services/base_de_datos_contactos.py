@@ -66,15 +66,17 @@ class CreacionBaseDatosService(object):
         del archivo de importación especificado para la base de datos de
         contactos.
         """
-        base_datos_metadata = base_datos_contacto.get_metadata()
-        columna_con_telefono = base_datos_metadata.columna_con_telefono
-        columnas_con_fecha = base_datos_metadata.columnas_con_fecha
-        columnas_con_hora = base_datos_metadata.columnas_con_hora
+        metadata = base_datos_contacto.get_metadata()
+        columna_con_telefono = metadata.columna_con_telefono
+        columnas_con_fecha = metadata.columnas_con_fecha
+        columnas_con_hora = metadata.columnas_con_hora
+        primer_fila_es_encabezado = metadata.primer_fila_es_encabezado
 
         # TODO: Sprint 11 - BORRAR CONTACTOS
 
         parser = ParserCsv()
         generador_contactos = parser.read_file(
+            primer_fila_es_encabezado
             columna_con_telefono,
             columnas_con_fecha,
             columnas_con_hora,
