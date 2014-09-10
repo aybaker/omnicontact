@@ -298,9 +298,11 @@ class DefineBaseDatosContactoView(UpdateView):
                 form_primer_linea_encabezado=form_primer_linea_encabezado))
 
         except FtsParserMaxRowError:
-            # FIXME: Debido a las nuevas validación de importación, definir que
-            # hacer en este caso. ¿Se tendrían que eliminar los 60000 contactos
-            # creados?
+            # En caso que se interrumpa la importación de los contactos por
+            # que superaron la cantidad límite. Lo borramos y presentamos el
+            # error.
+            self.object.elimina_contactos()
+
             message = '<strong>Operación Errónea!</strong> \
                       El archivo que seleccionó posee mas registros de los\
                       permitidos para ser importados.'
