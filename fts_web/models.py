@@ -1031,16 +1031,6 @@ class Campana(models.Model):
     segundos_ring = models.PositiveIntegerField()
     fecha_inicio = models.DateField(null=True, blank=True)
     fecha_fin = models.DateField(null=True, blank=True)
-    audio_original = models.FileField(
-        upload_to=upload_to_audios_originales,
-        max_length=100,
-        null=True, blank=True,
-    )
-    audio_asterisk = models.FileField(
-        upload_to=upload_to_audios_asterisk,
-        max_length=100,
-        null=True, blank=True,
-    )
     bd_contacto = models.ForeignKey(
         'BaseDatosContacto',
         null=True, blank=True,
