@@ -228,24 +228,23 @@ class ConversorDeAudioService(object):
         return int(archivo_id)
 
 
-def convertir_audio_de_campana(campana):
-    """Convierte archivo de audio de campaña,
-    y actualiza la instancia de campaña.
+def convertir_audio_de_campana(audio_de_campana):
+    """Convierte archivo de audio, y actualiza la instancia de AudioDeCampana.
 
-    :param campana: Campana para la cual hay que convertir el audio
-    :type campana: fts_web.models.Campana
+    :param audio_de_campana: AudioDeCampana al que hay que convertir el audio.
+    :type audio_de_campana: fts_web.models.AudioDeCampana 
     :raises: FtsAudioConversionError
     """
-    from fts_web.models import Campana
-    assert isinstance(campana, Campana)
+    from fts_web.models import AudioDeCampana
+    assert isinstance(audio_de_campana, AudioDeCampana)
 
     # chequea archivo original (a convertir)
-    wav_full_path = default_storage.path(campana.audio_original.name)
+    wav_full_path = default_storage.path(audio_de_campana.audio_original.name)
     assert os.path.exists(wav_full_path)
 
     # genera archivo de salida
     dirname, filename = crear_archivo_en_media_root("audio_asterisk/%Y/%m",
-        "c{0}-{1}-".format(campana.id, uuid.uuid4().hex),
+        "c{0}-{1}-".format(audio_de_campana.id, uuid.uuid4().hex),
         settings.TMPL_FTS_AUDIO_CONVERSOR_EXTENSION)
 
     abs_output_filename = os.path.join(settings.MEDIA_ROOT, dirname, filename)
@@ -255,8 +254,8 @@ def convertir_audio_de_campana(campana):
     convertir_audio(wav_full_path, abs_output_filename)
 
     # guarda ref. a archivo convertido
-    campana.audio_asterisk = os.path.join(dirname, filename)
-    campana.save()
+    audio_de_campana.audio_asterisk = os.path.join(dirname, filename)
+    audio_de_campana.save()
 
 
 def convertir_audio_de_archivo_de_audio_globales(archivo_de_audio):
