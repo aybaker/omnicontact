@@ -51,15 +51,6 @@
             <br>
             <form role="form" method="post" enctype="multipart/form-data" >   
                 <div class="col-lg-4">               
-
-                    {% if campana.audio_original %}
-                        <div>
-                            <h4>Audio actual de la Campaña</h4>
-                            <audio src="{{ MEDIA_URL }}{{ campana.audio_original.name }}" controls></audio>
-                        </div>
-                        <hr>
-                    {% endif %} 
-
                     {% crispy form %}
                 </div>
                 <div class="col-lg-12">
@@ -67,16 +58,15 @@
                     <button type="submit" id="id_guardar" class="btn btn-success btn-lg modal_proceso_grande">
                         Guardar Audio
                     </button>
-                    {% if campana.audio_original %}
-                        {% if es_template %}
-                            <a href="{% url 'calificacion_template' campana.pk %}" class="btn btn-default pull-right" role="button">
-                                Continuar <span class="glyphicon glyphicon-chevron-right"></span>
-                            </a> 
-                        {% else %}
-                            <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-default pull-right" role="button">
-                                Continuar <span class="glyphicon glyphicon-chevron-right"></span>
-                            </a> 
-                        {% endif %}
+                    
+                    {% if es_template %}
+                        <a href="{% url 'calificacion_template' campana.pk %}" class="btn btn-default pull-right" role="button">
+                            Continuar <span class="glyphicon glyphicon-chevron-right"></span>
+                        </a> 
+                    {% else %}
+                        <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-default pull-right" role="button">
+                            Continuar <span class="glyphicon glyphicon-chevron-right"></span>
+                        </a>                        
                     {% endif %}
                 </div>
             </form>
