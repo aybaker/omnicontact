@@ -18,7 +18,7 @@ from django.db.models import Sum
 from django.utils.timezone import now
 from fts_daemon.audio_conversor import ConversorDeAudioService
 from fts_web.errors import (FtsRecicladoCampanaError,
-    FTSOptimisticLockingError)
+                            FTSOptimisticLockingError)
 from fts_web.utiles import upload_to, log_timing
 
 
@@ -1469,6 +1469,34 @@ class Campana(models.Model):
 
     def __unicode__(self):
         return self.nombre
+
+
+class AudioDeCampana(models.Model):
+    """
+    Representa los audios que tienen las campañas.
+    """
+
+    orden = models.PositiveIntegerField()
+    audio_original = models.FileField(
+        upload_to=upload_to_audios_originales,
+        max_length=100,
+        null=True, blank=True,
+    )
+    audio_asterisk = models.FileField(
+        upload_to=upload_to_audios_asterisk,
+        max_length=100,
+        null=True, blank=True,
+    )
+    tts = models.CharField(
+        max_length=128,
+    )
+    archivo_de_audio = models.ForeignKey(
+        'ArchivoDeAudio',
+        null=True, blank=True,
+    )
+    campana = models.ForeignKey(
+        'Campana'
+    )
 
 
 #==============================================================================
