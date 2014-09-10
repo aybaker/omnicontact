@@ -268,6 +268,7 @@ class DefineBaseDatosContactoView(UpdateView):
         try:
             # No deberían existir contactos en la base de datos. De todos modos
             # intentamos borrarlos.
+            # FIXME: Pasar esta lógica al parser.
             self.object.elimina_contactos()
 
             creacion_base_datos.importa_contactos(self.object)
