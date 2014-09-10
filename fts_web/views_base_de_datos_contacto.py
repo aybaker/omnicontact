@@ -8,9 +8,10 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from fts_web.errors import FtsParserCsvDelimiterError, FtsParserMinRowError, \
-    FtsParserOpenFileError, FtsParserMaxRowError, \
-    FtsDepuraBaseDatoContactoError
+from fts_web.errors import (FtsParserCsvDelimiterError, FtsParserMinRowError,
+                            FtsParserOpenFileError, FtsParserMaxRowError,
+                            FtsDepuraBaseDatoContactoError,
+                            FtsParserCsvImportacionError)
 from fts_web.forms import (BaseDatosContactoForm, DefineNombreColumnaForm,
                            DefineColumnaTelefonoForm, DefineDatosExtrasForm,
                            PrimerLineaEncabezadoForm)
@@ -148,7 +149,9 @@ class DefineBaseDatosContactoView(UpdateView):
         self.object = self.get_object()
 
         estructura_archivo = self.obtiene_previsualizacion_archivo()
+        cantidad_de_columnas = len(estructura_archivo[0])
 
+        error_predictor = False
         try:
             predictor_metadata = PredictorMetadataService()
             metadata = predictor_metadata.inferir_metadata_desde_lineas(
@@ -160,14 +163,7 @@ class DefineBaseDatosContactoView(UpdateView):
             initial_predecido_nombre_columnas = {}
             initial_predecido_encabezado = {}
 
-            message = '<strong>Operación Errónea!</strong> \
-                Verifique los datos del archivo csv. {0}'.format(e)
-
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                message,
-            )
+            error_predictor = True
         else:
 
             initial_predecido_columna_telefono = \
@@ -191,21 +187,22 @@ class DefineBaseDatosContactoView(UpdateView):
                                             metadata.primer_fila_es_encabezado}
 
         form_columna_telefono = DefineColumnaTelefonoForm(
-            cantidad_columnas=metadata.cantidad_de_columnas,
+            cantidad_columnas=cantidad_de_columnas,
             initial=initial_predecido_columna_telefono)
 
         form_datos_extras = DefineDatosExtrasForm(
-            cantidad_columnas=metadata.cantidad_de_columnas,
+            cantidad_columnas=cantidad_de_columnas,
             initial=initial_predecido_datos_extras)
 
         form_nombre_columnas = DefineNombreColumnaForm(
-            cantidad_columnas=metadata.cantidad_de_columnas,
+            cantidad_columnas=cantidad_de_columnas,
             initial=initial_predecido_nombre_columnas)
 
         form_primer_linea_encabezado = PrimerLineaEncabezadoForm(
             initial=initial_predecido_encabezado)
 
         return self.render_to_response(self.get_context_data(
+            error_predictor=error_predictor,
             estructura_archivo=estructura_archivo,
             form_columna_telefono=form_columna_telefono,
             form_datos_extras=form_datos_extras,
@@ -269,8 +266,43 @@ class DefineBaseDatosContactoView(UpdateView):
         creacion_base_datos.guarda_metadata(self.object)
 
         try:
+            # No deberían existir contactos en la base de datos. De todos modos
+            # intentamos borrarlos.
+            self.object.elimina_contactos()
+
             creacion_base_datos.importa_contactos(self.object)
+        except FtsParserCsvImportacionError as e:
+            # En caso que se interrumpa la importación de los contactos por un
+            # problemas de validación de los mismo, borramos los que ya habían
+            # sido cargado hasta este momento.
+            self.object.elimina_contactos()
+
+            message = '<strong>Operación Errónea!</strong>\
+                      El archivo que seleccionó posee registros inválidos.<br>\
+                      <u>Línea Inválida:</u> {0}<br> <u>Contenido Línea:</u>\
+                      {1}<br><u>Contenido Inválido:</u> {2}'.format(
+                      e.numero_fila, e.fila, e.valor_celda)
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            # FIXME: Ver bien que hacer acá.
+            estructura_archivo = self.obtiene_previsualizacion_archivo()
+            return self.render_to_response(self.get_context_data(
+                estructura_archivo=estructura_archivo,
+                form_columna_telefono=form_columna_telefono,
+                form_datos_extras=form_datos_extras,
+                form_nombre_columnas=form_nombre_columnas,
+                form_primer_linea_encabezado=form_primer_linea_encabezado))
+
         except FtsParserMaxRowError:
+            # En caso que se interrumpa la importación de los contactos por
+            # que superaron la cantidad límite. Lo borramos y presentamos el
+            # error.
+            self.object.elimina_contactos()
+
             message = '<strong>Operación Errónea!</strong> \
                       El archivo que seleccionó posee mas registros de los\
                       permitidos para ser importados.'

@@ -12,7 +12,8 @@ import re
 
 from django.conf import settings
 from fts_web.errors import (FtsParserCsvDelimiterError,
-                            FtsParserMinRowError, FtsParserMaxRowError)
+                            FtsParserMinRowError, FtsParserMaxRowError,
+                            FtsParserCsvImportacionError)
 
 
 logger = logging.getLogger('ParserCsv')
@@ -22,7 +23,6 @@ logger = logging.getLogger('ParserCsv')
 # Parser CSV
 # =============================================================================
 
-
 class ParserCsv(object):
     """
     Clase utilitaria para obtener datos de archivo CSV.
@@ -31,23 +31,27 @@ class ParserCsv(object):
     def __init__(self):
         # No es thread-safe!
         self.vacias = 0
-        self.erroneas = 0
 
-    def read_file(self, columna_con_telefono, columnas_con_fecha,
-                  columnas_con_hora, file_obj):
+    def read_file(self, primer_fila_es_encabezado, columna_con_telefono,
+                  columnas_con_fecha, columnas_con_hora, file_obj):
         """
         Lee un archivo CSV y devuelve contenidos de la columna
         tomada por parámetro.
 
         Parametros:
+        - primer_fila_es_encabezado: Booleano que indica si la primer linea
+                                     del archivo es un encabezado o no.
         - columna_con_telefono: Número columna donde se encuantran los
                                 teléfonos.
+        - columnas_con_fecha: Los números de columnas donde se encuntran datos
+                              del tipo fechas.
+        - columnas_con_hora: Los números de columnas donde se encuntran datos
+                             del tipo horas.
         - file_obj: Objeto archivo de la instancia de BaseDatosContactos.
         """
 
         # Reseteamos estadisticas
         self.vacias = 0
-        self.erroneas = 0
 
         workbook = csv.reader(file_obj, self._get_dialect(file_obj))
 
@@ -55,7 +59,7 @@ class ParserCsv(object):
         for i, curr_row in enumerate(workbook):
             if len(curr_row) == 0:
                 logger.info("Ignorando fila vacia %s", i)
-                self.erroneas += 1
+                self.vacias += 1
                 continue
 
             if i > settings.FTS_MAX_CANTIDAD_CONTACTOS:
@@ -66,35 +70,46 @@ class ParserCsv(object):
             telefono = sanitize_number(curr_row[columna_con_telefono].strip())
 
             if not validate_telefono(telefono):
-                if i == 0:
+                if i == 0 and primer_fila_es_encabezado:
                     continue
-                logger.info("Ignorando Contacto. Teléfono %s no válido.",
-                            telefono)
-                self.erroneas += 1
-                continue
+                logger.warn("Error en la imporación de contactos: No "
+                            "valida el teléfono en la linea %s",
+                            curr_row)
+                raise FtsParserCsvImportacionError(
+                    numero_fila=i,
+                    numero_columna=columna_con_telefono,
+                    fila=curr_row,
+                    valor_celda=telefono)
 
             if columnas_con_fecha:
                 fechas = [curr_row[columna] for columna in columnas_con_fecha]
                 if not validate_fechas(fechas):
-                    logger.info("Ignorando Contacto. Fechas %s no válidas",
-                                fechas)
-                    self.erroneas += 1
-                    continue
+                    logger.warn("Error en la imporación de contactos: No "
+                                "valida el formato fecha en la linea %s",
+                                curr_row)
+                    raise FtsParserCsvImportacionError(
+                        numero_fila=i,
+                        numero_columna=columnas_con_fecha,
+                        fila=curr_row,
+                        valor_celda=fechas)
 
             if columnas_con_hora:
                 horas = [curr_row[columna] for columna in columnas_con_hora]
                 if not validate_horas(horas):
-                    logger.info("Ignorando Contacto. Horas %s no válidas",
-                                horas)
-                    self.erroneas += 1
-                    continue
+                    logger.warn("Error en la imporación de contactos: No "
+                                "valida el formato hora en la linea %s",
+                                curr_row)
+                    raise FtsParserCsvImportacionError(
+                        numero_fila=i,
+                        numero_columna=columnas_con_hora,
+                        fila=curr_row,
+                        valor_celda=horas)
 
             cantidad_importados += 1
             yield curr_row
 
-        logger.info("%s contactos importados - %s valores ignoradas"
-                    " - %s celdas erroneas", cantidad_importados, self.vacias,
-                    self.erroneas)
+        logger.info("%s contactos importados - %s valores ignoradas.",
+                    cantidad_importados, self.vacias)
 
     def previsualiza_archivo(self, file_obj):
         """

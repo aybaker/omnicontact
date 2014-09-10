@@ -66,15 +66,17 @@ class CreacionBaseDatosService(object):
         del archivo de importación especificado para la base de datos de
         contactos.
         """
-        base_datos_metadata = base_datos_contacto.get_metadata()
-        columna_con_telefono = base_datos_metadata.columna_con_telefono
-        columnas_con_fecha = base_datos_metadata.columnas_con_fecha
-        columnas_con_hora = base_datos_metadata.columnas_con_hora
+        metadata = base_datos_contacto.get_metadata()
+        columna_con_telefono = metadata.columna_con_telefono
+        columnas_con_fecha = metadata.columnas_con_fecha
+        columnas_con_hora = metadata.columnas_con_hora
+        primer_fila_es_encabezado = metadata.primer_fila_es_encabezado
 
         # TODO: Sprint 11 - BORRAR CONTACTOS
 
         parser = ParserCsv()
         generador_contactos = parser.read_file(
+            primer_fila_es_encabezado,
             columna_con_telefono,
             columnas_con_fecha,
             columnas_con_hora,
@@ -252,8 +254,7 @@ class PredictorMetadataService(object):
         metadata.columnas_con_hora = columnas_con_horas
 
         # Si no hemos inferido nada, salimos
-        if columna_con_telefono is None and not columnas_con_fechas \
-                                        and not columnas_con_horas:
+        if columna_con_telefono is None:
             # En realidad, al menos el numero de columans debio ser
             # inferido. Pero si ni siquiera se detecto numero de
             # telefono, se debe a que (a) hay un bug en esta logica
