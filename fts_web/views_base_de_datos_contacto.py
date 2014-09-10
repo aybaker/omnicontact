@@ -266,6 +266,10 @@ class DefineBaseDatosContactoView(UpdateView):
         creacion_base_datos.guarda_metadata(self.object)
 
         try:
+            # No deberían existir contactos en la base de datos. De todos modos
+            # intentamos borrarlos.
+            self.object.eliminar_contactos()
+
             creacion_base_datos.importa_contactos(self.object)
         except FtsParserCsvImportacionError as e:
             # TODO: Acudir al método que limpie los contactos que se alcanzaron
