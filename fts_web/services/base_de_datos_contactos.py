@@ -6,17 +6,18 @@ Servicio encargado de validar y crear las bases de datos.
 
 from __future__ import unicode_literals
 
-import os
+from __builtin__ import callable, enumerate
 import json
 import logging
+import os
+import re
 
-from fts_web.errors import FtsArchivoImportacionInvalidoError, FtsError
+from fts_web.errors import FtsArchivoImportacionInvalidoError, FtsError, \
+    FtsParserMaxRowError, FtsParserCsvImportacionError
 from fts_web.models import BaseDatosContacto, Contacto, \
     MetadataBaseDatosContactoDTO
 from fts_web.parser import ParserCsv, validate_telefono, validate_fechas, \
     validate_horas
-from __builtin__ import callable, enumerate
-import re
 
 
 logger = logging.getLogger(__name__)
@@ -37,6 +38,8 @@ class CreacionBaseDatosService(object):
             Si el archivo es válido, hace el save del objeto y si no los es
             lanza la excepción correspondiente.
         """
+        assert self.estado == BaseDatosContacto.ESTADO_EN_DEFINICION
+
         csv_extensions = ['.csv']
 
         filename = base_datos_contacto.nombre_archivo_importacion
@@ -66,6 +69,8 @@ class CreacionBaseDatosService(object):
         del archivo de importación especificado para la base de datos de
         contactos.
         """
+        assert self.estado == BaseDatosContacto.ESTADO_EN_DEFINICION
+
         metadata = base_datos_contacto.get_metadata()
         columna_con_telefono = metadata.columna_con_telefono
         columnas_con_fecha = metadata.columnas_con_fecha
