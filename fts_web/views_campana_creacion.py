@@ -15,7 +15,7 @@ from fts_web.errors import FtsAudioConversionError
 from fts_web.forms import CampanaForm, AudioForm, CalificacionForm, \
     OpcionForm, ActuacionForm, ConfirmaForm
 from fts_web.models import Campana, ArchivoDeAudio, Calificacion, Opcion, \
-    Actuacion
+    Actuacion, AudioDeCampana
 import logging as logging_
 
 
@@ -119,31 +119,34 @@ class CampanaUpdateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
             kwargs={"pk_campana": self.object.pk})
 
 
-class AudioCampanaCreateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
-                             UpdateView):
+class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
     """
     Esta vista actuaiza un objeto Campana
     con el upload del audio.
     """
 
     template_name = 'campana/audio_campana.html'
-    model = Campana
-    context_object_name = 'campana'
+    model = AudioDeCampana
     form_class = AudioForm
 
     # @@@@@@@@@@@@@@@@@@@@
 
-    def get_form(self, form_class):
-        id_archivo_audio = self.object.obtener_id_archivo_audio()
+    def get_initial(self):
+        initial = super(AudioCampanaCreateView, self).get_initial()
+        initial.update({'campana': self.campana.id})
+        return initial
 
-        return form_class(id_archivo_audio=id_archivo_audio,
-                          **self.get_form_kwargs())
+    def get_context_data(self, **kwargs):
+        context = super(AudioCampanaCreateView,
+                        self).get_context_data(**kwargs)
+        context['campana'] = self.campana
+        return context
 
     def form_valid(self, form):
-        archivo_audio = self.request.POST.get('archivo_audio')
+        archivo_de_audio = self.request.POST.get('archivo_de_audio')
         audio_original = self.request.FILES.get('audio_original')
 
-        if archivo_audio and audio_original:
+        if archivo_de_audio and audio_original:
             message = '<strong>Operación Errónea!</strong> \
                 Seleccione solo un audio para la campana.'
             messages.add_message(
@@ -151,52 +154,40 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
                 messages.ERROR,
                 message,
             )
-            return redirect(self.get_success_url())
+            return self.form_invalid(form)
 
-        if archivo_audio:
-            archivo_audio = get_object_or_404(
-                ArchivoDeAudio, pk=self.request.POST.get('archivo_audio')
-            )
-            self.object.audio_original = archivo_audio.audio_original
-            self.object.audio_asterisk = archivo_audio.audio_asterisk
-            self.object.save()
-
-            return redirect(self.get_success_url())
-
-        elif audio_original:
+        if archivo_de_audio or audio_original:
             self.object = form.save()
 
-            try:
-                convertir_audio_de_campana(self.object)
-                return redirect(self.get_success_url())
-            except FtsAudioConversionError:
-                self.object.audio_original = None
-                self.object.save()
+            if audio_original:
+                try:
+                    convertir_audio_de_campana(self.object)
+                except FtsAudioConversionError:
+                    self.object.delete()
 
-                message = '<strong>Operación Errónea!</strong> \
-                    Hubo un inconveniente en la conversión del audio.\
-                    Por favor verifique que el archivo subido sea el indicado.'
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    message,
-                )
-                return self.form_invalid(form)
-            except Exception, e:
-                self.object.audio_original = None
-                self.object.save()
+                    message = '<strong>Operación Errónea!</strong> \
+                        Hubo un inconveniente en la conversión del audio.\
+                        Por favor verifique que el archivo subido sea el indicado.'
+                    messages.add_message(
+                        self.request,
+                        messages.ERROR,
+                        message,
+                    )
+                    return self.form_invalid(form)
+                except Exception, e:
+                    self.object.delete()
 
-                logger.warn("convertir_audio_de_campana(): produjo un error "
-                            "inesperado. Detalle: %s", e)
+                    logger.warn("convertir_audio_de_campana(): produjo un error "
+                                "inesperado. Detalle: %s", e)
 
-                message = '<strong>Operación Errónea!</strong> \
-                    Se produjo un error inesperado en la conversión del audio.'
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    message,
-                )
-                return self.form_invalid(form)
+                    message = '<strong>Operación Errónea!</strong> \
+                        Se produjo un error inesperado en la conversión del audio.'
+                    messages.add_message(
+                        self.request,
+                        messages.ERROR,
+                        message,
+                    )
+                    return self.form_invalid(form)
         else:
             message = '<strong>Operación Errónea!</strong> \
                        Debe seleccionar un archivo de Audio para la campaña.'
@@ -207,10 +198,12 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
             )
             return self.form_invalid(form)
 
+        return redirect(self.get_success_url())
+
     def get_success_url(self):
         return reverse(
             'audio_campana',
-            kwargs={"pk_campana": self.object.pk})
+            kwargs={"pk_campana": self.campana.pk})
 
 
 class CalificacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
