@@ -238,6 +238,7 @@ class BaseDatosContactoManager(models.Manager):
             raise(SuspiciousOperation("No se encontro base datos en "
                                       "estado ESTADO_EN_DEFINICION"))
 
+
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
 
@@ -550,7 +551,12 @@ class BaseDatosContacto(models.Model):
         """
         Este método se encarga de eliminar todos los contactos de la
         BaseDatoContacto actual.
+        El estado de la base de datos tiene que ser ESTADO_EN_DEFINICION o
+        ESTADO_EN_DEPURACION, no se deberían eliminar los contactos con la
+        misma en otro estado.
         """
+        assert self.estado in (self.ESTADO_EN_DEFINICION,
+                               self.ESTADO_EN_DEPURACION)
         self.contactos.all().delete()
 
     def procesa_depuracion(self):
