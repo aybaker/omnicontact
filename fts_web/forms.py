@@ -16,8 +16,9 @@ from crispy_forms.layout import Field, Layout, Submit, Div, MultiField
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from fts_web.models import (Actuacion, AgenteGrupoAtencion, ArchivoDeAudio,
-                            BaseDatosContacto, Campana, Calificacion,
-                            GrupoAtencion, Opcion, DerivacionExterna)
+                            AudioDeCampana, BaseDatosContacto, Campana,
+                            Calificacion, GrupoAtencion, Opcion,
+                            DerivacionExterna)
 
 
 # =============================================================================
@@ -246,41 +247,41 @@ class CampanaForm(forms.ModelForm):
 
 
 class AudioForm(forms.ModelForm):
-    queryset = ArchivoDeAudio.objects.all()
-    archivo_audio = forms.ModelChoiceField(label='Archivo de Audio',
-                                           required=False,
-                                           queryset=queryset)
+    # queryset = ArchivoDeAudio.objects.all()
+    # archivo_audio = forms.ModelChoiceField(label='Archivo de Audio',
+    #                                        required=False,
+    #                                        queryset=queryset)
 
     check_audio_original = forms.BooleanField(label="Especificar Audio",
                                               required=False,
                                               widget=forms.CheckboxInput())
 
-    def __init__(self, id_archivo_audio=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(AudioForm, self).__init__(*args, **kwargs)
-        self.fields['archivo_audio'].initial = id_archivo_audio
         self.fields['audio_original'].widget.attrs['disabled'] = True
 
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Field('archivo_audio'),
+            Field('archivo_de_audio'),
             Field('check_audio_original'),
             Field('audio_original'),
+            Field('campana', type="hidden"),
         )
 
     class Meta:
-        model = Campana
-        fields = ('audio_original',)
+        model = AudioDeCampana
+        fields = ('orden', 'audio_original', 'archivo_de_audio', 'campana')
         widgets = {
             'audio_original': forms.FileInput(),
         }
         labels = {
             'audio_original': '',
+            'archivo_de_audio': '',
         }
         help_texts = {
             'audio_original': """Seleccione el archivo de audio que desea para
-            la Campaña. Si ya existe uno y guarda otro, el audio será
-            reemplazado.""",
+            la Campaña.""",
         }
 
 
