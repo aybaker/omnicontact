@@ -77,23 +77,33 @@ class CreacionBaseDatosService(object):
         columnas_con_hora = metadata.columnas_con_hora
         primer_fila_es_encabezado = metadata.primer_fila_es_encabezado
 
-        # TODO: Sprint 11 - BORRAR CONTACTOS
+        # Antes que nada, borramos los contactos preexistentes
+        base_datos_contacto.elimina_contactos()
 
         parser = ParserCsv()
-        generador_contactos = parser.read_file(
-            primer_fila_es_encabezado,
-            columna_con_telefono,
-            columnas_con_fecha,
-            columnas_con_hora,
-            base_datos_contacto.archivo_importacion.file)
 
-        cantidad_contactos = 0
-        for lista_dato in generador_contactos:
-            cantidad_contactos += 1
-            Contacto.objects.create(
-                datos=json.dumps(lista_dato),
-                bd_contacto=base_datos_contacto,
-            )
+        try:
+            generador_contactos = parser.read_file(
+                primer_fila_es_encabezado,
+                columna_con_telefono,
+                columnas_con_fecha,
+                columnas_con_hora,
+                base_datos_contacto.archivo_importacion.file)
+
+            cantidad_contactos = 0
+            for lista_dato in generador_contactos:
+                cantidad_contactos += 1
+                Contacto.objects.create(
+                    datos=json.dumps(lista_dato),
+                    bd_contacto=base_datos_contacto,
+                )
+        except FtsParserMaxRowError:
+            base_datos_contacto.elimina_contactos()
+            raise
+
+        except FtsParserCsvImportacionError:
+            base_datos_contacto.elimina_contactos()
+            raise
 
         base_datos_contacto.cantidad_contactos = cantidad_contactos
         base_datos_contacto.save()
