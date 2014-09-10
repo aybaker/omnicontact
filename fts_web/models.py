@@ -1479,6 +1479,7 @@ class AudioDeCampana(models.Model):
     )
     tts = models.CharField(
         max_length=128,
+        null=True, blank=True,
     )
     archivo_de_audio = models.ForeignKey(
         'ArchivoDeAudio',
