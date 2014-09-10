@@ -268,14 +268,14 @@ class DefineBaseDatosContactoView(UpdateView):
         try:
             # No deberían existir contactos en la base de datos. De todos modos
             # intentamos borrarlos.
-            self.object.eliminar_contactos()
+            self.object.elimina_contactos()
 
             creacion_base_datos.importa_contactos(self.object)
         except FtsParserCsvImportacionError as e:
             # En caso que se interrumpa la importación de los contactos por un
             # problemas de validación de los mismo, borramos los que ya habían
             # sido cargado hasta este momento.
-            self.object.eliminar_contactos()
+            self.object.elimina_contactos()
 
             message = '<strong>Operación Errónea!</strong>\
                       El archivo que seleccionó posee registros inválidos.<br>\
