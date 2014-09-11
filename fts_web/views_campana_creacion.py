@@ -136,6 +136,13 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
         initial.update({'campana': self.campana.id})
         return initial
 
+    def get_form(self, form_class):
+        metadata = self.campana.bd_contacto.get_metadata()
+        nombres_de_columnas = metadata.nombres_de_columnas
+
+        tts_choices = [(columna, columna) for columna in nombres_de_columnas]
+        return form_class(tts_choices=tts_choices, **self.get_form_kwargs())
+
     def get_context_data(self, **kwargs):
         context = super(AudioCampanaCreateView,
                         self).get_context_data(**kwargs)
