@@ -207,6 +207,26 @@ td, th {
     margin-bottom: 10px;
 }
 
+.mg-top-5 {
+    margin-top: 5px;
+}
+
 .pd-tp-15 {
     padding-top: 15px;
+}
+
+.va-middle {
+    vertical-align: middle !important;
+}
+
+.va-top {
+    vertical-align: top !important;
+}
+
+.bdleft-none {
+    border-left: none !important;
+}
+
+.bdright-none {
+    border-right: none !important;
 }
