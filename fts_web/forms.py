@@ -251,9 +251,10 @@ class AudioForm(forms.ModelForm):
                                               required=False,
                                               widget=forms.CheckboxInput())
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, tts_choices, *args, **kwargs):
         super(AudioForm, self).__init__(*args, **kwargs)
         self.fields['audio_original'].widget.attrs['disabled'] = True
+        self.fields['tts'].widget = forms.Select(choices=tts_choices)
 
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -261,12 +262,13 @@ class AudioForm(forms.ModelForm):
             Field('archivo_de_audio'),
             Field('check_audio_original'),
             Field('audio_original'),
+            Field('tts'),
             Field('campana', type="hidden"),
         )
 
     class Meta:
         model = AudioDeCampana
-        fields = ('audio_original', 'archivo_de_audio', 'campana')
+        fields = ('audio_original', 'archivo_de_audio', 'tts', 'campana')
         exclude = ('orden',)
         widgets = {
             'audio_original': forms.FileInput(),
@@ -274,6 +276,7 @@ class AudioForm(forms.ModelForm):
         labels = {
             'audio_original': '',
             'archivo_de_audio': '',
+            'tts': 'TTS',
         }
         help_texts = {
             'audio_original': """Seleccione el archivo de audio que desea para
