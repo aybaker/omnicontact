@@ -1461,10 +1461,26 @@ class Campana(models.Model):
         return self.nombre
 
 
+class AudioDeCampanaManager(models.Manager):
+
+    def obtener_siguien_numero_orden(self, campana_id):
+        try:
+            audio_de_campana = self.filter(campana=campana_id).latest('orden')
+            return audio_de_campana.orden + 1
+        except AudioDeCampana.DoesNotExist:
+            return 1
+
+
 class AudioDeCampana(models.Model):
     """
     Representa los audios que tienen las campañas.
     """
+    #objects_default = models.Manager()
+    # Por defecto django utiliza el primer manager instanciado. Se aplica al
+    # admin de django, y no aplica las customizaciones del resto de los
+    # managers que se creen.
+
+    objects = AudioDeCampanaManager()
 
     orden = models.PositiveIntegerField()
     audio_original = models.FileField(
