@@ -1502,8 +1502,12 @@ class AudioDeCampana(models.Model):
         null=True, blank=True,
     )
     campana = models.ForeignKey(
-        'Campana'
+        'Campana',
+        related_name='audios_de_campana'
     )
+
+    class Meta:
+        ordering = ['orden']
 
 
 #==============================================================================
