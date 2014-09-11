@@ -157,7 +157,11 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
             return self.form_invalid(form)
 
         if archivo_de_audio or audio_original:
-            self.object = form.save()
+            self.object = form.save(commit=False)
+            self.object.orden = \
+                AudioDeCampana.objects.obtener_siguien_numero_orden(
+                    self.campana.pk)
+            self.object.save()
 
             if audio_original:
                 try:
