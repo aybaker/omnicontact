@@ -49,16 +49,60 @@
                 <li class="disabled"><a>6- Confirmar</a></li>
             </ul>
             <br>
-            <form role="form" method="post" enctype="multipart/form-data" >   
-                <div class="col-lg-4">               
-                    {% crispy form %}
+            
+           <form role="form" method="post" enctype="multipart/form-data" >
+                <div class="col-lg-4">                
+                    {% csrf_token %}                         
+
+                    <h4>Nuevo Audio</h4>
+                    {% crispy form %} 
+                </div>
+                <div class="col-lg-6">
+                    {% if campana %}
+                        <h4>Audios de Campaña</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr class="fts-table-bg">
+                                    <th colspan="2">Audio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for audio_de_campana in campana.audios_de_campana.all %}
+                                    <tr>
+                                        <td class="va-middle bdright-none">
+                                                <span class="badge va-top mg-top-5">{{ audio_de_campana.orden }}</span> 
+                                                {% if audio_de_campana.audio_original %}
+                                                    <audio src="{{ audio_de_campana.audio_original.url }}" controls></audio>
+                                                {% else %}
+                                                    <audio src="{{ audio_de_campana.archivo_de_audio.audio_original.url }}" controls></audio>
+                                                {% endif %}
+                                        </td>
+                                        <td  class="va-middle bdleft-none">        
+                                            {% if es_template %}
+                                                
+                                                <a href="{# url '' campana.pk audio_de_campana.pk #}"> Eliminar</a>
+                                            {% else %}                                            
+                                                
+                                                <a href="{# url '' campana.pk audio_de_campana.pk #}"> Eliminar</a>
+
+                                            {% endif %}  
+                                        </td>
+                                    </tr>
+                                 {% empty %}
+                                    <tr>
+                                        <td> 
+                                            <p class="text-center text-danger">
+                                                <em>No se encontraron Audios de Campaña creados.</em>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
                 </div>
                 <div class="col-lg-12">
                     <br>
-                    <button type="submit" id="id_guardar" class="btn btn-success btn-lg modal_proceso_grande">
-                        Guardar Audio
-                    </button>
-                    
                     {% if es_template %}
                         <a href="{% url 'calificacion_template' campana.pk %}" class="btn btn-default pull-right" role="button">
                             Continuar <span class="glyphicon glyphicon-chevron-right"></span>
@@ -68,6 +112,10 @@
                             Continuar <span class="glyphicon glyphicon-chevron-right"></span>
                         </a>                        
                     {% endif %}
+                    <button type="submit" id="id_guardar" class="btn btn-success btn-lg modal_proceso_grande">
+                        Guardar Audio
+                    </button>
+                    
                 </div>
             </form>
         </div>
