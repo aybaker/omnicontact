@@ -253,8 +253,10 @@ class AudioForm(forms.ModelForm):
 
     def __init__(self, tts_choices, *args, **kwargs):
         super(AudioForm, self).__init__(*args, **kwargs)
-        self.fields['audio_original'].widget.attrs['disabled'] = True
+        tts_choices.insert(0, ('', '---------'))
         self.fields['tts'].widget = forms.Select(choices=tts_choices)
+
+        self.fields['audio_original'].widget.attrs['disabled'] = True
 
         self.helper = FormHelper()
         self.helper.form_tag = False
