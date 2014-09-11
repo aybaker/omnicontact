@@ -152,10 +152,15 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
     def form_valid(self, form):
         archivo_de_audio = self.request.POST.get('archivo_de_audio')
         audio_original = self.request.FILES.get('audio_original')
+        tts = self.request.POST.get('tts')
 
-        if archivo_de_audio and audio_original:
+        if ((archivo_de_audio and audio_original)
+                or (archivo_de_audio and tts)
+                or (audio_original and tts)
+                or (archivo_de_audio and audio_original and tts)):
+
             message = '<strong>Operación Errónea!</strong> \
-                Seleccione solo un audio para la campana.'
+                Puede seleccionr solo una opción para el audio de la campana.'
             messages.add_message(
                 self.request,
                 messages.ERROR,
@@ -163,7 +168,7 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
             )
             return self.form_invalid(form)
 
-        if archivo_de_audio or audio_original:
+        if archivo_de_audio or audio_original or tts:
             self.object = form.save(commit=False)
             self.object.orden = \
                 AudioDeCampana.objects.obtener_siguien_numero_orden(
