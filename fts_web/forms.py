@@ -247,11 +247,6 @@ class CampanaForm(forms.ModelForm):
 
 
 class AudioForm(forms.ModelForm):
-    # queryset = ArchivoDeAudio.objects.all()
-    # archivo_audio = forms.ModelChoiceField(label='Archivo de Audio',
-    #                                        required=False,
-    #                                        queryset=queryset)
-
     check_audio_original = forms.BooleanField(label="Especificar Audio",
                                               required=False,
                                               widget=forms.CheckboxInput())
@@ -271,7 +266,8 @@ class AudioForm(forms.ModelForm):
 
     class Meta:
         model = AudioDeCampana
-        fields = ('orden', 'audio_original', 'archivo_de_audio', 'campana')
+        fields = ('audio_original', 'archivo_de_audio', 'campana')
+        exclude = ('orden',)
         widgets = {
             'audio_original': forms.FileInput(),
         }
