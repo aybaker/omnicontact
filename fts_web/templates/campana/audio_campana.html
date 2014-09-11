@@ -94,8 +94,10 @@
                                                 <span class="badge va-top mg-top-5">{{ audio_de_campana.orden }}</span> 
                                                 {% if audio_de_campana.audio_original %}
                                                     <audio src="{{ audio_de_campana.audio_original.url }}" controls></audio>
-                                                {% else %}
+                                                {% elif  audio_de_campana.archivo_de_audio%}
                                                     <audio src="{{ audio_de_campana.archivo_de_audio.audio_original.url }}" controls></audio>
+                                                {% else %}
+                                                    <strong>TTS:</strong> {{ audio_de_campana.tts }}
                                                 {% endif %}
                                         </td>
                                         <td  class="va-middle bdleft-none">        
