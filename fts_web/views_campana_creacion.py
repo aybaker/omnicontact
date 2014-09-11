@@ -171,7 +171,8 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
 
                     message = '<strong>Operación Errónea!</strong> \
                         Hubo un inconveniente en la conversión del audio.\
-                        Por favor verifique que el archivo subido sea el indicado.'
+                        Por favor verifique que el archivo subido sea el \
+                        indicado.'
                     messages.add_message(
                         self.request,
                         messages.ERROR,
@@ -181,11 +182,12 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
                 except Exception, e:
                     self.object.delete()
 
-                    logger.warn("convertir_audio_de_campana(): produjo un error "
-                                "inesperado. Detalle: %s", e)
+                    logger.warn("convertir_audio_de_campana(): produjo un"
+                                "error inesperado. Detalle: %s", e)
 
                     message = '<strong>Operación Errónea!</strong> \
-                        Se produjo un error inesperado en la conversión del audio.'
+                        Se produjo un error inesperado en la conversión del \
+                        audio.'
                     messages.add_message(
                         self.request,
                         messages.ERROR,
