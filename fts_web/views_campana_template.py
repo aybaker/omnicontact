@@ -12,10 +12,11 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from fts_web.forms import TemplateForm, ConfirmaForm
 from fts_web.models import Campana
-from fts_web.views_campana_creacion import AudioCampanaCreateView, \
-    CalificacionCampanaCreateView, CalificacionCampanaDeleteView, \
-    OpcionCampanaCreateView, OpcionCampanaDeleteView, \
-    ActuacionCampanaCreateView, ActuacionCampanaDeleteView
+from fts_web.views_campana_creacion import (
+    AudioCampanaCreateView, AudiosCampanaDeleteView,
+    CalificacionCampanaCreateView, CalificacionCampanaDeleteView,
+    OpcionCampanaCreateView, OpcionCampanaDeleteView,
+    ActuacionCampanaCreateView, ActuacionCampanaDeleteView)
 from fts_web.views_campana_creacion import (CheckEstadoTemplateMixin,
                                             TemplateEnDefinicionMixin)
 import logging as logging_
@@ -142,6 +143,14 @@ class AudioTemplateCreateView(CheckEstadoTemplateMixin, TemplateMixin,
         return reverse(
             'audio_template',
             kwargs={"pk_campana": self.campana.pk})
+
+
+class AudiosTemplateDeleteView(CheckEstadoTemplateMixin, TemplateMixin,
+                               AudiosCampanaDeleteView):
+
+    def get_success_url(self):
+        return reverse('audio_template',
+                       kwargs={"pk_campana": self.campana.pk})
 
 
 class CalificacionTemplateCreateView(CheckEstadoTemplateMixin,
