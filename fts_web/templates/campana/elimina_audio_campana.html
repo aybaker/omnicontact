@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Audios</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-8">
+                <form method="post">{% csrf_token %}
+                    {% if es_template %}
+                        <h4>Template <strong>{{ object.campana.nombre }}</strong></h4>
+                    {% else %}
+                        <h4>Campaña <strong>{{ object.campana.nombre }}</strong></h4>
+                    {% endif %}
+                    <h4>¿Esta seguro que desea eliminar el Audio:  <strong>{{ object }}</strong>?</h4>
+
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <span class="glyphicon glyphicon-remove"></span> Eliminar
+                    </button>
+                    {% if es_template %}
+                        <a href="{% url 'audio_template' object.campana.pk %}">Cancelar</a>
+                    {% else %}
+                        <a href="{% url 'audio_campana' object.campana.pk %}">Cancelar</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
