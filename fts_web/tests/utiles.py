@@ -309,8 +309,8 @@ class FTSenderTestUtilsMixin(object):
             fecha_inicio=fecha_inicio,
             fecha_fin=fecha_fin,
             bd_contacto=bd_contactos,
-            audio_original="test/audio/original.wav",
-            audio_asterisk="test/audio/for-asterisk.wav",
+            # audio_original="test/audio/original.wav",
+            # audio_asterisk="test/audio/for-asterisk.wav",
         )
         c.save()
 
