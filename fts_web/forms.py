@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout, Submit, Div, MultiField
+from crispy_forms.layout import Field, Layout, Submit, Div, MultiField, HTML
 
 from bootstrap3_datetime.widgets import DateTimePicker
 
@@ -201,24 +201,27 @@ class TemplateForm(forms.ModelForm):
 # =============================================================================
 
 class CampanaForm(forms.ModelForm):
-    fecha_inicio = forms.DateField(
-        widget=DateTimePicker(options={"format": "DD/MM/YYYY",
-                                       "pickTime": False}),
-        help_text='Ejemplo: 10/04/2014')
-    fecha_fin = forms.DateField(
-        widget=DateTimePicker(options={"format": "DD/MM/YYYY",
-                                       "pickTime": False}),
-        help_text='Ejemplo: 20/04/2014')
-    bd_contacto = forms.ModelChoiceField(
-        queryset=BaseDatosContacto.objects.obtener_definidas(),
-    )
-
-    def __init__(self, reciclado=False, *args, **kwargs):
+    def __init__(self, reciclado=False, campana_con_tts=False, *args,
+                 **kwargs):
         super(CampanaForm, self).__init__(*args, **kwargs)
+        # NOTA: La bandera campana_con_tts debería se momentánea hasta resolver
+        # que hacer cuando una campana tiene tts.
+
+        self.fields['bd_contacto'].queryset =\
+            BaseDatosContacto.objects.obtener_definidas()
+
+        self.fields['fecha_inicio'].widget = DateTimePicker(
+            options={"format": "DD/MM/YYYY", "pickTime": False})
+        self.fields['fecha_inicio'].help_text = 'Ejemplo: 10/04/2014'
+
+        self.fields['fecha_fin'].widget = DateTimePicker(
+            options={"format": "DD/MM/YYYY", "pickTime": False})
+        self.fields['fecha_fin'].help_text = 'Ejemplo: 20/04/2014'
+
         self.helper = FormHelper()
         self.helper.form_tag = False
 
-        if reciclado:
+        if reciclado or campana_con_tts:
             self.fields.pop('bd_contacto')
 
             layout = Layout(
@@ -227,7 +230,11 @@ class CampanaForm(forms.ModelForm):
                 Field('cantidad_intentos'),
                 Field('segundos_ring'),
                 Field('fecha_inicio'),
-                Field('fecha_fin')
+                Field('fecha_fin'),
+                HTML(
+                    "<p class='text-center text-danger'>Debido a que los "
+                    "audios de la campaña poseen TTS, no es "
+                    "posible cambiar la base de datos ya seleccionada.</p>")
             )
         else:
             layout = Layout(
