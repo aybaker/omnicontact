@@ -1463,7 +1463,7 @@ class Campana(models.Model):
 
 class AudioDeCampanaManager(models.Manager):
 
-    def obtener_siguien_numero_orden(self, campana_id):
+    def obtener_siguiente_orden(self, campana_id):
         try:
             audio_de_campana = self.filter(campana=campana_id).latest('orden')
             return audio_de_campana.orden + 1
