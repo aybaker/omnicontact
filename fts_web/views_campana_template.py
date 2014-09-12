@@ -133,8 +133,7 @@ class DetalleTemplateView(TemplateMixin, DetailView):
     model = Campana
 
 
-class AudioTemplateCreateView(CheckEstadoTemplateMixin,
-                              TemplateEnDefinicionMixin, TemplateMixin,
+class AudioTemplateCreateView(CheckEstadoTemplateMixin, TemplateMixin,
                               AudioCampanaCreateView):
 
     # @@@@@@@@@@@@@@@@@@@@
@@ -142,7 +141,7 @@ class AudioTemplateCreateView(CheckEstadoTemplateMixin,
     def get_success_url(self):
         return reverse(
             'audio_template',
-            kwargs={"pk_campana": self.object.pk})
+            kwargs={"pk_campana": self.campana.pk})
 
 
 class CalificacionTemplateCreateView(CheckEstadoTemplateMixin,

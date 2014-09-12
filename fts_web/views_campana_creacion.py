@@ -183,8 +183,7 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
         if archivo_de_audio or audio_original or tts:
             self.object = form.save(commit=False)
             self.object.orden = \
-                AudioDeCampana.objects.obtener_siguiente_orden(
-                    self.campana.pk)
+                AudioDeCampana.objects.obtener_siguiente_orden(self.campana.pk)
             self.object.save()
 
             if audio_original:
