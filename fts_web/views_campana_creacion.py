@@ -235,6 +235,34 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
             kwargs={"pk_campana": self.campana.pk})
 
 
+class AudiosCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto AudioDeCampana seleccionado.
+    """
+
+    model = AudioDeCampana
+    template_name = 'campana/elimina_audio_campana.html'
+
+    # @@@@@@@@@@@@@@@@@@@@
+
+    def delete(self, request, *args, **kwargs):
+        message = '<strong>Operación Exitosa!</strong>\
+            Se llevó a cabo con éxito la eliminación del Audio.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return super(AudiosCampanaDeleteView, self).delete(request, *args,
+                                                           **kwargs)
+
+    def get_success_url(self):
+        return reverse('audio_campana',
+                       kwargs={"pk_campana": self.campana.pk})
+
+
 class CalificacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
     """
     Esta vista crea uno o varios objetos Calificación
