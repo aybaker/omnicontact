@@ -1523,6 +1523,7 @@ class AudioDeCampana(models.Model):
 
     class Meta:
         ordering = ['orden']
+        unique_together = ("orden", "campana")
 
 
 #==============================================================================
