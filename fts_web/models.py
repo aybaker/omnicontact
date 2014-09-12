@@ -1470,6 +1470,21 @@ class AudioDeCampanaManager(models.Manager):
         except AudioDeCampana.DoesNotExist:
             return 1
 
+    def campana_tiene_tts(self, campana_id):
+        """
+        Este método verifica si la campana pasada por parámetro tiene cargada
+        un objeto AudioDeCampana con tts. Devuelve true o false.
+        """
+        # NOTA: Este método debería ser temporal hasta que se resuelva bien
+        # que hacer, con la campañas que tiene TTS en AudioDeCampaña, en
+        # el proceso de creación de las mismas.
+
+        from django.db.models import Q
+        if self.filter(campana=campana_id).exclude(Q(tts__isnull=True) |
+                                                   Q(tts__exact='')):
+            return True
+        return False
+
 
 class AudioDeCampana(models.Model):
     """
