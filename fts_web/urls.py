@@ -51,7 +51,6 @@ urlpatterns = patterns('',
         login_required(views.DerivacionExternaDeleteView.as_view()),
         name='derivacion_externa_elimina',
     ),
-
     url(r'^grupo_atencion/nuevo/$',
         login_required(views.GrupoAtencionCreateView.as_view()),
         name='nuevo_grupo_atencion',
