@@ -155,7 +155,6 @@ class DetalleTemplateView(TemplateMixin, DetailView):
             self.kwargs['pk_campana'])
 
 
-
 class AudioTemplateCreateView(CheckEstadoTemplateMixin,
                               TemplateEnDefinicionMixin, TemplateMixin,
                               AudioCampanaCreateView):
