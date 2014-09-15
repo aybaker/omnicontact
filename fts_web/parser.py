@@ -75,7 +75,7 @@ class ParserCsv(object):
                 self.vacias += 1
                 continue
 
-            if i > settings.FTS_MAX_CANTIDAD_CONTACTOS:
+            if i >= settings.FTS_MAX_CANTIDAD_CONTACTOS:
                 raise FtsParserMaxRowError("El archivo CSV "
                                            "posee mas registros de los "
                                            "permitidos.")

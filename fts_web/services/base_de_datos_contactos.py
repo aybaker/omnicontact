@@ -38,8 +38,8 @@ class CreacionBaseDatosService(object):
             Si el archivo es válido, hace el save del objeto y si no los es
             lanza la excepción correspondiente.
         """
-        assert base_datos_contacto.estado == \
-            BaseDatosContacto.ESTADO_EN_DEFINICION
+        assert (base_datos_contacto.estado ==
+                BaseDatosContacto.ESTADO_EN_DEFINICION)
 
         csv_extensions = ['.csv']
 
@@ -70,14 +70,10 @@ class CreacionBaseDatosService(object):
         del archivo de importación especificado para la base de datos de
         contactos.
         """
-        assert base_datos_contacto.estado == \
-            BaseDatosContacto.ESTADO_EN_DEFINICION
+        assert (base_datos_contacto.estado ==
+                BaseDatosContacto.ESTADO_EN_DEFINICION)
 
         metadata = base_datos_contacto.get_metadata()
-        columna_con_telefono = metadata.columna_con_telefono
-        columnas_con_fecha = metadata.columnas_con_fecha
-        columnas_con_hora = metadata.columnas_con_hora
-        primer_fila_es_encabezado = metadata.primer_fila_es_encabezado
 
         # Antes que nada, borramos los contactos preexistentes
         base_datos_contacto.elimina_contactos()
