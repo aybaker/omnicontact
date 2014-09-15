@@ -117,6 +117,75 @@ class TemplateDeCampanaCrearTest(FTSenderBaseTest):
                              "".format(vista, url))
 
 
+class TemplateDeCampanaEliminaTest(FTSenderBaseTest):
+    """
+    Testea la vista de eliminación de Templates. Que se visualice si el mismo
+    se encuentra en el estado indicado.
+    """
+    def setUp(self):
+        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.assertTrue(self.client.login(username='user', password='user'))
+        self.campana = self.crear_campana()
+        self.campana.estado = Campana.ESTADO_TEMPLATE_ACTIVO
+        self.campana.es_template = True
+        self.campana.save()
+
+        self.crea_calificaciones(self.campana)
+        self.crea_todas_las_opcion_posibles(self.campana)
+        self.crea_todas_las_actuaciones(self.campana)
+
+    def test_eliminacion_template(self):
+        VISTAS = [
+            ('template_elimina', [self.campana.id]),
+        ]
+
+        for vista, args in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, "No se recibio status "
+                             "200 al realizar el render inicial del template "
+                             "definido para eliminar. Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+        self.campana.estado = Campana.ESTADO_TEMPLATE_BORRADO
+        self.campana.save()
+
+        for url in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 400, "No se recibio status "
+                             "400 al realizar el render inicial del template "
+                             "para eliminar cuando el template ya esta en  "
+                             "estado ESTADO_TEMPLATE_BORRADO."
+                             "Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+    def test_crea_campana_de_template(self):
+        VISTAS = [
+            ('crea_campana_template', [self.campana.id]),
+        ]
+
+        for vista, args in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302, "No se recibio el "
+                             "estado correcto del template para crear la "
+                             "campaña a partir de este. Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+        self.campana.estado = Campana.ESTADO_TEMPLATE_BORRADO
+        self.campana.save()
+
+        for url in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 400, "No se recibio status "
+                             "400 al intentar la creación de una campaña a "
+                             "partir de un template en estado incorrecto. "
+                             "Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+
 class ReciclarCampanaTest(FTSenderBaseTest):
     """Testea que las vistas usadas para reciclar una campanas NO puedan
     ser utilizadas si lamisma no esta en estado depurada.
@@ -216,7 +285,6 @@ class CrearBaseDeDatosContactosTest(FTSenderBaseTest):
         ]
 
         self.base_datos_contacto.define()
-        self.base_datos_contacto.save()
 
         for vista, args in VISTAS:
             url = reverse(vista, args=args)
