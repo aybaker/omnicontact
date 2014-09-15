@@ -477,9 +477,9 @@ class ReporteCampanaTest(FTSenderBaseTest):
         self.crea_todas_las_opcion_posibles(self.campana)
         self.crea_todas_las_actuaciones(self.campana)
 
-    def test_detalle_opciones_campana(self):
+    def test_reporte_campana(self):
         VISTAS = [
-            ('detalle_campana_reporte', [self.campana.id])
+            ('detalle_campana_reporte', [self.campana.id]),
         ]
         for vista, args in VISTAS:
             url = reverse(vista, args=args)
@@ -497,5 +497,45 @@ class ReporteCampanaTest(FTSenderBaseTest):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, "No se recibio status "
                              "200 al realizar el render del reporte campana "
+                             " de la campana depurada. Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+
+class ExportaReporteCampanaTest(FTSenderBaseTest):
+    """
+    Test para validar que la vista de exportación de reporte de campana,
+    responda cuando la campana propiamentedicha este en el estado depurada.
+    """
+
+    def setUp(self):
+        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.assertTrue(self.client.login(username='user', password='user'))
+        self.campana = self.crear_campana()
+        self.campana.activar()
+
+        self.crea_calificaciones(self.campana)
+        self.crea_todas_las_opcion_posibles(self.campana)
+        self.crea_todas_las_actuaciones(self.campana)
+
+    def test_exporta_reporte_campana(self):
+        VISTAS = [
+            ('exporta_campana_reporte', [self.campana.id]),
+        ]
+        for vista, args in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 400, "No se recibio status "
+                             "400 al realizar el render del reporte campana "
+                             "de la campana activa. Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+        self.campana.estado = Campana.ESTADO_DEPURADA
+        self.campana.save()
+
+        for url in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302, "No se recibio status "
+                             "302 al realizar el render del reporte campana "
                              " de la campana depurada. Vista: {0}. URL: {1}"
                              "".format(vista, url))
