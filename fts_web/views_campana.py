@@ -206,6 +206,13 @@ class ExportaReporteCampanaView(UpdateView):
     model = Campana
     context_object_name = 'campana'
 
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects.obtener_depurada_para_eliminar(
+                kwargs['pk'])
+        return super(ExportaReporteCampanaView, self).dispatch(request, *args,
+                                                               **kwargs)
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
 
