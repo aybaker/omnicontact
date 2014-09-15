@@ -63,13 +63,13 @@ class TemplateDeleteView(TemplateMixin, DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         self.campana = \
-            Campana.objects_template.obtener_activo_para_eliminar_o_crear(
+            Campana.objects_template.obtener_activo_para_eliminar_crear_ver(
                 kwargs['pk_campana'])
         return super(TemplateDeleteView, self).dispatch(request, *args,
                                                         **kwargs)
 
     def get_object(self, queryset=None):
-        return Campana.objects_template.obtener_activo_para_eliminar_o_crear(
+        return Campana.objects_template.obtener_activo_para_eliminar_crear_ver(
             self.kwargs['pk_campana'])
 
     def delete(self, request, *args, **kwargs):
@@ -142,6 +142,18 @@ class DetalleTemplateView(TemplateMixin, DetailView):
     context_object_name = 'campana'
     pk_url_kwarg = 'pk_campana'
     model = Campana
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects_template.obtener_activo_para_eliminar_crear_ver(
+                kwargs['pk_campana'])
+        return super(DetalleTemplateView, self).dispatch(request, *args,
+                                                         **kwargs)
+
+    def get_object(self, queryset=None):
+        return Campana.objects_template.obtener_activo_para_eliminar_crear_ver(
+            self.kwargs['pk_campana'])
+
 
 
 class AudioTemplateCreateView(CheckEstadoTemplateMixin,
@@ -314,7 +326,7 @@ class CreaCampanaTemplateView(TemplateMixin, RedirectView):
 
     def dispatch(self, request, *args, **kwargs):
         self.campana = \
-            Campana.objects_template.obtener_activo_para_eliminar_o_crear(
+            Campana.objects_template.obtener_activo_para_eliminar_crear_ver(
                 kwargs['pk_campana'])
         return super(CreaCampanaTemplateView, self).dispatch(request, *args,
                                                              **kwargs)
