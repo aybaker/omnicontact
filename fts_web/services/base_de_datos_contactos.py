@@ -70,7 +70,8 @@ class CreacionBaseDatosService(object):
         del archivo de importación especificado para la base de datos de
         contactos.
         """
-        assert self.estado == BaseDatosContacto.ESTADO_EN_DEFINICION
+        assert base_datos_contacto.estado == \
+            BaseDatosContacto.ESTADO_EN_DEFINICION
 
         metadata = base_datos_contacto.get_metadata()
         columna_con_telefono = metadata.columna_con_telefono
