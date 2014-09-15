@@ -2,18 +2,18 @@
 
 from __future__ import unicode_literals
 
-import os
-
 from django.test.utils import override_settings
 from fts_web.errors import (FtsParserMinRowError, FtsParserMaxRowError,
-                            FtsParserOpenFileError, FtsParserCsvDelimiterError)
-from fts_web.models import BaseDatosContacto
+                            FtsParserCsvDelimiterError)
 from fts_web.parser import ParserCsv, validate_telefono, sanitize_number, \
     validate_fechas, validate_horas
 from fts_web.tests.utiles import FTSenderBaseTest, get_test_resource_directory
+from fts_web.models import BaseDatosContacto, MetadataBaseDatosContactoDTO,\
+    MetadataBaseDatosContacto
 
 
 class GetDialectTest(FTSenderBaseTest):
+
     def test_cantidad_minima_de_filas(self):
         planilla = self.get_test_resource("planilla-ejemplo-2.csv")
         parser = ParserCsv()
@@ -43,10 +43,27 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
 
         parser = ParserCsv()
 
-        planilla = self.get_test_resource()
-        datos_parseados = parser.read_file(0, [], [], open(planilla, 'r'))
+        nombre_archivo = "planilla-ejemplo-1.csv"
+        BaseDatosContacto.objects.create(nombre="test",
+                                         archivo_importacion=nombre_archivo,
+                                         nombre_archivo_importacion="xx.csv",
+                                         metadata="")
 
-        self.assertEqual(next(datos_parseados),
+        # Solo hay 1, get() no puede fallar
+        bdc = BaseDatosContacto.objects.all().get()
+        metadata = bdc.get_metadata()
+        assert isinstance(metadata, MetadataBaseDatosContacto)
+        metadata.cantidad_de_columnas = 3
+        metadata.columna_con_telefono = 0  # o 2?
+        metadata.nombres_de_columnas = ["telefono_fijo",
+                                        "nombre",
+                                        "celular"]
+        metadata.primer_fila_es_encabezado = False
+        bdc.save()
+
+        generator = parser.read_file(bdc)
+
+        self.assertEqual(next(generator),
                          ['3543009865', 'lkasdjlfkaf', '0351156219387'])
 
     def test_devuelve_datos_correctos(self):
