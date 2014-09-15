@@ -238,6 +238,20 @@ class BaseDatosContactoManager(models.Manager):
             raise(SuspiciousOperation("No se encontro base datos en "
                                       "estado ESTADO_EN_DEFINICION"))
 
+    def obtener_definida_para_depurar(self, base_datos_contacto_id):
+        """Devuelve la base datos pasada por ID, siempre que pueda ser
+        depurada.
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=BaseDatosContacto.ESTADO_DEFINIDA).get(
+                pk=base_datos_contacto_id)
+        except BaseDatosContacto.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro base datos en "
+                                      "estado ESTADO_EN_DEFINICION"))
+
+
 
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
@@ -686,7 +700,6 @@ class TemplateManager(models.Manager):
         except Campana.DoesNotExist:
             raise(SuspiciousOperation("No se encontro campana/template %s en "
                                       "estado ESTADO_TEMPLATE_EN_DEFINICION"))
-
 
 class CampanaManager(models.Manager):
     """Manager para Campanas"""
