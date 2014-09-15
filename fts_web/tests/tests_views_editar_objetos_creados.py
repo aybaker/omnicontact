@@ -63,6 +63,42 @@ class CampanaCrearTest(FTSenderBaseTest):
                              "Vista: {0}. URL: {1}"
                              "".format(vista, url))
 
+    def test_detalle_campana(self):
+        VISTAS = [
+            ('detalle_campana', [self.campana.id]),
+        ]
+
+        for vista, args in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 400, "No se recibio status "
+                             "400 al realizar el render del detalle campana "
+                             "cuando la campana esta en definicion. "
+                             "Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+        self.campana.activar()
+
+        for url in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, "No se recibio status "
+                             "200 al realizar el render del detalle campana "
+                             "en estado activo. Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+        self.campana.estado = Campana.ESTADO_BORRADA
+        self.campana.save()
+
+        for url in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 400, "No se recibio status "
+                             "400 al realizar el render del detalle campana "
+                             "cuando la campana esta BORRADA. "
+                             "Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
 
 class CampanaEliminaTest(FTSenderBaseTest):
     """
