@@ -566,6 +566,12 @@ class BaseDatosContacto(models.Model):
         acciones.
         """
 
+        if self.estado != BaseDatosContacto.ESTADO_DEFINIDA:
+            raise(SuspiciousOperation("La BD {0} NO se puede depurar porque "
+                                      "no esta en estado ESTADO_DEFINIDA. "
+                                      "Estado: {1}".format(self.pk,
+                                                           self.estado)))
+
         # 1) Cambio de estado BaseDatoContacto (ESTADO_EN_DEPURACION).
         logger.info("Iniciando el proceso de depurado de BaseDatoContacto:"
                     "Seteando base datos contacto %s como"
