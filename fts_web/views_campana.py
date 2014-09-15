@@ -81,7 +81,7 @@ class CampanaDeleteView(DeleteView):
         # Eliminamos la tabla generada en la depuración de la campaña.
         from fts_daemon.models import EventoDeContacto
         EventoDeContacto.objects.eliminar_tabla_eventos_de_contacto_depurada(
-            self.object.pk)
+            self.object)
 
         message = '<strong>Operación Exitosa!</strong>\
         Se llevó a cabo con éxito la eliminación de la Campaña.'
