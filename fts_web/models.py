@@ -746,6 +746,19 @@ class CampanaManager(models.Manager):
         """Devuelve queryset para filtrar campañas en estado depuradas."""
         return self.filter(estado=Campana.ESTADO_DEPURADA)
 
+    def obtener_activa_para_detalle_estado(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña este activa, procesándose, para ver su estado.
+
+        En caso de no encontarse, lanza SuspiciousOperation.
+        """
+        try:
+            return self.filter(estado=Campana.ESTADO_ACTIVA).get(
+                pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana %s en "
+                                      "estado ESTADO_ACTIVA"))
+
     def obtener_en_definicion_para_editar(self, campana_id):
         """Devuelve la campaña pasada por ID, siempre que dicha
         campaña pueda ser editar (editada en el proceso de
