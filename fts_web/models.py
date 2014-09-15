@@ -782,10 +782,29 @@ class CampanaManager(models.Manager):
         """
         try:
             return self.filter(estado=Campana.ESTADO_DEPURADA).get(
-                               pk=campana_id)
+                pk=campana_id)
         except Campana.DoesNotExist:
             raise(SuspiciousOperation("No se encontro campana en "
                                       "estado ESTADO_DEPURADA"))
+
+    def obtener_para_detalle(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que a dicha
+        campaña se le pueda ver el detalle, debe estar en estado activa,
+        pausada, finalifada o depurada.
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            ESTADOS_VER_DETALLE = [Campana.ESTADO_ACTIVA,
+                                   Campana.ESTADO_PAUSADA,
+                                   Campana.ESTADO_FINALIZADA,
+                                   Campana.ESTADO_DEPURADA]
+            return self.filter(estado__in=ESTADOS_VER_DETALLE).get(
+                pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana en "
+                                      "estado ESTADO_ACTIVA, ESTADO_PAUSADA, "
+                                      "ESTADO_FINALIZADA o ESTADO_DEPURADA"))
 
     def obtener_todas_para_generar_dialplan(self):
         """Devuelve campañas que deben ser tenidas en cuenta
