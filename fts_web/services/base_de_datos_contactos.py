@@ -83,12 +83,7 @@ class CreacionBaseDatosService(object):
         parser = ParserCsv()
 
         try:
-            generador_contactos = parser.read_file(
-                primer_fila_es_encabezado,
-                columna_con_telefono,
-                columnas_con_fecha,
-                columnas_con_hora,
-                base_datos_contacto.archivo_importacion.file)
+            generador_contactos = parser.read_file(base_datos_contacto)
 
             cantidad_contactos = 0
             for lista_dato in generador_contactos:
