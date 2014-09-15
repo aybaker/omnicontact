@@ -59,6 +59,17 @@ class CampanaDeleteView(DeleteView):
 
     # @@@@@@@@@@@@@@@@@@@@
 
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects.obtener_depurada_para_eliminar(
+                kwargs['pk_campana'])
+        return super(CampanaDeleteView, self).dispatch(request, *args,
+                                                       **kwargs)
+
+    def get_object(self, queryset=None):
+        return Campana.objects.obtener_depurada_para_eliminar(
+            self.kwargs['pk_campana'])
+
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
