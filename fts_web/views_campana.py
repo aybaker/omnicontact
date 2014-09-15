@@ -188,6 +188,15 @@ class DetalleCampanView(DetailView):
     pk_url_kwarg = 'pk_campana'
     model = Campana
 
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects.obtener_para_detalle(kwargs['pk_campana'])
+        return super(DetalleCampanView, self).dispatch(request, *args,
+                                                       **kwargs)
+
+    def get_object(self, queryset=None):
+        return Campana.objects.obtener_para_detalle(self.kwargs['pk_campana'])
+
 
 class ExportaReporteCampanaView(UpdateView):
     """
