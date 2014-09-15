@@ -258,6 +258,18 @@ class CampanaEstadoOpcionesDetailView(DetailView):
     context_object_name = 'campana'
     model = Campana
 
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects.obtener_activa_para_detalle_estado(
+                kwargs['pk'])
+        return super(CampanaEstadoOpcionesDetailView, self).dispatch(request,
+                                                                     *args,
+                                                                     **kwargs)
+
+    def get_object(self, queryset=None):
+        return Campana.objects.obtener_activa_para_detalle_estado(
+            self.kwargs['pk'])
+
     def get_context_data(self, **kwargs):
         context = super(CampanaEstadoOpcionesDetailView,
                         self).get_context_data(**kwargs)
