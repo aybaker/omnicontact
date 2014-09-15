@@ -222,8 +222,9 @@ class CrearBaseDeDatosContactosTest(FTSenderBaseTest):
             url = reverse(vista, args=args)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, "No se recibio status "
-                             "200 al realizar el render inicial de la BD "
-                             "en definicion. Vista: {0}. URL: {1}"
+                             "200 al realizar el render inicial de la "
+                             "depuración de la BD ya definida. "
+                             "Vista: {0}. URL: {1}"
                              "".format(vista, url))
 
         self.base_datos_contacto.estado = BaseDatosContacto.ESTADO_DEPURADA
@@ -233,8 +234,8 @@ class CrearBaseDeDatosContactosTest(FTSenderBaseTest):
             url = reverse(vista, args=args)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 400, "No se recibio status "
-                             "400 al realizar el render inicial de la BD "
-                             "cuando la BD ya NO ESTA en definicion. "
+                             "400 al realizar el render inicial de la "
+                             "depuración de la BD en estado depurada."
                              "Vista: {0}. URL: {1}"
                              "".format(vista, url))
         
