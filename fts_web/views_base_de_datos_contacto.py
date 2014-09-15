@@ -355,10 +355,13 @@ class DepuraBaseDatosContactoView(DeleteView):
     model = BaseDatosContacto
     template_name = 'base_datos_contacto/depura_base_datos_contacto.html'
 
-    def get_success_url(self):
-        return reverse(
-            'lista_base_datos_contacto',
-        )
+    def dispatch(self, request, *args, **kwargs):
+        self.base_datos_contacto = \
+            BaseDatosContacto.objects.obtener_definida_para_depurar(
+                self.kwargs['pk'])
+        return super(DepuraBaseDatosContactoView, self).dispatch(request,
+                                                                 *args,
+                                                                 **kwargs)
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -397,3 +400,8 @@ class DepuraBaseDatosContactoView(DeleteView):
                 message,
             )
             return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse(
+            'lista_base_datos_contacto',
+        )
