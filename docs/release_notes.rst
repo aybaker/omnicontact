@@ -27,7 +27,7 @@ BUGs arreglados
 ...............
 
 * FTS-319 - Sistema permite modificar objetos (Campañas, Bases de Datos
-            de Contactos, etc) que no deberian poder modificarse
+  de Contactos, etc) que no deberian poder modificarse
 * FTS-320 - Bugs encontrados al implementar tests de las vistas
 
 
