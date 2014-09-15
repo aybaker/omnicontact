@@ -23,6 +23,12 @@ y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
     $ server> /home/ftsender/deploy/bin/manage.sh create_ftsender_user
 
 
+Migraciones de datos
+....................
+
+En este sprint no se registraron migraciones de datos.
+
+
 BUGs arreglados
 ...............
 
