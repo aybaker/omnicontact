@@ -235,7 +235,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
             for datos_contacto in parser.read_file(bdc):
                 datos_parseados.append(datos_contacto)
 
-        self.assertEquals(cm.exception.valor_celda, "fecha")
+        self.assertEquals(cm.exception.valor_celda, ["fecha"])
 
         # Debio devolver los primeros 3 ANTES de generar la excepcion
         self.assertEquals(len(datos_parseados), 3)
@@ -267,7 +267,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
             for datos_contacto in parser.read_file(bdc):
                 datos_parseados.append(datos_contacto)
 
-        self.assertEquals(cm.exception.valor_celda, "hora")
+        self.assertEquals(cm.exception.valor_celda, ["hora"])
 
         # Debio devolver los primeros 3 ANTES de generar la excepcion
         self.assertEquals(len(datos_parseados), 3)
