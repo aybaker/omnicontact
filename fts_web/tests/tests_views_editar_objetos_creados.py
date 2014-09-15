@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.urlresolvers import reverse
 
-from fts_web.models import Campana
+from fts_web.models import Campana, BaseDatosContacto
 from fts_web.tests.utiles import FTSenderBaseTest
 
 
@@ -209,3 +209,32 @@ class CrearBaseDeDatosContactosTest(FTSenderBaseTest):
                              "cuando la BD ya NO ESTA en definicion. "
                              "Vista: {0}. URL: {1}"
                              "".format(vista, url))
+
+    def test_depuracion_base_datos_contacto(self):
+        VISTAS = [
+            ('depurar_base_datos_contacto', [self.base_datos_contacto.id]),
+        ]
+
+        self.base_datos_contacto.define()
+        self.base_datos_contacto.save()
+
+        for vista, args in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, "No se recibio status "
+                             "200 al realizar el render inicial de la BD "
+                             "en definicion. Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+        self.base_datos_contacto.estado = BaseDatosContacto.ESTADO_DEPURADA
+        self.base_datos_contacto.save()
+
+        for url in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 400, "No se recibio status "
+                             "400 al realizar el render inicial de la BD "
+                             "cuando la BD ya NO ESTA en definicion. "
+                             "Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+        
