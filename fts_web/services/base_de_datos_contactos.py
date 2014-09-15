@@ -38,7 +38,8 @@ class CreacionBaseDatosService(object):
             Si el archivo es válido, hace el save del objeto y si no los es
             lanza la excepción correspondiente.
         """
-        assert self.estado == BaseDatosContacto.ESTADO_EN_DEFINICION
+        assert base_datos_contacto.estado == \
+            BaseDatosContacto.ESTADO_EN_DEFINICION
 
         csv_extensions = ['.csv']
 
