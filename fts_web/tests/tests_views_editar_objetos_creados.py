@@ -159,6 +159,42 @@ class TemplateDeCampanaCrearTest(FTSenderBaseTest):
                              "Vista: {0}. URL: {1}"
                              "".format(vista, url))
 
+    def test_detalle_template(self):
+        VISTAS = [
+            ('detalle_template', [self.campana.id]),
+        ]
+
+        for vista, args in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 400, "No se recibio status "
+                             "400 al realizar el render del detalle template "
+                             "cuando el template ya esta en definicion. "
+                             "Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+        self.campana.activar_template()
+
+        for url in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, "No se recibio status "
+                             "200 al realizar el render del detalle template "
+                             "en estado activo. Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
+        self.campana.estado = Campana.ESTADO_TEMPLATE_BORRADO
+        self.campana.save()
+
+        for url in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 400, "No se recibio status "
+                             "400 al realizar el render del detalle template "
+                             "cuando el template ya NO ESTA en activo. "
+                             "Vista: {0}. URL: {1}"
+                             "".format(vista, url))
+
 
 class TemplateDeCampanaEliminaTest(FTSenderBaseTest):
     """
