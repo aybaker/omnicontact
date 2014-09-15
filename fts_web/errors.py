@@ -60,7 +60,9 @@ class FtsParserCsvImportacionError(FtsError):
         super(FtsParserCsvImportacionError, self).__init__(*args, **kwargs)
         self.numero_fila = numero_fila
         self.numero_columna = numero_columna
-        self.fila = ', '.join(map(str, fila))
+        # TODO: esto puede fallar si el texto no pudiera transformar
+        #  en unicode!
+        self.fila = u', '.join(map(unicode, unicode(fila)))
         self.valor_celda = valor_celda
 
 
