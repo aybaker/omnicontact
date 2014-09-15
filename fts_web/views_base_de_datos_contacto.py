@@ -109,9 +109,8 @@ class DefineBaseDatosContactoView(UpdateView):
             base_datos_contacto = get_object_or_404(
                 BaseDatosContacto, pk=self.base_datos_contacto.pk
             )
-            # FIXME: Modificar el pasar por parámetro el archivo abierto.
-            return parser.previsualiza_archivo(
-                base_datos_contacto.archivo_importacion.file)
+
+            return parser.previsualiza_archivo(base_datos_contacto)
 
         except FtsParserCsvDelimiterError:
             message = '<strong>Operación Errónea!</strong> \

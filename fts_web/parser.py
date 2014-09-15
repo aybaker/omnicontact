@@ -127,11 +127,16 @@ class ParserCsv(object):
         logger.info("%s contactos importados - %s valores ignoradas.",
                     cantidad_importados, self.vacias)
 
-    def previsualiza_archivo(self, file_obj):
+    def previsualiza_archivo(self, base_datos_contactos):
         """
         Lee un archivo CSV y devuelve contenidos de
         las primeras tres filas.
         """
+
+        file_obj = base_datos_contactos.archivo_importacion.file
+        return self._previsualiza_archivo(file_obj)
+
+    def _previsualiza_archivo(self, file_obj):
 
         workbook = csv.reader(file_obj, self._get_dialect(file_obj))
 
