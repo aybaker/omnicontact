@@ -701,6 +701,20 @@ class TemplateManager(models.Manager):
             raise(SuspiciousOperation("No se encontro campana/template %s en "
                                       "estado ESTADO_TEMPLATE_EN_DEFINICION"))
 
+    def obtener_activo_para_eliminar_o_crear(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser eliminada.
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=Campana.ESTADO_TEMPLATE_ACTIVO).get(pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana/template %s en "
+                                      "estado ESTADO_TEMPLATE_ACTIVO"))
+
+
 class CampanaManager(models.Manager):
     """Manager para Campanas"""
 
@@ -759,7 +773,6 @@ class CampanaManager(models.Manager):
         except Campana.DoesNotExist:
             raise(SuspiciousOperation("No se encontro campana %s en "
                                       "estado ESTADO_DEPURADA"))
-
 
     def obtener_todas_para_generar_dialplan(self):
         """Devuelve campañas que deben ser tenidas en cuenta
