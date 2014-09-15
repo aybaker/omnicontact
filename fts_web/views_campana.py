@@ -312,6 +312,13 @@ class CampanaReporteDetailView(DetailView):
     context_object_name = 'campana'
     model = Campana
 
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects.obtener_depurada_para_eliminar(
+                kwargs['pk'])
+        return super(CampanaReporteDetailView, self).dispatch(request, *args,
+                                                              **kwargs)
+
     def get_queryset(self):
         return Campana.objects.obtener_depuradas()
 
