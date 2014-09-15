@@ -701,7 +701,7 @@ class TemplateManager(models.Manager):
             raise(SuspiciousOperation("No se encontro campana/template %s en "
                                       "estado ESTADO_TEMPLATE_EN_DEFINICION"))
 
-    def obtener_activo_para_eliminar_o_crear(self, campana_id):
+    def obtener_activo_para_eliminar_crear_ver(self, campana_id):
         """Devuelve la campaña pasada por ID, siempre que dicha
         campaña pueda ser eliminada.
 
