@@ -5,13 +5,12 @@ from __future__ import unicode_literals
 import os
 
 from django.test.utils import override_settings
-
-
-from fts_web.parser import *
 from fts_web.errors import (FtsParserMinRowError, FtsParserMaxRowError,
                             FtsParserOpenFileError, FtsParserCsvDelimiterError)
-from fts_web.tests.utiles import FTSenderBaseTest
 from fts_web.models import BaseDatosContacto
+from fts_web.parser import ParserCsv, validate_telefono, sanitize_number, \
+    validate_fechas, validate_horas
+from fts_web.tests.utiles import FTSenderBaseTest, get_test_resource_directory
 
 
 class GetDialectTest(FTSenderBaseTest):
@@ -32,6 +31,7 @@ class GetDialectTest(FTSenderBaseTest):
 class ParserCsvReadFileTests(FTSenderBaseTest):
     """Unit tests de ParserCsv.read_file()"""
 
+    @override_settings(MEDIA_ROOT=get_test_resource_directory())
     def test_generador_devuelve_datos(self):
         """
         Se crea este test debido a que la función zip() en caso que el
@@ -42,7 +42,8 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
         """
 
         parser = ParserCsv()
-        planilla = self.get_test_resource("planilla-ejemplo-3.csv")
+
+        planilla = self.get_test_resource()
         datos_parseados = parser.read_file(0, [], [], open(planilla, 'r'))
 
         self.assertEqual(next(datos_parseados),
