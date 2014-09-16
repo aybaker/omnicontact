@@ -416,6 +416,11 @@ class AsteriskHttpClient(object):
             - AsteriskHttpOriginateError: if originate failed
         """
         assert type(timeout) == int
+
+        # FIXME: esto se hizo asi para detectar intentos de realizacion de
+        #  originates con async=False. Una vez q' finalicemos la refactori-
+        #  zacion, hay que eliminar el argumento de la funcoin, y todos estos
+        #  asserts.
         assert type(async) == bool
         assert async
 
