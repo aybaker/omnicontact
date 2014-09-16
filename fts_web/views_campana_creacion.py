@@ -2,12 +2,15 @@
 
 from __future__ import unicode_literals
 
+import json
+
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import (CreateView, UpdateView, DeleteView,
+                                       BaseUpdateView)
 from fts_daemon.asterisk_config import create_dialplan_config_file, \
     reload_config, create_queue_config_file
 from fts_daemon.audio_conversor import convertir_audio_de_campana
@@ -233,6 +236,38 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
         return reverse(
             'audio_campana',
             kwargs={"pk_campana": self.campana.pk})
+
+
+class AudioCampanaOrdenView(CheckEstadoCampanaMixin, BaseUpdateView):
+    """
+    Esta vista actualiza el orden de los audios de campana para arriba.
+    """
+    model = AudioDeCampana
+
+    def render_to_json_response(self, context, **response_kwargs):
+        """
+        Este método se encarga de hacer un json response.
+        """
+        data = json.dumps(context)
+        response_kwargs['content_type'] = 'application/json'
+        return HttpResponse(data, **response_kwargs)
+
+    def post(self, request, *args, **kwargs):
+        audio_de_campana = self.get_object()
+
+        orden_audios_campana_service = OrdenAudiosCampanaService()
+
+        if self.request.is_ajax():
+            if 'up' in request.POST:
+                orden_audios_campana_service.ordenar_audios(audio_de_campana,
+                                                            'up')
+                return self.render_to_json_response({})
+            elif 'down' in request.POST:
+                orden_audios_campana_service.ordenar_audios(audio_de_campana,
+                                                            'down')
+                return self.render_to_json_response({})
+            else:
+                return self.render_to_json_response({'error': True})
 
 
 class AudiosCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
