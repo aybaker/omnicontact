@@ -47,9 +47,6 @@ Ver `assertTrueSelenium()` para mas informacion
 FTS_TESTING_MODE = False
 """Esta variable vale `True` cuando se estan ejecutando los test."""
 
-#FTS_ORIGINATE_SERVICE_CLASS = "fts_daemon.asterisk_originate."\
-#    "OriginateServiceProcess"
-
 FTS_ASTERISK_HTTP_CLIENT = "fts_daemon.asterisk_ami_http.AsteriskHttpClient"
 
 FTS_PROGRAMAR_CAMPANA_FUNC = "_programar_campana_sqlite"
