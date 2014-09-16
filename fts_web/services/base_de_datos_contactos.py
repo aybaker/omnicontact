@@ -6,17 +6,18 @@ Servicio encargado de validar y crear las bases de datos.
 
 from __future__ import unicode_literals
 
-import os
+from __builtin__ import callable, enumerate
 import json
 import logging
+import os
+import re
 
-from fts_web.errors import FtsArchivoImportacionInvalidoError, FtsError
+from fts_web.errors import FtsArchivoImportacionInvalidoError, FtsError, \
+    FtsParserMaxRowError, FtsParserCsvImportacionError
 from fts_web.models import BaseDatosContacto, Contacto, \
     MetadataBaseDatosContactoDTO
 from fts_web.parser import ParserCsv, validate_telefono, validate_fechas, \
     validate_horas
-from __builtin__ import callable, enumerate
-import re
 
 
 logger = logging.getLogger(__name__)
@@ -37,6 +38,9 @@ class CreacionBaseDatosService(object):
             Si el archivo es válido, hace el save del objeto y si no los es
             lanza la excepción correspondiente.
         """
+        assert (base_datos_contacto.estado ==
+                BaseDatosContacto.ESTADO_EN_DEFINICION)
+
         csv_extensions = ['.csv']
 
         filename = base_datos_contacto.nombre_archivo_importacion
@@ -66,29 +70,33 @@ class CreacionBaseDatosService(object):
         del archivo de importación especificado para la base de datos de
         contactos.
         """
-        metadata = base_datos_contacto.get_metadata()
-        columna_con_telefono = metadata.columna_con_telefono
-        columnas_con_fecha = metadata.columnas_con_fecha
-        columnas_con_hora = metadata.columnas_con_hora
-        primer_fila_es_encabezado = metadata.primer_fila_es_encabezado
+        assert (base_datos_contacto.estado ==
+                BaseDatosContacto.ESTADO_EN_DEFINICION)
 
-        # TODO: Sprint 11 - BORRAR CONTACTOS
+        metadata = base_datos_contacto.get_metadata()
+
+        # Antes que nada, borramos los contactos preexistentes
+        base_datos_contacto.elimina_contactos()
 
         parser = ParserCsv()
-        generador_contactos = parser.read_file(
-            primer_fila_es_encabezado,
-            columna_con_telefono,
-            columnas_con_fecha,
-            columnas_con_hora,
-            base_datos_contacto.archivo_importacion.file)
 
-        cantidad_contactos = 0
-        for lista_dato in generador_contactos:
-            cantidad_contactos += 1
-            Contacto.objects.create(
-                datos=json.dumps(lista_dato),
-                bd_contacto=base_datos_contacto,
-            )
+        try:
+            generador_contactos = parser.read_file(base_datos_contacto)
+
+            cantidad_contactos = 0
+            for lista_dato in generador_contactos:
+                cantidad_contactos += 1
+                Contacto.objects.create(
+                    datos=json.dumps(lista_dato),
+                    bd_contacto=base_datos_contacto,
+                )
+        except FtsParserMaxRowError:
+            base_datos_contacto.elimina_contactos()
+            raise
+
+        except FtsParserCsvImportacionError:
+            base_datos_contacto.elimina_contactos()
+            raise
 
         base_datos_contacto.cantidad_contactos = cantidad_contactos
         base_datos_contacto.save()

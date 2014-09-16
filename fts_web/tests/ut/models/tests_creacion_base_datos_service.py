@@ -117,10 +117,14 @@ class TestInfiereMetadata(FTSenderBaseTest):
                                                ])
 
     def test_infiere_ok_con_todos_los_datos(self):
-        ENCABEZADO = ["Nombre", "Apellido", "Telefono",
-                      "Fecha Alta", "Hora Alta", ]
+        ENCABEZADO_ORIGINAL = ["Nombre", "Apellido", "Telefono",
+                               "Fecha Alta", "Hora Alta", ]
+
+        ENCABEZADO_AJUSTADO = [u'NOMBRE', u'APELLIDO', u'TELEFONO',
+                               u'FECHA_ALTA', u'HORA_ALTA']
+
         lineas = [
-            ENCABEZADO,
+            ENCABEZADO_ORIGINAL,
             ["Chizo", "Napoli", TELEFONO_OK, FECHA_OK, HORA_OK, ],
             ["Chizo", "Napoli", TELEFONO_OK, FECHA_OK, HORA_OK, ],
             ["Chizo", "Napoli", TELEFONO_OK, FECHA_OK, HORA_OK, ],
@@ -136,7 +140,7 @@ class TestInfiereMetadata(FTSenderBaseTest):
         self.assertEquals(metadata.columnas_con_hora, [4])
 
         self.assertEquals(metadata.primer_fila_es_encabezado, True)
-        self.assertEquals(metadata.nombres_de_columnas, ENCABEZADO)
+        self.assertEquals(metadata.nombres_de_columnas, ENCABEZADO_AJUSTADO)
 
     def test_infiere_ok_sin_encabezado(self):
         lineas = [
@@ -162,17 +166,9 @@ class TestInfiereMetadata(FTSenderBaseTest):
         ]
 
         service = PredictorMetadataService()
-        metadata = service.inferir_metadata_desde_lineas(lineas)
 
-        self.assertEquals(metadata.cantidad_de_columnas, 5)
-        self.assertEquals(metadata.columnas_con_fecha, [3])
-        self.assertEquals(metadata.columnas_con_hora, [4])
-
-        self.assertEquals(metadata.primer_fila_es_encabezado, False)
-        self.assertEquals(len(metadata.nombres_de_columnas), 5)
-
-        with self.assertRaises(ValueError):
-            metadata.columna_con_telefono
+        with self.assertRaises(NoSePuedeInferirMetadataError):
+            service.inferir_metadata_desde_lineas(lineas)
 
     def test_no_infiere_nada_sin_datos(self):
         lineas = [

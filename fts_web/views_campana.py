@@ -59,6 +59,17 @@ class CampanaDeleteView(DeleteView):
 
     # @@@@@@@@@@@@@@@@@@@@
 
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects.obtener_depurada_para_eliminar(
+                kwargs['pk_campana'])
+        return super(CampanaDeleteView, self).dispatch(request, *args,
+                                                       **kwargs)
+
+    def get_object(self, queryset=None):
+        return Campana.objects.obtener_depurada_para_eliminar(
+            self.kwargs['pk_campana'])
+
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
@@ -70,7 +81,7 @@ class CampanaDeleteView(DeleteView):
         # Eliminamos la tabla generada en la depuración de la campaña.
         from fts_daemon.models import EventoDeContacto
         EventoDeContacto.objects.eliminar_tabla_eventos_de_contacto_depurada(
-            self.object.pk)
+            self.object)
 
         message = '<strong>Operación Exitosa!</strong>\
         Se llevó a cabo con éxito la eliminación de la Campaña.'
@@ -177,6 +188,15 @@ class DetalleCampanView(DetailView):
     pk_url_kwarg = 'pk_campana'
     model = Campana
 
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects.obtener_para_detalle(kwargs['pk_campana'])
+        return super(DetalleCampanView, self).dispatch(request, *args,
+                                                       **kwargs)
+
+    def get_object(self, queryset=None):
+        return Campana.objects.obtener_para_detalle(self.kwargs['pk_campana'])
+
 
 class ExportaReporteCampanaView(UpdateView):
     """
@@ -185,6 +205,13 @@ class ExportaReporteCampanaView(UpdateView):
 
     model = Campana
     context_object_name = 'campana'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects.obtener_depurada_para_eliminar(
+                kwargs['pk'])
+        return super(ExportaReporteCampanaView, self).dispatch(request, *args,
+                                                               **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -238,6 +265,18 @@ class CampanaEstadoOpcionesDetailView(DetailView):
     context_object_name = 'campana'
     model = Campana
 
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects.obtener_activa_para_detalle_estado(
+                kwargs['pk'])
+        return super(CampanaEstadoOpcionesDetailView, self).dispatch(request,
+                                                                     *args,
+                                                                     **kwargs)
+
+    def get_object(self, queryset=None):
+        return Campana.objects.obtener_activa_para_detalle_estado(
+            self.kwargs['pk'])
+
     def get_context_data(self, **kwargs):
         context = super(CampanaEstadoOpcionesDetailView,
                         self).get_context_data(**kwargs)
@@ -279,6 +318,13 @@ class CampanaReporteDetailView(DetailView):
     template_name = 'reporte/detalle_reporte.html'
     context_object_name = 'campana'
     model = Campana
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects.obtener_depurada_para_eliminar(
+                kwargs['pk'])
+        return super(CampanaReporteDetailView, self).dispatch(request, *args,
+                                                              **kwargs)
 
     def get_queryset(self):
         return Campana.objects.obtener_depuradas()

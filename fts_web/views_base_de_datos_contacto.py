@@ -109,9 +109,8 @@ class DefineBaseDatosContactoView(UpdateView):
             base_datos_contacto = get_object_or_404(
                 BaseDatosContacto, pk=self.base_datos_contacto.pk
             )
-            # FIXME: Modificar el pasar por parámetro el archivo abierto.
-            return parser.previsualiza_archivo(
-                base_datos_contacto.archivo_importacion.file)
+
+            return parser.previsualiza_archivo(base_datos_contacto)
 
         except FtsParserCsvDelimiterError:
             message = '<strong>Operación Errónea!</strong> \
@@ -266,17 +265,8 @@ class DefineBaseDatosContactoView(UpdateView):
         creacion_base_datos.guarda_metadata(self.object)
 
         try:
-            # No deberían existir contactos en la base de datos. De todos modos
-            # intentamos borrarlos.
-            # FIXME: Pasar esta lógica al parser.
-            self.object.elimina_contactos()
-
             creacion_base_datos.importa_contactos(self.object)
         except FtsParserCsvImportacionError as e:
-            # En caso que se interrumpa la importación de los contactos por un
-            # problemas de validación de los mismo, borramos los que ya habían
-            # sido cargado hasta este momento.
-            self.object.elimina_contactos()
 
             message = '<strong>Operación Errónea!</strong>\
                       El archivo que seleccionó posee registros inválidos.<br>\
@@ -299,11 +289,6 @@ class DefineBaseDatosContactoView(UpdateView):
                 form_primer_linea_encabezado=form_primer_linea_encabezado))
 
         except FtsParserMaxRowError:
-            # En caso que se interrumpa la importación de los contactos por
-            # que superaron la cantidad límite. Lo borramos y presentamos el
-            # error.
-            self.object.elimina_contactos()
-
             message = '<strong>Operación Errónea!</strong> \
                       El archivo que seleccionó posee mas registros de los\
                       permitidos para ser importados.'
@@ -369,10 +354,13 @@ class DepuraBaseDatosContactoView(DeleteView):
     model = BaseDatosContacto
     template_name = 'base_datos_contacto/depura_base_datos_contacto.html'
 
-    def get_success_url(self):
-        return reverse(
-            'lista_base_datos_contacto',
-        )
+    def dispatch(self, request, *args, **kwargs):
+        self.base_datos_contacto = \
+            BaseDatosContacto.objects.obtener_definida_para_depurar(
+                self.kwargs['pk'])
+        return super(DepuraBaseDatosContactoView, self).dispatch(request,
+                                                                 *args,
+                                                                 **kwargs)
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -411,3 +399,8 @@ class DepuraBaseDatosContactoView(DeleteView):
                 message,
             )
             return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse(
+            'lista_base_datos_contacto',
+        )
