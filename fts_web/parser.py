@@ -14,6 +14,7 @@ from django.conf import settings
 from fts_web.errors import (FtsParserCsvDelimiterError,
                             FtsParserMinRowError, FtsParserMaxRowError,
                             FtsParserCsvImportacionError)
+from fts_web.models import MetadataBaseDatosContactoDTO
 
 
 logger = logging.getLogger('ParserCsv')
@@ -32,28 +33,40 @@ class ParserCsv(object):
         # No es thread-safe!
         self.vacias = 0
 
-    def read_file(self, primer_fila_es_encabezado, columna_con_telefono,
-                  columnas_con_fecha, columnas_con_hora, file_obj):
-        """
-        Lee un archivo CSV y devuelve contenidos de la columna
-        tomada por parámetro.
-
-        Parametros:
-        - primer_fila_es_encabezado: Booleano que indica si la primer linea
-                                     del archivo es un encabezado o no.
-        - columna_con_telefono: Número columna donde se encuantran los
-                                teléfonos.
-        - columnas_con_fecha: Los números de columnas donde se encuntran datos
-                              del tipo fechas.
-        - columnas_con_hora: Los números de columnas donde se encuntran datos
-                             del tipo horas.
-        - file_obj: Objeto archivo de la instancia de BaseDatosContactos.
-        """
+    def read_file(self, base_datos_contactos):
+        """Lee un archivo CSV y devuelve contenidos de las columnas."""
 
         # Reseteamos estadisticas
         self.vacias = 0
 
-        workbook = csv.reader(file_obj, self._get_dialect(file_obj))
+        # base_datos_contactos.archivo_importacion.open()
+        # file_obj = base_datos_contactos.archivo_importacion.file
+        # try:
+        #     return self._read_file(file_obj,
+        #                            self._get_dialect(file_obj),
+        #                            base_datos_contactos.get_metadata()
+        #                            )
+        # finally:
+        #     base_datos_contactos.archivo_importacion.close()
+
+        # with open(base_datos_contactos.archivo_importacion.path, 'rb')
+        #     as file_obj:
+        #     return self._read_file(file_obj,
+        #                            self._get_dialect(file_obj),
+        #                            base_datos_contactos.get_metadata()
+        #                            )
+
+        file_obj = base_datos_contactos.archivo_importacion.file
+        return self._read_file(file_obj,
+                               self._get_dialect(file_obj),
+                               base_datos_contactos.get_metadata()
+                               )
+
+    def _read_file(self, file_obj, dialect, metadata):
+
+        assert isinstance(metadata, MetadataBaseDatosContactoDTO)
+
+        workbook = csv.reader(file_obj, dialect)
 
         cantidad_importados = 0
         for i, curr_row in enumerate(workbook):
@@ -62,46 +75,49 @@ class ParserCsv(object):
                 self.vacias += 1
                 continue
 
-            if i > settings.FTS_MAX_CANTIDAD_CONTACTOS:
+            if i >= settings.FTS_MAX_CANTIDAD_CONTACTOS:
                 raise FtsParserMaxRowError("El archivo CSV "
                                            "posee mas registros de los "
                                            "permitidos.")
 
-            telefono = sanitize_number(curr_row[columna_con_telefono].strip())
+            telefono = sanitize_number(
+                curr_row[metadata.columna_con_telefono].strip())
 
             if not validate_telefono(telefono):
-                if i == 0 and primer_fila_es_encabezado:
+                if i == 0 and metadata.primer_fila_es_encabezado:
                     continue
                 logger.warn("Error en la imporación de contactos: No "
                             "valida el teléfono en la linea %s",
                             curr_row)
                 raise FtsParserCsvImportacionError(
                     numero_fila=i,
-                    numero_columna=columna_con_telefono,
+                    numero_columna=metadata.columna_con_telefono,
                     fila=curr_row,
                     valor_celda=telefono)
 
-            if columnas_con_fecha:
-                fechas = [curr_row[columna] for columna in columnas_con_fecha]
+            if metadata.columnas_con_fecha:
+                fechas = [curr_row[columna]
+                          for columna in metadata.columnas_con_fecha]
                 if not validate_fechas(fechas):
                     logger.warn("Error en la imporación de contactos: No "
                                 "valida el formato fecha en la linea %s",
                                 curr_row)
                     raise FtsParserCsvImportacionError(
                         numero_fila=i,
-                        numero_columna=columnas_con_fecha,
+                        numero_columna=metadata.columnas_con_fecha,
                         fila=curr_row,
                         valor_celda=fechas)
 
-            if columnas_con_hora:
-                horas = [curr_row[columna] for columna in columnas_con_hora]
+            if metadata.columnas_con_hora:
+                horas = [curr_row[columna]
+                         for columna in metadata.columnas_con_hora]
                 if not validate_horas(horas):
                     logger.warn("Error en la imporación de contactos: No "
                                 "valida el formato hora en la linea %s",
                                 curr_row)
                     raise FtsParserCsvImportacionError(
                         numero_fila=i,
-                        numero_columna=columnas_con_hora,
+                        numero_columna=metadata.columnas_con_hora,
                         fila=curr_row,
                         valor_celda=horas)
 
@@ -111,11 +127,16 @@ class ParserCsv(object):
         logger.info("%s contactos importados - %s valores ignoradas.",
                     cantidad_importados, self.vacias)
 
-    def previsualiza_archivo(self, file_obj):
+    def previsualiza_archivo(self, base_datos_contactos):
         """
         Lee un archivo CSV y devuelve contenidos de
         las primeras tres filas.
         """
+
+        file_obj = base_datos_contactos.archivo_importacion.file
+        return self._previsualiza_archivo(file_obj)
+
+    def _previsualiza_archivo(self, file_obj):
 
         workbook = csv.reader(file_obj, self._get_dialect(file_obj))
 
@@ -176,6 +197,9 @@ class ParserCsv(object):
             logger.warn("No se pudo determinar el delimitador del archivo CSV")
             raise FtsParserCsvDelimiterError("No se pudo determinar el "
                                              "delimitador del archivo CSV")
+
+        finally:
+            file_obj.seek(0, 0)
 
 
 # =============================================================================

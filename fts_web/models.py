@@ -238,6 +238,20 @@ class BaseDatosContactoManager(models.Manager):
             raise(SuspiciousOperation("No se encontro base datos en "
                                       "estado ESTADO_EN_DEFINICION"))
 
+    def obtener_definida_para_depurar(self, base_datos_contacto_id):
+        """Devuelve la base datos pasada por ID, siempre que pueda ser
+        depurada.
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=BaseDatosContacto.ESTADO_DEFINIDA).get(
+                pk=base_datos_contacto_id)
+        except BaseDatosContacto.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro base datos en "
+                                      "estado ESTADO_EN_DEFINICION"))
+
+
 
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
@@ -512,7 +526,7 @@ class BaseDatosContacto(models.Model):
         objeto BaseDatosContacto. Establece el atributo sin_definir
         en False haciedo que quede disponible el objeto.
         """
-
+        assert self.estado == BaseDatosContacto.ESTADO_EN_DEFINICION
         logger.info("Seteando base datos contacto %s como definida", self.id)
         self.sin_definir = False
 
@@ -565,6 +579,12 @@ class BaseDatosContacto(models.Model):
         BaseDatoContacto invocando a los métodos que realizan las distintas
         acciones.
         """
+
+        if self.estado != BaseDatosContacto.ESTADO_DEFINIDA:
+            raise(SuspiciousOperation("La BD {0} NO se puede depurar porque "
+                                      "no esta en estado ESTADO_DEFINIDA. "
+                                      "Estado: {1}".format(self.pk,
+                                                           self.estado)))
 
         # 1) Cambio de estado BaseDatoContacto (ESTADO_EN_DEPURACION).
         logger.info("Iniciando el proceso de depurado de BaseDatoContacto:"
@@ -681,6 +701,19 @@ class TemplateManager(models.Manager):
             raise(SuspiciousOperation("No se encontro campana/template %s en "
                                       "estado ESTADO_TEMPLATE_EN_DEFINICION"))
 
+    def obtener_activo_para_eliminar_crear_ver(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser eliminada.
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=Campana.ESTADO_TEMPLATE_ACTIVO).get(pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana/template %s en "
+                                      "estado ESTADO_TEMPLATE_ACTIVO"))
+
 
 class CampanaManager(models.Manager):
     """Manager para Campanas"""
@@ -713,6 +746,19 @@ class CampanaManager(models.Manager):
         """Devuelve queryset para filtrar campañas en estado depuradas."""
         return self.filter(estado=Campana.ESTADO_DEPURADA)
 
+    def obtener_activa_para_detalle_estado(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña este activa, procesándose, para ver su estado.
+
+        En caso de no encontarse, lanza SuspiciousOperation.
+        """
+        try:
+            return self.filter(estado=Campana.ESTADO_ACTIVA).get(
+                pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana %s en "
+                                      "estado ESTADO_ACTIVA"))
+
     def obtener_en_definicion_para_editar(self, campana_id):
         """Devuelve la campaña pasada por ID, siempre que dicha
         campaña pueda ser editar (editada en el proceso de
@@ -728,6 +774,19 @@ class CampanaManager(models.Manager):
             raise(SuspiciousOperation("No se encontro campana %s en "
                                       "estado ESTADO_EN_DEFINICION"))
 
+    def obtener_depurada_para_eliminar(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser eliminada.
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=Campana.ESTADO_DEPURADA).get(pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana en "
+                                      "estado ESTADO_FINALIZADA"))
+
     def obtener_depurada_para_reciclar(self, campana_id):
         """Devuelve la campaña pasada por ID, siempre que dicha
         campaña pueda ser reciclada. Debe haber estar depuarada.
@@ -736,11 +795,29 @@ class CampanaManager(models.Manager):
         """
         try:
             return self.filter(estado=Campana.ESTADO_DEPURADA).get(
-                               pk=campana_id)
+                pk=campana_id)
         except Campana.DoesNotExist:
-            raise(SuspiciousOperation("No se encontro campana %s en "
+            raise(SuspiciousOperation("No se encontro campana en "
                                       "estado ESTADO_DEPURADA"))
 
+    def obtener_para_detalle(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que a dicha
+        campaña se le pueda ver el detalle, debe estar en estado activa,
+        pausada, finalifada o depurada.
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            ESTADOS_VER_DETALLE = [Campana.ESTADO_ACTIVA,
+                                   Campana.ESTADO_PAUSADA,
+                                   Campana.ESTADO_FINALIZADA,
+                                   Campana.ESTADO_DEPURADA]
+            return self.filter(estado__in=ESTADOS_VER_DETALLE).get(
+                pk=campana_id)
+        except Campana.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana en "
+                                      "estado ESTADO_ACTIVA, ESTADO_PAUSADA, "
+                                      "ESTADO_FINALIZADA o ESTADO_DEPURADA"))
 
     def obtener_todas_para_generar_dialplan(self):
         """Devuelve campañas que deben ser tenidas en cuenta

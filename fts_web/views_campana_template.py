@@ -62,6 +62,17 @@ class TemplateDeleteView(TemplateMixin, DeleteView):
     model = Campana
     template_name = 'campana/elimina_campana.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects_template.obtener_activo_para_eliminar_crear_ver(
+                kwargs['pk_campana'])
+        return super(TemplateDeleteView, self).dispatch(request, *args,
+                                                        **kwargs)
+
+    def get_object(self, queryset=None):
+        return Campana.objects_template.obtener_activo_para_eliminar_crear_ver(
+            self.kwargs['pk_campana'])
+
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
@@ -132,6 +143,17 @@ class DetalleTemplateView(TemplateMixin, DetailView):
     context_object_name = 'campana'
     pk_url_kwarg = 'pk_campana'
     model = Campana
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects_template.obtener_activo_para_eliminar_crear_ver(
+                kwargs['pk_campana'])
+        return super(DetalleTemplateView, self).dispatch(request, *args,
+                                                         **kwargs)
+
+    def get_object(self, queryset=None):
+        return Campana.objects_template.obtener_activo_para_eliminar_crear_ver(
+            self.kwargs['pk_campana'])
 
 
 class AudioTemplateCreateView(CheckEstadoTemplateMixin, TemplateMixin,
@@ -308,6 +330,13 @@ class ConfirmaTemplateView(CheckEstadoTemplateMixin, TemplateEnDefinicionMixin,
 class CreaCampanaTemplateView(TemplateMixin, RedirectView):
     permanent = False
     url = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana = \
+            Campana.objects_template.obtener_activo_para_eliminar_crear_ver(
+                kwargs['pk_campana'])
+        return super(CreaCampanaTemplateView, self).dispatch(request, *args,
+                                                             **kwargs)
 
     def get(self, request, *args, **kwargs):
         template = get_object_or_404(

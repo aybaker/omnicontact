@@ -154,6 +154,12 @@ def rtel():
     return random.randint(1140000000, 1149999999)
 
 
+def get_test_resource_directory():
+    tmp = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    resource = os.path.join(tmp, "test")
+    return resource
+
+
 class FTSenderTestUtilsMixin(object):
 
     def get_test_resource(self, resource):

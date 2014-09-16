@@ -42,7 +42,7 @@ class DepurarEventosDeContactoTest(FTSenderBaseTest):
         # -----
 
         EventoDeContacto.objects.eliminar_tabla_eventos_de_contacto_depurada(
-            campana.pk)
+            campana)
 
         with self.assertRaises(ProgrammingError):
             check_tabla()

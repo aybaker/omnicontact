@@ -269,7 +269,7 @@ class EventoDeContactoManager(models.Manager):
             "Depuración EDC: Eliminar los eventos de EDC tardo %s seg"):
             cursor.execute(sql, params)
 
-    def eliminar_tabla_eventos_de_contacto_depurada(self, campana_id):
+    def eliminar_tabla_eventos_de_contacto_depurada(self, campana):
         """
         Este método se encarga de eliminar la tabla de EDC_depurados_xx que se
         genero en la depuración de la campana.
@@ -277,9 +277,10 @@ class EventoDeContactoManager(models.Manager):
         Este método se invoca en la eliminación de la campaña.
         """
 
-        campana = Campana.objects.get(pk=int(campana_id))
+        assert isinstance(campana, Campana)
+        assert isinstance(campana.pk, int)
 
-        nombre_tabla = "EDC_depurados_{0}".format(campana.pk)
+        nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
 
         cursor = connection.cursor()
         sql = """DROP TABLE {0}""".format(nombre_tabla)
