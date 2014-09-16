@@ -401,8 +401,7 @@ class AsteriskHttpClient(object):
         parser.parse(response_body)
         return parser
 
-    def originate(self, channel, context, exten, priority, timeout,
-        async=False):
+    def originate(self, channel, context, exten, priority, timeout, async):
         """
         Send an ORIGINATE action.
         Parameters:
@@ -418,15 +417,11 @@ class AsteriskHttpClient(object):
         """
         assert type(timeout) == int
         assert type(async) == bool
+        assert async
 
-        if async:
-            request_timeout = 5
-            logger.debug("AsteriskHttpClient.originate(): async=True - "
-                "timeout: %s - request_timeout: %s", timeout, request_timeout)
-        else:
-            request_timeout = int(math.ceil(timeout / 1000) + 5)
-            logger.debug("AsteriskHttpClient.originate(): async=False - "
-                "timeout: %s - request_timeout: %s", timeout, request_timeout)
+        request_timeout = 5
+        logger.debug("AsteriskHttpClient.originate(): async=True - "
+            "timeout: %s - request_timeout: %s", timeout, request_timeout)
 
         logger.info("originate(): channel: '%s' - context: '%s' "
             "- exten: '%s' - priority: '%s' - timeout: '%s'",
@@ -439,7 +434,7 @@ class AsteriskHttpClient(object):
             'exten': exten,
             'priority': priority,
             'timeout': timeout,
-            'async': ("true" if async else "false")
+            'async': "true"
         }, timeout=request_timeout)
 
         parser = AsteriskXmlParserForOriginate()
