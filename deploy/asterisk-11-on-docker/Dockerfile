@@ -7,6 +7,14 @@
 #
 #    $ docker run -ti hgdeoro/fts-asterisk-dev
 #
+#
+# Usuarios SIP:
+#  - USER: test_user1 - PASS: 1234
+#  - USER: test_user2 - PASS: 1234
+#
+# Las llamadas realizadas al numero '319751355727335' seran
+#  routeadas al usuario sip 'test_user1'
+#
 
 FROM centos:centos6
 
