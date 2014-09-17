@@ -805,6 +805,7 @@ class GestionDeLlamadasManager(models.Manager):
         Cuando todos los pendientes han sido finalizados, devuelve
         una lista vacia.
         """
+        # FTS-306 - @hgdeoro
         campana = Campana.objects.get(pk=campana_id)
 
         #
@@ -948,10 +949,14 @@ class GestionDeLlamadasManager(models.Manager):
         """Devuelve los datos necesarios para generar llamadas
         para los contactos pasados por parametros (lista de IDs).
 
-        Lo más importante que devuelve es el numero telefonico.
+        Devuelve el numero telefonico y los datos extras.
 
-        Devuelve lista de listas, con ((id_contacto, telefono,), ...)
+        Devuelve lista de listas, con ((id_contacto, telefono, datos_extras),
+                                       (id_contacto, telefono, datos_extras),
+                                       ...
+                                      )
         """
+        # FTS-306 - @hgdeoro
         if len(id_contactos) > 100:
             logger.warn("obtener_datos_de_contactos(): de id_contactos "
                 "contiene muchos elementos, exactamente %s", len(id_contactos))
@@ -968,8 +973,9 @@ class GestionDeLlamadasManager(models.Manager):
                                         ).values_list('id', 'datos')
             values = []
             for pk, datos in qs:
-                telefono = metadata.obtener_telefono_de_dato_de_contacto(datos)
-                values.append((pk, telefono))
+                telefono, extras = metadata.obtener_telefono_y_datos_extras(
+                    datos)
+                values.append((pk, telefono, extras))
 
         return values
 
