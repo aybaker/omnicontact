@@ -26,6 +26,7 @@ class CampanaCrearTest(FTSenderBaseTest):
         self.crea_calificaciones(self.campana)
         self.crea_todas_las_opcion_posibles(self.campana)
         self.crea_todas_las_actuaciones(self.campana)
+        self.crea_audios_de_campana(self.campana)
 
     def test_creacion_campana(self):
 
@@ -62,6 +63,22 @@ class CampanaCrearTest(FTSenderBaseTest):
                              "cuando la campana ya NO ESTA en definicion. "
                              "Vista: {0}. URL: {1}"
                              "".format(vista, url))
+
+    def test_intento_renderizado_vista_orden_audio_campana(self):
+
+        VISTAS = [
+            ('audio_campana_orden',
+                [self.campana.id, self.campana.audios_de_campana.all()[0].pk]),
+        ]
+
+        for vista, args in VISTAS:
+            url = reverse(vista, args=args)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302, "No se recibio status "
+                             "302 al intentar renderizar el orden de audios "
+                             "de campana que no se renderiza."
+                             " Vista: {0}. URL: {1}".format(vista, url))
+
 
     def test_detalle_campana(self):
         VISTAS = [
