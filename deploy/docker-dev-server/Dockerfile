@@ -33,8 +33,8 @@
 #
 # 3) Crear un container
 #   
-#   Esto seria a generar una 'maquina virtual', desde la 'imagen' creada
-#    en el paso anterior.
+#   Esto seria simliar a generar una 'maquina virtual',
+#    desde la 'imagen' creada en el paso anterior.
 #
 #   Para probar la imagen en un nuevo container de prueba:
 #
