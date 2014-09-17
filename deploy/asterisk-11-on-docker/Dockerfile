@@ -5,7 +5,7 @@
 #
 # Para lanzar container:
 #
-#    $ docker run -ti hgdeoro/fts-asterisk-dev
+#    $ docker run -p 5060:5060/udp -p 7088:7088 -ti hgdeoro/fts-asterisk-dev
 #
 #
 # Usuarios SIP:
@@ -14,6 +14,17 @@
 #
 # Las llamadas realizadas al numero '319751355727335' seran
 #  routeadas al usuario sip 'test_user1'
+#
+# ----- Puertos usados por Asterisk -----
+#
+# tcp        0      0 0.0.0.0:5038                0.0.0.0:*                   LISTEN      -                   
+# tcp        0      0 0.0.0.0:2000                0.0.0.0:*                   LISTEN      -                   
+# tcp        0      0 0.0.0.0:7088                0.0.0.0:*                   LISTEN      -                   
+# udp        0      0 0.0.0.0:2727                0.0.0.0:*                               -                   
+# udp        0      0 0.0.0.0:4520                0.0.0.0:*                               -                   
+# udp        0      0 0.0.0.0:4569                0.0.0.0:*                               -                   
+# udp        0      0 0.0.0.0:5000                0.0.0.0:*                               -                   
+# udp        0      0 0.0.0.0:5060                0.0.0.0:*                               -                   
 #
 
 FROM centos:centos6
