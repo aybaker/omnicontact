@@ -15,7 +15,7 @@ from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
     AsteriskCallStatus
 from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
     NoMasContactosEnCampana, LimiteDeCanalesAlcanzadoError, \
-    TodosLosContactosPendientesEstanEnCursoError
+    TodosLosContactosPendientesEstanEnCursoError, DatosParaRealizarLlamada
 from fts_daemon.poll_daemon.originate_throttler import OriginateThrottler
 from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_web.errors import FTSOptimisticLockingError
@@ -509,19 +509,28 @@ class Llamador(object):
     def __init__(self):
         self.rr_tracker = RoundRobinTracker()
 
-    def procesar_contacto(self, *args, **kwargs):
-        return llamador_contacto.procesar_contacto(*args, **kwargs)
+    def procesar_contacto(self, datos_para_realizar_llamada):
+        return llamador_contacto.procesar_contacto(datos_para_realizar_llamada)
 
     def run(self, max_loops=0):
         """Inicia el llamador"""
         current_loop = 1
-        for campana, id_contacto, numero, cant_intentos in \
-            self.rr_tracker.generator():
-            logger.debug("Llamador.run(): campana: %s - id_contacto: %s"
-                " - numero: %s", campana, id_contacto, numero)
 
-            originate_ok = self.procesar_contacto(campana, id_contacto, numero,
-                cant_intentos)
+        for datos_para_realizar_llamada in self.rr_tracker.generator():
+
+            # FTS-306 - @hgdeoro
+            assert isinstance(datos_para_realizar_llamada,
+                              DatosParaRealizarLlamada)
+
+            logger.debug("Llamador.run(): campana: %s - id_contacto: %s"
+                " - numero: %s - intento: %s",
+                datos_para_realizar_llamada.campana.id,
+                datos_para_realizar_llamada.id_contacto,
+                datos_para_realizar_llamada.telefono,
+                datos_para_realizar_llamada.intentos)
+
+            originate_ok = self.procesar_contacto(datos_para_realizar_llamada)
+
             self.rr_tracker.originate_throttler.set_originate(originate_ok)
 
             current_loop += 1
