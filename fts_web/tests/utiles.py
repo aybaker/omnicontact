@@ -22,7 +22,8 @@ from django.test.runner import DiscoverRunner
 from django.test.testcases import LiveServerTestCase, TransactionTestCase
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
-    Contacto, BaseDatosContacto, Campana, Opcion, Actuacion, DerivacionExterna
+    Contacto, BaseDatosContacto, Campana, Opcion, Actuacion, \
+    DerivacionExterna, AudioDeCampana
 import shutil
 import json
 
@@ -473,6 +474,19 @@ class FTSenderTestUtilsMixin(object):
         for weekday in range(0, 7):
             self.crea_campana_actuacion(weekday,
                 datetime.time(0, 00), datetime.time(23, 59), campana)
+
+    def crea_audios_de_campana(self, campana):
+        """
+        Crea objetos AudioDeCampana, para una campana.
+
+        ** NO tiene en cuenta que 'tipo' crea. Por ahora todos TTS. **
+        """
+        for c in range(1, 5):
+            AudioDeCampana.objects.create(
+                orden=c,
+                campana=campana,
+                tts='TTS-{0}'.format(c)
+            )
 
     def registra_evento_de_intento(self, campana_id, contacto_id, intento):
         """Genera evento asociado a intento de contactacion"""
