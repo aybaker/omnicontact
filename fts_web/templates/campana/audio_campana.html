@@ -6,6 +6,8 @@
 {% block head_js %}
     <script type="text/javascript">
         $(function(){
+
+            /* Maneja las acciones de la selección de audios.*/
             $("#id_archivo_de_audio").change(function() {
                 if( $("#id_archivo_de_audio").val()) {
                     $("#id_tts").attr('disabled', true);
@@ -40,6 +42,54 @@
                     $("#id_archivo_de_audio").removeAttr('disabled');
                 }
             });
+            /**/
+
+            /* Maneja el post del ordenamiento.*/
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            $(".up").click(function (){
+                var url = $(this).attr('data-url');
+
+                $.post(url, {up: true}).done(function(data) {
+                    console.log(data)
+                });
+            });
+
+            $(".down").click(function (){
+                var url = $(this).attr('data-url');
+
+                $.post(url, {down: true}).done(function(data) {
+                    console.log(data)
+                });
+            });
+            /**/
         });
     </script>
 {% endblock %}
@@ -84,7 +134,7 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr class="fts-table-bg">
-                                    <th colspan="2">Audio</th>
+                                    <th colspan="3">Audio</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -109,6 +159,19 @@
                                                 <a href="{% url 'audios_campana_elimina' campana.pk audio_de_campana.pk %}"> Eliminar</a>
 
                                             {% endif %}  
+                                        </td>
+                                        <td>
+                                            {% if not forloop.first %}
+                                                <button data-url="{% url 'audio_campana_orden' campana.pk audio_de_campana.pk %}" type="button" class="btn btn-default btn-xs up">
+                                                    <span class="glyphicon glyphicon-chevron-up"></span>
+                                                </button>
+                                            {% endif %}
+                                            
+                                            {% if not forloop.last %}
+                                                <button data-url="{% url 'audio_campana_orden' campana.pk audio_de_campana.pk %}" type="button" class="btn btn-default btn-xs down">
+                                                   <span class="glyphicon glyphicon-chevron-down"></span>
+                                                </button>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                  {% empty %}
