@@ -1574,6 +1574,9 @@ class AudioDeCampana(models.Model):
 
     objects = AudioDeCampanaManager()
 
+    ORDEN_SENTIDO_UP = 0
+    ORDEN_SENTIDO_DOWN = 1
+
     orden = models.PositiveIntegerField()
     audio_original = models.FileField(
         upload_to=upload_to_audios_originales,
@@ -1598,9 +1601,29 @@ class AudioDeCampana(models.Model):
         related_name='audios_de_campana'
     )
 
+    def __unicode__(self):
+        return "{0} (pk={1}). Orden: {2}".format(self.campana,
+                                                 self.campana.pk, self.orden)
+
     class Meta:
         ordering = ['orden']
         unique_together = ("orden", "campana")
+
+    def obtener_audio_anterior(self):
+        """
+        Este método devuelve el audio de campana anterior a self, teniendo en
+        cuenta que pertenezca a la misma campana que self.
+        """
+        return AudioDeCampana.objects.filter(campana=self.campana,
+                                             orden__lt=self.orden).last()
+
+    def obtener_audio_siguiente(self):
+        """
+        Este método devuelve el audio de campana siguiente a self, teniendo en
+        cuenta que pertenezca a la misma campana que self.
+        """
+        return AudioDeCampana.objects.filter(campana=self.campana,
+                                             orden__gt=self.orden).first()
 
 
 #==============================================================================
