@@ -110,7 +110,7 @@
                                         </td>
                                         <td>
                                             {% if audio_de_campana.audio_original %}
-                                                {{ audio_de_campana.audio_original }}
+                                                <strong>{{ audio_de_campana.audio_descripcion }}</strong>
                                             {% elif  audio_de_campana.archivo_de_audio %}
                                                 <strong>{{ audio_de_campana.archivo_de_audio.descripcion }}</strong>
                                             {% else %}
