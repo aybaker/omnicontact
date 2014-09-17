@@ -199,6 +199,9 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
 
             if audio_original:
                 try:
+                    self.object.audio_descripcion = audio_original.name
+                    self.object.save()
+
                     convertir_audio_de_campana(self.object)
                 except FtsAudioConversionError:
                     self.object.delete()
