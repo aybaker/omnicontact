@@ -27,16 +27,25 @@ class TestMetadataBaseDatosContacto(FTSenderBaseTest):
     def test_guarda_datos_correctos(self):
         bd = BaseDatosContacto(pk=1)
         metadata = bd.get_metadata()
-        metadata.cantidad_de_columnas = 4
-        metadata.columna_con_telefono = 3
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 1
+        metadata.nombres_de_columnas = ["A", "B"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
 
-        self.assertDictEqual(json.loads(bd.metadata), {'col_telefono': 3,
-                                                       'cant_col': 4})
+        self.assertDictEqual(json.loads(bd.metadata),
+                             {'col_telefono': 1,
+                              'cant_col': 2,
+                              'nombres_de_columnas': ["A", "B"],
+                              'prim_fila_enc': True,
+                              })
 
     def test_valida_columna_con_telefono(self):
         bd = BaseDatosContacto(pk=1)
         metadata = bd.get_metadata()
         metadata.cantidad_de_columnas = 4
+        # metadata.save()
+
         with self.assertRaises(AssertionError):
             # columna_con_telefono NO puede ser 4
             metadata.columna_con_telefono = 4
@@ -46,6 +55,8 @@ class TestMetadataBaseDatosContacto(FTSenderBaseTest):
         metadata = bd.get_metadata()
         metadata.cantidad_de_columnas = 4
         metadata.nombres_de_columnas = ["a", "b", "c", "d"]
+        # metadata.save()
+
         with self.assertRaises(AssertionError):
             metadata.nombres_de_columnas = ["a", "b", "c"]
         with self.assertRaises(AssertionError):
