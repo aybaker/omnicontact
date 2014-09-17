@@ -275,12 +275,26 @@ class AudioCampanaOrdenView(CheckEstadoCampanaMixin, BaseUpdateView):
         elif sentido_orden == AudioDeCampana.ORDEN_SENTIDO_DOWN:
             orden_audios_campana_service.sube_audio_una_posisicion(
                 self.get_object())
+        else:
+            return form_invalid(form_orden_audios)
 
-        # TODO: Agregar mensaje de éxito el seteo del orden.
+        message = '<strong>Operación Exitosa!</strong> \
+                   Se llevó a cabo con éxito el reordenamiento de los audios.'
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
         return self.redirecciona_a_audios_campana()
 
     def form_invalid(self, form_orden_audios):
-        # TODO: Agrega mensaje de error en el seteo del orden.
+        message = '<strong>Operación Errónea!</strong> \
+                   No se pudo llevar a cabo el reordenamiento de los audios.'
+        messages.add_message(
+            self.request,
+            messages.ERROR,
+            message,
+        )
         return self.redirecciona_a_audios_campana()
 
     def post(self, request, *args, **kwargs):
