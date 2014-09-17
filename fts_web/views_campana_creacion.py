@@ -262,7 +262,7 @@ class AudioCampanaOrdenView(CheckEstadoCampanaMixin, BaseUpdateView):
         return initial
 
     def get(self, request, *args, **kwargs):
-        return self.redirecciona_a_adudios_campana()
+        return self.redirecciona_a_audios_campana()
 
     def form_valid(self, form_orden_audios):
         sentido_orden = int(form_orden_audios.cleaned_data.get(
@@ -277,11 +277,11 @@ class AudioCampanaOrdenView(CheckEstadoCampanaMixin, BaseUpdateView):
                 self.get_object())
 
         # TODO: Agregar mensaje de éxito el seteo del orden.
-        return self.redirecciona_a_adudios_campana()
+        return self.redirecciona_a_audios_campana()
 
     def form_invalid(self, form_orden_audios):
         # TODO: Agrega mensaje de error en el seteo del orden.
-        return self.redirecciona_a_adudios_campana()
+        return self.redirecciona_a_audios_campana()
 
     def post(self, request, *args, **kwargs):
 
@@ -292,7 +292,7 @@ class AudioCampanaOrdenView(CheckEstadoCampanaMixin, BaseUpdateView):
         else:
             return self.form_invalid(form_orden_audios)
 
-    def redirecciona_a_adudios_campana(self):
+    def redirecciona_a_audios_campana(self):
         url = reverse('audio_campana', kwargs={"pk_campana": self.campana.pk})
         return HttpResponseRedirect(url)
 
