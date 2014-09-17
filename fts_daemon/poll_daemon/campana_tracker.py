@@ -47,6 +47,27 @@ class LimiteDeCanalesAlcanzadoError(Exception):
     """
 
 
+class DatosParaRealizarLlamada(object):
+    """Encapsula los datos necesarios para realizar una llamada"""
+
+    def __init__(self, campana, id_contacto, telefono, intentos, datos_extras):
+        assert isinstance(campana, Campana)
+        assert isinstance(datos_extras, dict)
+
+        self.campana = campana
+        self.id_contacto = id_contacto
+        self.telefono = telefono
+        self.intentos = intentos
+        self.datos_extras = datos_extras
+
+    # FTS-306 - @hgdeoro - FIXME: ELIMINAR este metodo y arreglar quien lo use
+    def __iter__(self):
+        return iter([self.campana,
+                     self.id_contacto,
+                     self.telefono,
+                     self.intentos])
+
+
 class CampanaTracker(object):
     """Trackea los envios pendientes de UNA campaña. Tambien trackea
     (de manera aproximada) las llamadas en curso para dicha campaña.
