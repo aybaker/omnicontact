@@ -293,6 +293,18 @@ class AudioForm(forms.ModelForm):
         }
 
 
+class OrdenAudiosForm(forms.Form):
+    sentido_orden = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super(OrdenAudiosForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('sentido_orden', type="hidden"),
+        )
+
+
 class ConfirmaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
