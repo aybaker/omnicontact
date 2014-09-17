@@ -401,8 +401,7 @@ class AsteriskHttpClient(object):
         parser.parse(response_body)
         return parser
 
-    def originate(self, channel, context, exten, priority, timeout,
-        async=False):
+    def originate(self, channel, context, exten, priority, timeout, async):
         """
         Send an ORIGINATE action.
         Parameters:
@@ -417,20 +416,42 @@ class AsteriskHttpClient(object):
             - AsteriskHttpOriginateError: if originate failed
         """
         assert type(timeout) == int
-        assert type(async) == bool
 
-        if async:
-            request_timeout = 5
-            logger.debug("AsteriskHttpClient.originate(): async=True - "
-                "timeout: %s - request_timeout: %s", timeout, request_timeout)
-        else:
-            request_timeout = int(math.ceil(timeout / 1000) + 5)
-            logger.debug("AsteriskHttpClient.originate(): async=False - "
-                "timeout: %s - request_timeout: %s", timeout, request_timeout)
+        # FIXME: esto se hizo asi para detectar intentos de realizacion de
+        #  originates con async=False. Una vez q' finalicemos la refactori-
+        #  zacion, hay que eliminar el argumento de la funcoin, y todos estos
+        #  asserts.
+        assert type(async) == bool
+        assert async
+
+        request_timeout = 5
+        logger.debug("AsteriskHttpClient.originate(): async=True - "
+            "timeout: %s - request_timeout: %s", timeout, request_timeout)
 
         logger.info("originate(): channel: '%s' - context: '%s' "
             "- exten: '%s' - priority: '%s' - timeout: '%s'",
             channel, context, exten, priority, timeout)
+
+        # variables: separadas por ',', con formato NOMBRE=VALOR
+        # Asterisk 11 soporta HASTA 64 variables. Si hay mas de 64,
+        #  todos los valores, desde la 64 hasta las ultimas, quedan
+        #  guardados bajo el nombre de la variable 64
+        #
+        # DumpChan():
+        #
+        # Dumping Info For Channel: Local/11223344 (...)
+        # ==============================================
+        # Info:
+        #
+        # var1=x1
+        #  (...)
+        # var58=x58
+        # var59=x59
+        # var60=x60
+        # var61=x61
+        # var62=x62
+        # var63=x63
+        # var64=x64,var65=x65,var66=x66,var67=x67,(...)
 
         response_body, _ = self._request("/mxml", {
             'action': 'originate',
@@ -439,7 +460,8 @@ class AsteriskHttpClient(object):
             'exten': exten,
             'priority': priority,
             'timeout': timeout,
-            'async': ("true" if async else "false")
+            'async': "true",
+            # 'variable': variable,
         }, timeout=request_timeout)
 
         parser = AsteriskXmlParserForOriginate()
@@ -601,7 +623,7 @@ class AsteriskHttpResponseWithError(AsteriskHttpAmiError):
     """
 
 
-#class AsteriskHttpPermissionDeniedError(AsteriskHttpAmiError):
+# class AsteriskHttpPermissionDeniedError(AsteriskHttpAmiError):
 #    """The Asterisk Http interface returned 'permission denied'"""
 
 
