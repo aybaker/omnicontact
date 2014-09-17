@@ -252,7 +252,6 @@ class BaseDatosContactoManager(models.Manager):
                                       "estado ESTADO_EN_DEFINICION"))
 
 
-
 upload_to_archivos_importacion = upload_to("archivos_importacion", 95)
 
 
@@ -403,23 +402,6 @@ class MetadataBaseDatosContactoDTO(object):
         self._metadata['prim_fila_enc'] = es_encabezado
         self._save()
 
-
-class MetadataBaseDatosContacto(MetadataBaseDatosContactoDTO):
-    """Encapsula acceso a metadatos de BaseDatosContacto"""
-
-    def __init__(self, bd):
-        super(MetadataBaseDatosContacto, self).__init__()
-        self.bd = bd
-        if bd.metadata is not None and bd.metadata != '':
-            try:
-                self._metadata = json.loads(bd.metadata)
-            except:
-                logger.exception("Excepcion detectada al desserializar "
-                                 "metadata de la bd {0}".format(bd.id))
-                raise
-
-    # -----
-
     def obtener_telefono_de_dato_de_contacto(self, datos_json):
         """Devuelve el numero telefonico del contacto.
 
@@ -438,6 +420,68 @@ class MetadataBaseDatosContacto(MetadataBaseDatosContactoDTO):
 
         telefono = datos[col_telefono]
         return telefono
+
+    def obtener_telefono_y_datos_extras(self, datos_json):
+        """Devuelve tupla con (1) el numero telefonico del contacto,
+        y (2) un dict con los datos extras del contacto
+
+        :param datos: atribuito 'datos' del contacto, o sea, valores de
+                      las columnas codificadas con json
+        """
+        # Decodificamos JSON
+        try:
+            datos = json.loads(datos_json)
+        except:
+            logger.exception("Excepcion detectada al desserializar "
+                             "datos extras de la bd {0}. "
+                             "Datos extras: '{1}'".format(self.bd.id,
+                                                          datos_json))
+            raise
+
+        # Obtenemos telefono
+        col_telefono = self._metadata['col_telefono']
+        telefono = datos[col_telefono]
+
+        # Obtenemos datos extra
+        datos_extra = dict(zip(self.nombres_de_columnas,
+                               datos))
+
+        return telefono, datos_extra
+
+    def validar_metadatos(self):
+        """Valida que los datos de metadatos estan completos"""
+        assert self.cantidad_de_columnas > 0
+        assert self.columna_con_telefono >= 0
+        assert self.columna_con_telefono < self.cantidad_de_columnas
+
+        for index_columna in self.columnas_con_fecha:
+            assert index_columna >= 0
+            assert index_columna < self.cantidad_de_columnas
+
+        for index_columna in self.columnas_con_hora:
+            assert index_columna >= 0
+            assert index_columna < self.cantidad_de_columnas
+
+        assert len(self.nombres_de_columnas) == self.cantidad_de_columnas
+
+        assert self.primer_fila_es_encabezado in (True, False)
+
+
+class MetadataBaseDatosContacto(MetadataBaseDatosContactoDTO):
+    """Encapsula acceso a metadatos de BaseDatosContacto"""
+
+    def __init__(self, bd):
+        super(MetadataBaseDatosContacto, self).__init__()
+        self.bd = bd
+        if bd.metadata is not None and bd.metadata != '':
+            try:
+                self._metadata = json.loads(bd.metadata)
+            except:
+                logger.exception("Excepcion detectada al desserializar "
+                                 "metadata de la bd {0}".format(bd.id))
+                raise
+
+    # -----
 
     def _save(self):
         """Guardar los metadatos en la instancia de BaseDatosContacto"""

@@ -9,8 +9,7 @@ from fts_web.errors import (FtsParserMinRowError, FtsParserMaxRowError,
 from fts_web.parser import ParserCsv, validate_telefono, sanitize_number, \
     validate_fechas, validate_horas
 from fts_web.tests.utiles import FTSenderBaseTest, get_test_resource_directory
-from fts_web.models import BaseDatosContacto, MetadataBaseDatosContactoDTO, \
-    MetadataBaseDatosContacto
+from fts_web.models import BaseDatosContacto, MetadataBaseDatosContacto
 
 
 class GetDialectTest(FTSenderBaseTest):
