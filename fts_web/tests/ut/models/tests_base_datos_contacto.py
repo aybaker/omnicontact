@@ -127,3 +127,84 @@ class TestMetadataBaseDatosContactoDTO(FTSenderBaseTest):
         self.metadata._metadata['prim_fila_enc'] = ''
         with self.assertRaises(AssertionError):
             self.metadata.validar_metadatos()
+
+
+class TestMetadataBaseDatosContactoParseoDeDatos(FTSenderBaseTest):
+
+    def setUp(self):
+        metadata = MetadataBaseDatosContactoDTO()
+        metadata.cantidad_de_columnas = 5
+        metadata.columna_con_telefono = 2
+        metadata.columnas_con_fecha = [0, 4]
+        metadata.columnas_con_hora = [1]
+        metadata.nombres_de_columnas = ["F_ALTA",
+                                        "HORA",
+                                        "TELEFONO",
+                                        "CUIT",
+                                        "F_BAJA"
+                                        ]
+        metadata.primer_fila_es_encabezado = False
+        self.metadata = metadata
+
+        self.datos_json_ok = json.dumps(["xxx",
+                                         "xxx",
+                                         "01145679999",
+                                         "xxx",
+                                         "xxx"])
+
+        self.datos_json_con_sobrante = json.dumps(["xxx",
+                                                   "xxx",
+                                                   "01145679999",
+                                                   "xxx",
+                                                   "xxx",
+                                                   "dato-sobrante",
+                                                   ])
+
+        self.datos_json_con_faltantes = json.dumps(["xxx",
+                                                    "xxx",
+                                                    "01145679999",
+                                                    "xxx",
+                                                    ])
+
+    def test_obtener_telefono_de_dato_de_contacto(self):
+        telefono = self.metadata.obtener_telefono_de_dato_de_contacto(
+            self.datos_json_ok)
+        self.assertEquals(telefono, "01145679999")
+
+    def test_obtener_telefono__reporta_error_si_sobran_datos(self):
+        with self.assertRaises(AssertionError):
+            self.metadata.obtener_telefono_de_dato_de_contacto(
+                self.datos_json_con_sobrante)
+
+    def test_obtener_telefono__reporta_error_si_faltan_datos(self):
+        with self.assertRaises(AssertionError):
+            self.metadata.obtener_telefono_de_dato_de_contacto(
+                self.datos_json_con_faltantes)
+
+    def test_obtener_telefono_y_datos_extras(self):
+        datos_json = json.dumps(["11/11/11",
+                                 "11:11:11",
+                                 "01145679999",
+                                 "00-99555222-1",
+                                 "22/22/22"])
+        telefono, datos_extra = self.metadata.obtener_telefono_y_datos_extras(
+            datos_json)
+        self.assertEquals(telefono, "01145679999")
+        self.assertDictEqual(datos_extra,
+                             {
+                              'F_ALTA': '11/11/11',
+                              'HORA': '11:11:11',
+                              'TELEFONO': '01145679999',
+                              'CUIT': '00-99555222-1',
+                              'F_BAJA': '22/22/22',
+                              })
+
+    def test_obtener_tyde__reporta_error_si_sobran_datos(self):
+        with self.assertRaises(AssertionError):
+            self.metadata.obtener_telefono_y_datos_extras(
+                self.datos_json_con_sobrante)
+
+    def test_obtener_tyde__reporta_error_si_faltan_datos(self):
+        with self.assertRaises(AssertionError):
+            self.metadata.obtener_telefono_y_datos_extras(
+                self.datos_json_con_faltantes)

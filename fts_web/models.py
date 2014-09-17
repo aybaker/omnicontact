@@ -403,10 +403,11 @@ class MetadataBaseDatosContactoDTO(object):
             datos = json.loads(datos_json)
         except:
             logger.exception("Excepcion detectada al desserializar "
-                             "datos extras de la bd {0}. "
-                             "Datos extras: '{1}'".format(self.bd.id,
-                                                          datos_json))
+                             "datos extras. Datos extras: '{0}'"
+                             "".format(datos_json))
             raise
+
+        assert len(datos) == self.cantidad_de_columnas
 
         telefono = datos[col_telefono]
         return telefono
@@ -423,14 +424,14 @@ class MetadataBaseDatosContactoDTO(object):
             datos = json.loads(datos_json)
         except:
             logger.exception("Excepcion detectada al desserializar "
-                             "datos extras de la bd {0}. "
-                             "Datos extras: '{1}'".format(self.bd.id,
-                                                          datos_json))
+                             "datos extras. Datos extras: '{0}'"
+                             "".format(datos_json))
             raise
 
+        assert len(datos) == self.cantidad_de_columnas
+
         # Obtenemos telefono
-        col_telefono = self._metadata['col_telefono']
-        telefono = datos[col_telefono]
+        telefono = datos[self.columna_con_telefono]
 
         # Obtenemos datos extra
         datos_extra = dict(zip(self.nombres_de_columnas,
