@@ -59,8 +59,7 @@ RUN make -j 2
 RUN make install
 RUN make samples
 
-# EXPOSE 7088
-# EXPOSE 8088
+EXPOSE 2000 2727 4520 4569 5000 5038 5060 7088
 
 COPY start.sh /start.sh
 
