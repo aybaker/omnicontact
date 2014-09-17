@@ -17,7 +17,10 @@ import logging as _logging
 logger = _logging.getLogger(__name__)
 
 
-def procesar_contacto(campana, contacto_id, numero, cant_intentos):
+# FIXME: esto deberia ser un objeto / servicio
+
+
+def procesar_contacto(datos_para_realizar_llamada):
     """Registra realizacion de intento (usando EventoDeContacto)
     y luego realiza ORIGINATE, registrando el resultado de dicho comando.
 
@@ -27,6 +30,9 @@ def procesar_contacto(campana, contacto_id, numero, cant_intentos):
     :param cant_intentos: cantidad de intentos que ya fueron realizado
     :returns: bool - Si el originate fue exitoso (True), sino False
     """
+
+    # FTS-306 - @hgdeoro - FIXME: ELIMINAR ESTA EXPANSION DE LOS DATOS DE datos_para_realizar_llamada
+    campana, contacto_id, numero, cant_intentos = datos_para_realizar_llamada
 
     logger.info("Realizando originate - campana: %s - contacto: %s - "
         "numero: %s - intentos: %s", campana.id, contacto_id, numero,
