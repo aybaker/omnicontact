@@ -70,11 +70,22 @@ INTERNAL_IPS = (
     "127.0.0.1",
 )
 
+# ASTERISK = {
+#     'USERNAME': 'asterisk',
+#     'PASSWORD': 'asterisk',
+#     'HTTP_AMI_URL': 'http://127.0.0.1:1',
+#     'DIAL_URL': 'IAX2/xxx/${NumberToCall}'
+# }
+
+#
+# Para conectarse a Asterisk -> VER: deploy/asterisk-11-on-docker/Dockerfile
+#  TODO: DIAL_URL
+#
 ASTERISK = {
-    'USERNAME': 'asterisk',
-    'PASSWORD': 'asterisk',
-    'HTTP_AMI_URL': 'http://127.0.0.1:1',
-    'DIAL_URL': 'IAX2/xxx/${NumberToCall}'
+    'USERNAME': 'admin',
+    'PASSWORD': 'admin',
+    'HTTP_AMI_URL': 'http://172.17.42.1:7088',
+    'DIAL_URL': "IAX2/127.0.0.1/${NumberToCall}",
 }
 
 FTS_DIALPLAN_FILENAME = "/tmp/fts-extensions.conf"
