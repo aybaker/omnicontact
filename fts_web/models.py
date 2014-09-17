@@ -1578,6 +1578,10 @@ class AudioDeCampana(models.Model):
     ORDEN_SENTIDO_DOWN = 1
 
     orden = models.PositiveIntegerField()
+    audio_descripcion = models.CharField(
+        max_length=100,
+        null=True, blank=True,
+    )
     audio_original = models.FileField(
         upload_to=upload_to_audios_originales,
         max_length=100,
