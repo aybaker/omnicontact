@@ -40,3 +40,59 @@ class ObtieneSiguienteOrdenTest(FTSenderBaseTest):
             [1, 2, 3, 4, 5, 6, 7, 8, 9],
             [ac.orden for ac in AudioDeCampana.objects.filter(
                 campana=campana)])
+
+
+class ObtieneAudioSiguienteTest(FTSenderBaseTest):
+    def test_devuelve_siguiente(self):
+        campana = self.crear_campana_activa()
+
+        for c in range(1, 9):
+            AudioDeCampana.objects.create(campana=campana, orden=c)
+
+        adc = AudioDeCampana.objects.all().first()
+
+        # -----
+
+        self.assertEqual(adc.orden, 1)
+        self.assertEqual(adc.obtener_audio_siguiente().orden, 2)
+
+    def test_devuelve_none_en_ultimo(self):
+        campana = self.crear_campana_activa()
+
+        for c in range(1, 9):
+            AudioDeCampana.objects.create(campana=campana, orden=c)
+
+        adc = AudioDeCampana.objects.all().last()
+
+        # -----
+
+        self.assertEqual(adc.orden, 8)
+        self.assertEqual(adc.obtener_audio_siguiente(), None)
+
+
+class ObtieneAudioAnteriorTest(FTSenderBaseTest):
+    def test_devuelve_siguiente(self):
+        campana = self.crear_campana_activa()
+
+        for c in range(1, 9):
+            AudioDeCampana.objects.create(campana=campana, orden=c)
+
+        adc = AudioDeCampana.objects.all().last()
+
+        # -----
+
+        self.assertEqual(adc.orden, 8)
+        self.assertEqual(adc.obtener_audio_anterior().orden, 7)
+
+    def test_devuelve_none_en_primero(self):
+        campana = self.crear_campana_activa()
+
+        for c in range(1, 9):
+            AudioDeCampana.objects.create(campana=campana, orden=c)
+
+        adc = AudioDeCampana.objects.all().first()
+
+        # -----
+
+        self.assertEqual(adc.orden, 1)
+        self.assertEqual(adc.obtener_audio_anterior(), None)
