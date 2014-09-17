@@ -59,9 +59,11 @@ RUN make -j 2
 RUN make install
 RUN make samples
 
-# EXPOSE 22
+# EXPOSE 7088
 # EXPOSE 8088
 
 COPY start.sh /start.sh
+
+COPY conf /opt/asterisk-11/etc/asterisk/
 
 CMD ["/start.sh"]
