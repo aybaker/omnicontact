@@ -16,9 +16,10 @@ from fts_daemon.asterisk_config import create_dialplan_config_file, \
 from fts_daemon.audio_conversor import convertir_audio_de_campana
 from fts_web.errors import FtsAudioConversionError
 from fts_web.forms import CampanaForm, AudioForm, CalificacionForm, \
-    OpcionForm, ActuacionForm, ConfirmaForm
+    OpcionForm, ActuacionForm, ConfirmaForm, OrdenAudiosForm
 from fts_web.models import Campana, ArchivoDeAudio, Calificacion, Opcion, \
     Actuacion, AudioDeCampana
+from fts_web.services.audios_campana import OrdenAudiosCampanaService
 import logging as logging_
 
 
@@ -162,6 +163,13 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
         context = super(AudioCampanaCreateView,
                         self).get_context_data(**kwargs)
         context['campana'] = self.campana
+        context['ORDEN_SENTIDO_UP'] = AudioDeCampana.ORDEN_SENTIDO_UP
+        context['ORDEN_SENTIDO_DOWN'] = AudioDeCampana.ORDEN_SENTIDO_DOWN
+
+        # FIXME: Instanciar este formulario en el GET preferentemente.
+        form_orden_audios = OrdenAudiosForm()
+        context['form_orden_audios'] = form_orden_audios
+
         return context
 
     def form_valid(self, form):
@@ -240,34 +248,50 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
 
 class AudioCampanaOrdenView(CheckEstadoCampanaMixin, BaseUpdateView):
     """
-    Esta vista actualiza el orden de los audios de campana para arriba.
+    Esta vista actualiza el orden de los audios de campana.
     """
+
     model = AudioDeCampana
 
-    def render_to_json_response(self, context, **response_kwargs):
-        """
-        Este método se encarga de hacer un json response.
-        """
-        data = json.dumps(context)
-        response_kwargs['content_type'] = 'application/json'
-        return HttpResponse(data, **response_kwargs)
+    def get_initial(self):
+        initial = super(AudioCampanaOrdenView, self).get_initial()
+        initial.update({'campana': self.campana.id})
+        return initial
 
-    def post(self, request, *args, **kwargs):
-        audio_de_campana = self.get_object()
+    def get(self, request, *args, **kwargs):
+        return self.redirecciona_a_adudios_campana()
+
+    def form_valid(self, form_orden_audios):
+        sentido_orden = int(form_orden_audios.cleaned_data.get(
+                            'sentido_orden'))
 
         orden_audios_campana_service = OrdenAudiosCampanaService()
+        if sentido_orden == AudioDeCampana.ORDEN_SENTIDO_UP:
+            orden_audios_campana_service.baja_audio_una_posisicion(
+                self.get_object())
+        elif sentido_orden == AudioDeCampana.ORDEN_SENTIDO_DOWN:
+            orden_audios_campana_service.sube_audio_una_posisicion(
+                self.get_object())
 
-        if self.request.is_ajax():
-            if 'up' in request.POST:
-                orden_audios_campana_service.ordenar_audios(audio_de_campana,
-                                                            'up')
-                return self.render_to_json_response({})
-            elif 'down' in request.POST:
-                orden_audios_campana_service.ordenar_audios(audio_de_campana,
-                                                            'down')
-                return self.render_to_json_response({})
-            else:
-                return self.render_to_json_response({'error': True})
+        # TODO: Agregar mensaje de éxito el seteo del orden.
+        return self.redirecciona_a_adudios_campana()
+
+    def form_invalid(self, form_orden_audios):
+        # TODO: Agrega mensaje de error en el seteo del orden.
+        return self.redirecciona_a_adudios_campana()
+
+    def post(self, request, *args, **kwargs):
+
+        form_orden_audios = OrdenAudiosForm(request.POST)
+
+        if form_orden_audios.is_valid():
+            return self.form_valid(form_orden_audios)
+        else:
+            return self.form_invalid(form_orden_audios)
+
+    def redirecciona_a_adudios_campana(self):
+        url = reverse('audio_campana', kwargs={"pk_campana": self.campana.pk})
+        return HttpResponseRedirect(url)
 
 
 class AudiosCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
