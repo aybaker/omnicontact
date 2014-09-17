@@ -976,8 +976,6 @@ class CampanaManager(models.Manager):
             segundos_ring=campana.segundos_ring,
             fecha_inicio=campana.fecha_inicio,
             fecha_fin=campana.fecha_fin,
-            audio_original=campana.audio_original,
-            audio_asterisk=campana.audio_asterisk,
             bd_contacto=campana.bd_contacto,
         )
 
@@ -1010,6 +1008,7 @@ class CampanaManager(models.Manager):
                 campana=campana_replicada,
             )
 
+        # TODO Sprint12: Replicar los Audios de campana!!
         return campana_replicada
 
 upload_to_audios_asterisk = upload_to("audios_asterisk", 95)
@@ -1423,8 +1422,11 @@ class Campana(models.Model):
         Este método se encarga de validar que el audio de la campana actual
         sea válido.
         """
-        if not self.audio_original or not self.audio_asterisk:
-            return False
+        # TODO Sprint12: Esta validación no aplica con el refactor de
+        # AudiosDeCampana, refactorizar.
+
+        # if not self.audio_original or not self.audio_asterisk:
+        #    return False
         return True
 
     def obtener_actuaciones_validas(self):
