@@ -235,6 +235,7 @@ class CampanaTracker(object):
                 contacto_ids_en_curso=list(self._contactos_en_curso))
 
     def _obtener_datos_de_contactos(self, contactos_values):
+        # FTS-306 - @hgdeoro
         id_contactos = [tmp[1] for tmp in contactos_values]
         return EventoDeContacto.objects_gestion_llamadas.\
             obtener_datos_de_contactos(id_contactos,
@@ -319,31 +320,58 @@ class CampanaTracker(object):
             if not contactos_values:
                 raise NoMasContactosEnCampana()
 
+        #
+        # EL ORDEN DE contactos_values ES IMPORTANTE !!!!!!!!!!
+        #
         # ATENCION: `contactos_values` estan ordenados por cant. de intentos,
         #   asi que cualquier procesamiento que se haga, debe hacerse
         #   teniendo en cuenta el orden definido en dicha lista
+        #
 
         # Si llegamos aca, es porque en `contactos_values` estan
         # los datos a devolver
 
-        # lista de `(id_contacto, telefono)`
-        id_contacto_y_telefono = self._obtener_datos_de_contactos(
-            contactos_values)
-        id_contacto_y_telefono_dict = dict(id_contacto_y_telefono)
+        #
+        # `contactos_values` - cada item tiene:
+        #     - item[0]: cantidad de veces intentado
+        #     - item[1]: id_contacto
+        #
 
-        self.cache = [(
-            self.campana,
-            id_contacto,
-            id_contacto_y_telefono_dict[id_contacto],
-            intento
-        ) for intento, id_contacto in contactos_values]
+        # EX: id_contacto_telefono_y_datos_extras
+        id_contacto_telefono_y_datos_extras = self._obtener_datos_de_contactos(
+            contactos_values)
+
+        # EX: id_contacto_y_telefono_dict
+        datos_por_id_contacto = dict(
+            [(id_contacto, (telefono, datos_extras))
+             for id_contacto, telefono, datos_extras
+                in id_contacto_telefono_y_datos_extras]
+        )
+
+        # FTS-306 - @hgdeoro
+
+        # Cargamos cache, RESPETANDO el orden en `contactos_values`
+        nuevo_cache = []
+        for intento, id_contacto in contactos_values:
+            telefono = datos_por_id_contacto[id_contacto][0]
+            datos_extras = datos_por_id_contacto[id_contacto][1]
+
+            nuevo_cache.append(DatosParaRealizarLlamada(
+                self.campana,
+                id_contacto,
+                telefono,
+                intento,
+                datos_extras,
+            ))
+
+        self.cache = nuevo_cache
 
     def next(self):
         """Devuelve los datos de datos de contacto a contactar,
         para la campaña asociada a este tracker. Internamente, se encarga
         de obtener el generador, y obtener un dato.
 
-        :returns: (campana, contacto_id, telefono, intentos) - En particular,
+        :returns: instancia de DatosParaRealizarLlamada - En particular,
                   intentos es la cantidad de intentos ya realizados, asi que
                   sera >= a 0, y deberia ser siempre < a la cantidad maxima
                   de intentos configurados en la campaña.
@@ -353,6 +381,13 @@ class CampanaTracker(object):
         :raises: LimiteDeCanalesAlcanzadoError
         :raises: TodosLosContactosPendientesEstanEnCursoError
         """
+
+        # ----- ANTES ----- # FTS-306 - @hgdeoro
+        # :returns: (campana, contacto_id, telefono, intentos) - En particular,
+        #           intentos es la cantidad de intentos ya realizados, asi que
+        #           sera >= a 0, y deberia ser siempre < a la cantidad maxima
+        #           de intentos configurados en la campaña.
+
         self._verifica_fecha_y_hora()
 
         if self.limite_alcanzado():
@@ -371,10 +406,16 @@ class CampanaTracker(object):
             #         \-> NoMasContactosEnCampana
             #         \-> TodosLosContactosPendientesEstanEnCursoError
 
-        ret_campana, ret_contacto_id, ret_telefono, ret_intentos = \
-            self.cache.pop(0)
+        # ----- ANTES ----- # FTS-306 - @hgdeoro
+        # ret_campana, ret_contacto_id, ret_telefono, ret_intentos = \
+        #     self.cache.pop(0)
+        datos_para_realizar_llamada = self.cache.pop(0)
+        assert isinstance(datos_para_realizar_llamada,
+                          DatosParaRealizarLlamada)
 
-        # self._llamadas_en_curso_aprox += 1
-        self._contactos_en_curso.append(ret_contacto_id)
+        self._contactos_en_curso.append(
+            datos_para_realizar_llamada.id_contacto)
 
-        return ret_campana, ret_contacto_id, ret_telefono, ret_intentos
+        # ----- ANTES ----- # FTS-306 - @hgdeoro
+        # return ret_campana, ret_contacto_id, ret_telefono, ret_intentos
+        return datos_para_realizar_llamada
