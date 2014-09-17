@@ -261,10 +261,6 @@ class MetadataBaseDatosContactoDTO(object):
     def __init__(self):
         self._metadata = {}
 
-    def _save(self):
-        """Implementacion por default no hace nada"""
-        pass
-
     # -----
 
     @property
@@ -283,7 +279,6 @@ class MetadataBaseDatosContactoDTO(object):
                           "debe ser > 0. Se especifico {0}".format(cant))
 
         self._metadata['cant_col'] = cant
-        self._save()
 
     # -----
 
@@ -302,7 +297,6 @@ class MetadataBaseDatosContactoDTO(object):
             "posee {1} columnas"
             "".format(columna, self.cantidad_de_columnas))
         self._metadata['col_telefono'] = columna
-        self._save()
 
     # -----
 
@@ -331,7 +325,6 @@ class MetadataBaseDatosContactoDTO(object):
                 "".format(col, self.cantidad_de_columnas))
 
         self._metadata['cols_fecha'] = columnas
-        self._save()
 
     # -----
 
@@ -360,7 +353,6 @@ class MetadataBaseDatosContactoDTO(object):
                 "".format(col, self.cantidad_de_columnas))
 
         self._metadata['cols_hora'] = columnas
-        self._save()
 
     # -----
 
@@ -385,7 +377,6 @@ class MetadataBaseDatosContactoDTO(object):
             "".format(len(columnas), self.cantidad_de_columnas))
 
         self._metadata['nombres_de_columnas'] = columnas
-        self._save()
 
     @property
     def primer_fila_es_encabezado(self):
@@ -400,7 +391,6 @@ class MetadataBaseDatosContactoDTO(object):
         assert isinstance(es_encabezado, bool)
 
         self._metadata['prim_fila_enc'] = es_encabezado
-        self._save()
 
     def obtener_telefono_de_dato_de_contacto(self, datos_json):
         """Devuelve el numero telefonico del contacto.
@@ -483,9 +473,12 @@ class MetadataBaseDatosContacto(MetadataBaseDatosContactoDTO):
 
     # -----
 
-    def _save(self):
+    def save(self):
         """Guardar los metadatos en la instancia de BaseDatosContacto"""
         # Primero validamos
+        self.validar_metadatos()
+
+        # Ahora guardamos
         try:
             self.bd.metadata = json.dumps(self._metadata)
         except:
