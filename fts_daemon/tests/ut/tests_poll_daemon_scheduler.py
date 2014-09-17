@@ -4,11 +4,10 @@
 
 from __future__ import unicode_literals
 
-from fts_daemon.poll_daemon.campana_tracker import CampanaTracker, \
+from fts_daemon.poll_daemon.campana_tracker import \
     NoMasContactosEnCampana
 from fts_daemon.poll_daemon.scheduler import (
-    RoundRobinTracker, BANEO_NO_MAS_CONTACTOS,
-    CantidadMaximaDeIteracionesSuperada)
+    RoundRobinTracker, CantidadMaximaDeIteracionesSuperada)
 from fts_web.models import Campana
 from fts_web.tests.utiles import FTSenderBaseTest
 import logging as _logging
