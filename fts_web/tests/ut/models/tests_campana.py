@@ -172,11 +172,20 @@ class EliminarCampanaTest(FTSenderBaseTest):
 
 class ValidacionCampanaTest(FTSenderBaseTest):
 
-    def test_campana_valida_audio_falla(self):
+    def test_campana_valida_audio_falla_sin_audios_de_campana(self):
         campana = Campana(id=1)
         campana.save = Mock()
-        campana.audio_original = None
-        campana.audio_asterisk = None
+
+        # -----
+
+        self.assertEqual(campana.valida_audio(), False)
+
+    def test_campana_valida_audio_falla_con_audios_sin_un_attr_seteado(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+
+        adc = AudioDeCampana(id=1, orden=1, campana=campana)
+        adc.save()
 
         # -----
 
@@ -185,8 +194,9 @@ class ValidacionCampanaTest(FTSenderBaseTest):
     def test_campana_valida_audio(self):
         campana = Campana(id=1)
         campana.save = Mock()
-        campana.audio_original = Mock()
-        campana.audio_asterisk = Mock()
+
+        adc = AudioDeCampana(id=1, orden=1, campana=campana, tts='NOMBRE')
+        adc.save()
 
         # -----
 
