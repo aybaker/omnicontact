@@ -432,6 +432,10 @@ class CrearBaseDeDatosContactosTest(FTSenderBaseTest):
             ('define_base_datos_contacto', [self.base_datos_contacto.id]),
         ]
 
+        self.base_datos_contacto.estado = \
+            BaseDatosContacto.ESTADO_EN_DEFINICION
+        self.base_datos_contacto.save()
+
         for vista, args in VISTAS:
             url = reverse(vista, args=args)
             response = self.client.get(url)
@@ -455,8 +459,6 @@ class CrearBaseDeDatosContactosTest(FTSenderBaseTest):
         VISTAS = [
             ('depurar_base_datos_contacto', [self.base_datos_contacto.id]),
         ]
-
-        self.base_datos_contacto.define()
 
         for vista, args in VISTAS:
             url = reverse(vista, args=args)
