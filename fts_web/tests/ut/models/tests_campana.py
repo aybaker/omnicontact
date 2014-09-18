@@ -8,7 +8,7 @@ import datetime
 
 from django.utils.unittest.case import skipIf
 from fts_web.models import (Campana, Actuacion, GrupoAtencion,
-    DerivacionExterna, Opcion)
+    DerivacionExterna, Opcion, AudioDeCampana)
 
 from fts_web.tests.utiles import FTSenderBaseTest
 
@@ -452,6 +452,7 @@ class CampanaReplicarCampana(FTSenderBaseTest):
         campana = self.crear_campana()
         self.crea_calificaciones(campana)
         self.crea_todas_las_opcion_posibles(campana)
+        self.crea_audios_de_campana(campana)
 
         [self.crea_campana_actuacion(dia_semanal, hora_desde, hora_hasta,
             campana) for dia_semanal in range(0, 4)]
@@ -468,14 +469,11 @@ class CampanaReplicarCampana(FTSenderBaseTest):
                          campana=campana_replicada).count(), 8)
         self.assertEqual(Actuacion.objects.filter(
                          campana=campana_replicada).count(), 4)
-        self.assertEqual(campana.audio_original,
-                         campana_replicada.audio_original)
-        self.assertEqual(campana.audio_asterisk,
-                         campana_replicada.audio_asterisk)
         self.assertEqual(campana.cantidad_canales,
                          campana_replicada.cantidad_canales)
         self.assertEqual(campana.cantidad_intentos,
                          campana_replicada.cantidad_intentos)
         self.assertEqual(campana.segundos_ring,
                          campana_replicada.segundos_ring)
-
+        self.assertEqual(AudioDeCampana.objects.filter(
+                         campana=campana_replicada).count(), 4)
