@@ -52,16 +52,6 @@ class CreacionBaseDatosService(object):
 
         base_datos_contacto.save()
 
-    def guarda_metadata(self, base_datos_contacto):
-        """
-        Segundo paso de la creación de una BaseDatosContacto.
-
-        Este método se encarga de actualizar el objeto BaseDatoContacto con
-        la metadata.
-        """
-
-        base_datos_contacto.save()
-
     def importa_contactos(self, base_datos_contacto):
         """
         Tercer paso de la creación de una BaseDatosContacto.
@@ -74,6 +64,12 @@ class CreacionBaseDatosService(object):
                 BaseDatosContacto.ESTADO_EN_DEFINICION)
 
         metadata = base_datos_contacto.get_metadata()
+
+        # FIXME: este metodo valida la consistencia de los metadatos, y
+        #  lanza una excepcion ante cualquier problema. OJO! Esto no implica
+        #  que los metadatos sean correctos y consistentes con los datos,
+        #  pero al menos validan la consistencia "interna" de los metadatos
+        metadata.validar_metadatos()
 
         # Antes que nada, borramos los contactos preexistentes
         base_datos_contacto.elimina_contactos()
@@ -110,22 +106,22 @@ class CreacionBaseDatosService(object):
         """
         base_datos_contacto.define()
 
-    def inferir_metadata(self, base_datos_contacto):
-        """Devuelve instancia de MetadataBaseDatosContactoDTO que describe
-        la metadata del archivo desde el cual se creará la BD.
-
-        :raises: NoSePuedeInferirMetadataError: si no se pudo inferir. Esto
-                 es algo grave, ya que si se lanza es porque no se encontro
-                 ninguna columan con datos que validen como telefono!
-        """
-        lineas = [
-                  ["Nombre", "Contacto", "Email"],
-                  ["juan", "549351444444", "juan@example.com"],
-                  ["juan", "549351444444", "juan@example.com"],
-                  ["juan", "549351444444", "juan@example.com"],
-                  ]
-        service = PredictorMetadataService()
-        return service.inferir_metadata_desde_lineas(lineas)
+    # def inferir_metadata(self, base_datos_contacto):
+    #     """Devuelve instancia de MetadataBaseDatosContactoDTO que describe
+    #     la metadata del archivo desde el cual se creará la BD.
+    #
+    #     :raises: NoSePuedeInferirMetadataError: si no se pudo inferir. Esto
+    #              es algo grave, ya que si se lanza es porque no se encontro
+    #              ninguna columan con datos que validen como telefono!
+    #     """
+    #     lineas = [
+    #               ["Nombre", "Contacto", "Email"],
+    #               ["juan", "549351444444", "juan@example.com"],
+    #               ["juan", "549351444444", "juan@example.com"],
+    #               ["juan", "549351444444", "juan@example.com"],
+    #               ]
+    #     service = PredictorMetadataService()
+    #     return service.inferir_metadata_desde_lineas(lineas)
 
 
 class NoSePuedeInferirMetadataError(FtsError):
@@ -183,7 +179,9 @@ class PredictorMetadataService(object):
         return REGEX_NOMBRE_DE_COLUMNA_VALIDO.match(nombre)
 
     def inferir_metadata_desde_lineas(self, lineas):
-        """
+        """Infiere los metadatos desde las lineas pasadas por parametros.
+
+        Devuelve instancias de MetadataBaseDatosContactoDTO.
         """
         assert isinstance(lineas, (list, tuple))
 

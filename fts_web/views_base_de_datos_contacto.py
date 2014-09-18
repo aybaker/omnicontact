@@ -260,9 +260,9 @@ class DefineBaseDatosContactoView(UpdateView):
         if self.request.POST.get('es_encabezado', False):
             es_encabezado = True
         metadata.primer_fila_es_encabezado = es_encabezado
+        metadata.save()
 
         creacion_base_datos = CreacionBaseDatosService()
-        creacion_base_datos.guarda_metadata(self.object)
 
         try:
             creacion_base_datos.importa_contactos(self.object)

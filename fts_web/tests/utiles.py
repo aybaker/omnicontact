@@ -258,7 +258,12 @@ class FTSenderTestUtilsMixin(object):
         metadata = bd_contacto.get_metadata()
         metadata.cantidad_de_columnas = 1
         metadata.columna_con_telefono = 0
+        metadata.columnas_con_hora = []
+        metadata.columnas_con_fecha = []
         metadata.nombres_de_columnas = ['telefono']
+        metadata.primer_fila_es_encabezado = False
+        metadata.save()
+        bd_contacto.save()
 
         if numeros_telefonicos is not None:
             for nro_telefonico in numeros_telefonicos:

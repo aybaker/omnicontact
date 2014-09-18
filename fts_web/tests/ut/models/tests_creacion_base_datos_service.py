@@ -39,25 +39,6 @@ class TestGeneraBaseDatosContacto(FTSenderBaseTest):
         creacion_base_de_datos_service = CreacionBaseDatosService()
         creacion_base_de_datos_service.genera_base_dato_contacto(bd)
 
-    def test_guarda_metadata(self):
-        bd = BaseDatosContacto(id=1)
-        bd.save = Mock()
-
-        # -----
-        metadata = bd.get_metadata()
-        metadata.cantidad_de_columnas = 1
-        metadata.columna_con_telefono = 0
-        metadata.nombres_de_columnas = ['telefono']
-
-        creacion_base_de_datos_service = CreacionBaseDatosService()
-        creacion_base_de_datos_service.guarda_metadata(bd)
-
-        metadata = bd.get_metadata()
-
-        self.assertEqual(metadata.cantidad_de_columnas, 1)
-        self.assertEqual(metadata.columna_con_telefono, 0)
-        self.assertEqual(metadata.nombres_de_columnas, ['telefono'])
-
     def test_importa_contacto(self):
         # 3543009865,lkasdjlfkaf,0351156219387
         # 111534509230,dkasjflkja,0351156982639
