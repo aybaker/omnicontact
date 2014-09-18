@@ -1471,11 +1471,16 @@ class Campana(models.Model):
         Este método se encarga de validar que el audio de la campana actual
         sea válido.
         """
-        # TODO Sprint12: Esta validación no aplica con el refactor de
-        # AudiosDeCampana, refactorizar.
+        audios_de_campana = self.audios_de_campana.all()
+        if not audios_de_campana:
+            return False
 
-        # if not self.audio_original or not self.audio_asterisk:
-        #    return False
+        for audio_de_campana in audios_de_campana:
+            posibles_audios = [audio_de_campana.audio_asterisk,
+                               audio_de_campana.archivo_de_audio,
+                               audio_de_campana.tts]
+            if not any(posibles_audios):
+                return False
         return True
 
     def obtener_actuaciones_validas(self):
