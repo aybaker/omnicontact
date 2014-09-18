@@ -375,11 +375,13 @@ class ReciclarCampanaTest(FTSenderBaseTest):
         self.crea_calificaciones(self.campana)
         self.crea_todas_las_opcion_posibles(self.campana)
         self.crea_todas_las_actuaciones(self.campana)
+        self.crea_audios_de_campana(self.campana)
 
         self.campana_reciclada = self.crear_campana()
         self.crea_calificaciones(self.campana_reciclada)
         self.crea_todas_las_opcion_posibles(self.campana_reciclada)
         self.crea_todas_las_actuaciones(self.campana_reciclada)
+        self.crea_audios_de_campana(self.campana_reciclada)
 
     def test_reciclado_campana(self):
 
@@ -495,6 +497,7 @@ class ReporteCampanaTest(FTSenderBaseTest):
         self.crea_calificaciones(self.campana)
         self.crea_todas_las_opcion_posibles(self.campana)
         self.crea_todas_las_actuaciones(self.campana)
+        self.crea_audios_de_campana(self.campana)
 
     def test_reporte_campana(self):
         VISTAS = [
@@ -535,8 +538,10 @@ class ExportaReporteCampanaTest(FTSenderBaseTest):
         self.crea_calificaciones(self.campana)
         self.crea_todas_las_opcion_posibles(self.campana)
         self.crea_todas_las_actuaciones(self.campana)
+        self.crea_audios_de_campana(self.campana)
 
     def test_exporta_reporte_campana(self):
+
         VISTAS = [
             ('exporta_campana_reporte', [self.campana.id]),
         ]
@@ -546,15 +551,4 @@ class ExportaReporteCampanaTest(FTSenderBaseTest):
             self.assertEqual(response.status_code, 400, "No se recibio status "
                              "400 al realizar el render del reporte campana "
                              "de la campana activa. Vista: {0}. URL: {1}"
-                             "".format(vista, url))
-
-        self.campana.estado = Campana.ESTADO_DEPURADA
-        self.campana.save()
-
-        for url in VISTAS:
-            url = reverse(vista, args=args)
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 302, "No se recibio status "
-                             "302 al realizar el render del reporte campana "
-                             " de la campana depurada. Vista: {0}. URL: {1}"
                              "".format(vista, url))
