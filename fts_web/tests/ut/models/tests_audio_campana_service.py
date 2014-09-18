@@ -30,12 +30,12 @@ class BajaAudioUnaPosicionTest(FTSenderBaseTest):
         self.assertEqual(adc.orden, 9)
 
         orden_audios_campana_service = OrdenAudiosCampanaService()
-        orden_audios_campana_service.baja_audio_una_posisicion(adc)
+        orden_audios_campana_service.baja_audio_una_posicion(adc)
 
         adc = AudioDeCampana.objects.get(pk=adc.pk)
         self.assertEqual(adc.orden, 8)
 
-        orden_audios_campana_service.baja_audio_una_posisicion(adc)
+        orden_audios_campana_service.baja_audio_una_posicion(adc)
 
         adc = AudioDeCampana.objects.get(pk=adc.pk)
         self.assertEqual(adc.orden, 7)
@@ -53,7 +53,7 @@ class BajaAudioUnaPosicionTest(FTSenderBaseTest):
 
         orden_audios_campana_service = OrdenAudiosCampanaService()
         with self.assertRaises(NoSePuedeModificarOrdenError):
-            orden_audios_campana_service.baja_audio_una_posisicion(adc)
+            orden_audios_campana_service.baja_audio_una_posicion(adc)
 
 
 class SubeAudioUnaPosicionTest(FTSenderBaseTest):
@@ -70,12 +70,12 @@ class SubeAudioUnaPosicionTest(FTSenderBaseTest):
         self.assertEqual(adc.orden, 1)
 
         orden_audios_campana_service = OrdenAudiosCampanaService()
-        orden_audios_campana_service.sube_audio_una_posisicion(adc)
+        orden_audios_campana_service.sube_audio_una_posicion(adc)
 
         adc = AudioDeCampana.objects.get(pk=adc.pk)
         self.assertEqual(adc.orden, 2)
 
-        orden_audios_campana_service.sube_audio_una_posisicion(adc)
+        orden_audios_campana_service.sube_audio_una_posicion(adc)
 
         adc = AudioDeCampana.objects.get(pk=adc.pk)
         self.assertEqual(adc.orden, 3)
@@ -93,4 +93,4 @@ class SubeAudioUnaPosicionTest(FTSenderBaseTest):
 
         orden_audios_campana_service = OrdenAudiosCampanaService()
         with self.assertRaises(NoSePuedeModificarOrdenError):
-            orden_audios_campana_service.sube_audio_una_posisicion(adc)
+            orden_audios_campana_service.sube_audio_una_posicion(adc)

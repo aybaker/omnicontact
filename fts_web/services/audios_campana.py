@@ -25,7 +25,7 @@ class NoSePuedeModificarOrdenError(FtsError):
 
 class OrdenAudiosCampanaService(object):
 
-    def sube_audio_una_posisicion(self, audio_de_campana):
+    def sube_audio_una_posicion(self, audio_de_campana):
         """
         Este método intercambia el orden del objeto audio_de_campana pasado
         por parámetro con el objeto audio_de_campana con el siguiente orden.
@@ -47,7 +47,7 @@ class OrdenAudiosCampanaService(object):
         audio_de_campana.orden = orden_audio_de_campana_superior
         audio_de_campana.save()
 
-    def baja_audio_una_posisicion(self, audio_de_campana):
+    def baja_audio_una_posicion(self, audio_de_campana):
         """
         Este método intercambia el orden del objeto audio_de_campana pasado
         por parámetro con el objeto audio_de_campana con el anterior orden.
