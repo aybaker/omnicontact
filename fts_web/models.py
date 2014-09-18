@@ -1008,7 +1008,18 @@ class CampanaManager(models.Manager):
                 campana=campana_replicada,
             )
 
-        # TODO Sprint12: Replicar los Audios de campana!!
+        audios_de_campana = campana.audios_de_campana.all()
+        for audio_de_campana in audios_de_campana:
+            AudioDeCampana.objects.create(
+                orden=audio_de_campana.orden,
+                audio_descripcion=audio_de_campana.audio_descripcion,
+                audio_original=audio_de_campana.audio_original,
+                audio_asterisk=audio_de_campana.audio_asterisk,
+                tts=audio_de_campana.tts,
+                archivo_de_audio=audio_de_campana.archivo_de_audio,
+                campana=campana_replicada
+            )
+
         return campana_replicada
 
 upload_to_audios_asterisk = upload_to("audios_asterisk", 95)
