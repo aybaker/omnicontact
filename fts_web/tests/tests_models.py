@@ -141,6 +141,7 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         # Crea la base de datos y verifica que el método devueva False
         # hasta que no se lleve a cabo la depuración.
         bd_contacto = self.crear_base_datos_contacto(10)
+
         self.assertFalse(bd_contacto.verifica_depurada())
 
         bd_contacto.procesa_depuracion()
@@ -154,7 +155,8 @@ class BaseDatosContactoTest(FTSenderBaseTest):
 
         # -----
 
-        self.assertRaises(bd_contacto.elimina_contactos())
+        with self.assertRaises(AssertionError):
+            bd_contacto.elimina_contactos()
 
     def test_elimina_contactos_falla_estado_depurada(self):
         bd_contacto = self.crear_base_datos_contacto(10)
@@ -162,7 +164,8 @@ class BaseDatosContactoTest(FTSenderBaseTest):
 
         # -----
 
-        self.assertRaises(bd_contacto.elimina_contactos())
+        with self.assertRaises(AssertionError):
+            bd_contacto.elimina_contactos()
 
     def test_elimina_contactos_no_falla_en_definicion(self):
         bd_contacto = self.crear_base_datos_contacto(10)

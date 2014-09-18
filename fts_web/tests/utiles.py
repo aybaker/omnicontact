@@ -278,6 +278,9 @@ class FTSenderTestUtilsMixin(object):
         for _ in range(0, cant_contactos):
             self.crear_contacto(bd_contacto)
         bd_contacto.cantidad_contactos = cant_contactos
+
+        bd_contacto.sin_definir = False
+        bd_contacto.estado = BaseDatosContacto.ESTADO_DEFINIDA
         bd_contacto.save()
 
         return bd_contacto
