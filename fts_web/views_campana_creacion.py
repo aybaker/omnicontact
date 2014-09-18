@@ -270,10 +270,10 @@ class AudioCampanaOrdenView(CheckEstadoCampanaMixin, BaseUpdateView):
 
         orden_audios_campana_service = OrdenAudiosCampanaService()
         if sentido_orden == AudioDeCampana.ORDEN_SENTIDO_UP:
-            orden_audios_campana_service.baja_audio_una_posisicion(
+            orden_audios_campana_service.baja_audio_una_posicion(
                 self.get_object())
         elif sentido_orden == AudioDeCampana.ORDEN_SENTIDO_DOWN:
-            orden_audios_campana_service.sube_audio_una_posisicion(
+            orden_audios_campana_service.sube_audio_una_posicion(
                 self.get_object())
         else:
             return form_invalid(form_orden_audios)
