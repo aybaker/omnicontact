@@ -49,8 +49,16 @@ class TestGeneraBaseDatosContacto(FTSenderBaseTest):
         bd.archivo_importacion = File(open(self.get_test_resource(
             "planilla-ejemplo-1.csv"), 'r'))
         bd.nombre_archivo_importacion = "planilla-ejemplo-1.csv"
-        bd.metadata = json.dumps({'col_telefono': 0})
         bd.save = Mock()
+
+        metadata = bd.get_metadata()
+        metadata.cantidad_de_columnas = 3
+        metadata.columna_con_telefono = 0
+        metadata.nombres_de_columnas = ["telefono_fijo",
+                                        "nombre",
+                                        "celular"]
+        metadata.primer_fila_es_encabezado = False
+        metadata.save()
 
         # -----
 

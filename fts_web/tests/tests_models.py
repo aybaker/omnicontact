@@ -21,7 +21,8 @@ from fts_daemon.services.depurador_de_campana import DepuradorDeCampanaWorkflow
 from fts_web.errors import (FtsRecicladoCampanaError,
     FtsRecicladoBaseDatosContactoError)
 from fts_web.models import (AgenteGrupoAtencion, AgregacionDeEventoDeContacto,
-    BaseDatosContacto, Campana, Contacto, Opcion, Calificacion, Actuacion)
+    BaseDatosContacto, Campana, Contacto, Opcion, Calificacion, Actuacion,
+    AudioDeCampana)
 from fts_web.parser import ParserCsv
 from fts_web.tests.utiles import FTSenderBaseTest, \
     default_db_is_postgresql
@@ -140,6 +141,7 @@ class BaseDatosContactoTest(FTSenderBaseTest):
         # Crea la base de datos y verifica que el método devueva False
         # hasta que no se lleve a cabo la depuración.
         bd_contacto = self.crear_base_datos_contacto(10)
+
         self.assertFalse(bd_contacto.verifica_depurada())
 
         bd_contacto.procesa_depuracion()
@@ -153,7 +155,8 @@ class BaseDatosContactoTest(FTSenderBaseTest):
 
         # -----
 
-        self.assertRaises(bd_contacto.elimina_contactos())
+        with self.assertRaises(AssertionError):
+            bd_contacto.elimina_contactos()
 
     def test_elimina_contactos_falla_estado_depurada(self):
         bd_contacto = self.crear_base_datos_contacto(10)
@@ -161,7 +164,8 @@ class BaseDatosContactoTest(FTSenderBaseTest):
 
         # -----
 
-        self.assertRaises(bd_contacto.elimina_contactos())
+        with self.assertRaises(AssertionError):
+            bd_contacto.elimina_contactos()
 
     def test_elimina_contactos_no_falla_en_definicion(self):
         bd_contacto = self.crear_base_datos_contacto(10)
@@ -728,6 +732,7 @@ class CampanaTest(FTSenderBaseTest):
         campana = self.crear_campana()
         self.crea_calificaciones(campana)
         self.crea_todas_las_opcion_posibles(campana)
+        self.crea_audios_de_campana(campana)
 
         [self.crea_campana_actuacion(dia_semanal, hora_desde, hora_hasta,
             campana) for dia_semanal in range(0, 4)]
@@ -762,10 +767,8 @@ class CampanaTest(FTSenderBaseTest):
             .count(), 8)
         self.assertEqual(Actuacion.objects.filter(campana=campana_reciclada)
             .count(), 4)
-        self.assertEqual(campana.audio_original,
-            campana_reciclada.audio_original)
-        self.assertEqual(campana.audio_asterisk,
-            campana_reciclada.audio_asterisk)
+        self.assertEqual(AudioDeCampana.objects.filter(
+            campana=campana_reciclada).count(), 4)
         self.assertEqual(campana.cantidad_canales,
             campana_reciclada.cantidad_canales)
         self.assertEqual(campana.cantidad_intentos,

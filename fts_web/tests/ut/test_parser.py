@@ -54,6 +54,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
                                         "hora"
                                         ]
         metadata.primer_fila_es_encabezado = True
+        metadata.save()
         bdc.save()
         return bdc
 
@@ -76,6 +77,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
                                         "nombre",
                                         "celular"]
         metadata.primer_fila_es_encabezado = False
+        metadata.save()
         bdc.save()
         return bdc
 
@@ -102,6 +104,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
                                         "nombre",
                                         "celular"]
         metadata.primer_fila_es_encabezado = False
+        metadata.save()
         bdc.save()
         return bdc
 
@@ -122,6 +125,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
         metadata.columna_con_telefono = 0  # o 2?
         metadata.nombres_de_columnas = ["telefono_fijo"]
         metadata.primer_fila_es_encabezado = False
+        metadata.save()
         bdc.save()
         return bdc
 
@@ -223,6 +227,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
         # Cambiamos metadata, para q' ignore 'hora' y solo detecte
         #  error en 'fecha'
         metadata.columnas_con_hora = []
+        metadata.save()
         bdc.save()
 
         parser = ParserCsv()
@@ -255,6 +260,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
         # Cambiamos metadata, para q' ignore 'fecha' y solo detecte
         #  error en 'hora'
         metadata.columnas_con_fecha = []
+        metadata.save()
         bdc.save()
 
         parser = ParserCsv()
