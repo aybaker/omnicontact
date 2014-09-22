@@ -767,7 +767,7 @@ class CampanaTest(FTSenderBaseTest):
         self.assertEqual(Actuacion.objects.filter(campana=campana_reciclada)
             .count(), 4)
         self.assertEqual(AudioDeCampana.objects.filter(
-            campana=campana_reciclada).count(), 3)
+            campana=campana_reciclada).count(), 5)
         self.assertEqual(campana.cantidad_canales,
             campana_reciclada.cantidad_canales)
         self.assertEqual(campana.cantidad_intentos,
