@@ -63,7 +63,34 @@ exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
 exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
 exten => _ftsX.,n,Wait(1)
 exten => _ftsX.,n,Answer()
-exten => _ftsX.,n(audio),Background({fts_audio_file})
+exten => _ftsX.,n(audio),NoOp()
+"""
+
+
+TEMPLATE_DIALPLAN_PLAY_AUDIO = """
+; TEMPLATE_DIALPLAN_PLAY_AUDIO-{fts_audio_de_campana_id}
+exten => _ftsX.,n,Background({fts_audio_file})
+
+;@@@@@@@@@@ Generar dialplan.
+"""
+
+
+TEMPLATE_DIALPLAN_TTS = """
+;@@@@@@@@@@ Generar dialplan.
+"""
+
+
+TEMPLATE_DIALPLAN_HORA = """
+;@@@@@@@@@@ Generar dialplan.
+"""
+
+
+TEMPLATE_DIALPLAN_FECHA = """
+;@@@@@@@@@@ Generar dialplan.
+"""
+
+
+TEMPLATE_DIALPLAN_HANGUP = """
 ; TODO: alcanza 'WaitExten(10)'?
 exten => _ftsX.,n,WaitExten(10)
 exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
@@ -151,6 +178,12 @@ TEMPLATE_FAILED = """
 """
 
 
+def _check_audio_file_exist(fts_audio_file, audio_de_campana):
+    if not os.path.exists(fts_audio_file):
+        raise Exception("No se encontro el archivo de audio '%s' "
+                        "para la campana '%s'", fts_audio_file, campana.id)
+
+
 def generar_dialplan(campana):
     """Genera el dialplan para una campaña.
 
@@ -167,37 +200,63 @@ def generar_dialplan(campana):
     assert campana.id is not None, "campana.id == None"
     assert campana.segundos_ring is not None
 
-    # audio_original -> lo chqeueamos por las dudas nomas...
-    assert campana.audio_original is not None, "campana.audio_original == None"
-    assert campana.audio_original.name,\
-        "campana.audio_original.name no esta seteado"
+    # Chequeamos que se haya seteado al menos un objeto AudioDeCampana.
+    audios_de_campana = campana.audios_de_campana.all()
+    assert audios_de_campana, "campana.audios_de_campana -> None"
 
-    # audio_asterisk -> este tiene que existir si o si
-    assert campana.audio_asterisk is not None, "campana.audio_asterisk == None"
-    assert campana.audio_asterisk.name,\
-        "campana.audio_asterisk.name no esta seteado"
-
-    fts_audio_file = os.path.join(settings.MEDIA_ROOT,
-        campana.audio_asterisk.name)
-    if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
-        if not os.path.exists(fts_audio_file):
-            raise Exception("No se encontro el archivo de audio '%s' "
-                "para la campana '%s'", fts_audio_file, campana.id)
-
-    # Quitamos extension (Asterisk lo requiere asi)
-    fts_audio_file = os.path.splitext(fts_audio_file)[0]
+    # Chequeamos que cada objeto, al menos tenga setada uno de los posibles
+    # audios.
+    for audio_de_campana in audios_de_campana:
+        posibles_audios = [audio_de_campana.audio_asterisk,
+                           audio_de_campana.archivo_de_audio.audio_asterisk,
+                           audio_de_campana.tts]
+        assert any(posibles_audios), "Un AudioDeCampana no es valido."
 
     partes = []
     param_generales = {
         'fts_campana_id': campana.id,
         'fts_campana_dial_timeout': campana.segundos_ring,
-        'fts_audio_file': fts_audio_file,
-        'fts_agi_server': '127.0.0.1', # TODO: mover a settings
+        'fts_agi_server': '127.0.0.1',  # TODO: mover a settings
         'fts_dial_url': settings.ASTERISK['DIAL_URL'],
         'date': str(datetime.datetime.now())
     }
 
     partes.append(TEMPLATE_DIALPLAN_START.format(**param_generales))
+
+    for audio_de_campana in audios_de_campana:
+        if audio_de_campana.audio_asterisk:
+            fts_audio_file = os.path.join(settings.MEDIA_ROOT,
+                                          audio_de_campana.audio_asterisk.name)
+
+            if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
+                _check_audio_file_exist(fts_audio_file, audio_de_campana)
+
+            params_audios = {
+                'fts_audio_file': os.path.splitext(fts_audio_file)[0],
+            }
+            partes.append(TEMPLATE_DIALPLAN_PLAY_AUDIO.format(
+                **params_audios))
+
+        elif audio_de_campana.archivo_de_audio.audio_asterisk:
+            fts_audio_file = os.path.join(
+                settings.MEDIA_ROOT,
+                audio_de_campana.archivo_de_audio.audio_asterisk.name)
+
+            if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
+                _check_audio_file_exist(fts_audio_file, audio_de_campana)
+
+            params_audios = {
+                'fts_audio_file': os.path.splitext(fts_audio_file)[0],
+            }
+            partes.append(TEMPLATE_DIALPLAN_PLAY_AUDIO.format(
+                **params_audios))
+
+        else:
+            pass
+            # Identificar que tipo de TTS es, para armar el TEMPLATE adecuado.
+
+            # partes -> append de template TTS (GENERICO) o HORA o FECHA.
+
 
     # TODO: derivacion: setear GrupoAtencion / QUEUE (cuando corresponda)
     # TODO: voicemail: IMPLEMENTAR!
