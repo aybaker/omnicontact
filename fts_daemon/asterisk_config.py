@@ -200,7 +200,7 @@ class NoSePuedeCrearDialplanError(FtsError):
     pass
 
 
-def _check_audio_file_exist(fts_audio_file, audio_de_campana):
+def _check_audio_file_exist(fts_audio_file, campana):
     if not os.path.exists(fts_audio_file):
         raise NoSePuedeCrearDialplanError(
             "No se encontro el archivo de audio '{0}' para la campana "
@@ -253,7 +253,7 @@ def generar_dialplan(campana):
                                           audio_de_campana.audio_asterisk.name)
 
             if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
-                _check_audio_file_exist(fts_audio_file, audio_de_campana)
+                _check_audio_file_exist(fts_audio_file, campana)
 
             params_audios = {
                 'fts_audio_de_campana_id': audio_de_campana.id,
@@ -269,7 +269,7 @@ def generar_dialplan(campana):
                 audio_de_campana.archivo_de_audio.audio_asterisk.name)
 
             if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
-                _check_audio_file_exist(fts_audio_file, audio_de_campana)
+                _check_audio_file_exist(fts_audio_file, campana)
 
             params_audios = {
                 'fts_audio_de_campana_id': audio_de_campana.id,

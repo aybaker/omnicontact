@@ -485,4 +485,4 @@ class CampanaReplicarCampana(FTSenderBaseTest):
         self.assertEqual(campana.segundos_ring,
                          campana_replicada.segundos_ring)
         self.assertEqual(AudioDeCampana.objects.filter(
-                         campana=campana_replicada).count(), 3)
+                         campana=campana_replicada).count(), 5)
