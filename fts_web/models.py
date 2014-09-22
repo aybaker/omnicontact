@@ -457,6 +457,72 @@ class MetadataBaseDatosContactoDTO(object):
 
         assert self.primer_fila_es_encabezado in (True, False)
 
+    def dato_extra_es_hora(self, nombre_de_columna):
+        """
+        Devuelve True si el dato extra correspondiente a la columna
+        con nombre `nombre_de_columna` ha sido seteada con el
+        tipo de dato `hora`.
+
+        Este metodo no realiza ningun tipo de sanitizacion del nombre
+        de columna recibido por parametro! Se supone que el nombre
+        de columna es valido y existe.
+
+        :raises ValueError: si la columna no existe
+        """
+        index = self.nombres_de_columnas.index(nombre_de_columna)
+        return index in self.columnas_con_hora
+
+    def dato_extra_es_fecha(self, nombre_de_columna):
+        """
+        Devuelve True si el dato extra correspondiente a la columna
+        con nombre `nombre_de_columna` ha sido seteada con el
+        tipo de dato `fecha`.
+
+        Este metodo no realiza ningun tipo de sanitizacion del nombre
+        de columna recibido por parametro! Se supone que el nombre
+        de columna es valido y existe.
+
+        :raises ValueError: si la columna no existe
+        """
+        index = self.nombres_de_columnas.index(nombre_de_columna)
+        return index in self.columnas_con_fecha
+
+    def dato_extra_es_telefono(self, nombre_de_columna):
+        """
+        Devuelve True si el dato extra correspondiente a la columna
+        con numero telefonico.
+
+        Este metodo no realiza ningun tipo de sanitizacion del nombre
+        de columna recibido por parametro! Se supone que el nombre
+        de columna es valido y existe.
+
+        :raises ValueError: si la columna no existe
+        """
+        index = self.nombres_de_columnas.index(nombre_de_columna)
+        return index == self.columna_con_telefono
+
+    def dato_extra_es_generico(self, nombre_de_columna):
+        """
+        Devuelve True si el dato extra correspondiente a la columna
+        con nombre `nombre_de_columna` es de tipo generico, o sea
+        debe ser tratado como texto (ej: no es el nro de telefono,
+        ni hora ni fecha)
+
+        Este metodo no realiza ningun tipo de sanitizacion del nombre
+        de columna recibido por parametro! Se supone que el nombre
+        de columna es valido y existe.
+
+        :raises ValueError: si la columna no existe
+        """
+        index = self.nombres_de_columnas.index(nombre_de_columna)
+        return not (
+                    index in self.columnas_con_hora
+                    or
+                    index in self.columnas_con_fecha
+                    or
+                    index == self.columna_con_telefono
+                    )
+
 
 class MetadataBaseDatosContacto(MetadataBaseDatosContactoDTO):
     """Encapsula acceso a metadatos de BaseDatosContacto"""
@@ -494,6 +560,7 @@ class BaseDatosContacto(models.Model):
     DATO_EXTRA_GENERICO = 'GENERICO'
     DATO_EXTRA_FECHA = 'FECHA'
     DATO_EXTRA_HORA = 'HORA'
+
     DATOS_EXTRAS = (
         (DATO_EXTRA_GENERICO, 'Dato Genérico'),
         (DATO_EXTRA_FECHA, 'Fecha'),

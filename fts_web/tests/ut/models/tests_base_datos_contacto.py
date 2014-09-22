@@ -10,6 +10,27 @@ from fts_web.models import BaseDatosContacto, MetadataBaseDatosContactoDTO
 from fts_web.tests.utiles import FTSenderBaseTest
 
 
+class SetUpForMetadataBaseDatosContactoMixin():
+    """Mixin con metodo setUp() que genera una instancia
+    basica de MetadataBaseDatosContactoDTO en self.metadata
+    """
+
+    def setUp(self):
+        metadata = MetadataBaseDatosContactoDTO()
+        metadata.cantidad_de_columnas = 5
+        metadata.columna_con_telefono = 2
+        metadata.columnas_con_fecha = [0, 4]
+        metadata.columnas_con_hora = [1]
+        metadata.nombres_de_columnas = ["F_ALTA",
+                                        "HORA",
+                                        "TELEFONO",
+                                        "CUIT",
+                                        "F_BAJA"
+                                        ]
+        metadata.primer_fila_es_encabezado = False
+        self.metadata = metadata
+
+
 class TestMetadataBaseDatosContacto(FTSenderBaseTest):
     """Clase para testear MetadataBaseDatosContacto"""
 
@@ -67,22 +88,8 @@ class TestMetadataBaseDatosContacto(FTSenderBaseTest):
             BaseDatosContacto().get_metadata().columna_con_telefono
 
 
-class TestMetadataBaseDatosContactoDTO(FTSenderBaseTest):
-
-    def setUp(self):
-        metadata = MetadataBaseDatosContactoDTO()
-        metadata.cantidad_de_columnas = 5
-        metadata.columna_con_telefono = 2
-        metadata.columnas_con_fecha = [0, 4]
-        metadata.columnas_con_hora = [1]
-        metadata.nombres_de_columnas = ["F_ALTA",
-                                        "HORA",
-                                        "TELEFONO",
-                                        "CUIT",
-                                        "F_BAJA"
-                                        ]
-        metadata.primer_fila_es_encabezado = False
-        self.metadata = metadata
+class TestMetadataBaseDatosContactoDTO(SetUpForMetadataBaseDatosContactoMixin,
+                                       FTSenderBaseTest):
 
     def test_valida_metadatos_correcto(self):
         self.metadata.validar_metadatos()
@@ -127,6 +134,58 @@ class TestMetadataBaseDatosContactoDTO(FTSenderBaseTest):
         self.metadata._metadata['prim_fila_enc'] = ''
         with self.assertRaises(AssertionError):
             self.metadata.validar_metadatos()
+
+
+class TestMetodosDatoExtraEs(SetUpForMetadataBaseDatosContactoMixin,
+                             FTSenderBaseTest):
+
+    def test_dato_extra_es_fecha(self):
+
+        self.assertTrue(self.metadata.dato_extra_es_fecha("F_ALTA"))
+        self.assertTrue(self.metadata.dato_extra_es_fecha("F_BAJA"))
+
+        self.assertFalse(self.metadata.dato_extra_es_fecha("TELEFONO"))
+        self.assertFalse(self.metadata.dato_extra_es_fecha("CUIT"))
+        self.assertFalse(self.metadata.dato_extra_es_fecha("HORA"))
+
+        with self.assertRaises(ValueError):
+            self.metadata.dato_extra_es_fecha("X")
+
+    def test_dato_extra_es_hora(self):
+
+        self.assertTrue(self.metadata.dato_extra_es_hora("HORA"))
+
+        self.assertFalse(self.metadata.dato_extra_es_hora("F_ALTA"))
+        self.assertFalse(self.metadata.dato_extra_es_hora("F_BAJA"))
+        self.assertFalse(self.metadata.dato_extra_es_hora("TELEFONO"))
+        self.assertFalse(self.metadata.dato_extra_es_hora("CUIT"))
+
+        with self.assertRaises(ValueError):
+            self.metadata.dato_extra_es_hora("X")
+
+    def test_dato_extra_es_telefono(self):
+
+        self.assertTrue(self.metadata.dato_extra_es_telefono("TELEFONO"))
+
+        self.assertFalse(self.metadata.dato_extra_es_telefono("HORA"))
+        self.assertFalse(self.metadata.dato_extra_es_telefono("F_ALTA"))
+        self.assertFalse(self.metadata.dato_extra_es_telefono("F_BAJA"))
+        self.assertFalse(self.metadata.dato_extra_es_telefono("CUIT"))
+
+        with self.assertRaises(ValueError):
+            self.metadata.dato_extra_es_telefono("X")
+
+    def test_dato_extra_es_generico(self):
+
+        self.assertTrue(self.metadata.dato_extra_es_generico("CUIT"))
+
+        self.assertFalse(self.metadata.dato_extra_es_generico("HORA"))
+        self.assertFalse(self.metadata.dato_extra_es_generico("F_ALTA"))
+        self.assertFalse(self.metadata.dato_extra_es_generico("F_BAJA"))
+        self.assertFalse(self.metadata.dato_extra_es_generico("TELEFONO"))
+
+        with self.assertRaises(ValueError):
+            self.metadata.dato_extra_es_generico("X")
 
 
 class TestMetadataBaseDatosContactoParseoDeDatos(FTSenderBaseTest):
