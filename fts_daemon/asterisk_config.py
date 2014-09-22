@@ -14,6 +14,8 @@ import tempfile
 import traceback
 
 from django.conf import settings
+
+from fts_web.errors import FtsError
 from fts_web.models import Opcion, Campana, GrupoAtencion
 import logging as _logging
 
@@ -182,10 +184,16 @@ TEMPLATE_FAILED = """
 """
 
 
+class NoSePuedeCrearDialplanError(FtsError):
+    """Indica que no se pudo crear el dialplan."""
+    pass
+
+
 def _check_audio_file_exist(fts_audio_file, audio_de_campana):
     if not os.path.exists(fts_audio_file):
-        raise Exception("No se encontro el archivo de audio '%s' "
-                        "para la campana '%s'", fts_audio_file, campana.id)
+        raise NoSePuedeCrearDialplanError(
+            "No se encontro el archivo de audio '{0}' para la campana "
+            "'{1}'".format(fts_audio_file, campana.id))
 
 
 def generar_dialplan(campana):
@@ -257,7 +265,7 @@ def generar_dialplan(campana):
             partes.append(TEMPLATE_DIALPLAN_PLAY_AUDIO.format(
                 **params_audios))
 
-        else:
+        elif audio_de_campana.tts:
             metadata = campana.bd_contacto.get_metadata()
 
             if metadata.dato_extra_es_hora(audio_de_campana.tts):
@@ -276,9 +284,9 @@ def generar_dialplan(campana):
                 partes.append(TEMPLATE_DIALPLAN_FECHA.format(
                     **params_tts_fecha))
 
-            elif (metadata.dato_extra_es_telefono(audio_de_campana.tts) or
-                    metadata.dato_extra_es_generico(audio_de_campana.tts)):
-
+            else:
+                # O es Teléfono, o es Genérico. En ambos casos se trata como
+                # tts genérico.
                 params_tts = {
                     'fts_audio_de_campana_id': audio_de_campana.id,
                     'fts_tts': audio_de_campana.tts,
@@ -332,9 +340,9 @@ def generar_dialplan(campana):
             partes.append(TEMPLATE_OPCION_CALIFICAR.format(**params_opcion))
 
         else:
-            # FIXME: usar excepcion customizada
-            raise Exception("Tipo de accion para opcion desconocida: {0}"
-                "".format(opcion.accion))
+            raise NoSePuedeCrearDialplanError(
+                "Tipo de acción '{0}' desconocida para la opcion."
+                "Campana '{1}'".format(opcion.accion, campana.id))
 
     partes.append(TEMPLATE_DIALPLAN_END.format(**param_generales))
 
