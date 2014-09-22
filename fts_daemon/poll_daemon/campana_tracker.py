@@ -48,6 +48,18 @@ class LimiteDeCanalesAlcanzadoError(Exception):
     """
 
 
+class ImposibleGenerarVariablesDesdeDatosExtras(Exception):
+    """No se pudieron generar las variables de canal (para ser usadas
+    en el dialplan de Asterisk) desde los valores de 'datos extras'
+    del contacto.
+
+    Esto puede deverse, por ejemplo, a que el campo no existe, o
+    la hora o fecha no posee un formato valido. Esto es un error interno
+    del sistema, ya que nunca deberia haber referencias a campos no
+    existentes, ni contactos con fechas y horas invalidas.
+    """
+
+
 class DatosParaRealizarLlamada(object):
     """Encapsula los datos necesarios para realizar una llamada.
 
@@ -84,14 +96,13 @@ class DatosParaRealizarLlamada(object):
 
         nombre_del_campo = audio_de_campana.tts
 
-        if nombre_del_campo not in self.datos_extras:
-            raise(Exception(
+        try:
+            valor_del_campo = self.datos_extras[nombre_del_campo]
+        except KeyError:
+            raise(ImposibleGenerarVariablesDesdeDatosExtras(
                 "El campo '{0}' no se encuentra entre "
-                "los datos extras: '{1}'"
-                "".format(nombre_del_campo,
-                          pprint.pformat(self.datos_extras))))
-
-        valor_del_campo = self.datos_extras[nombre_del_campo]
+                "los datos extras del contacto '{1}'"
+                "".format(nombre_del_campo, self.id_contacto)))
 
         if metadata.dato_extra_es_hora(nombre_del_campo):
             # TTS de hora
@@ -119,8 +130,16 @@ class DatosParaRealizarLlamada(object):
     def generar_variables_de_canal(self):
         """Genera variables para ser inyectadas en Asterisk como
         variables de canal. Esto es necesario para enviar datos
-        de TTS / fechas / horas
+        de TTS / fechas / horas.
+
+        :raises: ImposibleGenerarVariablesDesdeDatosExtras si se detecta
+                 un problema al intentar generar variables para datos
+                 extras.
         """
+        # TODO: aqui se parsean los datos, pero este parseo deberia estar
+        #  en algun componente que tambien maneje la validacion al
+        #  importar, asi, la logica de qué es una fecha/hora válida
+        #  no estaria distibuida por todo el sistema
         variables = {}
         audios_de_campana = self.campana.audios_de_campana.all()
         metadata = self.campana.bd_contacto.get_metadata()
@@ -133,11 +152,21 @@ class DatosParaRealizarLlamada(object):
                 # Ignoramos audios
                 pass
             elif audio_de_campana.tts:
-                variables.update(self._generar_tts(metadata, audio_de_campana))
+                try:
+                    variables.update(self._generar_tts(metadata,
+                                                       audio_de_campana))
+                except ImposibleGenerarVariablesDesdeDatosExtras:
+                    raise
+                except:
+                    logger.exception("Error detectado en "
+                                     "generar_variables_de_canal()")
+                    raise(ImposibleGenerarVariablesDesdeDatosExtras(
+                        "DatosParaRealizarLlamada._generar_tts() "
+                        "genero un error"))
             else:
-                raise(Exception("AudioDeCampana {0} no es de ninguno de "
-                                "los tipos esperados"
-                                "".format(audio_de_campana.id)))
+                raise(ImposibleGenerarVariablesDesdeDatosExtras(
+                    "AudioDeCampana {0} no es de ninguno de "
+                    "los tipos esperados".format(audio_de_campana.id)))
 
         return variables
 
