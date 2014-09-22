@@ -72,26 +72,37 @@ exten => _ftsX.,n(audio),NoOp()
 TEMPLATE_DIALPLAN_PLAY_AUDIO = """
 ; TEMPLATE_DIALPLAN_PLAY_AUDIO-{fts_audio_de_campana_id}
 exten => _ftsX.,n,Background({fts_audio_file})
-
-;@@@@@@@@@@ Generar dialplan.
 """
 
 
 TEMPLATE_DIALPLAN_TTS = """
 ; TEMPLATE_DIALPLAN_TTS-{fts_audio_de_campana_id}
-;@@@@@@@@@@ Generar dialplan.
+exten => _ftsX.,n,NoOp(TTS,{fts_tts},${{{fts_tts}}})
+exten => _ftsX.,n,AGI(googletts.agi,${{{fts_tts}}},es)
 """
 
 
 TEMPLATE_DIALPLAN_HORA = """
 ; TEMPLATE_DIALPLAN_HORA-{fts_audio_de_campana_id}
-;@@@@@@@@@@ Generar dialplan.
+exten => _ftsX.,n,NoOp(TTS,{fts_tts_hora}_hora,${{{fts_tts_hora}_hora}})
+exten => _ftsX.,n,Saynumber(${{{fts_tts_hora}_hora}})
+exten => _ftsX.,n,Playback(horas)
+exten => _ftsX.,n,NoOp(TTS,{fts_tts_hora}_min,${{{fts_tts_hora}_min}})
+exten => _ftsX.,n,Saynumber(${{{fts_tts_hora}_min}})
+exten => _ftsX.,n,Playback(minutos)
 """
 
 
 TEMPLATE_DIALPLAN_FECHA = """
 ; TEMPLATE_DIALPLAN_FECHA-{fts_audio_de_campana_id}
-;@@@@@@@@@@ Generar dialplan.
+exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_dia,${{{fts_tts_fecha}_dia}})
+exten => _ftsX.,n,Saynumber(${{{fts_tts_fecha}_dia}})
+exten => _ftsX.,n,Playback(del)
+exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_mes,${{{fts_tts_fecha}_mes}})
+exten => _ftsX.,n,Playback(${{{fts_tts_fecha}_mes}})
+exten => _ftsX.,n,Playback(de)
+exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_anio,${{{fts_tts_fecha}_anio}})
+exten => _ftsX.,n,Saynumber(${{{fts_tts_fecha}_anio}})
 """
 
 
@@ -237,6 +248,7 @@ def generar_dialplan(campana):
 
     for audio_de_campana in audios_de_campana:
         if audio_de_campana.audio_asterisk:
+            # Un archivo subido por el usuario
             fts_audio_file = os.path.join(settings.MEDIA_ROOT,
                                           audio_de_campana.audio_asterisk.name)
 
@@ -251,6 +263,7 @@ def generar_dialplan(campana):
                 **params_audios))
 
         elif audio_de_campana.archivo_de_audio:
+            # Un audio de los pre-definidos / pre-cargados
             fts_audio_file = os.path.join(
                 settings.MEDIA_ROOT,
                 audio_de_campana.archivo_de_audio.audio_asterisk.name)
