@@ -16,10 +16,15 @@ from fts_web.services.audios_campana import (OrdenAudiosCampanaService,
 from mock import Mock, patch
 
 
-class BajaAudioUnaPosicionTest(FTSenderBaseTest):
+class AudiosDeCampanaMixin():
+    def setUp(self):
+        AudioDeCampana.objects.all().delete()
+
+
+class BajaAudioUnaPosicionTest(AudiosDeCampanaMixin, FTSenderBaseTest):
 
     def test_no_falla(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
         for c in range(1, 10):
             AudioDeCampana.objects.create(campana=campana, orden=c)
@@ -41,7 +46,7 @@ class BajaAudioUnaPosicionTest(FTSenderBaseTest):
         self.assertEqual(adc.orden, 7)
 
     def test_falla_primera_posicion(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
         for c in range(1, 10):
             AudioDeCampana.objects.create(campana=campana, orden=c)
@@ -56,10 +61,10 @@ class BajaAudioUnaPosicionTest(FTSenderBaseTest):
             orden_audios_campana_service.baja_audio_una_posicion(adc)
 
 
-class SubeAudioUnaPosicionTest(FTSenderBaseTest):
+class SubeAudioUnaPosicionTest(AudiosDeCampanaMixin, FTSenderBaseTest):
 
     def test_no_falla(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
         for c in range(1, 10):
             AudioDeCampana.objects.create(campana=campana, orden=c)
@@ -81,7 +86,7 @@ class SubeAudioUnaPosicionTest(FTSenderBaseTest):
         self.assertEqual(adc.orden, 3)
 
     def test_falla_ultima_posicion(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
         for c in range(1, 10):
             AudioDeCampana.objects.create(campana=campana, orden=c)

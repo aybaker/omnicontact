@@ -240,7 +240,8 @@ class FTSenderTestUtilsMixin(object):
             o es None, se genera un numero aleatorio
         """
         nro_telefonico = nro_telefonico or rtel()
-        return Contacto.objects.create(datos=json.dumps([nro_telefonico]),
+        return Contacto.objects.create(datos=json.dumps([nro_telefonico,
+                                                         'nombre']),
                                        bd_contacto=bd_contacto)
 
     def crear_base_datos_contacto(self, cant_contactos=None,
@@ -331,6 +332,8 @@ class FTSenderTestUtilsMixin(object):
 
         c.nombre = "Campaña de PRUEBA - {0}".format(c.id)
         c.save()
+
+        self.crea_audios_de_campana(c)
 
         return c
 

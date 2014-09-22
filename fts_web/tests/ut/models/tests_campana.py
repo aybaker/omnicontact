@@ -462,7 +462,6 @@ class CampanaReplicarCampana(FTSenderBaseTest):
         campana = self.crear_campana()
         self.crea_calificaciones(campana)
         self.crea_todas_las_opcion_posibles(campana)
-        self.crea_audios_de_campana(campana)
 
         [self.crea_campana_actuacion(dia_semanal, hora_desde, hora_hasta,
             campana) for dia_semanal in range(0, 4)]
@@ -486,4 +485,4 @@ class CampanaReplicarCampana(FTSenderBaseTest):
         self.assertEqual(campana.segundos_ring,
                          campana_replicada.segundos_ring)
         self.assertEqual(AudioDeCampana.objects.filter(
-                         campana=campana_replicada).count(), 4)
+                         campana=campana_replicada).count(), 3)

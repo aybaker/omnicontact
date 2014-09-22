@@ -732,7 +732,6 @@ class CampanaTest(FTSenderBaseTest):
         campana = self.crear_campana()
         self.crea_calificaciones(campana)
         self.crea_todas_las_opcion_posibles(campana)
-        self.crea_audios_de_campana(campana)
 
         [self.crea_campana_actuacion(dia_semanal, hora_desde, hora_hasta,
             campana) for dia_semanal in range(0, 4)]
@@ -768,7 +767,7 @@ class CampanaTest(FTSenderBaseTest):
         self.assertEqual(Actuacion.objects.filter(campana=campana_reciclada)
             .count(), 4)
         self.assertEqual(AudioDeCampana.objects.filter(
-            campana=campana_reciclada).count(), 4)
+            campana=campana_reciclada).count(), 3)
         self.assertEqual(campana.cantidad_canales,
             campana_reciclada.cantidad_canales)
         self.assertEqual(campana.cantidad_intentos,

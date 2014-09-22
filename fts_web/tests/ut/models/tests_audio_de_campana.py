@@ -13,22 +13,28 @@ from fts_web.tests.utiles import FTSenderBaseTest
 from mock import Mock, patch
 
 
-class OrdenUniqueTest(FTSenderBaseTest):
+class AudiosDeCampanaMixin():
+    def setUp(self):
+        AudioDeCampana.objects.all().delete()
+
+
+class OrdenUniqueTest(AudiosDeCampanaMixin, FTSenderBaseTest):
     def test_falla_con_ordenes_iguales(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
 
-class ObtieneSiguienteOrdenTest(FTSenderBaseTest):
+class ObtieneSiguienteOrdenTest(AudiosDeCampanaMixin, FTSenderBaseTest):
     def test_devuelve_1(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
         # -----
+
         AudioDeCampana.objects.create(campana=campana, orden=1)
         with self.assertRaises(IntegrityError):
             AudioDeCampana.objects.create(campana=campana, orden=1)
 
     def test_devuelve_1_a_9(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
         for c in range(9):
             orden = AudioDeCampana.objects.obtener_siguiente_orden(campana.pk)
@@ -42,9 +48,9 @@ class ObtieneSiguienteOrdenTest(FTSenderBaseTest):
                 campana=campana)])
 
 
-class ObtieneAudioSiguienteTest(FTSenderBaseTest):
+class ObtieneAudioSiguienteTest(AudiosDeCampanaMixin, FTSenderBaseTest):
     def test_devuelve_siguiente(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
         for c in range(1, 9):
             AudioDeCampana.objects.create(campana=campana, orden=c)
@@ -57,7 +63,7 @@ class ObtieneAudioSiguienteTest(FTSenderBaseTest):
         self.assertEqual(adc.obtener_audio_siguiente().orden, 2)
 
     def test_devuelve_none_en_ultimo(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
         for c in range(1, 9):
             AudioDeCampana.objects.create(campana=campana, orden=c)
@@ -70,9 +76,9 @@ class ObtieneAudioSiguienteTest(FTSenderBaseTest):
         self.assertEqual(adc.obtener_audio_siguiente(), None)
 
 
-class ObtieneAudioAnteriorTest(FTSenderBaseTest):
+class ObtieneAudioAnteriorTest(AudiosDeCampanaMixin, FTSenderBaseTest):
     def test_devuelve_siguiente(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
         for c in range(1, 9):
             AudioDeCampana.objects.create(campana=campana, orden=c)
@@ -85,7 +91,7 @@ class ObtieneAudioAnteriorTest(FTSenderBaseTest):
         self.assertEqual(adc.obtener_audio_anterior().orden, 7)
 
     def test_devuelve_none_en_primero(self):
-        campana = self.crear_campana_activa()
+        campana = self.crear_campana_sin_audio()
 
         for c in range(1, 9):
             AudioDeCampana.objects.create(campana=campana, orden=c)
