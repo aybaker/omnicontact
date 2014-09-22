@@ -76,21 +76,25 @@ exten => _ftsX.,n,Background({fts_audio_file})
 
 
 TEMPLATE_DIALPLAN_TTS = """
+; TEMPLATE_DIALPLAN_TTS-{fts_audio_de_campana_id}
 ;@@@@@@@@@@ Generar dialplan.
 """
 
 
 TEMPLATE_DIALPLAN_HORA = """
+; TEMPLATE_DIALPLAN_HORA-{fts_audio_de_campana_id}
 ;@@@@@@@@@@ Generar dialplan.
 """
 
 
 TEMPLATE_DIALPLAN_FECHA = """
+; TEMPLATE_DIALPLAN_FECHA-{fts_audio_de_campana_id}
 ;@@@@@@@@@@ Generar dialplan.
 """
 
 
 TEMPLATE_DIALPLAN_HANGUP = """
+; TEMPLATE_DIALPLAN_HANGUP-{fts_campana_id}
 ; TODO: alcanza 'WaitExten(10)'?
 exten => _ftsX.,n,WaitExten(10)
 exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
@@ -208,7 +212,7 @@ def generar_dialplan(campana):
     # audios.
     for audio_de_campana in audios_de_campana:
         posibles_audios = [audio_de_campana.audio_asterisk,
-                           audio_de_campana.archivo_de_audio.audio_asterisk,
+                           audio_de_campana.archivo_de_audio,
                            audio_de_campana.tts]
         assert any(posibles_audios), "Un AudioDeCampana no es valido."
 
@@ -232,12 +236,13 @@ def generar_dialplan(campana):
                 _check_audio_file_exist(fts_audio_file, audio_de_campana)
 
             params_audios = {
+                'fts_audio_de_campana_id': audio_de_campana.id,
                 'fts_audio_file': os.path.splitext(fts_audio_file)[0],
             }
             partes.append(TEMPLATE_DIALPLAN_PLAY_AUDIO.format(
                 **params_audios))
 
-        elif audio_de_campana.archivo_de_audio.audio_asterisk:
+        elif audio_de_campana.archivo_de_audio:
             fts_audio_file = os.path.join(
                 settings.MEDIA_ROOT,
                 audio_de_campana.archivo_de_audio.audio_asterisk.name)
@@ -246,17 +251,42 @@ def generar_dialplan(campana):
                 _check_audio_file_exist(fts_audio_file, audio_de_campana)
 
             params_audios = {
+                'fts_audio_de_campana_id': audio_de_campana.id,
                 'fts_audio_file': os.path.splitext(fts_audio_file)[0],
             }
             partes.append(TEMPLATE_DIALPLAN_PLAY_AUDIO.format(
                 **params_audios))
 
         else:
-            pass
-            # Identificar que tipo de TTS es, para armar el TEMPLATE adecuado.
+            metadata = campana.bd_contacto.get_metadata()
 
-            # partes -> append de template TTS (GENERICO) o HORA o FECHA.
+            if metadata.dato_extra_es_hora(audio_de_campana.tts):
+                params_tts_hora = {
+                    'fts_audio_de_campana_id': audio_de_campana.id,
+                    'fts_tts_hora': audio_de_campana.tts,
+                }
+                partes.append(TEMPLATE_DIALPLAN_HORA.format(
+                    **params_tts_hora))
 
+            elif metadata.dato_extra_es_fecha(audio_de_campana.tts):
+                params_tts_fecha = {
+                    'fts_audio_de_campana_id': audio_de_campana.id,
+                    'fts_tts_fecha': audio_de_campana.tts,
+                }
+                partes.append(TEMPLATE_DIALPLAN_FECHA.format(
+                    **params_tts_fecha))
+
+            elif (metadata.dato_extra_es_telefono(audio_de_campana.tts) or
+                    metadata.dato_extra_es_generico(audio_de_campana.tts)):
+
+                params_tts = {
+                    'fts_audio_de_campana_id': audio_de_campana.id,
+                    'fts_tts': audio_de_campana.tts,
+                }
+                partes.append(TEMPLATE_DIALPLAN_TTS.format(
+                    **params_tts))
+
+    partes.append(TEMPLATE_DIALPLAN_HANGUP.format(**param_generales))
 
     # TODO: derivacion: setear GrupoAtencion / QUEUE (cuando corresponda)
     # TODO: voicemail: IMPLEMENTAR!
