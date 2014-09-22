@@ -102,6 +102,22 @@ Default: 20.0 (inicia ejecucion del loop despues de 20 segundos)
 #para que el proceso hijo termine
 #"""
 
+AUDIOS_PARA_MESES = [
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "setiembre",
+    "octubre",
+    "noviembre",
+    "diciembre",
+]
+"""Archivos de audio a utilizar en el dialpla para los TTS de tipo fecha"""
+
 #==============================================================================
 # Celery
 #==============================================================================
