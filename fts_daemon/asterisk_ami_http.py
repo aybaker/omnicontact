@@ -5,7 +5,6 @@
 from __future__ import unicode_literals
 
 import collections
-import math
 import os
 import re
 import tempfile
@@ -401,7 +400,8 @@ class AsteriskHttpClient(object):
         parser.parse(response_body)
         return parser
 
-    def originate(self, channel, context, exten, priority, timeout, async):
+    def originate(self, channel, context, exten, priority, timeout, async,
+                  variables_de_canal):
         """
         Send an ORIGINATE action.
         Parameters:
@@ -453,6 +453,10 @@ class AsteriskHttpClient(object):
         # var63=x63
         # var64=x64,var65=x65,var66=x66,var67=x67,(...)
 
+        lista_de_variables = []
+        for key, value in variables_de_canal.iteritems():
+            lista_de_variables.append(key + "=" + value)
+
         response_body, _ = self._request("/mxml", {
             'action': 'originate',
             'channel': channel,
@@ -461,7 +465,7 @@ class AsteriskHttpClient(object):
             'priority': priority,
             'timeout': timeout,
             'async': "true",
-            # 'variable': variable,
+            'variable': ",".join(lista_de_variables),
         }, timeout=request_timeout)
 
         parser = AsteriskXmlParserForOriginate()
