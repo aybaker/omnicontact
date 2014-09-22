@@ -256,11 +256,11 @@ class FTSenderTestUtilsMixin(object):
             nombre="base-datos-contactos-" + ru())
 
         metadata = bd_contacto.get_metadata()
-        metadata.cantidad_de_columnas = 1
+        metadata.cantidad_de_columnas = 2
         metadata.columna_con_telefono = 0
         metadata.columnas_con_hora = []
         metadata.columnas_con_fecha = []
-        metadata.nombres_de_columnas = ['telefono']
+        metadata.nombres_de_columnas = ['TELEFONO', 'NOMBRE']
         metadata.primer_fila_es_encabezado = False
         metadata.save()
         bd_contacto.save()
@@ -485,16 +485,27 @@ class FTSenderTestUtilsMixin(object):
 
     def crea_audios_de_campana(self, campana):
         """
-        Crea objetos AudioDeCampana, para una campana.
-
-        ** NO tiene en cuenta que 'tipo' crea. Por ahora todos TTS. **
+        Crea objeto AudioDeCampana, para una campana.
         """
-        for c in range(1, 5):
-            AudioDeCampana.objects.create(
-                orden=c,
-                campana=campana,
-                tts='TTS-{0}'.format(c)
-            )
+
+        AudioDeCampana.objects.create(
+            orden=1,
+            campana=campana,
+            audio_original="test/audio/original.wav",
+            audio_asterisk="test/audio/for-asterisk.wav",
+        )
+        AudioDeCampana.objects.create(
+            orden=2,
+            campana=campana,
+            tts='NOMBRE'
+        )
+        AudioDeCampana.objects.create(
+            orden=3,
+            campana=campana,
+            audio_original="test/audio/original.wav",
+            audio_asterisk="test/audio/for-asterisk.wav",
+        )
+
 
     def registra_evento_de_intento(self, campana_id, contacto_id, intento):
         """Genera evento asociado a intento de contactacion"""
