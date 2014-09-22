@@ -12,6 +12,7 @@ from fts_daemon.asterisk_ami_http import AsteriskHttpOriginateError
 from fts_daemon.models import EventoDeContacto
 from fts_web.utiles import get_class
 import logging as _logging
+from fts_daemon.poll_daemon.campana_tracker import DatosParaRealizarLlamada
 
 
 logger = _logging.getLogger(__name__)
@@ -24,12 +25,17 @@ def procesar_contacto(datos_para_realizar_llamada):
     """Registra realizacion de intento (usando EventoDeContacto)
     y luego realiza ORIGINATE, registrando el resultado de dicho comando.
 
-    :param campana: campaña a la que pertenece el contacto
-    :param contacto_id: id de contacto
-    :param numero: el numero al cual hay que llamar
-    :param cant_intentos: cantidad de intentos que ya fueron realizado
+    :param datos_para_realizar_llamada: instancia de DatosParaRealizarLlamada
+
     :returns: bool - Si el originate fue exitoso (True), sino False
     """
+
+    # :param campana: campaña a la que pertenece el contacto
+    # :param contacto_id: id de contacto
+    # :param numero: el numero al cual hay que llamar
+    # :param cant_intentos: cantidad de intentos que ya fueron realizado
+
+    assert isinstance(datos_para_realizar_llamada, DatosParaRealizarLlamada)
 
     # FTS-306 - @hgdeoro - FIXME: ELIMINAR ESTA EXPANSION DE LOS DATOS DE datos_para_realizar_llamada
     campana, contacto_id, numero, cant_intentos = datos_para_realizar_llamada
