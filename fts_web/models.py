@@ -1658,8 +1658,8 @@ class AudioDeCampana(models.Model):
     )
 
     def __unicode__(self):
-        return "{0} (pk={1}). Orden: {2}".format(self.campana,
-                                                 self.campana.pk, self.orden)
+        return "{0} (ADC pk={1}). Orden: {2}".format(self.campana,
+                                                     self.pk, self.orden)
 
     class Meta:
         ordering = ['orden']
