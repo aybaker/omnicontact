@@ -241,7 +241,10 @@ class FTSenderTestUtilsMixin(object):
         """
         nro_telefonico = nro_telefonico or rtel()
         return Contacto.objects.create(datos=json.dumps([nro_telefonico,
-                                                         'nombre']),
+                                                         'nombre',
+                                                         '15/01/1988',
+                                                         '19:41'
+                                                         ]),
                                        bd_contacto=bd_contacto)
 
     def crear_base_datos_contacto(self, cant_contactos=None,
@@ -257,11 +260,11 @@ class FTSenderTestUtilsMixin(object):
             nombre="base-datos-contactos-" + ru())
 
         metadata = bd_contacto.get_metadata()
-        metadata.cantidad_de_columnas = 2
+        metadata.cantidad_de_columnas = 4
         metadata.columna_con_telefono = 0
-        metadata.columnas_con_hora = []
-        metadata.columnas_con_fecha = []
-        metadata.nombres_de_columnas = ['TELEFONO', 'NOMBRE']
+        metadata.columnas_con_hora = [3]
+        metadata.columnas_con_fecha = [2]
+        metadata.nombres_de_columnas = ['TELEFONO', 'NOMBRE', 'FECHA', 'HORA']
         metadata.primer_fila_es_encabezado = False
         metadata.save()
         bd_contacto.save()
@@ -504,6 +507,16 @@ class FTSenderTestUtilsMixin(object):
         )
         AudioDeCampana.objects.create(
             orden=3,
+            campana=campana,
+            tts='FECHA'
+        )
+        AudioDeCampana.objects.create(
+            orden=4,
+            campana=campana,
+            tts='HORA'
+        )
+        AudioDeCampana.objects.create(
+            orden=5,
             campana=campana,
             audio_original="test/audio/original.wav",
             audio_asterisk="test/audio/for-asterisk.wav",
