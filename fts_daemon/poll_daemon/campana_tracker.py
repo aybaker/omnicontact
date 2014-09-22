@@ -12,6 +12,7 @@ import random
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import Campana
 import logging as _logging
+from django.conf import settings
 
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
@@ -48,7 +49,11 @@ class LimiteDeCanalesAlcanzadoError(Exception):
 
 
 class DatosParaRealizarLlamada(object):
-    """Encapsula los datos necesarios para realizar una llamada"""
+    """Encapsula los datos necesarios para realizar una llamada.
+
+    Las instancias son de esta clase son pasada entre las distintas
+    capas / servicios, desde el tracker de campaña hasta el llamador.
+    """
 
     def __init__(self, campana, id_contacto, telefono, intentos, datos_extras):
         assert isinstance(campana, Campana)
@@ -59,6 +64,82 @@ class DatosParaRealizarLlamada(object):
         self.telefono = telefono
         self.intentos = intentos
         self.datos_extras = datos_extras
+
+    def _get_archivo_de_audio_para_mes(self, mes):
+        """Devuelve el nombre del archivo de audio, para el
+        dialplan de Asterisk, para el mes pasado por parametro.
+
+        El mes es un entero entre 1 y 12 inclusive.
+        """
+        assert isinstance(mes, int)
+        assert 1 <= mes <= 12
+        index = mes - 1
+
+        return settings.AUDIOS_PARA_MESES[index]
+
+    def _generar_tts(self, metadata, audio_de_campana):
+        """Genera variables para 1 TTS, de cualquier tipo.
+        :returns: diccionario con valores.
+        """
+
+        nombre_del_campo = audio_de_campana.tts
+
+        if nombre_del_campo not in self.datos_extras:
+            raise(Exception(
+                "El campo '{0}' no se encuentra entre "
+                "los datos extras: '{1}'"
+                "".format(nombre_del_campo,
+                          pprint.pformat(self.datos_extras))))
+
+        valor_del_campo = self.datos_extras[nombre_del_campo]
+
+        if metadata.dato_extra_es_hora(nombre_del_campo):
+            # TTS de hora
+            hora, minutos = valor_del_campo.split(":")
+            return {
+                nombre_del_campo + '_hora': unicode(int(hora)),
+                nombre_del_campo + '_min': unicode(int(minutos)),
+            }
+
+        elif metadata.dato_extra_es_fecha(nombre_del_campo):
+            # TTS de fecha
+            dia, mes, anio = valor_del_campo.split("/")
+
+            audio_mes = self._get_archivo_de_audio_para_mes(int(mes))
+            return {
+                nombre_del_campo + '_dia': unicode(int(dia)),
+                nombre_del_campo + '_mes': audio_mes,
+                nombre_del_campo + '_anio': unicode(int(anio)),
+            }
+
+        else:
+            # TTS generico / texto
+            return {nombre_del_campo: valor_del_campo}
+
+    def generar_variables_de_canal(self):
+        """Genera variables para ser inyectadas en Asterisk como
+        variables de canal. Esto es necesario para enviar datos
+        de TTS / fechas / horas
+        """
+        variables = {}
+        audios_de_campana = self.campana.audios_de_campana.all()
+        metadata = self.campana.bd_contacto.get_metadata()
+
+        for audio_de_campana in audios_de_campana:
+            if audio_de_campana.audio_asterisk:
+                # Ignoramos audios
+                pass
+            elif audio_de_campana.archivo_de_audio:
+                # Ignoramos audios
+                pass
+            elif audio_de_campana.tts:
+                variables.update(self._generar_tts(metadata, audio_de_campana))
+            else:
+                raise(Exception("AudioDeCampana {0} no es de ninguno de "
+                                "los tipos esperados"
+                                "".format(audio_de_campana.id)))
+
+        return variables
 
     # FTS-306 - @hgdeoro - FIXME: ELIMINAR este metodo y arreglar quien lo use
     def __iter__(self):
