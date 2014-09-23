@@ -78,8 +78,10 @@ INTERNAL_IPS = (
 # }
 
 #
-# Para conectarse a Asterisk -> VER: deploy/asterisk-11-on-docker/Dockerfile
-#  TODO: DIAL_URL
+# Para conectarse a Asterisk
+# VER: deploy/asterisk-11-on-docker/Dockerfile
+#
+# TODO: DIAL_URL
 #
 ASTERISK = {
     'USERNAME': 'admin',
@@ -88,11 +90,25 @@ ASTERISK = {
     'DIAL_URL': "IAX2/127.0.0.1/${NumberToCall}",
 }
 
-FTS_DIALPLAN_FILENAME = "/tmp/fts-extensions.conf"
+#
+# VER: deploy/asterisk-11-on-docker/Dockerfile
+#
 
-FTS_QUEUE_FILENAME = "/tmp/fts-queues.conf"
+FTS_DIALPLAN_FILENAME = "/opt/data-tsunami/fts/asterisk/conf/extensions_fts.conf"
 
-FTS_RELOAD_CMD = ["/bin/true"]
+#
+# VER: deploy/asterisk-11-on-docker/Dockerfile
+#
+
+FTS_QUEUE_FILENAME = "/opt/data-tsunami/fts/asterisk/conf/queues_fts.conf"
+
+#
+# Hacemos que reload falle, asi la campana se pausa, y hay
+# posibilidad de reiniciar asterisk@docker
+#
+
+FTS_RELOAD_CMD = ["{0}/deploy/asterisk-11-on-docker/reload_asterisk.sh"
+                  "".format(os.path.abspath(os.path.dirname(__file__)))]
 
 # Ubuntu (wav -> wav)
 TMPL_FTS_AUDIO_CONVERSOR = ["sox", "-t", "wav", "<INPUT_FILE>",

@@ -3,11 +3,6 @@
 #
 #    $ docker build -t hgdeoro/fts-asterisk-dev .
 #
-# Para lanzar container:
-#
-#    $ docker run -p 5060:5060/udp -p 7088:7088 -ti hgdeoro/fts-asterisk-dev
-#
-#
 # Usuarios SIP:
 #  - USER: test_user1 - PASS: 1234
 #  - USER: test_user2 - PASS: 1234
@@ -80,8 +75,9 @@ RUN make samples
 
 EXPOSE 2000 2727 4520 4569 5000 5038 5060 7088
 
-COPY start.sh /start.sh
+COPY in_docker_start.sh /in_docker_start.sh
 
 COPY conf /opt/asterisk-11/etc/asterisk/
 
-CMD ["/start.sh"]
+CMD ["/in_docker_start.sh"]
+
