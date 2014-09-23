@@ -71,11 +71,31 @@ class DatosParaRealizarLlamada(object):
         assert isinstance(campana, Campana)
         assert isinstance(datos_extras, dict)
 
-        self.campana = campana
-        self.id_contacto = id_contacto
-        self.telefono = telefono
-        self.intentos = intentos
-        self.datos_extras = datos_extras
+        self._campana = campana
+        self._id_contacto = id_contacto
+        self._telefono = telefono
+        self._intentos = intentos
+        self._datos_extras = datos_extras
+
+    @property
+    def campana(self):
+        return self._campana
+
+    @property
+    def id_contacto(self):
+        return self._id_contacto
+
+    @property
+    def telefono(self):
+        return self._telefono
+
+    @property
+    def intentos(self):
+        return self._intentos
+
+    @property
+    def datos_extras(self):
+        return self._datos_extras
 
     def _get_archivo_de_audio_para_mes(self, mes):
         """Devuelve el nombre del archivo de audio, para el
@@ -169,13 +189,6 @@ class DatosParaRealizarLlamada(object):
                     "los tipos esperados".format(audio_de_campana.id)))
 
         return variables
-
-    # FTS-306 - @hgdeoro - FIXME: ELIMINAR este metodo y arreglar quien lo use
-    def __iter__(self):
-        return iter([self.campana,
-                     self.id_contacto,
-                     self.telefono,
-                     self.intentos])
 
 
 class CampanaTracker(object):
@@ -328,28 +341,44 @@ class CampanaTracker(object):
         return random.randint(self.fetch_min, self.fetch_max)
 
     def _obtener_pendientes(self):
-        """Devuelve información de contactos pendientes de contactar.
+        """Devuelve lista de ContactoPendiente con info de
+        contactos pendientes de contactar.
         Puede devolver contactos que actualmente estan siendo
-        contactados."""
+        contactados.
+
+        :returns: lista de ContactoPendiente
+        """
         limit = self._get_random_fetch()
-        return EventoDeContacto.objects_gestion_llamadas.\
-            obtener_pendientes(self.campana.id, limit=limit)
+        manager = EventoDeContacto.objects_gestion_llamadas
+        return manager.obtener_pendientes(
+            self.campana.id,
+            limit=limit
+        )
 
     def _obtener_pendientes_sin_en_curso(self):
-        """Devuelve información de contactos pendientes de contactar,
+        """Devuelve lista de ContactoPendiente con info de
+        contactos pendientes de contactar,
         EXCEPTUANDO contactos con llamadas en curso. Por lo tanto,
-        es seguro contactar a los contactos devueltos por este metodo"""
-        limit = self._get_random_fetch()
-        return EventoDeContacto.objects_gestion_llamadas.\
-            obtener_pendientes_no_en_curso(self.campana.id, limit=limit,
-                contacto_ids_en_curso=list(self._contactos_en_curso))
+        es seguro contactar a los contactos devueltos por este metodo
 
-    def _obtener_datos_de_contactos(self, contactos_values):
-        # FTS-306 - @hgdeoro
-        id_contactos = [tmp[1] for tmp in contactos_values]
-        return EventoDeContacto.objects_gestion_llamadas.\
-            obtener_datos_de_contactos(id_contactos,
-                                       self.campana.bd_contacto)
+        :returns: lista de ContactoPendiente
+        """
+        limit = self._get_random_fetch()
+        manager = EventoDeContacto.objects_gestion_llamadas
+        return manager.obtener_pendientes_no_en_curso(
+            self.campana.id,
+            limit=limit,
+            contacto_ids_en_curso=list(self._contactos_en_curso)
+        )
+
+    def _obtener_contactos(self, contactos_pendientes):
+        """Devuelve instancias de Contacto para los items de
+        `contactos_pendientes`
+
+        :returns: lista de Contacto
+        """
+        manager = EventoDeContacto.objects_gestion_llamadas
+        return manager.obtener_contactos(contactos_pendientes)
 
     def _verifica_fecha_y_hora(self):
         """Verifica q' fecha con datos de campaña, y hora con datos
@@ -410,61 +439,52 @@ class CampanaTracker(object):
                 self._obtener_pendientes_sin_en_curso()
 
             if not contactos_sin_en_curso_values:
-                contactos_values = self._obtener_pendientes()
+                contactos_pendientes = self._obtener_pendientes()
                 # ¿Es situacion (a)?
-                if not contactos_values:
+                if not contactos_pendientes:
                     raise NoMasContactosEnCampana()
 
                 # Si llegamos aca, es porque se trata de (b), y entonces
-                # `contactos_values` tiene datos
+                # `contactos_pendientes` tiene datos
                 raise TodosLosContactosPendientesEstanEnCursoError()
 
             # Si llegamos aca, es porque `contactos_sin_en_curso_values`
             # tiene contactos. Usamos esos valores!
-            contactos_values = contactos_sin_en_curso_values
+            contactos_pendientes = contactos_sin_en_curso_values
 
         else:
             # No hay info de contactos en curso
-            contactos_values = self._obtener_pendientes()
+            contactos_pendientes = self._obtener_pendientes()
 
-            if not contactos_values:
+            if not contactos_pendientes:
                 raise NoMasContactosEnCampana()
 
         #
-        # EL ORDEN DE contactos_values ES IMPORTANTE !!!!!!!!!!
+        # EL ORDEN DE contactos_pendientes ES IMPORTANTE !!!!!!!!!!
         #
-        # ATENCION: `contactos_values` estan ordenados por cant. de intentos,
+        # ATENCION: `contactos_pendientes` estan ordenados x cant. de intentos,
         #   asi que cualquier procesamiento que se haga, debe hacerse
         #   teniendo en cuenta el orden definido en dicha lista
         #
 
-        # Si llegamos aca, es porque en `contactos_values` estan
+        # Si llegamos aca, es porque en `contactos_pendientes` estan
         # los datos a devolver
 
-        #
-        # `contactos_values` - cada item tiene:
-        #     - item[0]: cantidad de veces intentado
-        #     - item[1]: id_contacto
-        #
+        contactos = self._obtener_contactos(contactos_pendientes)
+        contactos_dict = dict([(c.id, c) for c in contactos])
 
-        # EX: id_contacto_telefono_y_datos_extras
-        id_contacto_telefono_y_datos_extras = self._obtener_datos_de_contactos(
-            contactos_values)
-
-        # EX: id_contacto_y_telefono_dict
-        datos_por_id_contacto = dict(
-            [(id_contacto, (telefono, datos_extras))
-             for id_contacto, telefono, datos_extras
-                in id_contacto_telefono_y_datos_extras]
-        )
-
-        # FTS-306 - @hgdeoro
-
-        # Cargamos cache, RESPETANDO el orden en `contactos_values`
+        # Cargamos cache, RESPETANDO el orden en `contactos_pendientes`
+        metadata = self.campana.bd_contacto.get_metadata()
         nuevo_cache = []
-        for intento, id_contacto in contactos_values:
-            telefono = datos_por_id_contacto[id_contacto][0]
-            datos_extras = datos_por_id_contacto[id_contacto][1]
+        for contactos_pendientes in contactos_pendientes:
+            id_contacto = contactos_pendientes.id_contacto
+            intento = contactos_pendientes.cantidad_intentos_realizados
+
+            contacto = contactos_dict[id_contacto]
+
+            telefono, datos_extras = contacto.obtener_telefono_y_datos_extras(
+                metadata
+            )
 
             nuevo_cache.append(DatosParaRealizarLlamada(
                 self.campana,

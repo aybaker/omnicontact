@@ -270,7 +270,7 @@ class RoundRobinTracker(object):
         """Devuelve los datos de contacto a contactar, de a una
         campaña por vez.
 
-        :returns: (campana, contacto_id, telefono, cant_intentos_realizados)
+        :returns: DatosParaRealizarLlamada
         """
 
         iter_num = 0
@@ -518,7 +518,6 @@ class Llamador(object):
 
         for datos_para_realizar_llamada in self.rr_tracker.generator():
 
-            # FTS-306 - @hgdeoro
             assert isinstance(datos_para_realizar_llamada,
                               DatosParaRealizarLlamada)
 

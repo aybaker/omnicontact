@@ -14,7 +14,8 @@ from django.db import connection
 from django.db import models
 from django.db.models import Count
 
-from fts_web.models import Campana, BaseDatosContacto, Contacto
+from fts_web.models import Campana, BaseDatosContacto, Contacto,\
+    ContactoPendiente
 from fts_web.utiles import log_timing
 import logging as _logging
 import json
@@ -794,18 +795,21 @@ class GestionDeLlamadasManager(models.Manager):
             )
 
     def obtener_pendientes(self, campana_id, limit=100):
-        """Devuelve lista de listas, con los datos de los contactos que
-        estan pendientes de realizar. Tiene en cuenta la cantidad maxima
+        """Devuelve lista de ContactoPendiente, con los datos de los contactos
+        pendientes de realizar. Tiene en cuenta la cantidad maxima
         de intentos seteada en la campana
-
-        Cada elemento de la lista contiene una lista, con 2 items:
-        - item[0]: cantidad de veces intentado
-        - item[1]: id_contacto
 
         Cuando todos los pendientes han sido finalizados, devuelve
         una lista vacia.
+
+        :returns: lista de ContactoPendiente
         """
-        # FTS-306 - @hgdeoro
+        # ----- <ANTES> -----
+        # Cada elemento de la lista contiene una lista, con 2 items:
+        # - item[0]: cantidad de veces intentado
+        # - item[1]: id_contacto
+        # ----- </ANTES> -----
+
         campana = Campana.objects.get(pk=campana_id)
 
         #
@@ -856,19 +860,16 @@ class GestionDeLlamadasManager(models.Manager):
             cursor.execute(sql, params)
             values = cursor.fetchall()
 
-        values = [(row[0] - 1, row[1],) for row in values]
+        values = [ContactoPendiente(row[1], row[0] - 1)
+                  for row in values]
         return values
 
     def obtener_pendientes_no_en_curso(self, campana_id, contacto_ids_en_curso,
         limit=100):
-        """Devuelve lista de listas, con los datos de los contactos que
-        estan pendientes de realizar. Tiene en cuenta la cantidad maxima
+        """Devuelve lista de ContactoPendiente, con los datos de los contactos
+        pendientes de realizar. Tiene en cuenta la cantidad maxima
         de intentos seteada en la campana, y filtra los contactos para
         excluir los contactos especificados en `contacto_ids_en_curso`.
-
-        Cada elemento de la lista contiene una lista, con 2 items:
-        - item[0]: cantidad de veces intentado
-        - item[1]: id_contacto
 
         Cuando todos los pendientes han sido finalizados, devuelve
         una lista vacia.
@@ -877,6 +878,13 @@ class GestionDeLlamadasManager(models.Manager):
                                       estar vacia. Si no hay contactos
                                       en curso, utilizar obtener_pendientes()
         """
+
+        # ----- <ANTES> -----
+        # Cada elemento de la lista contiene una lista, con 2 items:
+        # - item[0]: cantidad de veces intentado
+        # - item[1]: id_contacto
+        # ----- </ANTES> -----
+
         assert len(contacto_ids_en_curso) > 0
 
         campana = Campana.objects.get(pk=campana_id)
@@ -942,42 +950,27 @@ class GestionDeLlamadasManager(models.Manager):
             cursor.execute(sql, params)
             values = cursor.fetchall()
 
-        values = [(row[0] - 1, row[1],) for row in values]
+        values = [ContactoPendiente(row[1], row[0] - 1)
+                  for row in values]
         return values
 
-    def obtener_datos_de_contactos(self, id_contactos, bd_contactos):
-        """Devuelve los datos necesarios para generar llamadas
-        para los contactos pasados por parametros (lista de IDs).
+    def obtener_contactos(self, contactos_pendientes):
+        """Devuelve Contactos referenciados por contactos_pendientes
 
-        Devuelve el numero telefonico y los datos extras.
-
-        Devuelve lista de listas, con ((id_contacto, telefono, datos_extras),
-                                       (id_contacto, telefono, datos_extras),
-                                       ...
-                                      )
+        :param contactos_pendientes: lista de ContactoPendiente
         """
-        # FTS-306 - @hgdeoro
-        if len(id_contactos) > 100:
-            logger.warn("obtener_datos_de_contactos(): de id_contactos "
-                "contiene muchos elementos, exactamente %s", len(id_contactos))
+        if len(contactos_pendientes) > 100:
+            logger.warn("obtener_contactos(): 'contactos_pendientes' "
+                "contiene muchos elementos, exactamente %s",
+                len(contactos_pendientes))
 
-        metadata = bd_contactos.get_metadata()
+        id_contactos = [cp.id_contacto for cp in contactos_pendientes]
 
-        with log_timing(logger, "obtener_datos_de_contactos() tardo %s seg"):
+        with log_timing(logger, "obtener_contactos() tardo %s seg"):
             # forzamos query
+            contactos = list(Contacto.objects.filter(id__in=id_contactos))
 
-            # values = list(Contacto.objects.filter(
-            #     id__in=id_contactos).values_list('id', 'telefono'))
-
-            qs = Contacto.objects.filter(id__in=id_contactos
-                                        ).values_list('id', 'datos')
-            values = []
-            for pk, datos in qs:
-                telefono, extras = metadata.obtener_telefono_y_datos_extras(
-                    datos)
-                values.append((pk, telefono, extras))
-
-        return values
+        return contactos
 
 
 class RecicladorContactosEventoDeContactoManager(models.Manager):
