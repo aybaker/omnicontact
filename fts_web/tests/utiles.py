@@ -152,7 +152,7 @@ def ru():
 
 def rtel():
     """Devuelve nro telefonico aleatorio"""
-    return random.randint(1140000000, 1149999999)
+    return unicode(random.randint(1140000000, 1149999999))
 
 
 def get_test_resource_directory():
@@ -231,6 +231,24 @@ class FTSenderTestUtilsMixin(object):
             numero_interno=str(random.randint(1000000, 5000000)),
             grupo_atencion=grupo_atencion)
 
+    def crear_lista_datos_extras(self, nro_telefonico=None):
+        """Devuelve lista con datos extras.
+
+        Lo que devuelve emula los datos extras de un contacto,
+        luego de haber sido parseados desde string json.
+        """
+        nro_telefonico = nro_telefonico or rtel()
+        return [nro_telefonico, 'nombre', '15/01/1988', '19:41']
+
+    def crear_dict_datos_extras(self, nro_telefonico=None):
+        """Devuelve dict con datos extras.
+
+        Lo que devuelve emula los datos extras de un contacto,
+        luego de haber sido parseados desde string json.
+        """
+        return dict(zip(['TELEFONO', 'NOMBRE', 'FECHA', 'HORA'],
+                        self.crear_lista_datos_extras(nro_telefonico)))
+
     def crear_contacto(self, bd_contacto, nro_telefonico=None):
         """Crea un contacto asociado a la base de datos de
         contactos especificada.
@@ -239,13 +257,10 @@ class FTSenderTestUtilsMixin(object):
         - nro_telefonico: nro telefonico del contacto. Si no se epscifica
             o es None, se genera un numero aleatorio
         """
-        nro_telefonico = nro_telefonico or rtel()
-        return Contacto.objects.create(datos=json.dumps([nro_telefonico,
-                                                         'nombre',
-                                                         '15/01/1988',
-                                                         '19:41'
-                                                         ]),
-                                       bd_contacto=bd_contacto)
+        return Contacto.objects.create(
+            datos=json.dumps(self.crear_lista_datos_extras(nro_telefonico)),
+            bd_contacto=bd_contacto
+        )
 
     def crear_base_datos_contacto(self, cant_contactos=None,
         numeros_telefonicos=None):
@@ -269,19 +284,20 @@ class FTSenderTestUtilsMixin(object):
         metadata.save()
         bd_contacto.save()
 
-        if numeros_telefonicos is not None:
+        if numeros_telefonicos is None:
+            if cant_contactos is None:
+                cant_contactos = random.randint(3, 7)
+            for _ in range(0, cant_contactos):
+                self.crear_contacto(bd_contacto)
+            bd_contacto.cantidad_contactos = cant_contactos
+
+        else:
             for nro_telefonico in numeros_telefonicos:
                 self.crear_contacto(
                     bd_contacto, nro_telefonico=nro_telefonico)
             bd_contacto.cantidad_contactos = len(numeros_telefonicos)
             bd_contacto.save()
             return bd_contacto
-
-        if cant_contactos is None:
-            cant_contactos = random.randint(3, 7)
-        for _ in range(0, cant_contactos):
-            self.crear_contacto(bd_contacto)
-        bd_contacto.cantidad_contactos = cant_contactos
 
         bd_contacto.sin_definir = False
         bd_contacto.estado = BaseDatosContacto.ESTADO_DEFINIDA
