@@ -75,13 +75,18 @@ def procesar_contacto(datos_para_realizar_llamada):
     http_ami_client = http_client_clazz()
 
     try:
+        variables_de_canal = datos_para_realizar_llamada.\
+            generar_variables_de_canal()
+
         http_ami_client.login()
         http_ami_client.originate(channel, context, exten, 1,
-            (campana.segundos_ring + 2) * 1000, async=True)
+            (campana.segundos_ring + 2) * 1000, async=True,
+            variables_de_canal=variables_de_canal)
         EventoDeContacto.objects.\
             create_evento_daemon_originate_successful(
                 campana.id, contacto_id, intento_actual)
         return True
+
     except AsteriskHttpOriginateError:
         logger.exception("Originate failed - campana: %s - contacto: %s",
             campana.id, contacto_id)
@@ -89,6 +94,7 @@ def procesar_contacto(datos_para_realizar_llamada):
             create_evento_daemon_originate_failed(
                 campana.id, contacto_id, intento_actual)
         return False
+
     except:
         logger.exception("Originate failed - campana: %s - contacto: %s",
             campana.id, contacto_id)
