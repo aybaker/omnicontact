@@ -1657,6 +1657,9 @@ class Campana(models.Model):
                             datos."]
                     })
 
+    class Meta:
+        ordering = ['pk']
+
     def __unicode__(self):
         return self.nombre
 
