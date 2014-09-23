@@ -80,8 +80,9 @@ RUN make samples
 
 EXPOSE 2000 2727 4520 4569 5000 5038 5060 7088
 
-COPY start.sh /start.sh
+COPY in_docker_start.sh /in_docker_start.sh
 
 COPY conf /opt/asterisk-11/etc/asterisk/
 
-CMD ["/start.sh"]
+CMD ["/in_docker_start.sh"]
+
