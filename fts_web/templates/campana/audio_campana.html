@@ -132,7 +132,8 @@
                                                 <a href="{% url 'audios_template_elimina' campana.pk audio_de_campana.pk %}"> 
                                                 <span class="glyphicon glyphicon-trash"></span>
                                                 </a>
-                                            {% else %}                                            
+
+                                            {% else %}
                                                 
                                                 <a href="{% url 'audios_campana_elimina' campana.pk audio_de_campana.pk %}">
                                                 <span class="glyphicon glyphicon-trash"></span>
@@ -142,17 +143,30 @@
                                         </td>
                                         <td>
                                             {% if not forloop.last %}
-                                                <button data-url="{% url 'audio_campana_orden' campana.pk audio_de_campana.pk %}" data-sentido-orden="{{ ORDEN_SENTIDO_DOWN }}" type="button" class="btn btn-default btn-xs orden">
+                                                {% if es_template %}
+                                                    <button data-url="{% url 'audio_template_orden' campana.pk audio_de_campana.pk %}" data-sentido-orden="{{ ORDEN_SENTIDO_DOWN }}" type="button" class="btn btn-default btn-xs orden">
 
-                                                   <span class="glyphicon glyphicon-chevron-down"></span>
-                                                </button>
+                                                       <span class="glyphicon glyphicon-chevron-down"></span>
+                                                    </button>
+                                                {% else %}
+                                                    <button data-url="{% url 'audio_campana_orden' campana.pk audio_de_campana.pk %}" data-sentido-orden="{{ ORDEN_SENTIDO_DOWN }}" type="button" class="btn btn-default btn-xs orden">
+
+                                                       <span class="glyphicon glyphicon-chevron-down"></span>
+                                                    </button>
+                                                {% endif %}
                                             {% endif %}
                                         </td>
                                         <td>  
                                             {% if not forloop.first %}
-                                                <button data-url="{% url 'audio_campana_orden' campana.pk audio_de_campana.pk %}" data-sentido-orden="{{ ORDEN_SENTIDO_UP }}" type="button" class="btn btn-default btn-xs orden">
+                                                {% if es_template %}
+                                                    <button data-url="{% url 'audio_template_orden' campana.pk audio_de_campana.pk %}" data-sentido-orden="{{ ORDEN_SENTIDO_UP }}" type="button" class="btn btn-default btn-xs orden">
+                                                        <span class="glyphicon glyphicon-chevron-up"></span>
+                                                    </button>
+                                                {% else %}
+                                                     <button data-url="{% url 'audio_campana_orden' campana.pk audio_de_campana.pk %}" data-sentido-orden="{{ ORDEN_SENTIDO_UP }}" type="button" class="btn btn-default btn-xs orden">
                                                     <span class="glyphicon glyphicon-chevron-up"></span>
                                                 </button>
+                                                {% endif %}
                                             {% endif %}
                                         </td>
                                     </tr>
