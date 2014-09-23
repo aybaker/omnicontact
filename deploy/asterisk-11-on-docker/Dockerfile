@@ -3,11 +3,6 @@
 #
 #    $ docker build -t hgdeoro/fts-asterisk-dev .
 #
-# Para lanzar container:
-#
-#    $ docker run -p 5060:5060/udp -p 7088:7088 -ti hgdeoro/fts-asterisk-dev
-#
-#
 # Usuarios SIP:
 #  - USER: test_user1 - PASS: 1234
 #  - USER: test_user2 - PASS: 1234
