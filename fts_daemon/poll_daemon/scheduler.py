@@ -518,7 +518,6 @@ class Llamador(object):
 
         for datos_para_realizar_llamada in self.rr_tracker.generator():
 
-            # FTS-306 - @hgdeoro
             assert isinstance(datos_para_realizar_llamada,
                               DatosParaRealizarLlamada)
 

@@ -810,7 +810,6 @@ class GestionDeLlamadasManager(models.Manager):
         # - item[1]: id_contacto
         # ----- </ANTES> -----
 
-        # FTS-306 - @hgdeoro
         campana = Campana.objects.get(pk=campana_id)
 
         #

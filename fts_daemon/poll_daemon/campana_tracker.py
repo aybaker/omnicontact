@@ -377,7 +377,6 @@ class CampanaTracker(object):
 
         :returns: lista de Contacto
         """
-        # FTS-306 - @hgdeoro
         manager = EventoDeContacto.objects_gestion_llamadas
         return manager.obtener_contactos(contactos_pendientes)
 
@@ -446,7 +445,7 @@ class CampanaTracker(object):
                     raise NoMasContactosEnCampana()
 
                 # Si llegamos aca, es porque se trata de (b), y entonces
-                # `contactos_values` tiene datos
+                # `contactos_pendientes` tiene datos
                 raise TodosLosContactosPendientesEstanEnCursoError()
 
             # Si llegamos aca, es porque `contactos_sin_en_curso_values`
@@ -474,9 +473,7 @@ class CampanaTracker(object):
         contactos = self._obtener_contactos(contactos_pendientes)
         contactos_dict = dict([(c.id, c) for c in contactos])
 
-        # FTS-306 - @hgdeoro
-
-        # Cargamos cache, RESPETANDO el orden en `contactos_values`
+        # Cargamos cache, RESPETANDO el orden en `contactos_pendientes`
         metadata = self.campana.bd_contacto.get_metadata()
         nuevo_cache = []
         for contactos_pendientes in contactos_pendientes:
