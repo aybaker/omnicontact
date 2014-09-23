@@ -102,6 +102,12 @@ FTS_DIALPLAN_FILENAME = "/opt/data-tsunami/fts/asterisk/conf/extensions_fts.conf
 
 FTS_QUEUE_FILENAME = "/opt/data-tsunami/fts/asterisk/conf/queues_fts.conf"
 
+if not os.path.exists(os.path.dirname(FTS_QUEUE_FILENAME)):
+    raise(Exception("El directorio {0} no existe. "
+                    "Para crearlo, ejecute "
+                    "./deploy/asterisk-11-on-docker/run_asterisk.sh"
+                    "".format(os.path.dirname(FTS_QUEUE_FILENAME))))
+
 #
 # Hacemos que reload falle, asi la campana se pausa, y hay
 # posibilidad de reiniciar asterisk@docker
