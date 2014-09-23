@@ -16,7 +16,16 @@
                     {% else %}
                         <h4>Campaña <strong>{{ object.campana.nombre }}</strong></h4>
                     {% endif %}
-                    <h4>¿Esta seguro que desea eliminar el Audio:  <strong>{{ object }}</strong>?</h4>
+                    <h4>¿Esta seguro que desea eliminar el Audio:  
+                    <strong>
+                        {% if object.audio_descripcion %}
+                            {{ object.audio_descripcion }}
+                        {% elif object.archivo_de_audio %}
+                            {{ object.archivo_de_audio.descripcion }}
+                        {% else %}
+                            {{ object.tts }}
+                        {% endif %}
+                    </strong>?</h4>
 
                     <button type="submit" class="btn btn-danger btn-sm">
                         <span class="glyphicon glyphicon-remove"></span> Eliminar

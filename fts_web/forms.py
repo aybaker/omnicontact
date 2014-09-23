@@ -264,6 +264,8 @@ class AudioForm(forms.ModelForm):
         self.fields['tts'].widget = forms.Select(choices=tts_choices)
 
         self.fields['audio_original'].widget.attrs['disabled'] = True
+        self.fields['archivo_de_audio'].queryset =\
+            ArchivoDeAudio.objects.all()
 
         self.helper = FormHelper()
         self.helper.form_tag = False
