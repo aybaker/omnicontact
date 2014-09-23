@@ -89,8 +89,7 @@
            <form role="form" method="post" enctype="multipart/form-data" >
                 <div class="col-lg-4">                
                     {% csrf_token %}                         
-
-                    <h4>Nuevo Audio</h4>
+                    <h4>Agregar Audios</h4>
                     {% crispy form %} 
                 </div>
                 <div class="col-lg-6">
@@ -195,7 +194,8 @@
                         </a>                        
                     {% endif %}
                     <button type="submit" id="id_guardar" class="btn btn-success btn-lg modal_proceso_grande">
-                        Guardar Audio
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Agregar Audio
                     </button>
                     
                 </div>

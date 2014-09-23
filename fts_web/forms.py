@@ -254,9 +254,9 @@ class CampanaForm(forms.ModelForm):
 
 
 class AudioForm(forms.ModelForm):
-    check_audio_original = forms.BooleanField(label="Especificar Audio",
-                                              required=False,
-                                              widget=forms.CheckboxInput())
+    check_audio_original = forms.BooleanField(
+        label="Seleccionar y subir audio", required=False,
+        widget=forms.CheckboxInput())
 
     def __init__(self, tts_choices, *args, **kwargs):
         super(AudioForm, self).__init__(*args, **kwargs)
@@ -286,7 +286,7 @@ class AudioForm(forms.ModelForm):
         }
         labels = {
             'audio_original': '',
-            'archivo_de_audio': '',
+            'archivo_de_audio': 'Audio Precargado',
             'tts': 'TTS',
         }
         help_texts = {
@@ -344,15 +344,15 @@ class TipoRecicladoForm(forms.Form):
         self.helper.form_show_labels = False
         self.helper.form_id = 'id_guardar'
         self.helper.form_method = 'post'
-
-        self.helper.add_input(
-            Submit('continuar', 'Continuar',
-                   css_class='btn btn-primary pull-right modal_proceso_grande')
-        )
-
         self.helper.layout = Layout(
             Field('tipo_reciclado_unico', css_class='radio_reciclado'),
             Field('tipo_reciclado_conjunto', css_class='checkboxs_reciclado'),
+            HTML("""
+                <button type="submit" name="continuar" id="submit-id-continuar"
+                    class="btn btn-default pull-right modal_proceso_grande">
+                    Continuar
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </button>"""),
         )
 
 
