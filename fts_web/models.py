@@ -752,6 +752,22 @@ class ContactoManager(models.Manager):
             cursor.execute(sql, params)
 
 
+class ContactoPendiente(object):
+    """Guarda informacion de un contacto pendiente de ser contactado"""
+
+    def __init__(self, id_contacto, cantidad_intentos_realizados):
+        self._id_contacto = id_contacto
+        self._cantidad_intentos_realizados = cantidad_intentos_realizados
+
+    @property
+    def cantidad_intentos_realizados(self):
+        return self._cantidad_intentos_realizados
+
+    @property
+    def id_contacto(self):
+        return self._id_contacto
+
+
 class Contacto(models.Model):
     objects = ContactoManager()
 
@@ -760,6 +776,16 @@ class Contacto(models.Model):
         'BaseDatosContacto',
         related_name='contactos'
     )
+
+    def obtener_telefono_y_datos_extras(self, metadata):
+        """Devuelve lista con (telefono, datos_extras) utilizando
+        la informacion de metadata pasada por parametro.
+
+        Recibimos `metadata` por parametro por una cuestion de
+        performance.
+        """
+        telefono, extras = metadata.obtener_telefono_y_datos_extras(self.datos)
+        return (telefono, extras)
 
     def __unicode__(self):
         return '{0} >> {1}'.format(
