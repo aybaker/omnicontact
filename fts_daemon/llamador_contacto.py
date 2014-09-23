@@ -30,23 +30,20 @@ def procesar_contacto(datos_para_realizar_llamada):
     :returns: bool - Si el originate fue exitoso (True), sino False
     """
 
-    # :param campana: campaña a la que pertenece el contacto
-    # :param contacto_id: id de contacto
-    # :param numero: el numero al cual hay que llamar
-    # :param cant_intentos: cantidad de intentos que ya fueron realizado
-
     assert isinstance(datos_para_realizar_llamada, DatosParaRealizarLlamada)
 
-    # FTS-306 - @hgdeoro - FIXME: ELIMINAR ESTA EXPANSION DE LOS DATOS DE datos_para_realizar_llamada
-    campana, contacto_id, numero, cant_intentos = datos_para_realizar_llamada
+    campana = datos_para_realizar_llamada.campana
 
     logger.info("Realizando originate - campana: %s - contacto: %s - "
-        "numero: %s - intentos: %s", campana.id, contacto_id, numero,
-        cant_intentos)
+        "numero: %s - intentos: %s", campana.id,
+        datos_para_realizar_llamada.id_contacto,
+        datos_para_realizar_llamada.telefono,
+        datos_para_realizar_llamada.intentos)
 
-    intento_actual = cant_intentos + 1
+    intento_actual = datos_para_realizar_llamada.intentos + 1
 
-    EventoDeContacto.objects.inicia_intento(campana.id, contacto_id,
+    EventoDeContacto.objects.inicia_intento(campana.id,
+        datos_para_realizar_llamada.id_contacto,
         intento_actual)
 
     # ANTES:
@@ -55,8 +52,8 @@ def procesar_contacto(datos_para_realizar_llamada):
     #  * Local/{contactoId}-{numberToCall}-{intento}@
     #                                        FTS_local_campana_{campanaId}
     channel = settings.FTS_ASTERISK_DIALPLAN_LOCAL_CHANNEL.format(
-        contactoId=str(contacto_id),
-        numberToCall=str(numero),
+        contactoId=str(datos_para_realizar_llamada.id_contacto),
+        numberToCall=str(datos_para_realizar_llamada.telefono),
         campanaId=str(campana.id),
         intento=intento_actual,
     )
@@ -66,8 +63,8 @@ def procesar_contacto(datos_para_realizar_llamada):
     # AHORA:
     #  * fts-{contactoId}-{numberToCall}-{intento}
     exten = settings.FTS_ASTERISK_DIALPLAN_EXTEN.format(
-        contactoId=str(contacto_id),
-        numberToCall=str(numero),
+        contactoId=str(datos_para_realizar_llamada.id_contacto),
+        numberToCall=str(datos_para_realizar_llamada.telefono),
         intento=intento_actual,
     )
 
@@ -84,21 +81,26 @@ def procesar_contacto(datos_para_realizar_llamada):
             variables_de_canal=variables_de_canal)
         EventoDeContacto.objects.\
             create_evento_daemon_originate_successful(
-                campana.id, contacto_id, intento_actual)
+                campana.id,
+                datos_para_realizar_llamada.id_contacto,
+                intento_actual)
         return True
 
     except AsteriskHttpOriginateError:
         logger.exception("Originate failed - campana: %s - contacto: %s",
-            campana.id, contacto_id)
+            campana.id, datos_para_realizar_llamada.id_contacto)
         EventoDeContacto.objects.\
             create_evento_daemon_originate_failed(
-                campana.id, contacto_id, intento_actual)
+                campana.id, datos_para_realizar_llamada.id_contacto,
+                intento_actual)
         return False
 
     except:
         logger.exception("Originate failed - campana: %s - contacto: %s",
-            campana.id, contacto_id)
+            campana.id, datos_para_realizar_llamada.id_contacto)
         EventoDeContacto.objects.\
             create_evento_daemon_originate_internal_error(
-                campana.id, contacto_id, intento_actual)
+                campana.id,
+                datos_para_realizar_llamada.id_contacto,
+                intento_actual)
         return False
