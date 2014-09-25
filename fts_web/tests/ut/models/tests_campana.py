@@ -326,6 +326,24 @@ class ValidacionCampanaTest(FTSenderBaseTest):
 
         self.assertEqual(campana.valida_derivacion_externa(), False)
 
+    def test_campana_valida_tts_falla_tts_no_en_base_datos(self):
+        campana = self.crear_campana_activa()
+
+        adc = AudioDeCampana(id=1, orden=1, campana=campana,
+                             tts='ESTE_NO_ESTA_EN_BDC')
+        adc.save()
+
+        # -----
+
+        self.assertEqual(campana.valida_tts(), False)
+
+    def test_campana_valida_tts_no_falla(self):
+        campana = self.crear_campana_activa()
+
+        # -----
+
+        self.assertEqual(campana.valida_tts(), True)
+
 
 class TemplatesObtieneActivosActivaTemplateTest(FTSenderBaseTest):
 
