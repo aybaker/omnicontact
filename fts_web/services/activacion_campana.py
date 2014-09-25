@@ -105,7 +105,9 @@ class ActivacionCampanaTemplateService(object):
 
     def activar(self, campana):
         self._validar_campana(campana)
-        campana.activar()
-        if not campana.es_template:
+        if campana.es_template:
+            campana.activar_template()
+        else:
+            campana.activar()
             self._validar_actuacion_campana(campana)
             self._restablecer_dialplan_campana()
