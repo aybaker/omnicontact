@@ -87,7 +87,37 @@ class CampanaEnDefinicionMixin(object):
             self.kwargs['pk_campana'])
 
 
-class CampanaCreateView(CreateView):
+class CampanaCreateUpdateMixin(object):
+    """
+    Mixin para el proceso de creado y edición de las campana con el método
+    post que se encarga de validar que los tts de la campana, en caso de tener,
+    coinicidan con las columnas de la base de datos.
+    """
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+        if form.is_valid():
+            # Por mas que el form sea válido, validamos que los tts también
+            # lo son, de lo contrario, seteamos el error y llamamos a
+            # form_invalid, si los tts son válidos el método sigue su curso
+            # normal.
+            if not self.object.valida_tts():
+                form.errors.update({'bd_contacto':
+                                   ['La base de datos seleccionada no tiene '
+                                    'las columnas que tienen los tts de la '
+                                    'campana.']})
+                return self.form_invalid(form)
+
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+
+class CampanaCreateView(CampanaCreateUpdateMixin, CreateView):
     """
     Esta vista crea un objeto Campana.
     Por defecto su estado es EN_DEFICNICION,
@@ -106,8 +136,8 @@ class CampanaCreateView(CreateView):
             kwargs={"pk_campana": self.object.pk})
 
 
-class CampanaUpdateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
-                        UpdateView):
+class CampanaUpdateView(CampanaCreateUpdateMixin, CheckEstadoCampanaMixin,
+                        CampanaEnDefinicionMixin, UpdateView):
     """
     Esta vista actualiza un objeto Campana.
     """
@@ -116,27 +146,6 @@ class CampanaUpdateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
     model = Campana
     context_object_name = 'campana'
     form_class = CampanaForm
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-
-        if form.is_valid():
-            # Por mas que el form sea válido, validamos que si los tts lo son,
-            # de no serlo, seteamos el error y llamamos al form_invalid, sino
-            # sigue su curso normal el método.
-            if not self.object.valida_tts():
-                form.errors.update({'bd_contacto':
-                                   ['La base de datos seleccionada no tiene '
-                                    'las columnas que tienen los tts de la '
-                                    'campana.']})
-                return self.form_invalid(form)
-
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse(
