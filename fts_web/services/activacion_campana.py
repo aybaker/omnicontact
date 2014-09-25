@@ -78,16 +78,17 @@ class ActivacionCampanaTemplateService(object):
                 "hubo un inconveniente al generar el Dialplan de "
                 "Asterisk."))
 
-        # try:
-        #     # Esto es algo redundante! Para que re-crear los queues?
-        #     # Total, esto lo hace GrupoDeAtencion!
-        #     create_queue_config_file()
-        # except:
-        #     logger.exception("ActivacionCampanaTemplateService: error al "
-        #                     "intentar create_queue_config_file()")
-        #     dialplan_ok = False
-        #     message += ' Atencion: hubo un inconveniente al generar\
-        #         la configuracion de Asterisk (queues).'
+        try:
+            # Esto es algo redundante! Para que re-crear los queues?
+            # Total, esto lo hace GrupoDeAtencion!
+            create_queue_config_file()
+        except:
+            logger.exception("ActivacionCampanaTemplateService: error al "
+                             "intentar create_queue_config_file()")
+
+            raise(RestablecerDialplanError(
+                "hubo un inconveniente al generar el Dialplan de "
+                "Asterisk."))
 
         try:
             ret = reload_config()
