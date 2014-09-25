@@ -91,12 +91,35 @@ class CampanaEnDefinicionMixin(object):
             self.kwargs['pk_campana'])
 
 
-class CampanaCreateUpdateMixin(object):
+class CampanaCreateView(CreateView):
     """
-    Mixin para el proceso de creado y edición de las campana con el método
-    post que se encarga de validar que los tts de la campana, en caso de tener,
-    coinicidan con las columnas de la base de datos.
+    Esta vista crea un objeto Campana.
+    Por defecto su estado es EN_DEFICNICION,
+    Redirecciona a crear las opciones para esta
+    Campana.
     """
+
+    template_name = 'campana/nueva_edita_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = CampanaForm
+
+    def get_success_url(self):
+        return reverse(
+            'audio_campana',
+            kwargs={"pk_campana": self.object.pk})
+
+
+class CampanaUpdateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
+                        UpdateView):
+    """
+    Esta vista actualiza un objeto Campana.
+    """
+
+    template_name = 'campana/nueva_edita_campana.html'
+    model = Campana
+    context_object_name = 'campana'
+    form_class = CampanaForm
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -120,37 +143,6 @@ class CampanaCreateUpdateMixin(object):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
-
-
-class CampanaCreateView(CampanaCreateUpdateMixin, CreateView):
-    """
-    Esta vista crea un objeto Campana.
-    Por defecto su estado es EN_DEFICNICION,
-    Redirecciona a crear las opciones para esta
-    Campana.
-    """
-
-    template_name = 'campana/nueva_edita_campana.html'
-    model = Campana
-    context_object_name = 'campana'
-    form_class = CampanaForm
-
-    def get_success_url(self):
-        return reverse(
-            'audio_campana',
-            kwargs={"pk_campana": self.object.pk})
-
-
-class CampanaUpdateView(CampanaCreateUpdateMixin, CheckEstadoCampanaMixin,
-                        CampanaEnDefinicionMixin, UpdateView):
-    """
-    Esta vista actualiza un objeto Campana.
-    """
-
-    template_name = 'campana/nueva_edita_campana.html'
-    model = Campana
-    context_object_name = 'campana'
-    form_class = CampanaForm
 
     def get_success_url(self):
         return reverse(
@@ -603,24 +595,9 @@ class ActuacionCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
         )
 
 
-class ConfirmaCampanaMixin(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
-                           UpdateView):
-
-    """
-    Esta vista confirma la creación de un objeto
-    Campana. Imprime el resumen del objeto y si
-    es aceptado, cambia el estado del objeto a ACTIVA.
-    Si el objeto ya esta ACTIVA, redirecciona
-    al listado.
-    """
-
-    # @@@@@@@@@@@@@@@@@@@@
-
-    model = Campana
-    context_object_name = 'campana'
+class ConfirmaCampanaMixin(object):
 
     def post(self, request, *args, **kwargs):
-
         self.object = self.get_object()
 
         activacion_campana_service = ActivacionCampanaTemplateService()
@@ -662,24 +639,16 @@ class ConfirmaCampanaMixin(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
         return reverse('lista_campana')
 
 
-class ConfirmaCampanaView(ConfirmaCampanaMixin):
+class ConfirmaCampanaView(ConfirmaCampanaMixin, CheckEstadoCampanaMixin,
+                          CampanaEnDefinicionMixin, UpdateView):
+    """
+    Esta vista confirma la creación de un objeto
+    Campana. Imprime el resumen del objeto y si
+    es aceptado, cambia el estado del objeto a ACTIVA.
+    Si el objeto ya esta ACTIVA, redirecciona
+    al listado.
+    """
+
     template_name = 'campana/confirma_campana.html'
-
-    def get(self, request, *args, **kwargs):
-        campana = self.get_object()
-        if not campana.confirma_campana_valida():
-            message = """<strong>¡Cuidado!</strong>
-            La campana posee datos inválidos y no pude ser confirmada.
-            Verifique que todos los datos requeridos sean válidos."""
-            messages.add_message(
-                self.request,
-                messages.WARNING,
-                message,
-            )
-
-            return HttpResponseRedirect(
-                reverse('audio_campana', kwargs={"pk_campana": campana.pk}))
-
-        return super(ConfirmaCampanaView, self).get(request, *args, **kwargs)
-
-    # @@@@@@@@@@@@@@@@@@@@
+    model = Campana
+    context_object_name = 'campana'

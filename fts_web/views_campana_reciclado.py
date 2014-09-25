@@ -14,7 +14,7 @@ from fts_web.models import Campana, Actuacion
 from fts_web.reciclador_base_datos_contacto.reciclador import (
     RecicladorBaseDatosContacto, CampanaEstadoInvalidoError,
     CampanaTipoRecicladoInvalidoError, FtsRecicladoBaseDatosContactoError)
-from fts_web.views_campana_creacion import (ConfirmaCampanaMixin,
+from fts_web.views_campana_creacion import (ConfirmaCampanaView,
                                             CheckEstadoCampanaMixin,
                                             CampanaEnDefinicionMixin)
 
@@ -248,26 +248,5 @@ class ActuacionRecicladoCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
         )
 
 
-class ConfirmaRecicladoCampanaView(ConfirmaCampanaMixin):
+class ConfirmaRecicladoCampanaView(ConfirmaCampanaView):
     template_name = 'campana/reciclado/confirma_reciclado_campana.html'
-
-    # @@@@@@@@@@@@@@@@@@@@
-
-    def get(self, request, *args, **kwargs):
-        campana = self.get_object()
-        if not campana.confirma_campana_valida():
-            message = """<strong>¡Cuidado!</strong>
-            La campana posee datos inválidos y no pude ser confirmada.
-            Verifique que todos los datos requeridos sean válidos."""
-            messages.add_message(
-                self.request,
-                messages.WARNING,
-                message,
-            )
-
-            return HttpResponseRedirect(
-                reverse(
-                    'actuacion_reciclado_campana',
-                    kwargs={"pk_campana": campana.pk}))
-        return super(ConfirmaRecicladoCampanaView, self).get(
-            request, *args, **kwargs)
