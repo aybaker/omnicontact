@@ -1649,23 +1649,6 @@ class Campana(models.Model):
         """
         return self.estado == Campana.ESTADO_EN_DEFINICION
 
-    def confirma_campana_valida(self):
-        """
-        Este método se encarga de validar la campana cuando se confirma su
-        creación. Valida que los datos obligatorios estén seteados/creados.
-
-        Devuelve un booleano.
-        """
-        if not self.valida_estado_en_definicion():
-            return False
-        if not self.valida_audio():
-            return False
-        if not self.valida_actuaciones():
-            return False
-        if not self.valida_tts():
-            return False
-        return True
-
     def clean(self, *args, **kwargs):
         """
         Valida que al crear una campaña la fechas de
