@@ -317,25 +317,6 @@ class OrdenAudiosForm(forms.Form):
         )
 
 
-class ConfirmaForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.add_input(
-            Submit('confirma', 'Confirmar Creación',
-                   css_class='btn btn-success btn-lg modal_proceso_grande')
-        )
-        # self.helper.add_input(
-        #     Submit('cancela', 'Cancelar', css_class='btn-danger')
-        # )
-        super(ConfirmaForm, self).__init__(*args, **kwargs)
-
-    class Meta:
-        model = Campana
-        fields = ()
-
-
 class TipoRecicladoForm(forms.Form):
     tipo_reciclado_unico = forms.ChoiceField(
         choices=Campana.TIPO_RECICLADO_UNICO,
