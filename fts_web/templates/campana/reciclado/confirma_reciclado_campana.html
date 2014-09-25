@@ -20,6 +20,7 @@
             </ul>
             <br>
             <form role="form" method="post" >
+                {% csrf_token %}
                 <div class="col-lg-6">
                     <h4>Datos Básicos</h4>
                     <dl class="dl-horizontal">
@@ -140,7 +141,9 @@
                 </div>
                 <div class="col-lg-12">
                     <br>
-                    {% crispy form %} 
+                    <button type="submit" class="btn btn-success btn-lg modal_proceso_grande">
+                        Confirmar Creación de Campaña
+                    </button> 
                 </div>
             </form>           
         </div>
