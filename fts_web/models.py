@@ -1576,6 +1576,22 @@ class Campana(models.Model):
                 return False
         return True
 
+    def valida_tts(self):
+        """
+        Este método valida que, en caso que alguno AudioDeCampana de la campana
+        sea tts, cada uno de los tts que posea concuerden con alguna columna
+        de la base de datos que tenga la campana.
+        Devuelve True or False.
+        """
+        metadata = self.bd_contacto.get_metadata()
+
+        audios_de_campana = self.audios_de_campana.all()
+        for audio_de_campana in audios_de_campana:
+            if (audio_de_campana.tts and audio_de_campana.tts not in
+                    metadata.nombres_de_columnas):
+                return False
+        return True
+
     def obtener_actuaciones_validas(self):
         """
         Este método devuelve un lista con las actuaciones válidas de una
