@@ -1662,6 +1662,8 @@ class Campana(models.Model):
             return False
         if not self.valida_actuaciones():
             return False
+        if not self.valida_tts():
+            return False
         return True
 
     def clean(self, *args, **kwargs):
