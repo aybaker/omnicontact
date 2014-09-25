@@ -201,11 +201,8 @@ class TemplateForm(forms.ModelForm):
 # =============================================================================
 
 class CampanaForm(forms.ModelForm):
-    def __init__(self, reciclado=False, campana_con_tts=False, *args,
-                 **kwargs):
+    def __init__(self, reciclado=False, *args, **kwargs):
         super(CampanaForm, self).__init__(*args, **kwargs)
-        # NOTA: La bandera campana_con_tts debería se momentánea hasta resolver
-        # que hacer cuando una campana tiene tts.
 
         self.fields['bd_contacto'].queryset =\
             BaseDatosContacto.objects.obtener_definidas()
@@ -221,7 +218,7 @@ class CampanaForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
 
-        if reciclado or campana_con_tts:
+        if reciclado:
             self.fields.pop('bd_contacto')
 
             layout = Layout(
@@ -231,10 +228,6 @@ class CampanaForm(forms.ModelForm):
                 Field('segundos_ring'),
                 Field('fecha_inicio'),
                 Field('fecha_fin'),
-                HTML(
-                    "<p class='text-center text-danger'>Debido a que los "
-                    "audios de la campaña poseen TTS, no es "
-                    "posible cambiar la base de datos ya seleccionada.</p>")
             )
         else:
             layout = Layout(

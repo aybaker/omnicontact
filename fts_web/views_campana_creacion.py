@@ -117,16 +117,6 @@ class CampanaUpdateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
     context_object_name = 'campana'
     form_class = CampanaForm
 
-    def get_form(self, form_class):
-        """
-        Pasar la badera campana_con_tts debería ser temporal hasta que se
-        resuelva que hacer en el caso que la campaña posea tts.
-        """
-        campana_con_tts = AudioDeCampana.objects.campana_tiene_tts(
-            self.object.pk)
-        return form_class(campana_con_tts=False,
-                          **self.get_form_kwargs())
-
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
 
