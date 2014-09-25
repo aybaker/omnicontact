@@ -11,6 +11,9 @@ from fts_web.models import (Campana, Actuacion, GrupoAtencion,
     DerivacionExterna, Opcion, AudioDeCampana)
 
 from fts_web.tests.utiles import FTSenderBaseTest
+from fts_web.services.activacion_campana import (
+    ActivacionCampanaTemplateService, ValidarCampanaError,
+    RestablecerDialplanError)
 
 from mock import Mock, patch
 
@@ -170,7 +173,7 @@ class EliminarCampanaTest(FTSenderBaseTest):
             Campana.objects.get(id=1)
 
 
-class ValidacionCampanaTest(FTSenderBaseTest):
+class MetodosValidadoresDeCampanaTest(FTSenderBaseTest):
     def setUp(self):
         AudioDeCampana.objects.all().delete()
 
@@ -458,3 +461,252 @@ class CampanaReplicarCampana(FTSenderBaseTest):
                          campana_replicada.segundos_ring)
         self.assertEqual(AudioDeCampana.objects.filter(
                          campana=campana_replicada).count(), 5)
+
+
+class ValidarCampanaTest(FTSenderBaseTest):
+    """
+    Este test corresponde al método _validar_campana del servicio
+    ActivacionCampanaTemplateService.
+    """
+
+    def test_validar_campana_no_falla(self):
+        campana = self.crear_campana_activa()
+
+        campana.bd_contacto.verifica_depurada = Mock(return_value=False)
+        campana.valida_audio = Mock(return_value=True)
+        campana.valida_grupo_atencion = Mock(return_value=True)
+        campana.valida_derivacion_externa = Mock(return_value=True)
+        campana.valida_tts = Mock(return_value=True)
+
+        # -----
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+        activacion_campana_service._validar_campana(campana)
+
+    def test_validar_campana_falla_bd_depurada(self):
+        campana = self.crear_campana_activa()
+
+        campana.bd_contacto.verifica_depurada = Mock(return_value=True)
+        campana.valida_audio = Mock(return_value=True)
+        campana.valida_grupo_atencion = Mock(return_value=True)
+        campana.valida_derivacion_externa = Mock(return_value=True)
+        campana.valida_tts = Mock(return_value=True)
+
+        # -----
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+
+        with self.assertRaises(ValidarCampanaError):
+            activacion_campana_service._validar_campana(campana)
+
+    def test_validar_campana_falla_audio_invalido(self):
+        campana = self.crear_campana_activa()
+
+        campana.bd_contacto.verifica_depurada = Mock(return_value=False)
+        campana.valida_audio = Mock(return_value=False)
+        campana.valida_grupo_atencion = Mock(return_value=True)
+        campana.valida_derivacion_externa = Mock(return_value=True)
+        campana.valida_tts = Mock(return_value=True)
+
+        # -----
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+
+        with self.assertRaises(ValidarCampanaError):
+            activacion_campana_service._validar_campana(campana)
+
+    def test_validar_campana_falla_grupo_atencion_invalido(self):
+        campana = self.crear_campana_activa()
+
+        campana.bd_contacto.verifica_depurada = Mock(return_value=False)
+        campana.valida_audio = Mock(return_value=True)
+        campana.valida_grupo_atencion = Mock(return_value=False)
+        campana.valida_derivacion_externa = Mock(return_value=True)
+        campana.valida_tts = Mock(return_value=True)
+
+        # -----
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+
+        with self.assertRaises(ValidarCampanaError):
+            activacion_campana_service._validar_campana(campana)
+
+    def test_validar_campana_falla_derivacion_externa_invalido(self):
+        campana = self.crear_campana_activa()
+
+        campana.bd_contacto.verifica_depurada = Mock(return_value=False)
+        campana.valida_audio = Mock(return_value=True)
+        campana.valida_grupo_atencion = Mock(return_value=True)
+        campana.valida_derivacion_externa = Mock(return_value=False)
+        campana.valida_tts = Mock(return_value=True)
+
+        # -----
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+
+        with self.assertRaises(ValidarCampanaError):
+            activacion_campana_service._validar_campana(campana)
+
+    def test_validar_campana_falla_tts_invalido(self):
+        campana = self.crear_campana_activa()
+
+        campana.bd_contacto.verifica_depurada = Mock(return_value=False)
+        campana.valida_audio = Mock(return_value=True)
+        campana.valida_grupo_atencion = Mock(return_value=True)
+        campana.valida_derivacion_externa = Mock(return_value=True)
+        campana.valida_tts = Mock(return_value=False)
+
+        # -----
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+
+        with self.assertRaises(ValidarCampanaError):
+            activacion_campana_service._validar_campana(campana)
+
+
+class ValidarActuacionCampanaTest(FTSenderBaseTest):
+    """
+    Este test corresponde al método _validar_actuacion_campana del servicio
+    ActivacionCampanaTemplateService.
+    """
+
+    def test_validar_actuacion_campana_no_falla(self):
+        campana = self.crear_campana_activa()
+
+        campana.valida_actuaciones = Mock(return_value=True)
+
+        # -----
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+        activacion_campana_service._validar_actuacion_campana(campana)
+
+    def test_validar_actuacion_campana_falla_bd_depurada(self):
+        campana = self.crear_campana_activa()
+
+        campana.valida_actuaciones = Mock(return_value=False)
+
+        # -----
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+
+        with self.assertRaises(ValidarCampanaError):
+            activacion_campana_service._validar_actuacion_campana(campana)
+
+
+class ActivarCampanaTest(FTSenderBaseTest):
+    """
+    Este test corresponde al método activar del servicio
+    ActivacionCampanaTemplateService.
+    """
+
+    def test_activar_campana_no_falla(self):
+        campana = self.crear_campana()
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+        activacion_campana_service._validar_campana = Mock()
+        activacion_campana_service._validar_actuacion_campana = Mock()
+        activacion_campana_service._restablecer_dialplan_campana = Mock()
+
+        # -----
+
+        activacion_campana_service.activar(campana)
+        self.assertEqual(campana.estado, Campana.ESTADO_ACTIVA)
+
+    def test_activar_campana_falla_validacion_no_se_activa(self):
+        campana = self.crear_campana()
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+        activacion_campana_service._validar_campana = Mock(
+            side_effect=ValidarCampanaError())
+        activacion_campana_service._validar_actuacion_campana = Mock()
+        activacion_campana_service._restablecer_dialplan_campana = Mock()
+
+        # -----
+
+        with self.assertRaises(ValidarCampanaError):
+            activacion_campana_service.activar(campana)
+        self.assertEqual(campana.estado, Campana.ESTADO_EN_DEFINICION)
+
+    def test_activar_campana_falla_actuacion_no_se_activa(self):
+        campana = self.crear_campana()
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+        activacion_campana_service._validar_campana = Mock()
+        activacion_campana_service._validar_actuacion_campana = Mock(
+            side_effect=ValidarCampanaError())
+        activacion_campana_service._restablecer_dialplan_campana = Mock()
+
+        # -----
+
+        with self.assertRaises(ValidarCampanaError):
+            activacion_campana_service.activar(campana)
+        self.assertEqual(campana.estado, Campana.ESTADO_EN_DEFINICION)
+
+    def test_activar_campana_falla_restablecer_dialplan_se_activa(self):
+        campana = self.crear_campana()
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+        activacion_campana_service._validar_campana = Mock()
+        activacion_campana_service._validar_actuacion_campana = Mock()
+        activacion_campana_service._restablecer_dialplan_campana = Mock(
+            side_effect=RestablecerDialplanError())
+        # -----
+
+        with self.assertRaises(RestablecerDialplanError):
+            activacion_campana_service.activar(campana)
+        self.assertEqual(campana.estado, Campana.ESTADO_ACTIVA)
+
+    def test_activar_template_no_falla(self):
+        campana = self.crear_campana()
+        campana.estado = Campana.ESTADO_TEMPLATE_EN_DEFINICION
+        campana.es_template = True
+        campana.save()
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+        activacion_campana_service._validar_campana = Mock()
+
+        # -----
+
+        activacion_campana_service.activar(campana)
+        self.assertEqual(campana.estado, Campana.ESTADO_TEMPLATE_ACTIVO)
+
+    def test_activar_template_falla_validacion_no_se_activa(self):
+        campana = self.crear_campana()
+        campana.estado = Campana.ESTADO_TEMPLATE_EN_DEFINICION
+        campana.es_template = True
+        campana.save()
+
+        activacion_campana_service = ActivacionCampanaTemplateService()
+        activacion_campana_service._validar_campana = Mock(
+            side_effect=ValidarCampanaError())
+
+        # -----
+
+        with self.assertRaises(ValidarCampanaError):
+            activacion_campana_service.activar(campana)
+        self.assertEqual(campana.estado, Campana.ESTADO_TEMPLATE_EN_DEFINICION)
+
+
+# No anda como quisiera... :( je
+# class RestablecerDialplanCampanaTest(FTSenderBaseTest):
+#     """
+#     Este test corresponde al método _restablecer_dialplan_campana del servicio
+#     ActivacionCampanaTemplateService.
+#     """
+#     @patch('fts_daemon.asterisk_config.create_dialplan_config_file')
+#     @patch('fts_daemon.asterisk_config.create_queue_config_file')
+#     @patch('fts_daemon.asterisk_config.reload_config')
+#     def test_restablecer_dialplan_campana_no_falla(
+#         self, mock_create_dialplan_config_file, mock_create_queue_config_file,
+#             mock_reload_config):
+
+#         mock_create_dialplan_config_file.return_value = None
+#         mock_create_queue_config_file.return_value = None
+#         mock_reload_config.return_value = None
+
+#         # mock.side_effect = Exception('Boom!')
+
+#         # -----
+
+#         activacion_campana_service = ActivacionCampanaTemplateService()
+#         activacion_campana_service._restablecer_dialplan_campana()
