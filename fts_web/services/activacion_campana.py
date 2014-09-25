@@ -56,6 +56,17 @@ class ActivacionCampanaTemplateService(object):
                 "creacion de la campana ha sido eliminada. Debe "
                 "seleccionar uno valido."))
 
+        if not campana.valida_audio():
+            raise(ValidarCampanaError(
+                "Los Audios de la campana no son validos. Debe seleccionar "
+                "audios o tts validos."))
+
+    def _validar_actuacion_campana(self, campana):
+        if not campana.valida_actuaciones():
+            raise(ValidarCampanaError(
+                "Las Actuaciones de la campana no son validas. Debe "
+                "seleccionar actuaciones validas."))
+
     def _restablecer_dialplan_campana(self):
         try:
             create_dialplan_config_file()
@@ -96,4 +107,5 @@ class ActivacionCampanaTemplateService(object):
         self._validar_campana(campana)
         campana.activar()
         if not campana.es_template:
+            self._validar_actuacion_campana(campana)
             self._restablecer_dialplan_campana()
