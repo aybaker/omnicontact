@@ -171,6 +171,8 @@ class EliminarCampanaTest(FTSenderBaseTest):
 
 
 class ValidacionCampanaTest(FTSenderBaseTest):
+    def setUp(self):
+        AudioDeCampana.objects.all().delete()
 
     def test_campana_valida_audio_falla_sin_audios_de_campana(self):
         campana = Campana(id=1)
@@ -227,6 +229,7 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         campana.valida_estado_en_definicion = Mock(return_value=False)
         campana.valida_audio = Mock(return_value=True)
         campana.valida_actuaciones = Mock(return_value=True)
+        campana.valida_tts = Mock(return_value=True)
 
         # -----
 
@@ -239,6 +242,7 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         campana.valida_estado_en_definicion = Mock(return_value=True)
         campana.valida_audio = Mock(return_value=False)
         campana.valida_actuaciones = Mock(return_value=True)
+        campana.valida_tts = Mock(return_value=True)
 
         # -----
 
@@ -251,6 +255,20 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         campana.valida_estado_en_definicion = Mock(return_value=True)
         campana.valida_audio = Mock(return_value=True)
         campana.valida_actuaciones = Mock(return_value=False)
+        campana.valida_tts = Mock(return_value=True)
+
+        # -----
+
+        self.assertEqual(campana.confirma_campana_valida(), False)
+
+    def test_campana_confirma_campana_valida_falla_tts(self):
+        campana = Campana(id=1)
+        campana.save = Mock()
+
+        campana.valida_estado_en_definicion = Mock(return_value=True)
+        campana.valida_audio = Mock(return_value=True)
+        campana.valida_actuaciones = Mock(return_value=True)
+        campana.valida_tts = Mock(return_value=False)
 
         # -----
 
@@ -263,6 +281,7 @@ class ValidacionCampanaTest(FTSenderBaseTest):
         campana.valida_estado_en_definicion = Mock(return_value=True)
         campana.valida_audio = Mock(return_value=True)
         campana.valida_actuaciones = Mock(return_value=True)
+        campana.valida_tts = Mock(return_value=True)
 
         # -----
 
@@ -329,8 +348,8 @@ class ValidacionCampanaTest(FTSenderBaseTest):
     def test_campana_valida_tts_falla_tts_no_en_base_datos(self):
         campana = self.crear_campana_activa()
 
-        adc = AudioDeCampana(id=1, orden=1, campana=campana,
-                             tts='ESTE_NO_ESTA_EN_BDC')
+        adc = AudioDeCampana.objects.create(orden=6, campana=campana,
+                                            tts='ESTE_NO_ESTA_EN_BDC')
         adc.save()
 
         # -----
