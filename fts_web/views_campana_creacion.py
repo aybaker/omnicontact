@@ -16,10 +16,14 @@ from fts_daemon.asterisk_config import create_dialplan_config_file, \
 from fts_daemon.audio_conversor import convertir_audio_de_campana
 from fts_web.errors import FtsAudioConversionError
 from fts_web.forms import CampanaForm, AudioForm, CalificacionForm, \
-    OpcionForm, ActuacionForm, ConfirmaForm, OrdenAudiosForm
+    OpcionForm, ActuacionForm, OrdenAudiosForm
 from fts_web.models import Campana, ArchivoDeAudio, Calificacion, Opcion, \
     Actuacion, AudioDeCampana
 from fts_web.services.audios_campana import OrdenAudiosCampanaService
+from fts_web.services.activacion_campana import (
+    ActivacionCampanaTemplateService, ValidarCampanaError,
+    RestablecerDialplanError)
+
 import logging as logging_
 
 
@@ -100,18 +104,19 @@ class CampanaCreateUpdateMixin(object):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
 
-        if form.is_valid():
-            # Por mas que el form sea válido, validamos que los tts también
-            # lo son, de lo contrario, seteamos el error y llamamos a
-            # form_invalid, si los tts son válidos el método sigue su curso
-            # normal.
-            if not self.object.valida_tts():
-                form.errors.update({'bd_contacto':
-                                   ['La base de datos seleccionada no tiene '
-                                    'las columnas que tienen los tts de la '
-                                    'campana.']})
-                return self.form_invalid(form)
+        from_valid = form.is_valid()
 
+        # Validamos que los tts  sean válidos, si no lo son, seteamos
+        # el error y llamamos a form_invalid. Si los tts son válidos,
+        # el método sigue su curso  normal.
+        if not self.object.valida_tts():
+            form.errors.update({'bd_contacto':
+                               ['La base de datos seleccionada no tiene '
+                                'las columnas que tienen los tts de la '
+                                'campana.']})
+            return self.form_invalid(form)
+
+        if from_valid:
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -613,126 +618,45 @@ class ConfirmaCampanaMixin(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
 
     model = Campana
     context_object_name = 'campana'
-    form_class = ConfirmaForm
 
-    def form_valid(self, form):
-        if 'confirma' in self.request.POST:
-            campana = self.object
+    def post(self, request, *args, **kwargs):
 
-            if not campana.valida_tts():
-                message = '<strong>Operación Errónea!</strong> \
-                    Las columnas de la base de datos seleccionado en el \
-                    proceso de creación de la campana no coincide con los \
-                    tts creado en audios de campana. Debe seleccionar una \
-                    una base de datos válida.'
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    message,
-                )
-                return self.form_invalid(form)
+        self.object = self.get_object()
 
-            if not campana.valida_grupo_atencion():
-                message = '<strong>Operación Errónea!</strong> \
-                    EL Grupo Atención seleccionado en el proceso de creación \
-                    de la campana ha sido eliminado. Debe seleccionar uno \
-                    válido.'
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    message,
-                )
-                return self.form_invalid(form)
+        activacion_campana_service = ActivacionCampanaTemplateService()
+        try:
+            activacion_campana_service.activar(self.object)
+        except ValidarCampanaError, e:
+            message = ("<strong>Operación Errónea!</strong> "
+                       "No se pudo confirmar la creación de la campaña debido "
+                       "al siguiente error: {0}".format(e))
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return self.render_to_response(self.get_context_data())
+        except RestablecerDialplanError, e:
+            self.object.pausar()
 
-            if not campana.valida_derivacion_externa():
-                message = '<strong>Operación Errónea!</strong> \
-                    La Derivación Externa seleccionado en el proceso de \
-                    creación de la campana ha sido eliminada. Debe \
-                    seleccionar uno válido.'
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    message,
-                )
-                return self.form_invalid(form)
-
-            if campana.bd_contacto.verifica_depurada():
-                message = """<strong>Operación Errónea!</strong>.
-                No se pudo realizar la confirmación de la campaña debido a
-                que durante el proceso de creación de la misma, la base de
-                datos seleccionada fue depurada y no está disponible para su
-                uso. Debe seleccionar una base de datos válida."""
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    message,
-                )
-                return self.form_invalid(form)
-
-            post_proceso_ok = True
-            message = ''
-
-            with transaction.atomic(savepoint=False):
-
-                campana.activar()
-
-                try:
-                    create_dialplan_config_file()
-                except:
-                    logger.exception("ConfirmaCampanaMixin: error al intentar "
-                                     "create_dialplan_config_file()")
-                    post_proceso_ok = False
-                    message += ' Atencion: hubo un inconveniente al generar\
-                        la configuracion de Asterisk (dialplan).'
-
-                try:
-                    # Esto es algo redundante! Para que re-crear los queues?
-                    # Total, esto lo hace GrupoDeAtencion!
-                    create_queue_config_file()
-                except:
-                    logger.exception("ConfirmaCampanaMixin: error al intentar "
-                                     "create_queue_config_file()")
-                    post_proceso_ok = False
-                    message += ' Atencion: hubo un inconveniente al generar\
-                        la configuracion de Asterisk (queues).'
-
-                try:
-                    ret = reload_config()
-                    if ret != 0:
-                        post_proceso_ok = False
-                        message += "Atencion: hubo un inconveniente al \
-                            intentar recargar la configuracion de Asterisk."
-                except:
-                    logger.exception("ConfirmaCampanaMixin: error al intentar "
-                                     "reload_config()")
-                    post_proceso_ok = False
-                    message += ' Atencion: hubo un inconveniente al intentar\
-                        recargar la configuracion de Asterisk.'
-
-            if post_proceso_ok:
-                message = '<strong>Operación Exitosa!</strong> \
-                    Se llevó a cabo con éxito la creación de \
-                    la Campaña.'
-                messages.add_message(
-                    self.request,
-                    messages.SUCCESS,
-                    message,
-                )
-            else:
-                message += ' La campaña será pausada. Por favor, contactese \
-                    con el administrador del sistema.'
-                messages.add_message(
-                    self.request,
-                    messages.WARNING,
-                    message
-                )
-                campana.pausar()
-
+            message = ("<strong>¡Cuidado!</strong> "
+                       "Se llevó a cabo con éxito la creación de la Campaña, "
+                       "pero {0} La campaña será pausada.".format(e))
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
             return redirect(self.get_success_url())
-
-        elif 'cancela' in self.request.POST:
-            pass
-            # TODO: Implementar la cancelación.
+        else:
+            message = ("<strong>Operación Exitosa!</strong> "
+                       "Se llevó a cabo con éxito la creación de la Campaña.")
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                message,
+            )
+            return redirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse('lista_campana')
