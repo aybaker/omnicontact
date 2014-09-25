@@ -144,7 +144,6 @@ class CampanaUpdateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
             kwargs={"pk_campana": self.object.pk})
 
 
-
 class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
     """
     Esta vista actuaiza un objeto Campana
@@ -611,6 +610,19 @@ class ConfirmaCampanaMixin(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
         if 'confirma' in self.request.POST:
             campana = self.object
 
+            if not campana.valida_tts():
+                message = '<strong>Operación Errónea!</strong> \
+                    Las columnas de la base de datos seleccionado en el \
+                    proceso de creación de la campana no coincide con los \
+                    tts creado en audios de campana. Debe seleccionar una \
+                    una base de datos válida.'
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return self.form_invalid(form)
+
             if not campana.valida_grupo_atencion():
                 message = '<strong>Operación Errónea!</strong> \
                     EL Grupo Atención seleccionado en el proceso de creación \
@@ -636,22 +648,17 @@ class ConfirmaCampanaMixin(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
                 return self.form_invalid(form)
 
             if campana.bd_contacto.verifica_depurada():
-                # TODO: Cuando en el proceso de creación de la campana se
-                # pueda ir volviendo de paso, mostrar el error y no
-                # redireccionar, permitir que puda seleccionar otra base de
-                # datos.
-
                 message = """<strong>Operación Errónea!</strong>.
                 No se pudo realizar la confirmación de la campaña debido a
                 que durante el proceso de creación de la misma, la base de
                 datos seleccionada fue depurada y no está disponible para su
-                uso. La campaña no se creará."""
+                uso. Debe seleccionar una base de datos válida."""
                 messages.add_message(
                     self.request,
                     messages.ERROR,
                     message,
                 )
-                return redirect(self.get_success_url())
+                return self.form_invalid(form)
 
             post_proceso_ok = True
             message = ''
