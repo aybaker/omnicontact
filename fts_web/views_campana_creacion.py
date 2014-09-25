@@ -124,13 +124,35 @@ class CampanaUpdateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
         """
         campana_con_tts = AudioDeCampana.objects.campana_tiene_tts(
             self.object.pk)
-        return form_class(campana_con_tts=campana_con_tts,
+        return form_class(campana_con_tts=False,
                           **self.get_form_kwargs())
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+        if form.is_valid():
+            # Por mas que el form sea válido, validamos que si los tts lo son,
+            # de no serlo, seteamos el error y llamamos al form_invalid, sino
+            # sigue su curso normal el método.
+            if not self.object.valida_tts():
+                form.errors.update({'bd_contacto':
+                                   ['La base de datos seleccionada no tiene '
+                                    'las columnas que tienen los tts de la '
+                                    'campana.']})
+                return self.form_invalid(form)
+
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse(
             'audio_campana',
             kwargs={"pk_campana": self.object.pk})
+
 
 
 class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
