@@ -45,12 +45,53 @@
 
                     <hr>              
 
-                    {% if campana.audio_original %}
-                        <div>
-                            <h4>Audio de la Campaña</h4>
-                            <audio src="{{ campana.audio_original.url }}" controls></audio>
-                        </div>
-                    {% endif %}
+                    
+                    <div>
+                        <h4>Audio de la Campaña</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr class="fts-table-bg">
+                                    <th colspan="6">Audio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for audio_de_campana in campana.audios_de_campana.all %}
+                                <tr>
+                                    <td>
+                                        <span class="badge va-top mg-top-5">{{ forloop.counter }}</span> 
+                                    </td>
+                                    <td>
+                                        {% if audio_de_campana.audio_original %}
+                                            <strong>{{ audio_de_campana.audio_descripcion }}</strong>
+                                        {% elif  audio_de_campana.archivo_de_audio %}
+                                            <strong>{{ audio_de_campana.archivo_de_audio.descripcion }}</strong>
+                                        {% else %}
+                                            <strong>TTS:</strong>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if audio_de_campana.audio_original %}
+                                            <audio src="{{ audio_de_campana.audio_original.url }}" controls></audio>
+                                        {% elif  audio_de_campana.archivo_de_audio %}
+                                            <audio src="{{ audio_de_campana.archivo_de_audio.audio_original.url }}" controls></audio>
+                                        {% else %}
+                                            {{ audio_de_campana.tts }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                             {% empty %}
+                                <tr>
+                                    <td> 
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Audios de Campaña creados.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
 
                     <hr>
 
