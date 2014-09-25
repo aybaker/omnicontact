@@ -290,6 +290,34 @@ class ConfirmaTemplateView(CheckEstadoTemplateMixin, TemplateEnDefinicionMixin,
         if 'confirma' in self.request.POST:
             campana = self.object
 
+            if campana.bd_contacto.verifica_depurada():
+                message = """<strong>Operación Errónea!</strong>.
+                No se pudo realizar la confirmación del template debido a
+                que durante el proceso de creación del mismo, la base de
+                datos seleccionada fue depurada y no está disponible para su
+                uso. Debe seleccionar una base de datos válida."""
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return self.form_invalid(form)
+
+            if not campana.valida_tts():
+                message = '<strong>Operación Errónea!</strong> \
+                    Las columnas de la base de datos seleccionado en el \
+                    proceso de creación del template no coincide con los \
+                    tts creado en audios de campana. Debe seleccionar una \
+                    una base de datos válida.'
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    message,
+                )
+                return self.form_invalid(form)
+            campana.bd_contacto = None
+            campana.save()
+
             if not campana.valida_grupo_atencion():
                 message = '<strong>Operación Errónea!</strong> \
                     EL Grupo Atención seleccionado en el proceso de creación \

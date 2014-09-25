@@ -179,6 +179,9 @@ class PrimerLineaEncabezadoForm(forms.Form):
 class TemplateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TemplateForm, self).__init__(*args, **kwargs)
+        self.fields['bd_contacto'].queryset =\
+            BaseDatosContacto.objects.obtener_definidas()
+
         self.helper = FormHelper()
         self.helper.form_tag = False
 
@@ -187,13 +190,24 @@ class TemplateForm(forms.ModelForm):
             Field('cantidad_canales'),
             Field('cantidad_intentos'),
             Field('segundos_ring'),
+            Field('bd_contacto')
         )
         self.helper.layout = layout
 
     class Meta:
         model = Campana
-        exclude = ('estado', 'fecha_inicio', 'fecha_fin', 'bd_contacto',
-                   'es_template')
+        exclude = ('estado', 'fecha_inicio', 'fecha_fin', 'es_template')
+
+        labels = {
+            'bd_contacto': 'Base de Datos de referencia para TTS',
+        }
+        help_texts = {
+            'bd_contacto': """¡Importante! La base de datos
+                              que seleccione es solo de referencia para poder
+                              especificar los tts de la campaña. No se
+                              utilizará la misma en la ejecución de la
+                              campaña.""",
+        }
 
 
 # =============================================================================
@@ -244,6 +258,9 @@ class CampanaForm(forms.ModelForm):
     class Meta:
         model = Campana
         exclude = ('estado',)
+        labels = {
+            'bd_contacto': 'Base de Datos de Contactos',
+        }
 
 
 class AudioForm(forms.ModelForm):
