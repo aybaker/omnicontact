@@ -15,10 +15,9 @@ from django.db import models
 from django.db.models import Count
 
 from fts_web.models import Campana, BaseDatosContacto, Contacto,\
-    ContactoPendiente
+    ContactoPendiente, MetadataBaseDatosContacto
 from fts_web.utiles import log_timing
 import logging as _logging
-import json
 
 
 logger = _logging.getLogger(__name__)
@@ -377,6 +376,15 @@ class SimuladorEventoDeContactoManager():
             cantidad_contactos=cantidad,
             estado=BaseDatosContacto.ESTADO_DEFINIDA,
         )
+
+        metadata = bd_contactos.get_metadata()
+        assert isinstance(metadata, MetadataBaseDatosContacto)
+        metadata.cantidad_de_columnas = 1
+        metadata.columna_con_telefono = 0
+        metadata.nombres_de_columnas = ["TELEF"]
+        metadata.primer_fila_es_encabezado = False
+        metadata.save()
+        bd_contactos.save()
 
         cursor = connection.cursor()
         sql = """
