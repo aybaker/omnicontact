@@ -20,7 +20,7 @@ from fts_web.forms import CampanaForm, AudioForm, CalificacionForm, \
 from fts_web.models import Campana, ArchivoDeAudio, Calificacion, Opcion, \
     Actuacion, AudioDeCampana
 from fts_web.services.audios_campana import OrdenAudiosCampanaService
-from fts_web.services.activacion_campana import (
+from fts_web.services.creacion_campana import (
     ActivacionCampanaTemplateService, ValidarCampanaError,
     RestablecerDialplanError)
 

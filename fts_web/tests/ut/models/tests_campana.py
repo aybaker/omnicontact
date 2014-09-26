@@ -11,7 +11,7 @@ from fts_web.models import (Campana, Actuacion, GrupoAtencion,
     DerivacionExterna, Opcion, AudioDeCampana)
 
 from fts_web.tests.utiles import FTSenderBaseTest
-from fts_web.services.activacion_campana import (
+from fts_web.services.creacion_campana import (
     ActivacionCampanaTemplateService, ValidarCampanaError,
     RestablecerDialplanError)
 
