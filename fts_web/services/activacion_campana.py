@@ -9,6 +9,9 @@ from __future__ import unicode_literals
 import logging
 
 from fts_web.errors import FtsError
+from fts_daemon.asterisk_config import (create_dialplan_config_file,
+                                        reload_config,
+                                        create_queue_config_file)
 
 logger = logging.getLogger(__name__)
 
@@ -68,16 +71,16 @@ class ActivacionCampanaTemplateService(object):
                 "seleccionar actuaciones validas."))
 
     def _restablecer_dialplan_campana(self):
+        proceso_ok = True
         try:
             create_dialplan_config_file()
         except:
             logger.exception("ActivacionCampanaTemplateService: error al "
                              "intentar create_dialplan_config_file()")
 
-            raise(RestablecerDialplanError(
-                "hubo un inconveniente al generar el Dialplan de "
-                "Asterisk."))
-
+            proceso_ok = False
+            mensaje_error = ("hubo un inconveniente al generar el Dialplan de "
+                             "Asterisk.")
         try:
             # Esto es algo redundante! Para que re-crear los queues?
             # Total, esto lo hace GrupoDeAtencion!
@@ -86,23 +89,24 @@ class ActivacionCampanaTemplateService(object):
             logger.exception("ActivacionCampanaTemplateService: error al "
                              "intentar create_queue_config_file()")
 
-            raise(RestablecerDialplanError(
-                "hubo un inconveniente al generar el Dialplan de "
-                "Asterisk."))
-
+            proceso_ok = False
+            mensaje_error = ("hubo un inconveniente al generar el Dialplan de "
+                             "Asterisk.")
         try:
             ret = reload_config()
             if ret != 0:
-                raise(RestablecerDialplanError(
-                    "hubo un inconveniente al intentar recargar la "
-                    "configuracion de Asterisk."))
+                proceso_ok = False
+                mensaje_error = ("hubo un inconveniente al intentar recargar "
+                                 "la configuracion de Asterisk.")
         except:
             logger.exception("ActivacionCampanaTemplateService: error al "
                              " intentar reload_config()")
+            proceso_ok = False
+            mensaje_error = ("hubo un inconveniente al intentar recargar "
+                             "la configuracion de Asterisk.")
 
-            raise(RestablecerDialplanError(
-                "hubo un inconveniente al intentar recargar la "
-                "configuracion de Asterisk."))
+        if not proceso_ok:
+            raise(RestablecerDialplanError(mensaje_error))
 
     def activar(self, campana):
         self._validar_campana(campana)
