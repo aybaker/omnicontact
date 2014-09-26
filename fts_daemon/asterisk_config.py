@@ -200,221 +200,230 @@ class NoSePuedeCrearDialplanError(FtsError):
     pass
 
 
-def _check_audio_file_exist(fts_audio_file, campana):
-    if not os.path.exists(fts_audio_file):
-        raise NoSePuedeCrearDialplanError(
-            "No se encontro el archivo de audio '{0}' para la campana "
-            "'{1}'".format(fts_audio_file, campana.id))
-
-
 def generar_dialplan(campana):
-    """Genera el dialplan para una campaña.
-
-    :param campana: Campana para la cual hay crear el dialplan
-    :type campana: fts_web.models.Campana
-    :returns: str -- dialplan para la campaña
-    :raises: Exception en caso de problemas (ej: no se encuentra
-        el archivo de audio)
-    """
-
-    assert campana is not None, "Campana == None"
-    assert campana.estado != Campana.ESTADO_EN_DEFINICION,\
-        "Campana: estado == ESTADO_EN_DEFINICION "
-    assert campana.id is not None, "campana.id == None"
-    assert campana.segundos_ring is not None
-
-    # Chequeamos que se haya seteado al menos un objeto AudioDeCampana.
-    audios_de_campana = campana.audios_de_campana.all()
-    assert audios_de_campana, "campana.audios_de_campana -> None"
-
-    # Chequeamos que cada objeto, al menos tenga setada uno de los posibles
-    # audios.
-    for audio_de_campana in audios_de_campana:
-        posibles_audios = [audio_de_campana.audio_asterisk,
-                           audio_de_campana.archivo_de_audio,
-                           audio_de_campana.tts]
-        assert any(posibles_audios), "Un AudioDeCampana no es valido."
-
-    partes = []
-    param_generales = {
-        'fts_campana_id': campana.id,
-        'fts_campana_dial_timeout': campana.segundos_ring,
-        'fts_agi_server': '127.0.0.1',  # TODO: mover a settings
-        'fts_dial_url': settings.ASTERISK['DIAL_URL'],
-        'date': str(datetime.datetime.now())
-    }
-
-    partes.append(TEMPLATE_DIALPLAN_START.format(**param_generales))
-
-    for audio_de_campana in audios_de_campana:
-        if audio_de_campana.audio_asterisk:
-            # Un archivo subido por el usuario
-            fts_audio_file = os.path.join(settings.MEDIA_ROOT,
-                                          audio_de_campana.audio_asterisk.name)
-
-            if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
-                _check_audio_file_exist(fts_audio_file, campana)
-
-            params_audios = {
-                'fts_audio_de_campana_id': audio_de_campana.id,
-                'fts_audio_file': os.path.splitext(fts_audio_file)[0],
-            }
-            partes.append(TEMPLATE_DIALPLAN_PLAY_AUDIO.format(
-                **params_audios))
-
-        elif audio_de_campana.archivo_de_audio:
-            # Un audio de los pre-definidos / pre-cargados
-            fts_audio_file = os.path.join(
-                settings.MEDIA_ROOT,
-                audio_de_campana.archivo_de_audio.audio_asterisk.name)
-
-            if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
-                _check_audio_file_exist(fts_audio_file, campana)
-
-            params_audios = {
-                'fts_audio_de_campana_id': audio_de_campana.id,
-                'fts_audio_file': os.path.splitext(fts_audio_file)[0],
-            }
-            partes.append(TEMPLATE_DIALPLAN_PLAY_AUDIO.format(
-                **params_audios))
-
-        elif audio_de_campana.tts:
-            metadata = campana.bd_contacto.get_metadata()
-
-            if metadata.dato_extra_es_hora(audio_de_campana.tts):
-                params_tts_hora = {
-                    'fts_audio_de_campana_id': audio_de_campana.id,
-                    'fts_tts_hora': audio_de_campana.tts,
-                }
-                partes.append(TEMPLATE_DIALPLAN_HORA.format(
-                    **params_tts_hora))
-
-            elif metadata.dato_extra_es_fecha(audio_de_campana.tts):
-                params_tts_fecha = {
-                    'fts_audio_de_campana_id': audio_de_campana.id,
-                    'fts_tts_fecha': audio_de_campana.tts,
-                }
-                partes.append(TEMPLATE_DIALPLAN_FECHA.format(
-                    **params_tts_fecha))
-
-            else:
-                # O es Teléfono, o es Genérico. En ambos casos se trata como
-                # tts genérico.
-                params_tts = {
-                    'fts_audio_de_campana_id': audio_de_campana.id,
-                    'fts_tts': audio_de_campana.tts,
-                }
-                partes.append(TEMPLATE_DIALPLAN_TTS.format(
-                    **params_tts))
-
-    partes.append(TEMPLATE_DIALPLAN_HANGUP.format(**param_generales))
-
-    # TODO: derivacion: setear GrupoAtencion / QUEUE (cuando corresponda)
-    # TODO: voicemail: IMPLEMENTAR!
-
-    # Genera opciones de campana
-    for opcion in campana.opciones.all():
-        params_opcion = dict(param_generales)
-        params_opcion.update({
-            'fts_opcion_id': opcion.id,
-            'fts_opcion_digito': opcion.digito,
-        })
-
-        if opcion.accion == Opcion.DERIVAR_GRUPO_ATENCION:
-            ga = opcion.grupo_atencion
-            params_opcion.update({
-                'fts_queue_name': ga.get_nombre_para_asterisk(),
-                'fts_grup_atencion_id': ga.id,
-            })
-            partes.append(TEMPLATE_OPCION_DERIVAR_GRUPO_ATENCION.format(
-                          **params_opcion))
-
-        elif opcion.accion == Opcion.DERIVAR_DERIVACION_EXTERNA:
-            de = opcion.derivacion_externa
-            params_opcion.update({
-                'fts_derivacion_externa_id': de.id,
-                'fts_dial_string': de.dial_string,
-            })
-            partes.append(TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA.format(
-                          **params_opcion))
-
-        elif opcion.accion == Opcion.REPETIR:
-            partes.append(TEMPLATE_OPCION_REPETIR.format(**params_opcion))
-
-        elif opcion.accion == Opcion.VOICEMAIL:
-            # TODO: implementar
-            partes.append(TEMPLATE_OPCION_VOICEMAIL.format(**params_opcion))
-
-        elif opcion.accion == Opcion.CALIFICAR:
-            params_opcion.update({
-                'fts_calificacion_id': opcion.calificacion.id,
-                'fts_calificacion_nombre': opcion.calificacion.nombre,
-            })
-            partes.append(TEMPLATE_OPCION_CALIFICAR.format(**params_opcion))
-
-        else:
-            raise NoSePuedeCrearDialplanError(
-                "Tipo de acción '{0}' desconocida para la opcion."
-                "Campana '{1}'".format(opcion.accion, campana.id))
-
-    partes.append(TEMPLATE_DIALPLAN_END.format(**param_generales))
-
-    return ''.join(partes)
+    create_dialplan_config_file = CreateDialplanConfigFile()
+    return create_dialplan_config_file._generar_dialplan(campana)
 
 
 def create_dialplan_config_file(campana=None, campanas=None):
-    """Crea el archivo de dialplan para campanas existentes
-    (si `campana` es None). Si `campana` es pasada por parametro,
-    se genera solo para dicha campana.
-    """
+    create_dialplan_config_file = CreateDialplanConfigFile()
+    create_dialplan_config_file.create_config_file(campana, campanas)
 
-    if campanas:
-        pass
-    elif campana:
-        campanas = [campana]
-    else:
-        campanas = Campana.objects.obtener_todas_para_generar_dialplan()
 
-    tmp_fd, tmp_filename = tempfile.mkstemp()
-    try:
-        tmp_file_obj = os.fdopen(tmp_fd, 'w')
-        for campana in campanas:
-            logger.info("Creando dialplan para campana %s", campana.id)
-            try:
-                config_chunk = generar_dialplan(campana)
-                logger.info("Dialplan generado OK para campana %s", campana.id)
-            except:
-                logger.exception("No se pudo generar configuracion de Asterisk"
-                    " para la campana {0}".format(campana.id))
+class CreateDialplanConfigFile(object):
+    def _check_audio_file_exist(self, fts_audio_file, campana):
+        if not os.path.exists(fts_audio_file):
+            raise NoSePuedeCrearDialplanError(
+                "No se encontro el archivo de audio '{0}' para la campana "
+                "'{1}'".format(fts_audio_file, campana.id))
 
-                try:
-                    traceback_lines = ["; {0}".format(line)
-                        for line in traceback.format_exc().splitlines()]
-                    traceback_lines = "\n".join(traceback_lines)
-                except:
-                    traceback_lines = "Error al intentar generar traceback"
-                    logger.exception("Error al intentar generar traceback")
+    def _generar_dialplan(self, campana):
+        """Genera el dialplan para una campaña.
 
-                config_chunk = TEMPLATE_FAILED.format(
-                    fts_campana_id=campana.id,
-                    date=str(datetime.datetime.now()),
-                    traceback_lines=traceback_lines
-                )
+        :param campana: Campana para la cual hay crear el dialplan
+        :type campana: fts_web.models.Campana
+        :returns: str -- dialplan para la campaña
+        :raises: Exception en caso de problemas (ej: no se encuentra
+            el archivo de audio)
+        """
 
-            tmp_file_obj.write(config_chunk)
+        assert campana is not None, "Campana == None"
+        assert campana.estado != Campana.ESTADO_EN_DEFINICION,\
+            "Campana: estado == ESTADO_EN_DEFINICION "
+        assert campana.id is not None, "campana.id == None"
+        assert campana.segundos_ring is not None
 
-        tmp_file_obj.close()
-        dest_filename = settings.FTS_DIALPLAN_FILENAME.strip()
-        logger.info("Copiando dialplan a %s", dest_filename)
-        shutil.copy(tmp_filename, dest_filename)
-        os.chmod(dest_filename, 0644)
+        # Chequeamos que se haya seteado al menos un objeto AudioDeCampana.
+        audios_de_campana = campana.audios_de_campana.all()
+        assert audios_de_campana, "campana.audios_de_campana -> None"
 
-    finally:
+        # Chequeamos que cada objeto, al menos tenga setada uno de los posibles
+        # audios.
+        for audio_de_campana in audios_de_campana:
+            posibles_audios = [audio_de_campana.audio_asterisk,
+                               audio_de_campana.archivo_de_audio,
+                               audio_de_campana.tts]
+            assert any(posibles_audios), "Un AudioDeCampana no es valido."
+
+        partes = []
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',  # TODO: mover a settings
+            'fts_dial_url': settings.ASTERISK['DIAL_URL'],
+            'date': str(datetime.datetime.now())
+        }
+
+        partes.append(TEMPLATE_DIALPLAN_START.format(**param_generales))
+
+        for audio_de_campana in audios_de_campana:
+            if audio_de_campana.audio_asterisk:
+                # Un archivo subido por el usuario
+                fts_audio_file = os.path.join(settings.MEDIA_ROOT,
+                                              audio_de_campana.audio_asterisk.name)
+
+                if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
+                    self._check_audio_file_exist(fts_audio_file, campana)
+
+                params_audios = {
+                    'fts_audio_de_campana_id': audio_de_campana.id,
+                    'fts_audio_file': os.path.splitext(fts_audio_file)[0],
+                }
+                partes.append(TEMPLATE_DIALPLAN_PLAY_AUDIO.format(
+                    **params_audios))
+
+            elif audio_de_campana.archivo_de_audio:
+                # Un audio de los pre-definidos / pre-cargados
+                fts_audio_file = os.path.join(
+                    settings.MEDIA_ROOT,
+                    audio_de_campana.archivo_de_audio.audio_asterisk.name)
+
+                if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
+                    self._check_audio_file_exist(fts_audio_file, campana)
+
+                params_audios = {
+                    'fts_audio_de_campana_id': audio_de_campana.id,
+                    'fts_audio_file': os.path.splitext(fts_audio_file)[0],
+                }
+                partes.append(TEMPLATE_DIALPLAN_PLAY_AUDIO.format(
+                    **params_audios))
+
+            elif audio_de_campana.tts:
+                metadata = campana.bd_contacto.get_metadata()
+
+                if metadata.dato_extra_es_hora(audio_de_campana.tts):
+                    params_tts_hora = {
+                        'fts_audio_de_campana_id': audio_de_campana.id,
+                        'fts_tts_hora': audio_de_campana.tts,
+                    }
+                    partes.append(TEMPLATE_DIALPLAN_HORA.format(
+                        **params_tts_hora))
+
+                elif metadata.dato_extra_es_fecha(audio_de_campana.tts):
+                    params_tts_fecha = {
+                        'fts_audio_de_campana_id': audio_de_campana.id,
+                        'fts_tts_fecha': audio_de_campana.tts,
+                    }
+                    partes.append(TEMPLATE_DIALPLAN_FECHA.format(
+                        **params_tts_fecha))
+
+                else:
+                    # O es Teléfono, o es Genérico. En ambos casos se trata como
+                    # tts genérico.
+                    params_tts = {
+                        'fts_audio_de_campana_id': audio_de_campana.id,
+                        'fts_tts': audio_de_campana.tts,
+                    }
+                    partes.append(TEMPLATE_DIALPLAN_TTS.format(
+                        **params_tts))
+
+        partes.append(TEMPLATE_DIALPLAN_HANGUP.format(**param_generales))
+
+        # TODO: derivacion: setear GrupoAtencion / QUEUE (cuando corresponda)
+        # TODO: voicemail: IMPLEMENTAR!
+
+        # Genera opciones de campana
+        for opcion in campana.opciones.all():
+            params_opcion = dict(param_generales)
+            params_opcion.update({
+                'fts_opcion_id': opcion.id,
+                'fts_opcion_digito': opcion.digito,
+            })
+
+            if opcion.accion == Opcion.DERIVAR_GRUPO_ATENCION:
+                ga = opcion.grupo_atencion
+                params_opcion.update({
+                    'fts_queue_name': ga.get_nombre_para_asterisk(),
+                    'fts_grup_atencion_id': ga.id,
+                })
+                partes.append(TEMPLATE_OPCION_DERIVAR_GRUPO_ATENCION.format(
+                              **params_opcion))
+
+            elif opcion.accion == Opcion.DERIVAR_DERIVACION_EXTERNA:
+                de = opcion.derivacion_externa
+                params_opcion.update({
+                    'fts_derivacion_externa_id': de.id,
+                    'fts_dial_string': de.dial_string,
+                })
+                partes.append(TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA.format(
+                              **params_opcion))
+
+            elif opcion.accion == Opcion.REPETIR:
+                partes.append(TEMPLATE_OPCION_REPETIR.format(**params_opcion))
+
+            elif opcion.accion == Opcion.VOICEMAIL:
+                # TODO: implementar
+                partes.append(TEMPLATE_OPCION_VOICEMAIL.format(**params_opcion))
+
+            elif opcion.accion == Opcion.CALIFICAR:
+                params_opcion.update({
+                    'fts_calificacion_id': opcion.calificacion.id,
+                    'fts_calificacion_nombre': opcion.calificacion.nombre,
+                })
+                partes.append(TEMPLATE_OPCION_CALIFICAR.format(**params_opcion))
+
+            else:
+                raise NoSePuedeCrearDialplanError(
+                    "Tipo de acción '{0}' desconocida para la opcion."
+                    "Campana '{1}'".format(opcion.accion, campana.id))
+
+        partes.append(TEMPLATE_DIALPLAN_END.format(**param_generales))
+
+        return ''.join(partes)
+
+    def create_config_file(self, campana=None, campanas=None):
+        """Crea el archivo de dialplan para campanas existentes
+        (si `campana` es None). Si `campana` es pasada por parametro,
+        se genera solo para dicha campana.
+        """
+
+        if campanas:
+            pass
+        elif campana:
+            campanas = [campana]
+        else:
+            campanas = Campana.objects.obtener_todas_para_generar_dialplan()
+
+        tmp_fd, tmp_filename = tempfile.mkstemp()
         try:
-            os.remove(tmp_filename)
-        except:
-            logger.exception("Error al intentar borrar temporal %s",
-                tmp_filename)
+            tmp_file_obj = os.fdopen(tmp_fd, 'w')
+            for campana in campanas:
+                logger.info("Creando dialplan para campana %s", campana.id)
+                try:
+                    config_chunk = self._generar_dialplan(campana)
+                    logger.info("Dialplan generado OK para campana %s", campana.id)
+                except:
+                    logger.exception("No se pudo generar configuracion de Asterisk"
+                        " para la campana {0}".format(campana.id))
+
+                    try:
+                        traceback_lines = ["; {0}".format(line)
+                            for line in traceback.format_exc().splitlines()]
+                        traceback_lines = "\n".join(traceback_lines)
+                    except:
+                        traceback_lines = "Error al intentar generar traceback"
+                        logger.exception("Error al intentar generar traceback")
+
+                    config_chunk = TEMPLATE_FAILED.format(
+                        fts_campana_id=campana.id,
+                        date=str(datetime.datetime.now()),
+                        traceback_lines=traceback_lines
+                    )
+
+                tmp_file_obj.write(config_chunk)
+
+            tmp_file_obj.close()
+            dest_filename = settings.FTS_DIALPLAN_FILENAME.strip()
+            logger.info("Copiando dialplan a %s", dest_filename)
+            shutil.copy(tmp_filename, dest_filename)
+            os.chmod(dest_filename, 0644)
+
+        finally:
+            try:
+                os.remove(tmp_filename)
+            except:
+                logger.exception("Error al intentar borrar temporal %s",
+                    tmp_filename)
 
 
 TEMPLATE_QUEUE = """
@@ -447,91 +456,110 @@ member => SIP/{fts_member_number}
 
 
 def generar_queue(grupo_atencion):
-    """Genera configuracion para queue / grupos de atencion"""
-
-    partes = []
-    param_generales = {
-        'fts_grupo_atencion_id': grupo_atencion.id,
-        'fts_grupo_atencion_nombre': grupo_atencion.nombre,
-        'fts_queue_name': grupo_atencion.get_nombre_para_asterisk(),
-        'fts_strategy': grupo_atencion.get_ring_strategy_para_asterisk(),
-        'fts_timeout': grupo_atencion.timeout,
-        'date': str(datetime.datetime.now())
-    }
-
-    partes.append(TEMPLATE_QUEUE.format(**param_generales))
-
-    for agente in grupo_atencion.agentes.all():
-        params_opcion = dict(param_generales)
-        params_opcion.update({
-            'fts_member_number': agente.numero_interno,
-            'fts_agente_id': agente.id
-        })
-        partes.append(TEMPLATE_QUEUE_MEMBER.format(**params_opcion))
-
-    return ''.join(partes)
+    create_queue_config_file = CreateQueueConfigFile()
+    return create_queue_config_file._generar_queue(grupo_atencion)
 
 
 def create_queue_config_file():
-    """Crea el archivo de queue para G.A. existentes"""
+    create_queue_config_file = CreateQueueConfigFile()
+    create_queue_config_file.create_queue_config_file()
 
-    grupos_atencion = GrupoAtencion.objects.obtener_todos_para_generar_config()
 
-    tmp_fd, tmp_filename = tempfile.mkstemp()
-    try:
-        tmp_file_obj = os.fdopen(tmp_fd, 'w')
-        for ga in grupos_atencion:
-            logger.info("Creando config para grupo de atencion %s", ga.id)
-            config_chunk = generar_queue(ga)
-            tmp_file_obj.write(config_chunk)
+class CreateQueueConfigFile(object):
 
-        tmp_file_obj.close()
-        dest_filename = settings.FTS_QUEUE_FILENAME.strip()
-        logger.info("Copiando config de queues a %s", dest_filename)
-        shutil.copy(tmp_filename, dest_filename)
+    def _generar_queue(self, grupo_atencion):
+        """Genera configuracion para queue / grupos de atencion"""
 
-    finally:
+        partes = []
+        param_generales = {
+            'fts_grupo_atencion_id': grupo_atencion.id,
+            'fts_grupo_atencion_nombre': grupo_atencion.nombre,
+            'fts_queue_name': grupo_atencion.get_nombre_para_asterisk(),
+            'fts_strategy': grupo_atencion.get_ring_strategy_para_asterisk(),
+            'fts_timeout': grupo_atencion.timeout,
+            'date': str(datetime.datetime.now())
+        }
+
+        partes.append(TEMPLATE_QUEUE.format(**param_generales))
+
+        for agente in grupo_atencion.agentes.all():
+            params_opcion = dict(param_generales)
+            params_opcion.update({
+                'fts_member_number': agente.numero_interno,
+                'fts_agente_id': agente.id
+            })
+            partes.append(TEMPLATE_QUEUE_MEMBER.format(**params_opcion))
+
+        return ''.join(partes)
+
+    def create_queue_config_file(self):
+        """Crea el archivo de queue para G.A. existentes"""
+
+        grupos_atencion = \
+            GrupoAtencion.objects.obtener_todos_para_generar_config()
+
+        tmp_fd, tmp_filename = tempfile.mkstemp()
         try:
-            os.remove(tmp_filename)
-        except:
-            logger.exception("Error al intentar borrar temporal %s",
-                tmp_filename)
+            tmp_file_obj = os.fdopen(tmp_fd, 'w')
+            for ga in grupos_atencion:
+                logger.info("Creando config para grupo de atencion %s", ga.id)
+                config_chunk = self._generar_queue(ga)
+                tmp_file_obj.write(config_chunk)
+
+            tmp_file_obj.close()
+            dest_filename = settings.FTS_QUEUE_FILENAME.strip()
+            logger.info("Copiando config de queues a %s", dest_filename)
+            shutil.copy(tmp_filename, dest_filename)
+
+        finally:
+            try:
+                os.remove(tmp_filename)
+            except:
+                logger.exception("Error al intentar borrar temporal %s",
+                                 tmp_filename)
 
 
 def reload_config():
-    """Realiza reload de configuracion de Asterisk
+    reload_asterisk_config = ReloadAsteriskConfig()
+    return reload_asterisk_config.reload_config()
 
-    :returns: int -- exit status de proceso ejecutado.
-              0 (cero) si fue exitoso, otro valor si se produjo
-              un error
-    """
-    stdout_file = tempfile.TemporaryFile()
-    stderr_file = tempfile.TemporaryFile()
 
-    try:
-        subprocess.check_call(settings.FTS_RELOAD_CMD,
-            stdout=stdout_file, stderr=stderr_file)
-        logger.info("Reload de configuracion de Asterisk fue OK")
-        return 0
-    except subprocess.CalledProcessError, e:
-        logger.warn("Exit status erroneo: %s", e.returncode)
-        logger.warn(" - Comando ejecutado: %s", e.cmd)
+class ReloadAsteriskConfig(object):
+
+    def reload_config(self):
+        """Realiza reload de configuracion de Asterisk
+
+        :returns: int -- exit status de proceso ejecutado.
+                  0 (cero) si fue exitoso, otro valor si se produjo
+                  un error
+        """
+        stdout_file = tempfile.TemporaryFile()
+        stderr_file = tempfile.TemporaryFile()
+
         try:
-            stdout_file.seek(0)
-            stderr_file.seek(0)
-            stdout = stdout_file.read().splitlines()
-            for line in stdout:
-                if line:
-                    logger.warn(" STDOUT> %s", line)
-            stderr = stderr_file.read().splitlines()
-            for line in stderr:
-                if line:
-                    logger.warn(" STDERR> %s", line)
-        except:
-            logger.exception("Error al intentar reporter STDERR y STDOUT")
+            subprocess.check_call(settings.FTS_RELOAD_CMD,
+                                  stdout=stdout_file, stderr=stderr_file)
+            logger.info("Reload de configuracion de Asterisk fue OK")
+            return 0
+        except subprocess.CalledProcessError, e:
+            logger.warn("Exit status erroneo: %s", e.returncode)
+            logger.warn(" - Comando ejecutado: %s", e.cmd)
+            try:
+                stdout_file.seek(0)
+                stderr_file.seek(0)
+                stdout = stdout_file.read().splitlines()
+                for line in stdout:
+                    if line:
+                        logger.warn(" STDOUT> %s", line)
+                stderr = stderr_file.read().splitlines()
+                for line in stderr:
+                    if line:
+                        logger.warn(" STDERR> %s", line)
+            except:
+                logger.exception("Error al intentar reporter STDERR y STDOUT")
 
-        return e.returncode
+            return e.returncode
 
-    finally:
-        stdout_file.close()
-        stderr_file.close()
+        finally:
+            stdout_file.close()
+            stderr_file.close()
