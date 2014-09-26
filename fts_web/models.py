@@ -1576,6 +1576,22 @@ class Campana(models.Model):
                 return False
         return True
 
+    def valida_tts(self):
+        """
+        Este método valida que, en caso que alguno AudioDeCampana de la campana
+        sea tts, cada uno de los tts que posea concuerden con alguna columna
+        de la base de datos que tenga la campana.
+        Devuelve True or False.
+        """
+        metadata = self.bd_contacto.get_metadata()
+
+        audios_de_campana = self.audios_de_campana.all()
+        for audio_de_campana in audios_de_campana:
+            if (audio_de_campana.tts and audio_de_campana.tts not in
+                    metadata.nombres_de_columnas):
+                return False
+        return True
+
     def obtener_actuaciones_validas(self):
         """
         Este método devuelve un lista con las actuaciones válidas de una
@@ -1633,21 +1649,6 @@ class Campana(models.Model):
         """
         return self.estado == Campana.ESTADO_EN_DEFINICION
 
-    def confirma_campana_valida(self):
-        """
-        Este método se encarga de validar la campana cuando se confirma su
-        creación. Valida que los datos obligatorios estén seteados/creados.
-
-        Devuelve un booleano.
-        """
-        if not self.valida_estado_en_definicion():
-            return False
-        if not self.valida_audio():
-            return False
-        if not self.valida_actuaciones():
-            return False
-        return True
-
     def clean(self, *args, **kwargs):
         """
         Valida que al crear una campaña la fechas de
@@ -1683,6 +1684,9 @@ class Campana(models.Model):
                             datos."]
                     })
 
+    class Meta:
+        ordering = ['pk']
+
     def __unicode__(self):
         return self.nombre
 
@@ -1695,21 +1699,6 @@ class AudioDeCampanaManager(models.Manager):
             return audio_de_campana.orden + 1
         except AudioDeCampana.DoesNotExist:
             return 1
-
-    def campana_tiene_tts(self, campana_id):
-        """
-        Este método verifica si la campana pasada por parámetro tiene cargada
-        un objeto AudioDeCampana con tts. Devuelve true o false.
-        """
-        # NOTA: Este método debería ser temporal hasta que se resuelva bien
-        # que hacer, con la campañas que tiene TTS en AudioDeCampaña, en
-        # el proceso de creación de las mismas.
-
-        from django.db.models import Q
-        if self.filter(campana=campana_id).exclude(Q(tts__isnull=True) |
-                                                   Q(tts__exact='')):
-            return True
-        return False
 
 
 class AudioDeCampana(models.Model):

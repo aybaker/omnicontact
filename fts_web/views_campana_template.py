@@ -10,13 +10,14 @@ from django.views.generic.base import RedirectView
 from django.views.generic.edit import DeleteView, CreateView, UpdateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from fts_web.forms import TemplateForm, ConfirmaForm
+from fts_web.forms import TemplateForm
 from fts_web.models import Campana
 from fts_web.views_campana_creacion import (
     AudioCampanaCreateView, AudioCampanaOrdenView, AudiosCampanaDeleteView,
     CalificacionCampanaCreateView, CalificacionCampanaDeleteView,
     OpcionCampanaCreateView, OpcionCampanaDeleteView,
-    ActuacionCampanaCreateView, ActuacionCampanaDeleteView)
+    ActuacionCampanaCreateView, ActuacionCampanaDeleteView,
+    ConfirmaCampanaView)
 from fts_web.views_campana_creacion import (CheckEstadoTemplateMixin,
                                             TemplateEnDefinicionMixin)
 import logging as logging_
@@ -278,57 +279,7 @@ class ActuacionTemplateDeleteView(CheckEstadoTemplateMixin, TemplateMixin,
 
 
 class ConfirmaTemplateView(CheckEstadoTemplateMixin, TemplateEnDefinicionMixin,
-                           TemplateMixin, UpdateView):
-    template_name = 'campana/confirma_campana.html'
-    model = Campana
-    context_object_name = 'campana'
-    form_class = ConfirmaForm
-
-    # @@@@@@@@@@@@@@@@@@@@
-
-    def form_valid(self, form):
-        if 'confirma' in self.request.POST:
-            campana = self.object
-
-            if not campana.valida_grupo_atencion():
-                message = '<strong>Operación Errónea!</strong> \
-                    EL Grupo Atención seleccionado en el proceso de creación \
-                    del template ha sido eliminado. Debe seleccionar uno \
-                    válido.'
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    message,
-                )
-                return self.form_invalid(form)
-
-            if not campana.valida_derivacion_externa():
-                message = '<strong>Operación Errónea!</strong> \
-                    La Derivación Externa seleccionado en el proceso de \
-                    creación del template ha sido eliminada. Debe \
-                    seleccionar uno válido.'
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    message,
-                )
-                return self.form_invalid(form)
-
-            campana.activar_template()
-
-            message = '<strong>Operación Exitosa!</strong> \
-                Se llevó a cabo con éxito la creación del Template.'
-            messages.add_message(
-                self.request,
-                messages.SUCCESS,
-                message,
-            )
-
-            return redirect(self.get_success_url())
-
-        elif 'cancela' in self.request.POST:
-            pass
-            # TODO: Implementar la cancelación.
+                           TemplateMixin, ConfirmaCampanaView):
 
     def get_success_url(self):
         return reverse('lista_template')
