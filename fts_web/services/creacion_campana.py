@@ -9,9 +9,9 @@ from __future__ import unicode_literals
 import logging
 
 from fts_web.errors import FtsError
-from fts_daemon.asterisk_config import (create_dialplan_config_file,
-                                        reload_config,
-                                        create_queue_config_file)
+from fts_daemon.asterisk_config import (CreateDialplanConfigFile,
+                                        CreateQueueConfigFile,
+                                        ReloadAsteriskConfig)
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +27,11 @@ class RestablecerDialplanError(FtsError):
 
 
 class ActivacionCampanaTemplateService(object):
+
+    def __init__(self):
+        self.create_dialplan_config_file = CreateDialplanConfigFile()
+        self.create_queue_config_file = CreateQueueConfigFile()
+        self.reload_asterisk_config = ReloadAsteriskConfig()
 
     def _validar_campana(self, campana):
         """
@@ -75,7 +80,7 @@ class ActivacionCampanaTemplateService(object):
         mensaje_error = ""
 
         try:
-            create_dialplan_config_file()
+            self.create_dialplan_config_file.create_config_file()
         except:
             logger.exception("ActivacionCampanaTemplateService: error al "
                              "intentar create_dialplan_config_file()")
@@ -86,7 +91,7 @@ class ActivacionCampanaTemplateService(object):
         try:
             # Esto es algo redundante! Para que re-crear los queues?
             # Total, esto lo hace GrupoDeAtencion!
-            create_queue_config_file()
+            self.create_queue_config_file.create_config_file()
         except:
             logger.exception("ActivacionCampanaTemplateService: error al "
                              "intentar create_queue_config_file()")
@@ -95,7 +100,7 @@ class ActivacionCampanaTemplateService(object):
             mensaje_error = ("hubo un inconveniente al generar el Dialplan de "
                              "Asterisk.")
         try:
-            ret = reload_config()
+            ret = self.reload_asterisk_config.reload_config()
             if ret != 0:
                 proceso_ok = False
                 mensaje_error = ("hubo un inconveniente al intentar recargar "
