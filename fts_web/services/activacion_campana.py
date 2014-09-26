@@ -72,6 +72,8 @@ class ActivacionCampanaTemplateService(object):
 
     def _restablecer_dialplan_campana(self):
         proceso_ok = True
+        mensaje_error = ""
+
         try:
             create_dialplan_config_file()
         except:
