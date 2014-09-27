@@ -1,7 +1,6 @@
 #
-# Para crear imagen:
-#
-#    $ docker build -t hgdeoro/fts-asterisk-dev .
+# TODO:
+#  * hacer accesibles archivos de audio
 #
 # Usuarios SIP:
 #  - USER: test_user1 - PASS: 1234
