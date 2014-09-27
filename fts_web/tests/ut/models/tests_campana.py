@@ -696,9 +696,9 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
     def test_restablecer_dialplan_campana_no_falla(self):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
-        activacion_campana_service.create_dialplan_config_file.\
+        activacion_campana_service.dialplan_config_creator.\
             create_config_file = Mock()
-        activacion_campana_service.create_queue_config_file.\
+        activacion_campana_service.queue_config_creator.\
             create_config_file = Mock()
         activacion_campana_service.reload_asterisk_config.reload_config = \
             Mock(return_value=0)
@@ -710,9 +710,9 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
     def test_restablecer_dialplan_campana_falla_dialplan(self):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
-        activacion_campana_service.create_dialplan_config_file.\
+        activacion_campana_service.dialplan_config_creator.\
             create_config_file = Mock(side_effect=RestablecerDialplanError())
-        activacion_campana_service.create_queue_config_file.\
+        activacion_campana_service.queue_config_creator.\
             create_config_file = Mock()
         activacion_campana_service.reload_asterisk_config.reload_config = \
             Mock(return_value=0)
@@ -725,9 +725,9 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
     def test_restablecer_dialplan_campana_falla_queue(self):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
-        activacion_campana_service.create_dialplan_config_file.\
+        activacion_campana_service.dialplan_config_creator.\
             create_config_file = Mock()
-        activacion_campana_service.create_queue_config_file.\
+        activacion_campana_service.queue_config_creator.\
             create_config_file = Mock(side_effect=RestablecerDialplanError())
         activacion_campana_service.reload_asterisk_config.reload_config = \
             Mock(return_value=0)
@@ -740,9 +740,9 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
     def test_restablecer_dialplan_campana_falla_reload(self):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
-        activacion_campana_service.create_dialplan_config_file.\
+        activacion_campana_service.dialplan_config_creator.\
             create_config_file = Mock()
-        activacion_campana_service.create_queue_config_file.\
+        activacion_campana_service.queue_config_creator.\
             create_config_file = Mock()
         activacion_campana_service.reload_asterisk_config.reload_config = \
             Mock(side_effect=RestablecerDialplanError())
@@ -755,9 +755,9 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
     def test_restablecer_dialplan_campana_falla_reload_devuelve_1(self):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
-        activacion_campana_service.create_dialplan_config_file.\
+        activacion_campana_service.dialplan_config_creator.\
             create_config_file = Mock()
-        activacion_campana_service.create_queue_config_file.\
+        activacion_campana_service.queue_config_creator.\
             create_config_file = Mock()
         activacion_campana_service.reload_asterisk_config.reload_config = \
             Mock(return_value=1)

@@ -194,23 +194,66 @@ TEMPLATE_FAILED = """
 
 """
 
+TEMPLATE_QUEUE = """
+
+;----------------------------------------------------------------------
+; TEMPLATE_QUEUE-{fts_queue_name}
+;   Autogenerado {date}
+;----------------------------------------------------------------------
+; Grupo de Atencion
+;     - Id: {fts_grupo_atencion_id}
+; - Nombre: {fts_grupo_atencion_nombre}
+;----------------------------------------------------------------------
+
+[{fts_queue_name}]
+
+strategy={fts_strategy}
+timeout={fts_timeout}
+maxlen=0
+monitor-type=mixmonitor
+monitor-format=wav
+
+"""
+
+TEMPLATE_QUEUE_MEMBER = """
+
+; agente.id={fts_agente_id}
+member => SIP/{fts_member_number}
+
+"""
+
+
+def generar_dialplan(campana):
+    dialplan_config_creator = DialplanConfigCreator()
+    return dialplan_config_creator._generar_dialplan(campana)
+
+
+def create_dialplan_config_file(campana=None, campanas=None):
+    dialplan_config_creator = DialplanConfigCreator()
+    dialplan_config_creator.create_dialplan(campana, campanas)
+
+
+def generar_queue(grupo_atencion):
+    queue_config_creator = QueueConfigCreator()
+    return queue_config_creator._generar_queue(grupo_atencion)
+
+
+def create_queue_config_file():
+    queue_config_creator = QueueConfigCreator()
+    queue_config_creator.create_queue()
+
+
+def reload_config():
+    reload_asterisk_config = ReloadAsteriskConfig()
+    return reload_asterisk_config.reload_config()
+
 
 class NoSePuedeCrearDialplanError(FtsError):
     """Indica que no se pudo crear el dialplan."""
     pass
 
 
-def generar_dialplan(campana):
-    create_dialplan_config_file = CreateDialplanConfigFile()
-    return create_dialplan_config_file._generar_dialplan(campana)
-
-
-def create_dialplan_config_file(campana=None, campanas=None):
-    create_dialplan_config_file = CreateDialplanConfigFile()
-    create_dialplan_config_file.create_dialplan(campana, campanas)
-
-
-class CreateDialplanConfigFile(object):  # -> DialplanConfig()
+class DialplanConfigCreator(object):  # -> DialplanConfigCreator()
     def _check_audio_file_exist(self, fts_audio_file, campana):
         if not os.path.exists(fts_audio_file):
             raise NoSePuedeCrearDialplanError(
@@ -419,46 +462,7 @@ class CreateDialplanConfigFile(object):  # -> DialplanConfig()
         dialplan_config_file.write(dialplan)
 
 
-TEMPLATE_QUEUE = """
-
-;----------------------------------------------------------------------
-; TEMPLATE_QUEUE-{fts_queue_name}
-;   Autogenerado {date}
-;----------------------------------------------------------------------
-; Grupo de Atencion
-;     - Id: {fts_grupo_atencion_id}
-; - Nombre: {fts_grupo_atencion_nombre}
-;----------------------------------------------------------------------
-
-[{fts_queue_name}]
-
-strategy={fts_strategy}
-timeout={fts_timeout}
-maxlen=0
-monitor-type=mixmonitor
-monitor-format=wav
-
-"""
-
-TEMPLATE_QUEUE_MEMBER = """
-
-; agente.id={fts_agente_id}
-member => SIP/{fts_member_number}
-
-"""
-
-
-def generar_queue(grupo_atencion):
-    create_queue_config_file = CreateQueueConfigFile()
-    return create_queue_config_file._generar_queue(grupo_atencion)
-
-
-def create_queue_config_file():
-    create_queue_config_file = CreateQueueConfigFile()
-    create_queue_config_file.create_queue()
-
-
-class CreateQueueConfigFile(object):
+class QueueConfigCreator(object):  # -> QueueConfigCreator()
 
     def _generar_queue(self, grupo_atencion):
         """Genera configuracion para queue / grupos de atencion"""
@@ -499,11 +503,6 @@ class CreateQueueConfigFile(object):
 
         queue_config_file = QueueConfigFile()
         queue_config_file.write(queue)
-
-
-def reload_config():
-    reload_asterisk_config = ReloadAsteriskConfig()
-    return reload_asterisk_config.reload_config()
 
 
 class ReloadAsteriskConfig(object):
