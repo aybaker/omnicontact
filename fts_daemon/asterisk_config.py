@@ -207,10 +207,10 @@ def generar_dialplan(campana):
 
 def create_dialplan_config_file(campana=None, campanas=None):
     create_dialplan_config_file = CreateDialplanConfigFile()
-    create_dialplan_config_file.create_config_file(campana, campanas)
+    create_dialplan_config_file.create_dialplan(campana, campanas)
 
 
-class CreateDialplanConfigFile(object):
+class CreateDialplanConfigFile(object):  # -> DialplanConfig()
     def _check_audio_file_exist(self, fts_audio_file, campana):
         if not os.path.exists(fts_audio_file):
             raise NoSePuedeCrearDialplanError(
@@ -259,8 +259,8 @@ class CreateDialplanConfigFile(object):
         for audio_de_campana in audios_de_campana:
             if audio_de_campana.audio_asterisk:
                 # Un archivo subido por el usuario
-                fts_audio_file = os.path.join(settings.MEDIA_ROOT,
-                                              audio_de_campana.audio_asterisk.name)
+                fts_audio_file = os.path.join(
+                    settings.MEDIA_ROOT, audio_de_campana.audio_asterisk.name)
 
                 if settings.FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS:
                     self._check_audio_file_exist(fts_audio_file, campana)
@@ -308,7 +308,7 @@ class CreateDialplanConfigFile(object):
                         **params_tts_fecha))
 
                 else:
-                    # O es Teléfono, o es Genérico. En ambos casos se trata como
+                    # Es Teléfono, o es Genérico. En ambos casos se trata como
                     # tts genérico.
                     params_tts = {
                         'fts_audio_de_campana_id': audio_de_campana.id,
@@ -345,22 +345,25 @@ class CreateDialplanConfigFile(object):
                     'fts_derivacion_externa_id': de.id,
                     'fts_dial_string': de.dial_string,
                 })
-                partes.append(TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA.format(
-                              **params_opcion))
+                partes.append(
+                    TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA.format(
+                        **params_opcion))
 
             elif opcion.accion == Opcion.REPETIR:
                 partes.append(TEMPLATE_OPCION_REPETIR.format(**params_opcion))
 
             elif opcion.accion == Opcion.VOICEMAIL:
                 # TODO: implementar
-                partes.append(TEMPLATE_OPCION_VOICEMAIL.format(**params_opcion))
+                partes.append(TEMPLATE_OPCION_VOICEMAIL.format(
+                              **params_opcion))
 
             elif opcion.accion == Opcion.CALIFICAR:
                 params_opcion.update({
                     'fts_calificacion_id': opcion.calificacion.id,
                     'fts_calificacion_nombre': opcion.calificacion.nombre,
                 })
-                partes.append(TEMPLATE_OPCION_CALIFICAR.format(**params_opcion))
+                partes.append(TEMPLATE_OPCION_CALIFICAR.format(
+                              **params_opcion))
 
             else:
                 raise NoSePuedeCrearDialplanError(
@@ -371,7 +374,7 @@ class CreateDialplanConfigFile(object):
 
         return ''.join(partes)
 
-    def create_config_file(self, campana=None, campanas=None):
+    def create_dialplan(self, campana=None, campanas=None):
         """Crea el archivo de dialplan para campanas existentes
         (si `campana` es None). Si `campana` es pasada por parametro,
         se genera solo para dicha campana.
@@ -384,46 +387,36 @@ class CreateDialplanConfigFile(object):
         else:
             campanas = Campana.objects.obtener_todas_para_generar_dialplan()
 
-        tmp_fd, tmp_filename = tempfile.mkstemp()
-        try:
-            tmp_file_obj = os.fdopen(tmp_fd, 'w')
-            for campana in campanas:
-                logger.info("Creando dialplan para campana %s", campana.id)
-                try:
-                    config_chunk = self._generar_dialplan(campana)
-                    logger.info("Dialplan generado OK para campana %s", campana.id)
-                except:
-                    logger.exception("No se pudo generar configuracion de Asterisk"
-                        " para la campana {0}".format(campana.id))
-
-                    try:
-                        traceback_lines = ["; {0}".format(line)
-                            for line in traceback.format_exc().splitlines()]
-                        traceback_lines = "\n".join(traceback_lines)
-                    except:
-                        traceback_lines = "Error al intentar generar traceback"
-                        logger.exception("Error al intentar generar traceback")
-
-                    config_chunk = TEMPLATE_FAILED.format(
-                        fts_campana_id=campana.id,
-                        date=str(datetime.datetime.now()),
-                        traceback_lines=traceback_lines
-                    )
-
-                tmp_file_obj.write(config_chunk)
-
-            tmp_file_obj.close()
-            dest_filename = settings.FTS_DIALPLAN_FILENAME.strip()
-            logger.info("Copiando dialplan a %s", dest_filename)
-            shutil.copy(tmp_filename, dest_filename)
-            os.chmod(dest_filename, 0644)
-
-        finally:
+        dialplan = []
+        for campana in campanas:
+            logger.info("Creando dialplan para campana %s", campana.id)
             try:
-                os.remove(tmp_filename)
+                config_chunk = self._generar_dialplan(campana)
+                logger.info("Dialplan generado OK para campana %s",
+                            campana.id)
             except:
-                logger.exception("Error al intentar borrar temporal %s",
-                    tmp_filename)
+                logger.exception(
+                    "No se pudo generar configuracion de "
+                    "Asterisk para la campana {0}".format(campana.id))
+
+                try:
+                    traceback_lines = [
+                        "; {0}".format(line)
+                        for line in traceback.format_exc().splitlines()]
+                    traceback_lines = "\n".join(traceback_lines)
+                except:
+                    traceback_lines = "Error al intentar generar traceback"
+                    logger.exception("Error al intentar generar traceback")
+
+                config_chunk = TEMPLATE_FAILED.format(
+                    fts_campana_id=campana.id,
+                    date=str(datetime.datetime.now()),
+                    traceback_lines=traceback_lines
+                )
+            dialplan.append(config_chunk)
+
+        dialplan_config_file = DialplanConfigFile()
+        dialplan_config_file.write(dialplan)
 
 
 TEMPLATE_QUEUE = """
@@ -462,7 +455,7 @@ def generar_queue(grupo_atencion):
 
 def create_queue_config_file():
     create_queue_config_file = CreateQueueConfigFile()
-    create_queue_config_file.create_queue_config_file()
+    create_queue_config_file.create_queue()
 
 
 class CreateQueueConfigFile(object):
@@ -492,31 +485,20 @@ class CreateQueueConfigFile(object):
 
         return ''.join(partes)
 
-    def create_queue_config_file(self):
+    def create_queue(self):
         """Crea el archivo de queue para G.A. existentes"""
 
         grupos_atencion = \
             GrupoAtencion.objects.obtener_todos_para_generar_config()
 
-        tmp_fd, tmp_filename = tempfile.mkstemp()
-        try:
-            tmp_file_obj = os.fdopen(tmp_fd, 'w')
-            for ga in grupos_atencion:
-                logger.info("Creando config para grupo de atencion %s", ga.id)
-                config_chunk = self._generar_queue(ga)
-                tmp_file_obj.write(config_chunk)
+        queue = []
+        for ga in grupos_atencion:
+            logger.info("Creando config para grupo de atencion %s", ga.id)
+            config_chunk = self._generar_queue(ga)
+            queue.append(config_chunk)
 
-            tmp_file_obj.close()
-            dest_filename = settings.FTS_QUEUE_FILENAME.strip()
-            logger.info("Copiando config de queues a %s", dest_filename)
-            shutil.copy(tmp_filename, dest_filename)
-
-        finally:
-            try:
-                os.remove(tmp_filename)
-            except:
-                logger.exception("Error al intentar borrar temporal %s",
-                                 tmp_filename)
+        queue_config_file = QueueConfigFile()
+        queue_config_file.write(queue)
 
 
 def reload_config():
@@ -563,3 +545,40 @@ class ReloadAsteriskConfig(object):
         finally:
             stdout_file.close()
             stderr_file.close()
+
+
+class ConfigFile(object):
+    def __init__(self, filename):
+        self._filename = filename
+
+    def write(self, contenidos):
+        tmp_fd, tmp_filename = tempfile.mkstemp()
+        try:
+            tmp_file_obj = os.fdopen(tmp_fd, 'w')
+            for contenido in contenidos:
+                tmp_file_obj.write(contenido)
+
+            tmp_file_obj.close()
+
+            logger.info("Copiando file config a %s", self._filename)
+            shutil.copy(tmp_filename, self._filename)
+            os.chmod(self._filename, 0644)
+
+        finally:
+            try:
+                os.remove(tmp_filename)
+            except:
+                logger.exception("Error al intentar borrar temporal %s",
+                                 tmp_filename)
+
+
+class QueueConfigFile(ConfigFile):
+    def __init__(self):
+        filename = settings.FTS_QUEUE_FILENAME.strip()
+        super(QueueConfigFile, self).__init__(filename)
+
+
+class DialplanConfigFile(ConfigFile):
+    def __init__(self):
+        filename = settings.FTS_DIALPLAN_FILENAME.strip()
+        super(DialplanConfigFile, self).__init__(filename)
