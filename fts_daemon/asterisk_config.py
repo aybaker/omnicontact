@@ -254,6 +254,10 @@ class NoSePuedeCrearDialplanError(FtsError):
 
 
 class DialplanConfigCreator(object):
+
+    def __init__(self):
+        self._dialplan_config_file = DialplanConfigFile()
+
     def _check_audio_file_exist(self, fts_audio_file, campana):
         if not os.path.exists(fts_audio_file):
             raise NoSePuedeCrearDialplanError(
@@ -458,11 +462,12 @@ class DialplanConfigCreator(object):
                 )
             dialplan.append(config_chunk)
 
-        dialplan_config_file = DialplanConfigFile()
-        dialplan_config_file.write(dialplan)
+        self._dialplan_config_file.write(dialplan)
 
 
 class QueueConfigCreator(object):
+    def __init__(self):
+        self._queue_config_file = QueueConfigFile()
 
     def _generar_queue(self, grupo_atencion):
         """Genera configuracion para queue / grupos de atencion"""
@@ -501,8 +506,7 @@ class QueueConfigCreator(object):
             config_chunk = self._generar_queue(ga)
             queue.append(config_chunk)
 
-        queue_config_file = QueueConfigFile()
-        queue_config_file.write(queue)
+        self._queue_config_file.write(queue)
 
 
 class ReloadAsteriskConfig(object):
