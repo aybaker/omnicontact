@@ -31,3 +31,5 @@ class Command(BaseCommand):
         bd = EventoDeContacto.objects_simulacion.\
             crear_bd_contactos_con_datos_random(cantidad)
         print("INSERT ok - BD: {0}".format(bd.id))
+
+        bd.get_metadata().validar_metadatos()

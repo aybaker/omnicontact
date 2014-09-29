@@ -499,11 +499,16 @@ class QueueConfigCreator(object):
 
         return ''.join(partes)
 
+    def _obtener_ga_generar_config(self):
+        """Devuelve los GA a tener en cuenta para generar el archivo
+        de configuracion
+        """
+        return GrupoAtencion.objects.obtener_todos_para_generar_config()
+
     def create_queue(self):
         """Crea el archivo de queue para G.A. existentes"""
 
-        grupos_atencion = \
-            GrupoAtencion.objects.obtener_todos_para_generar_config()
+        grupos_atencion = self._obtener_ga_generar_config()
 
         queue = []
         for ga in grupos_atencion:
