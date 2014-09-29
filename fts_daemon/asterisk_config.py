@@ -426,6 +426,11 @@ class DialplanConfigCreator(object):
 
         return ''.join(partes)
 
+    def _obtener_todas_para_generar_dialplan(self):
+        """Devuelve las campanas para crear el dialplan.
+        """
+        return Campana.objects.obtener_todas_para_generar_dialplan()
+
     def create_dialplan(self, campana=None, campanas=None):
         """Crea el archivo de dialplan para campanas existentes
         (si `campana` es None). Si `campana` es pasada por parametro,
@@ -437,8 +442,7 @@ class DialplanConfigCreator(object):
         elif campana:
             campanas = [campana]
         else:
-            campanas = Campana.objects.obtener_todas_para_generar_dialplan()
-
+            campanas = self._obtener_todas_para_generar_dialplan()
         dialplan = []
         for campana in campanas:
             logger.info("Creando dialplan para campana %s", campana.id)
