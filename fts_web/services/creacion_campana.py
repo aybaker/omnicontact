@@ -86,8 +86,8 @@ class ActivacionCampanaTemplateService(object):
                              "intentar dialplan_config_creator()")
 
             proceso_ok = False
-            mensaje_error = ("hubo un inconveniente al generar el Dialplan de "
-                             "Asterisk.")
+            mensaje_error += ("Hubo un inconveniente al crear el archivo de "
+                              "configuracion del dialplan de Asterisk. ")
         try:
             # Esto es algo redundante! Para que re-crear los queues?
             # Total, esto lo hace GrupoDeAtencion!
@@ -97,20 +97,20 @@ class ActivacionCampanaTemplateService(object):
                              "intentar queue_config_creator()")
 
             proceso_ok = False
-            mensaje_error = ("hubo un inconveniente al generar el Dialplan de "
-                             "Asterisk.")
+            mensaje_error += ("Hubo un inconveniente al crear el archivo de "
+                              "configuracion de colas de Asterisk. ")
         try:
             ret = self.reload_asterisk_config.reload_config()
             if ret != 0:
                 proceso_ok = False
-                mensaje_error = ("hubo un inconveniente al intentar recargar "
-                                 "la configuracion de Asterisk.")
+                mensaje_error += ("Hubo un inconveniente al intenar recargar "
+                                  "la configuracion de Asterisk. ")
         except:
             logger.exception("ActivacionCampanaTemplateService: error al "
                              " intentar reload_config()")
             proceso_ok = False
-            mensaje_error = ("hubo un inconveniente al intentar recargar "
-                             "la configuracion de Asterisk.")
+            mensaje_error += ("Hubo un inconveniente al crear el archivo de "
+                              "configuracion de colas de Asterisk. ")
 
         if not proceso_ok:
             raise(RestablecerDialplanError(mensaje_error))
