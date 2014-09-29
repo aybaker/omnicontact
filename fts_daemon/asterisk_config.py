@@ -222,6 +222,9 @@ member => SIP/{fts_member_number}
 
 """
 
+# TODO: Las siguientes funciones deberán ser removidas en la medida que se
+# implemente el uso de los objetos que las reemplazan.
+
 
 def generar_dialplan(campana):
     dialplan_config_creator = DialplanConfigCreator()
@@ -244,8 +247,10 @@ def create_queue_config_file():
 
 
 def reload_config():
-    reload_asterisk_config = ReloadAsteriskConfig()
+    reload_asterisk_config = AsteriskConfigReloader()
     return reload_asterisk_config.reload_config()
+
+##############################################################################
 
 
 class NoSePuedeCrearDialplanError(FtsError):
@@ -509,7 +514,7 @@ class QueueConfigCreator(object):
         self._queue_config_file.write(queue)
 
 
-class ReloadAsteriskConfig(object):
+class AsteriskConfigReloader(object):
 
     def reload_config(self):
         """Realiza reload de configuracion de Asterisk

@@ -11,7 +11,7 @@ import logging
 from fts_web.errors import FtsError
 from fts_daemon.asterisk_config import (DialplanConfigCreator,
                                         QueueConfigCreator,
-                                        ReloadAsteriskConfig)
+                                        AsteriskConfigReloader)
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class ActivacionCampanaTemplateService(object):
     def __init__(self):
         self.dialplan_config_creator = DialplanConfigCreator()
         self.queue_config_creator = QueueConfigCreator()
-        self.reload_asterisk_config = ReloadAsteriskConfig()
+        self.reload_asterisk_config = AsteriskConfigReloader()
 
     def _validar_campana(self, campana):
         """
