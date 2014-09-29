@@ -75,7 +75,7 @@ class ActivacionCampanaTemplateService(object):
                 "Las Actuaciones de la campana no son validas. Debe "
                 "seleccionar actuaciones validas."))
 
-    def _restablecer_dialplan_campana(self):
+    def _generar_y_recargar_configuracion_asterisk(self):
         proceso_ok = True
         mensaje_error = ""
 
@@ -122,4 +122,4 @@ class ActivacionCampanaTemplateService(object):
         else:
             self._validar_actuacion_campana(campana)
             campana.activar()
-            self._restablecer_dialplan_campana()
+            self._generar_y_recargar_configuracion_asterisk()
