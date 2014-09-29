@@ -617,8 +617,7 @@ class ConfirmaCampanaMixin(object):
             self.object.pausar()
 
             message = ("<strong>¡Cuidado!</strong> "
-                       "Se llevó a cabo con éxito la creación de la Campaña, "
-                       "pero {0} La campaña será pausada.".format(e))
+                       "{0} La campaña será pausada.".format(e))
             messages.add_message(
                 self.request,
                 messages.WARNING,
