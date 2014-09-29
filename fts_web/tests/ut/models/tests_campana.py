@@ -605,7 +605,7 @@ class ActivarCampanaTest(FTSenderBaseTest):
         activacion_campana_service = ActivacionCampanaTemplateService()
         activacion_campana_service._validar_campana = Mock()
         activacion_campana_service._validar_actuacion_campana = Mock()
-        activacion_campana_service._restablecer_dialplan_campana = Mock()
+        activacion_campana_service._generar_y_recargar_configuracion_asterisk = Mock()
 
         # -----
 
@@ -619,7 +619,7 @@ class ActivarCampanaTest(FTSenderBaseTest):
         activacion_campana_service._validar_campana = Mock(
             side_effect=ValidarCampanaError())
         activacion_campana_service._validar_actuacion_campana = Mock()
-        activacion_campana_service._restablecer_dialplan_campana = Mock()
+        activacion_campana_service._generar_y_recargar_configuracion_asterisk = Mock()
 
         # -----
 
@@ -634,7 +634,7 @@ class ActivarCampanaTest(FTSenderBaseTest):
         activacion_campana_service._validar_campana = Mock()
         activacion_campana_service._validar_actuacion_campana = Mock(
             side_effect=ValidarCampanaError())
-        activacion_campana_service._restablecer_dialplan_campana = Mock()
+        activacion_campana_service._generar_y_recargar_configuracion_asterisk = Mock()
 
         # -----
 
@@ -648,7 +648,7 @@ class ActivarCampanaTest(FTSenderBaseTest):
         activacion_campana_service = ActivacionCampanaTemplateService()
         activacion_campana_service._validar_campana = Mock()
         activacion_campana_service._validar_actuacion_campana = Mock()
-        activacion_campana_service._restablecer_dialplan_campana = Mock(
+        activacion_campana_service._generar_y_recargar_configuracion_asterisk = Mock(
             side_effect=RestablecerDialplanError())
         # -----
 
@@ -689,7 +689,7 @@ class ActivarCampanaTest(FTSenderBaseTest):
 
 class RestablecerDialplanCampanaTest(FTSenderBaseTest):
     """
-    Este test corresponde al método _restablecer_dialplan_campana del servicio
+    Este test corresponde al método _generar_y_recargar_configuracion_asterisk del servicio
     ActivacionCampanaTemplateService.
     """
 
@@ -705,7 +705,7 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
 
         # -----
 
-        activacion_campana_service._restablecer_dialplan_campana()
+        activacion_campana_service._generar_y_recargar_configuracion_asterisk()
 
     def test_restablecer_dialplan_campana_falla_dialplan(self):
         activacion_campana_service = ActivacionCampanaTemplateService()
@@ -720,7 +720,7 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
         # -----
 
         with self.assertRaises(RestablecerDialplanError):
-            activacion_campana_service._restablecer_dialplan_campana()
+            activacion_campana_service._generar_y_recargar_configuracion_asterisk()
 
     def test_restablecer_dialplan_campana_falla_queue(self):
         activacion_campana_service = ActivacionCampanaTemplateService()
@@ -735,7 +735,7 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
         # -----
 
         with self.assertRaises(RestablecerDialplanError):
-            activacion_campana_service._restablecer_dialplan_campana()
+            activacion_campana_service._generar_y_recargar_configuracion_asterisk()
 
     def test_restablecer_dialplan_campana_falla_reload(self):
         activacion_campana_service = ActivacionCampanaTemplateService()
@@ -750,7 +750,7 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
         # -----
 
         with self.assertRaises(RestablecerDialplanError):
-            activacion_campana_service._restablecer_dialplan_campana()
+            activacion_campana_service._generar_y_recargar_configuracion_asterisk()
 
     def test_restablecer_dialplan_campana_falla_reload_devuelve_1(self):
         activacion_campana_service = ActivacionCampanaTemplateService()
@@ -765,4 +765,4 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
         # -----
 
         with self.assertRaises(RestablecerDialplanError):
-            activacion_campana_service._restablecer_dialplan_campana()
+            activacion_campana_service._generar_y_recargar_configuracion_asterisk()
