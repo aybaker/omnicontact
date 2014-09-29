@@ -687,26 +687,82 @@ class ActivarCampanaTest(FTSenderBaseTest):
         self.assertEqual(campana.estado, Campana.ESTADO_TEMPLATE_EN_DEFINICION)
 
 
-# No anda como quisiera... :( je
-# class RestablecerDialplanCampanaTest(FTSenderBaseTest):
-#     """
-#     Este test corresponde al método _restablecer_dialplan_campana del servicio
-#     ActivacionCampanaTemplateService.
-#     """
-#     @patch('fts_daemon.asterisk_config.create_dialplan_config_file')
-#     @patch('fts_daemon.asterisk_config.create_queue_config_file')
-#     @patch('fts_daemon.asterisk_config.reload_config')
-#     def test_restablecer_dialplan_campana_no_falla(
-#         self, mock_create_dialplan_config_file, mock_create_queue_config_file,
-#             mock_reload_config):
+class RestablecerDialplanCampanaTest(FTSenderBaseTest):
+    """
+    Este test corresponde al método _restablecer_dialplan_campana del servicio
+    ActivacionCampanaTemplateService.
+    """
 
-#         mock_create_dialplan_config_file.return_value = None
-#         mock_create_queue_config_file.return_value = None
-#         mock_reload_config.return_value = None
+    def test_restablecer_dialplan_campana_no_falla(self):
+        activacion_campana_service = ActivacionCampanaTemplateService()
 
-#         # mock.side_effect = Exception('Boom!')
+        activacion_campana_service.dialplan_config_creator.\
+            create_config_file = Mock()
+        activacion_campana_service.queue_config_creator.\
+            create_config_file = Mock()
+        activacion_campana_service.reload_asterisk_config.reload_config = \
+            Mock(return_value=0)
 
-#         # -----
+        # -----
 
-#         activacion_campana_service = ActivacionCampanaTemplateService()
-#         activacion_campana_service._restablecer_dialplan_campana()
+        activacion_campana_service._restablecer_dialplan_campana()
+
+    def test_restablecer_dialplan_campana_falla_dialplan(self):
+        activacion_campana_service = ActivacionCampanaTemplateService()
+
+        activacion_campana_service.dialplan_config_creator.\
+            create_config_file = Mock(side_effect=RestablecerDialplanError())
+        activacion_campana_service.queue_config_creator.\
+            create_config_file = Mock()
+        activacion_campana_service.reload_asterisk_config.reload_config = \
+            Mock(return_value=0)
+
+        # -----
+
+        with self.assertRaises(RestablecerDialplanError):
+            activacion_campana_service._restablecer_dialplan_campana()
+
+    def test_restablecer_dialplan_campana_falla_queue(self):
+        activacion_campana_service = ActivacionCampanaTemplateService()
+
+        activacion_campana_service.dialplan_config_creator.\
+            create_config_file = Mock()
+        activacion_campana_service.queue_config_creator.\
+            create_config_file = Mock(side_effect=RestablecerDialplanError())
+        activacion_campana_service.reload_asterisk_config.reload_config = \
+            Mock(return_value=0)
+
+        # -----
+
+        with self.assertRaises(RestablecerDialplanError):
+            activacion_campana_service._restablecer_dialplan_campana()
+
+    def test_restablecer_dialplan_campana_falla_reload(self):
+        activacion_campana_service = ActivacionCampanaTemplateService()
+
+        activacion_campana_service.dialplan_config_creator.\
+            create_config_file = Mock()
+        activacion_campana_service.queue_config_creator.\
+            create_config_file = Mock()
+        activacion_campana_service.reload_asterisk_config.reload_config = \
+            Mock(side_effect=RestablecerDialplanError())
+
+        # -----
+
+        with self.assertRaises(RestablecerDialplanError):
+            activacion_campana_service._restablecer_dialplan_campana()
+
+    def test_restablecer_dialplan_campana_falla_reload_devuelve_1(self):
+        activacion_campana_service = ActivacionCampanaTemplateService()
+
+        activacion_campana_service.dialplan_config_creator.\
+            create_config_file = Mock()
+        activacion_campana_service.queue_config_creator.\
+            create_config_file = Mock()
+        activacion_campana_service.reload_asterisk_config.reload_config = \
+            Mock(return_value=1)
+
+        # -----
+
+        with self.assertRaises(RestablecerDialplanError):
+            activacion_campana_service._restablecer_dialplan_campana()

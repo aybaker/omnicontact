@@ -9,8 +9,8 @@ from __future__ import unicode_literals
 import logging
 
 from fts_web.errors import FtsError
-from fts_daemon.asterisk_config import (CreateDialplanConfigFile,
-                                        CreateQueueConfigFile,
+from fts_daemon.asterisk_config import (DialplanConfigCreator,
+                                        QueueConfigCreator,
                                         ReloadAsteriskConfig)
 
 logger = logging.getLogger(__name__)
@@ -29,8 +29,8 @@ class RestablecerDialplanError(FtsError):
 class ActivacionCampanaTemplateService(object):
 
     def __init__(self):
-        self.create_dialplan_config_file = CreateDialplanConfigFile()
-        self.create_queue_config_file = CreateQueueConfigFile()
+        self.dialplan_config_creator = DialplanConfigCreator()
+        self.queue_config_creator = QueueConfigCreator()
         self.reload_asterisk_config = ReloadAsteriskConfig()
 
     def _validar_campana(self, campana):
@@ -80,10 +80,10 @@ class ActivacionCampanaTemplateService(object):
         mensaje_error = ""
 
         try:
-            self.create_dialplan_config_file.create_config_file()
+            self.dialplan_config_creator.create_config_file()
         except:
             logger.exception("ActivacionCampanaTemplateService: error al "
-                             "intentar create_dialplan_config_file()")
+                             "intentar dialplan_config_creator()")
 
             proceso_ok = False
             mensaje_error = ("hubo un inconveniente al generar el Dialplan de "
@@ -91,10 +91,10 @@ class ActivacionCampanaTemplateService(object):
         try:
             # Esto es algo redundante! Para que re-crear los queues?
             # Total, esto lo hace GrupoDeAtencion!
-            self.create_queue_config_file.create_config_file()
+            self.queue_config_creator.create_config_file()
         except:
             logger.exception("ActivacionCampanaTemplateService: error al "
-                             "intentar create_queue_config_file()")
+                             "intentar queue_config_creator()")
 
             proceso_ok = False
             mensaje_error = ("hubo un inconveniente al generar el Dialplan de "
