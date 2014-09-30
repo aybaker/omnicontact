@@ -216,3 +216,60 @@ Diferidos para próximo Sprint
 * FTS-312 - Soportar PostgreSql 8
 * FTS-314 - Arreglar UI de "Listado de contactos que seleccionaron opcion"
 * FTS-316 - Cancelar importacion de BD de contactos si validacion falla 
+
+
+Sprint 11 - 2 de septiembre de 2014 - 15 de septiembre de 2014
+--------------------------------------------------------------
+
+
+Instrucciones de deploy
+.......................
+
+
+.. code::
+
+    $ ssh deployer@192.168.99.224
+    $ ./deploy.sh sprint11-fixes <INVENTARIO>
+
+Para crear usuarios, es necesario loguearse en el servidor con el usuario `ftsender`
+y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
+
+.. code::
+
+    $ host> ssh ftsender@server-or-ip
+    $ server> /home/ftsender/deploy/bin/manage.sh create_ftsender_user
+
+
+Migraciones de datos
+....................
+
+En este sprint no se registraron migraciones de datos.
+
+
+BUGs arreglados
+...............
+
+* FTS-319 - Sistema permite modificar objetos (Campañas, Bases de Datos
+  de Contactos, etc) que no deberian poder modificarse
+* FTS-320 - Bugs encontrados al implementar tests de las vistas
+
+
+Bases de Datos de Contactos y Múltiples Audios
+..............................................
+
+* FTS-308 - Refactorizacion de modelos
+* FTS-309 - UI: Alta de campaña (funcionalidad básica)
+* FTS-314 - UI de "Listado de contactos que seleccionaron opcion"
+* FTS-316 - Cancelar importacion de BD de contactos si validacion falla 
+* FTS-318 - UI: Nombres de columnas de CSV: Definir nombres para las columnas
+
+
+Diferidos para próximo Sprint
+.............................
+
+* FTS-312 - Soportar PostgreSql 8
+* FTS-315 - ParserCsv abre file pero NO lo cierra
+* FTS-311 - UI: Alta de campaña: volver a permitir modificación de BD
+* FTS-307 - Campos fecha/hora: Generador de dialplan
+* FTS-306 - Campos fecha/hora: Daemon: obtener metadatos de BD
+* FTS-297 - Soporte para multiples sistemas de TTS
