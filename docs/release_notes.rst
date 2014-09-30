@@ -8,10 +8,9 @@ Sprint 12 - 16 de septiembre de 2014 - 29 de septiembre de 2014
 Instrucciones de deploy
 .......................
 
-ATENCION: en el presente Sprint se implementaron cambios en la BD. Antes de realizar
-el deploy del sistema, confirme que no haya campañas pausadas o en ejecución.
-El proceso de migración de la BD hará inutilizables las campañas y templates de
-campalas preexistentes.
+ATENCION: en el presente Sprint se implementaron cambios en la BD. Antes de realizar el deploy del sistema,
+confirme que no haya campañas pausadas o en ejecución. El proceso de migración de la BD dejará las campañas y
+templates en un estado inconsistente y no deberian ser utilizadas ni recicladas.
 
 .. code::
 
