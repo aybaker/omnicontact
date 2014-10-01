@@ -10,9 +10,10 @@ import os
 
 from django.conf import settings
 from fts_web.errors import FtsError
-from fts_web.models import Opcion, Campana, GrupoAtencion, AudioDeCampana
+from fts_web.models import Opcion, AudioDeCampana
 import logging as _logging
 import pprint
+import textwrap
 
 
 logger = _logging.getLogger(__name__)
@@ -93,8 +94,10 @@ class GeneradorDePedazo(object):
             pass
 
     def generar_pedazo(self):
+        template = self.get_template()
+        template = "\n".join(t.strip() for t in template.splitlines())
         try:
-            return self.get_template().format(**self.get_parametros())
+            return template.format(**self.get_parametros())
         except KeyError:
             self._reportar_key_error()
             raise
@@ -120,14 +123,14 @@ class GeneradorParaOpcionVoicemail(GeneradorDePedazoDeDialplanParaOpcion):
     def get_template(self):
         return """
 
-; TEMPLATE_OPCION_VOICEMAIL-{fts_opcion_id}
-exten => {fts_opcion_digito},1,NoOp(FTS,VOICEMAIL,llamada=${{ContactoId}},campana={fts_campana_id})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/voicemail/)
-exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
-; TODO: IMPLEMENTAR!
-exten => {fts_opcion_digito},n,Hangup()
+        ; TEMPLATE_OPCION_VOICEMAIL-{fts_opcion_id}
+        exten => {fts_opcion_digito},1,NoOp(FTS,VOICEMAIL,llamada=${{ContactoId}},campana={fts_campana_id})
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/voicemail/)
+        exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
+        ; TODO: IMPLEMENTAR!
+        exten => {fts_opcion_digito},n,Hangup()
 
-"""
+        """
 
     def get_parametros(self):
         return self._parametros
@@ -138,13 +141,13 @@ class GeneradorParaOpcionCalificar(GeneradorDePedazoDeDialplanParaOpcion):
     def get_template(self):
         return """
 
-; TEMPLATE_OPCION_CALIFICAR-{fts_opcion_id}-{fts_calificacion_id}-{fts_calificacion_nombre}
-exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{ContactoId}},campana={fts_campana_id},calificacion={fts_calificacion_id}-fts_calificacion_nombre)
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/calificar/{fts_calificacion_id}/)
-exten => {fts_opcion_digito},n,Playback(demo-thanks)
-exten => {fts_opcion_digito},n,Hangup()
+        ; TEMPLATE_OPCION_CALIFICAR-{fts_opcion_id}-{fts_calificacion_id}-{fts_calificacion_nombre}
+        exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{ContactoId}},campana={fts_campana_id},calificacion={fts_calificacion_id}-fts_calificacion_nombre)
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/calificar/{fts_calificacion_id}/)
+        exten => {fts_opcion_digito},n,Playback(demo-thanks)
+        exten => {fts_opcion_digito},n,Hangup()
 
-"""
+        """
 
     def get_parametros(self):
         parametros = dict(self._parametros)
@@ -160,13 +163,13 @@ class GeneradorParaOpcionGrupoAtencion(GeneradorDePedazoDeDialplanParaOpcion):
     def get_template(self):
         return """
 
-; TEMPLATE_OPCION_DERIVAR_GRUPO_ATENCION-{fts_opcion_id}-{fts_grup_atencion_id}-{fts_queue_name}
-exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_GRUPO_ATENCION,llamada=${{ContactoId}},campana={fts_campana_id},queue={fts_queue_name})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivar/)
-exten => {fts_opcion_digito},n,Queue({fts_queue_name})
-exten => {fts_opcion_digito},n,Hangup()
+        ; TEMPLATE_OPCION_DERIVAR_GRUPO_ATENCION-{fts_opcion_id}-{fts_grup_atencion_id}-{fts_queue_name}
+        exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_GRUPO_ATENCION,llamada=${{ContactoId}},campana={fts_campana_id},queue={fts_queue_name})
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivar/)
+        exten => {fts_opcion_digito},n,Queue({fts_queue_name})
+        exten => {fts_opcion_digito},n,Hangup()
 
-"""
+        """
 
     def get_parametros(self):
         parametros = dict(self._parametros)
@@ -184,13 +187,13 @@ class GeneradorParaOpcionDerivacionExterna(
     def get_template(self):
         return """
 
-; TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA-{fts_opcion_id}-{fts_derivacion_externa_id}-{fts_dial_string}
-exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_DERIVACION_EXTERNA,llamada=${{ContactoId}},campana={fts_campana_id},dial_string={fts_dial_string})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivacion_externa/)
-exten => {fts_opcion_digito},n,Dial({fts_dial_string})
-exten => {fts_opcion_digito},n,Hangup()
+        ; TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA-{fts_opcion_id}-{fts_derivacion_externa_id}-{fts_dial_string}
+        exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_DERIVACION_EXTERNA,llamada=${{ContactoId}},campana={fts_campana_id},dial_string={fts_dial_string})
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivacion_externa/)
+        exten => {fts_opcion_digito},n,Dial({fts_dial_string})
+        exten => {fts_opcion_digito},n,Hangup()
 
-"""
+        """
 
     def get_parametros(self):
         parametros = dict(self._parametros)
@@ -207,13 +210,13 @@ class GeneradorParaOpcionRepetir(GeneradorDePedazoDeDialplanParaOpcion):
     def get_template(self):
         return """
 
-; TEMPLATE_OPCION_REPETIR-{fts_opcion_id}
-exten => {fts_opcion_digito},1,NoOp(FTS,REPETIR,llamada=${{ContactoId}},campana={fts_campana_id})
-exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/repetir/)
-exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
-exten => {fts_opcion_digito},n,Hangup()
+        ; TEMPLATE_OPCION_REPETIR-{fts_opcion_id}
+        exten => {fts_opcion_digito},1,NoOp(FTS,REPETIR,llamada=${{ContactoId}},campana={fts_campana_id})
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/repetir/)
+        exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
+        exten => {fts_opcion_digito},n,Hangup()
 
-"""
+        """
 
     def get_parametros(self):
         return self._parametros
@@ -239,10 +242,10 @@ class GeneradorParaAudioAsterisk(GeneradorDePedazoDeDialplanParaAudio):
     def get_template(self):
         return """
 
-; TEMPLATE_DIALPLAN_PLAY_AUDIO-{fts_audio_de_campana_id}
-exten => _ftsX.,n,Background({fts_audio_file})
+        ; TEMPLATE_DIALPLAN_PLAY_AUDIO-{fts_audio_de_campana_id}
+        exten => _ftsX.,n,Background({fts_audio_file})
 
-"""
+        """
 
     def get_parametros(self):
 
@@ -268,10 +271,10 @@ class GeneradorParaArchivoDeAudio(GeneradorDePedazoDeDialplanParaAudio):
     def get_template(self):
         return """
 
-; TEMPLATE_DIALPLAN_PLAY_AUDIO-{fts_audio_de_campana_id}
-exten => _ftsX.,n,Background({fts_audio_file})
+        ; TEMPLATE_DIALPLAN_PLAY_AUDIO-{fts_audio_de_campana_id}
+        exten => _ftsX.,n,Background({fts_audio_file})
 
-"""
+        """
 
     def get_parametros(self):
 
@@ -297,15 +300,15 @@ class GeneradorParaTtsHora(GeneradorDePedazoDeDialplanParaAudio):
     def get_template(self):
         return """
 
-; TEMPLATE_DIALPLAN_HORA-{fts_audio_de_campana_id}
-exten => _ftsX.,n,NoOp(TTS,{fts_tts_hora}_hora,${{{fts_tts_hora}_hora}})
-exten => _ftsX.,n,Saynumber(${{{fts_tts_hora}_hora}})
-exten => _ftsX.,n,Playback(horas)
-exten => _ftsX.,n,NoOp(TTS,{fts_tts_hora}_min,${{{fts_tts_hora}_min}})
-exten => _ftsX.,n,Saynumber(${{{fts_tts_hora}_min}})
-exten => _ftsX.,n,Playback(minutos)
+        ; TEMPLATE_DIALPLAN_HORA-{fts_audio_de_campana_id}
+        exten => _ftsX.,n,NoOp(TTS,{fts_tts_hora}_hora,${{{fts_tts_hora}_hora}})
+        exten => _ftsX.,n,Saynumber(${{{fts_tts_hora}_hora}})
+        exten => _ftsX.,n,Playback(horas)
+        exten => _ftsX.,n,NoOp(TTS,{fts_tts_hora}_min,${{{fts_tts_hora}_min}})
+        exten => _ftsX.,n,Saynumber(${{{fts_tts_hora}_min}})
+        exten => _ftsX.,n,Playback(minutos)
 
-"""
+        """
 
     def get_parametros(self):
         params_tts_hora = {
@@ -320,17 +323,17 @@ class GeneradorParaTtsFecha(GeneradorDePedazoDeDialplanParaAudio):
     def get_template(self):
         return """
 
-; TEMPLATE_DIALPLAN_FECHA-{fts_audio_de_campana_id}
-exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_dia,${{{fts_tts_fecha}_dia}})
-exten => _ftsX.,n,Saynumber(${{{fts_tts_fecha}_dia}})
-exten => _ftsX.,n,Playback(del)
-exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_mes,${{{fts_tts_fecha}_mes}})
-exten => _ftsX.,n,Playback(${{{fts_tts_fecha}_mes}})
-exten => _ftsX.,n,Playback(de)
-exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_anio,${{{fts_tts_fecha}_anio}})
-exten => _ftsX.,n,Saynumber(${{{fts_tts_fecha}_anio}})
+        ; TEMPLATE_DIALPLAN_FECHA-{fts_audio_de_campana_id}
+        exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_dia,${{{fts_tts_fecha}_dia}})
+        exten => _ftsX.,n,Saynumber(${{{fts_tts_fecha}_dia}})
+        exten => _ftsX.,n,Playback(del)
+        exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_mes,${{{fts_tts_fecha}_mes}})
+        exten => _ftsX.,n,Playback(${{{fts_tts_fecha}_mes}})
+        exten => _ftsX.,n,Playback(de)
+        exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_anio,${{{fts_tts_fecha}_anio}})
+        exten => _ftsX.,n,Saynumber(${{{fts_tts_fecha}_anio}})
 
-"""
+        """
 
     def get_parametros(self):
         params_tts_fecha = {
@@ -345,11 +348,11 @@ class GeneradorParaTts(GeneradorDePedazoDeDialplanParaAudio):
     def get_template(self):
         return """
 
-; TEMPLATE_DIALPLAN_TTS-{fts_audio_de_campana_id}
-exten => _ftsX.,n,NoOp(TTS,{fts_tts},${{{fts_tts}}})
-exten => _ftsX.,n,AGI(googletts.agi,${{{fts_tts}}},es)
+        ; TEMPLATE_DIALPLAN_TTS-{fts_audio_de_campana_id}
+        exten => _ftsX.,n,NoOp(TTS,{fts_tts},${{{fts_tts}}})
+        exten => _ftsX.,n,AGI(googletts.agi,${{{fts_tts}}},es)
 
-"""
+        """
 
     def get_parametros(self):
         params_tts = {
