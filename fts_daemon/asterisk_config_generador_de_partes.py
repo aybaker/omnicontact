@@ -74,17 +74,8 @@ class GeneradorDePedazoDeDialplanFactory(object):
                 audio_de_campana)))
 
 
-#==============================================================================
-# Opciones
-#==============================================================================
-
-class GeneradorDePedazoDeDialplanParaOpcion(object):
-    """Interfaz / Clase abstracta para generadores de dialplan"""
-
-    def __init__(self, opcion, parametros):
-        assert isinstance(opcion, Opcion)
-        self._opcion = opcion
-        self._parametros = parametros
+class GeneradorDePedazo(object):
+    """Generador de pedazo generico"""
 
     def get_template(self):
         raise(NotImplementedError())
@@ -107,6 +98,21 @@ class GeneradorDePedazoDeDialplanParaOpcion(object):
         except KeyError:
             self._reportar_key_error()
             raise
+
+
+#==============================================================================
+# Opciones
+#==============================================================================
+
+class GeneradorDePedazoDeDialplanParaOpcion(GeneradorDePedazo):
+    """Interfaz / Clase abstracta para generadores de pedazos de dialplan
+    relacionados con las Opciones de una campana
+    """
+
+    def __init__(self, opcion, parametros):
+        assert isinstance(opcion, Opcion)
+        self._opcion = opcion
+        self._parametros = parametros
 
 
 class GeneradorParaOpcionVoicemail(GeneradorDePedazoDeDialplanParaOpcion):
@@ -217,22 +223,15 @@ exten => {fts_opcion_digito},n,Hangup()
 # Audios
 #==============================================================================
 
-class GeneradorDePedazoDeDialplanParaAudio(object):
-    """Interfaz / Clase abstracta para generadores de dialplan"""
+class GeneradorDePedazoDeDialplanParaAudio(GeneradorDePedazo):
+    """Interfaz / Clase abstracta para generadores de pedazos de dialplan
+    relacionados con los AUDIOS de una campana
+    """
 
     def __init__(self, audio_de_campana, parametros):
         assert isinstance(audio_de_campana, AudioDeCampana)
         self._audio_de_campana = audio_de_campana
         self._parametros = parametros
-
-    def get_template(self):
-        raise(NotImplementedError())
-
-    def get_parametros(self):
-        raise(NotImplementedError())
-
-    def generar_pedazo(self):
-        return self.get_template().format(**self.get_parametros())
 
 
 class GeneradorParaAudioAsterisk(GeneradorDePedazoDeDialplanParaAudio):
