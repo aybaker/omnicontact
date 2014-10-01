@@ -129,6 +129,114 @@ class CreateDialplanTest(FTSenderBaseTest):
             self.assertTrue(config.find("TEMPLATE_DIALPLAN_END-{0}".format(
                 campana.id)) == -1)
 
+    def test_create_dialplan_genera_configuracion_campana_finalizada(self):
+        config_file_mock = ConfigFileMock()
+
+        campanas = []
+        for i in range(1, 4):
+            campana = Campana(pk=i, nombre="C",
+                              estado=Campana.ESTADO_FINALIZADA,
+                              cantidad_canales=1, cantidad_intentos=1,
+                              segundos_ring=10)
+
+            bd_contacto = BaseDatosContacto(pk=i)
+            metadata = bd_contacto.get_metadata()
+            metadata.cantidad_de_columnas = 1
+            metadata.columna_con_telefono = 0
+            metadata.nombres_de_columnas = ["TELEFONO"]
+            metadata.primer_fila_es_encabezado = True
+            metadata.save()
+            campana.bd_contacto = bd_contacto
+
+            campana.audios_de_campana = [
+                AudioDeCampana(pk=i, orden=1, campana=campana,
+                               tts="TELEFONO")]
+
+            campanas.append(campana)
+
+        dialplan_config_creator = DialplanConfigCreator()
+        dialplan_config_creator._check_audio_file_exist = Mock()
+        dialplan_config_creator._obtener_todas_para_generar_dialplan = Mock(
+            return_value=campanas)
+        dialplan_config_creator._dialplan_config_file = config_file_mock
+
+        # -----
+
+        dialplan_config_creator.create_dialplan()
+
+        self.assertEqual(len(config_file_mock.contenidos), 3)
+
+        config = "\n".join(config_file_mock.contenidos)
+
+        for campana in campanas:
+            self.assertTrue(
+                config.find("TEMPLATE_DIALPLAN_START-{0}".format(
+                    campana.id)) > 0)
+            self.assertTrue(
+                config.find("TEMPLATE_DIALPLAN_HANGUP-{0}".format(
+                    campana.id)) > 0)
+            self.assertTrue(
+                config.find("TEMPLATE_DIALPLAN_END-{0}".format(
+                    campana.id)) > 0)
+
+    def test_create_dialplan_genera_configuracion_sin_campana_mala(self):
+        config_file_mock = ConfigFileMock()
+
+        campanas = []
+        for i in range(1, 4):
+            campana = Campana(pk=i, nombre="C", estado=Campana.ESTADO_ACTIVA,
+                              cantidad_canales=1, cantidad_intentos=1,
+                              segundos_ring=10)
+            if campana.pk == 1:
+                campana.segundos_ring = None
+
+            bd_contacto = BaseDatosContacto(pk=i)
+            metadata = bd_contacto.get_metadata()
+            metadata.cantidad_de_columnas = 1
+            metadata.columna_con_telefono = 0
+            metadata.nombres_de_columnas = ["TELEFONO"]
+            metadata.primer_fila_es_encabezado = True
+            metadata.save()
+            campana.bd_contacto = bd_contacto
+
+            campana.audios_de_campana = [
+                AudioDeCampana(pk=i, orden=1, campana=campana,
+                               tts="TELEFONO")]
+
+            campanas.append(campana)
+
+        dialplan_config_creator = DialplanConfigCreator()
+        dialplan_config_creator._check_audio_file_exist = Mock()
+        dialplan_config_creator._obtener_todas_para_generar_dialplan = Mock(
+            return_value=campanas)
+        dialplan_config_creator._dialplan_config_file = config_file_mock
+
+        # -----
+
+        dialplan_config_creator.create_dialplan()
+
+        self.assertEqual(len(config_file_mock.contenidos), 3)
+
+        config = "\n".join(config_file_mock.contenidos)
+
+        for campana in campanas:
+            if campana.pk == 1:
+                self.assertTrue(
+                    config.find("TEMPLATE_DIALPLAN_START-{0}".format(
+                        campana.id)) == -1)
+                self.assertTrue(
+                    config.find("TEMPLATE_FAILED-{0}".format(campana.id)) > 0)
+            else:
+                self.assertTrue(
+                    config.find("TEMPLATE_DIALPLAN_START-{0}".format(
+                        campana.id)) > 0)
+                self.assertTrue(
+                    config.find("TEMPLATE_DIALPLAN_HANGUP-{0}".format(
+                        campana.id)) > 0)
+                self.assertTrue(
+                    config.find("TEMPLATE_DIALPLAN_END-{0}".format(
+                        campana.id)) > 0)
+
     def test_create_dialplan_genera_configuracion_con_opciones(self):
 
         config_file_mock = ConfigFileMock()
@@ -181,6 +289,8 @@ class CreateDialplanTest(FTSenderBaseTest):
             for opcion in campana.opciones.all():
                 self.assertTrue(config.find("TEMPLATE_OPCION_REPETIR-{0}"
                                             "".format(opcion.id)) > 0)
+        self.assertTrue(campana.opciones.count,
+                        len(re.findall('\TEMPLATE_OPCION_*', config)))
 
     def test_create_dialplan_genera_configuracion_con_opcion_calificar(self):
 
@@ -324,6 +434,8 @@ class CreateQueueTest(FTSenderBaseTest):
         for ga in grupos_de_atencion:
             self.assertTrue(config.find("TEMPLATE_QUEUE-{0}".format(
                 ga.get_nombre_para_asterisk())) > 0)
+            for ag in ga.agentes.all():
+                self.assertTrue(config.find("agente.id={0}".format(ag.id)) > 0)
 
 
 class ReloadConfigTest(FTSenderBaseTest):
