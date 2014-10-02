@@ -26,28 +26,11 @@ class NoSePuedeCrearDialplanError(FtsError):
 
 class GeneradorDePedazoDeDialplanFactory(object):
 
-    def crear_generador_para_opcion(self, opcion, parametros, campana):
-        assert isinstance(opcion, Opcion)
+    def crear_generador_para_failed(self, parametros):
+        return GeneradorParaFailed(parametros)
 
-        if opcion.accion == Opcion.DERIVAR_GRUPO_ATENCION:
-            return GeneradorParaOpcionGrupoAtencion(opcion, parametros)
-
-        elif opcion.accion == Opcion.DERIVAR_DERIVACION_EXTERNA:
-            return GeneradorParaOpcionDerivacionExterna(opcion, parametros)
-
-        elif opcion.accion == Opcion.REPETIR:
-            return GeneradorParaOpcionRepetir(opcion, parametros)
-
-        elif opcion.accion == Opcion.VOICEMAIL:
-            return GeneradorParaOpcionVoicemail(opcion, parametros)
-
-        elif opcion.accion == Opcion.CALIFICAR:
-            return GeneradorParaOpcionCalificar(opcion, parametros)
-
-        else:
-            raise NoSePuedeCrearDialplanError(
-                "Tipo de acción '{0}' desconocida para la opcion."
-                "Campana '{1}'".format(opcion.accion, campana.id))
+    def crear_generador_para_start(self, parametros):
+        return GeneradorParaStart(parametros)
 
     def crear_generador_para_audio(self,
                                    audio_de_campana,
@@ -73,6 +56,35 @@ class GeneradorDePedazoDeDialplanFactory(object):
         else:
             raise(Exception("Tipo de audio de campana desconocido: {0}".format(
                 audio_de_campana)))
+
+    def crear_generador_para_hangup(self, parametros):
+        return GeneradorParaHangup(parametros)
+
+    def crear_generador_para_opcion(self, opcion, parametros, campana):
+        assert isinstance(opcion, Opcion)
+
+        if opcion.accion == Opcion.DERIVAR_GRUPO_ATENCION:
+            return GeneradorParaOpcionGrupoAtencion(opcion, parametros)
+
+        elif opcion.accion == Opcion.DERIVAR_DERIVACION_EXTERNA:
+            return GeneradorParaOpcionDerivacionExterna(opcion, parametros)
+
+        elif opcion.accion == Opcion.REPETIR:
+            return GeneradorParaOpcionRepetir(opcion, parametros)
+
+        elif opcion.accion == Opcion.VOICEMAIL:
+            return GeneradorParaOpcionVoicemail(opcion, parametros)
+
+        elif opcion.accion == Opcion.CALIFICAR:
+            return GeneradorParaOpcionCalificar(opcion, parametros)
+
+        else:
+            raise NoSePuedeCrearDialplanError(
+                "Tipo de acción '{0}' desconocida para la opcion."
+                "Campana '{1}'".format(opcion.accion, campana.id))
+
+    def crear_generador_para_end(self, parametros):
+        return GeneradorParaEnd(parametros)
 
 
 class GeneradorDePedazo(object):
@@ -104,31 +116,35 @@ class GeneradorDePedazo(object):
 
 
 #==============================================================================
-# Opciones
+# Failed
 #==============================================================================
 
-class GeneradorDePedazoDeDialplanParaOpcion(GeneradorDePedazo):
-    """Interfaz / Clase abstracta para generadores de pedazos de dialplan
-    relacionados con las Opciones de una campana
+
+class GeneradorDePedazoDeDialplanParaFailed(GeneradorDePedazo):
+    """Interfaz / Clase abstracta para generar el pedazo de dialplan 
+    fallido para una campana.
     """
 
-    def __init__(self, opcion, parametros):
-        assert isinstance(opcion, Opcion)
-        self._opcion = opcion
+    def __init__(self, parametros):
         self._parametros = parametros
 
 
-class GeneradorParaOpcionVoicemail(GeneradorDePedazoDeDialplanParaOpcion):
+class GeneradorParaFailed(GeneradorDePedazoDeDialplanParaFailed):
 
     def get_template(self):
         return """
 
-        ; TEMPLATE_OPCION_VOICEMAIL-{fts_opcion_id}
-        exten => {fts_opcion_digito},1,NoOp(FTS,VOICEMAIL,llamada=${{ContactoId}},campana={fts_campana_id})
-        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/voicemail/)
-        exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
-        ; TODO: IMPLEMENTAR!
-        exten => {fts_opcion_digito},n,Hangup()
+        ;----------------------------------------------------------------------
+        ; TEMPLATE_FAILED-{fts_campana_id}
+        ;   Autogenerado {date}
+        ;
+        ; La generacion de configuracin para la campana {fts_campana_id}
+        ;   a fallado.
+        ;
+        ; {traceback_lines}
+        ;
+        ;----------------------------------------------------------------------
+
 
         """
 
@@ -136,85 +152,62 @@ class GeneradorParaOpcionVoicemail(GeneradorDePedazoDeDialplanParaOpcion):
         return self._parametros
 
 
-class GeneradorParaOpcionCalificar(GeneradorDePedazoDeDialplanParaOpcion):
+#==============================================================================
+# Start
+#==============================================================================
+
+
+class GeneradorDePedazoDeDialplanParaStart(GeneradorDePedazo):
+    """Interfaz / Clase abstracta para generadores del pedazo inicial del
+    dialplan para una campana.
+    """
+
+    def __init__(self, parametros):
+        self._parametros = parametros
+
+
+class GeneradorParaStart(GeneradorDePedazoDeDialplanParaStart):
 
     def get_template(self):
         return """
 
-        ; TEMPLATE_OPCION_CALIFICAR-{fts_opcion_id}-{fts_calificacion_id}-{fts_calificacion_nombre}
-        exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{ContactoId}},campana={fts_campana_id},calificacion={fts_calificacion_id}-fts_calificacion_nombre)
-        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/calificar/{fts_calificacion_id}/)
-        exten => {fts_opcion_digito},n,Playback(demo-thanks)
-        exten => {fts_opcion_digito},n,Hangup()
+        ;----------------------------------------------------------------------
+        ; TEMPLATE_DIALPLAN_START-{fts_campana_id}
+        ;   Autogenerado {date}
+        ;----------------------------------------------------------------------
 
-        """
+        ;----------------------------------------------------------------------
+        ; Para usar local channels
+        ;----------------------------------------------------------------------
 
-    def get_parametros(self):
-        parametros = dict(self._parametros)
-        parametros.update({
-            'fts_calificacion_id': self._opcion.calificacion.id,
-            'fts_calificacion_nombre': self._opcion.calificacion.nombre,
-        })
-        return parametros
+        [FTS_local_campana_{fts_campana_id}]
 
+        exten => _X.,1,NoOp(FTS,INICIO,llamada=${{EXTEN}},campana={fts_campana_id})
+        exten => _X.,n,Set(ContactoId=${{CUT(EXTEN,,1)}})
+        exten => _X.,n,Set(NumberToCall=${{CUT(EXTEN,,2)}})
+        exten => _X.,n,Set(Intento=${{CUT(EXTEN,,3)}})
+        exten => _X.,n,NoOp(FTS,ContactoId=${{ContactoId}},NumberToCall=${{NumberToCall}},Intento=${{Intento}})
+        exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-pre-dial/)
+        exten => _X.,n,Dial({fts_dial_url},{fts_campana_dial_timeout})
+        ; # TODO: *** WARN: el siguiente 'AGI()' a veces no es llamado
+        exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-post-dial/dial-status/${{DIALSTATUS}}/)
+        exten => _X.,n,Hangup()
 
-class GeneradorParaOpcionGrupoAtencion(GeneradorDePedazoDeDialplanParaOpcion):
+        ;----------------------------------------------------------------------
+        ; Dialplan de campana (audio, opciones, etc)
+        ;----------------------------------------------------------------------
 
-    def get_template(self):
-        return """
+        [campania_{fts_campana_id}]
 
-        ; TEMPLATE_OPCION_DERIVAR_GRUPO_ATENCION-{fts_opcion_id}-{fts_grup_atencion_id}-{fts_queue_name}
-        exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_GRUPO_ATENCION,llamada=${{ContactoId}},campana={fts_campana_id},queue={fts_queue_name})
-        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivar/)
-        exten => {fts_opcion_digito},n,Queue({fts_queue_name})
-        exten => {fts_opcion_digito},n,Hangup()
-
-        """
-
-    def get_parametros(self):
-        parametros = dict(self._parametros)
-        ga = self._opcion.grupo_atencion
-        parametros.update({
-            'fts_queue_name': ga.get_nombre_para_asterisk(),
-            'fts_grup_atencion_id': ga.id,
-        })
-        return parametros
-
-
-class GeneradorParaOpcionDerivacionExterna(
-    GeneradorDePedazoDeDialplanParaOpcion):
-
-    def get_template(self):
-        return """
-
-        ; TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA-{fts_opcion_id}-{fts_derivacion_externa_id}-{fts_dial_string}
-        exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_DERIVACION_EXTERNA,llamada=${{ContactoId}},campana={fts_campana_id},dial_string={fts_dial_string})
-        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivacion_externa/)
-        exten => {fts_opcion_digito},n,Dial({fts_dial_string})
-        exten => {fts_opcion_digito},n,Hangup()
-
-        """
-
-    def get_parametros(self):
-        parametros = dict(self._parametros)
-        de = self._opcion.derivacion_externa
-        parametros.update({
-            'fts_derivacion_externa_id': de.id,
-            'fts_dial_string': de.dial_string,
-        })
-        return parametros
-
-
-class GeneradorParaOpcionRepetir(GeneradorDePedazoDeDialplanParaOpcion):
-
-    def get_template(self):
-        return """
-
-        ; TEMPLATE_OPCION_REPETIR-{fts_opcion_id}
-        exten => {fts_opcion_digito},1,NoOp(FTS,REPETIR,llamada=${{ContactoId}},campana={fts_campana_id})
-        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/repetir/)
-        exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
-        exten => {fts_opcion_digito},n,Hangup()
+        exten => _ftsX.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
+        exten => _ftsX.,n,Set(OriginalExten=${{EXTEN}})
+        exten => _ftsX.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
+        exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
+        exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
+        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
+        exten => _ftsX.,n,Wait(1)
+        exten => _ftsX.,n,Answer()
+        exten => _ftsX.,n(audio),NoOp()
 
         """
 
@@ -360,3 +353,187 @@ class GeneradorParaTts(GeneradorDePedazoDeDialplanParaAudio):
             'fts_tts': self._audio_de_campana.tts,
         }
         return params_tts
+
+
+#==============================================================================
+# Hangup
+#==============================================================================
+
+
+class GeneradorDePedazoDeDialplanParaHangup(GeneradorDePedazo):
+    """Interfaz / Clase abstracta para generadores del pedazo de hangup del
+    dialplan para una campana.
+    """
+
+    def __init__(self, parametros):
+        self._parametros = parametros
+
+
+class GeneradorParaHangup(GeneradorDePedazoDeDialplanParaHangup):
+
+    def get_template(self):
+        return """
+
+        ; TEMPLATE_DIALPLAN_HANGUP-{fts_campana_id}
+        ; TODO: alcanza 'WaitExten(10)'?
+        exten => _ftsX.,n,WaitExten(10)
+        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
+        exten => _ftsX.,n,Hangup()
+
+        """
+
+    def get_parametros(self):
+        return self._parametros
+
+
+#==============================================================================
+# Opciones
+#==============================================================================
+
+class GeneradorDePedazoDeDialplanParaOpcion(GeneradorDePedazo):
+    """Interfaz / Clase abstracta para generadores de pedazos de dialplan
+    relacionados con las Opciones de una campana
+    """
+
+    def __init__(self, opcion, parametros):
+        assert isinstance(opcion, Opcion)
+        self._opcion = opcion
+        self._parametros = parametros
+
+
+class GeneradorParaOpcionVoicemail(GeneradorDePedazoDeDialplanParaOpcion):
+
+    def get_template(self):
+        return """
+
+        ; TEMPLATE_OPCION_VOICEMAIL-{fts_opcion_id}
+        exten => {fts_opcion_digito},1,NoOp(FTS,VOICEMAIL,llamada=${{ContactoId}},campana={fts_campana_id})
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/voicemail/)
+        exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
+        ; TODO: IMPLEMENTAR!
+        exten => {fts_opcion_digito},n,Hangup()
+
+        """
+
+    def get_parametros(self):
+        return self._parametros
+
+
+class GeneradorParaOpcionCalificar(GeneradorDePedazoDeDialplanParaOpcion):
+
+    def get_template(self):
+        return """
+
+        ; TEMPLATE_OPCION_CALIFICAR-{fts_opcion_id}-{fts_calificacion_id}-{fts_calificacion_nombre}
+        exten => {fts_opcion_digito},1,NoOp(FTS,CALIFICAR,llamada=${{ContactoId}},campana={fts_campana_id},calificacion={fts_calificacion_id}-fts_calificacion_nombre)
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/calificar/{fts_calificacion_id}/)
+        exten => {fts_opcion_digito},n,Playback(demo-thanks)
+        exten => {fts_opcion_digito},n,Hangup()
+
+        """
+
+    def get_parametros(self):
+        parametros = dict(self._parametros)
+        parametros.update({
+            'fts_calificacion_id': self._opcion.calificacion.id,
+            'fts_calificacion_nombre': self._opcion.calificacion.nombre,
+        })
+        return parametros
+
+
+class GeneradorParaOpcionGrupoAtencion(GeneradorDePedazoDeDialplanParaOpcion):
+
+    def get_template(self):
+        return """
+
+        ; TEMPLATE_OPCION_DERIVAR_GRUPO_ATENCION-{fts_opcion_id}-{fts_grup_atencion_id}-{fts_queue_name}
+        exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_GRUPO_ATENCION,llamada=${{ContactoId}},campana={fts_campana_id},queue={fts_queue_name})
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivar/)
+        exten => {fts_opcion_digito},n,Queue({fts_queue_name})
+        exten => {fts_opcion_digito},n,Hangup()
+
+        """
+
+    def get_parametros(self):
+        parametros = dict(self._parametros)
+        ga = self._opcion.grupo_atencion
+        parametros.update({
+            'fts_queue_name': ga.get_nombre_para_asterisk(),
+            'fts_grup_atencion_id': ga.id,
+        })
+        return parametros
+
+
+class GeneradorParaOpcionDerivacionExterna(
+    GeneradorDePedazoDeDialplanParaOpcion):
+
+    def get_template(self):
+        return """
+
+        ; TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA-{fts_opcion_id}-{fts_derivacion_externa_id}-{fts_dial_string}
+        exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_DERIVACION_EXTERNA,llamada=${{ContactoId}},campana={fts_campana_id},dial_string={fts_dial_string})
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivacion_externa/)
+        exten => {fts_opcion_digito},n,Dial({fts_dial_string})
+        exten => {fts_opcion_digito},n,Hangup()
+
+        """
+
+    def get_parametros(self):
+        parametros = dict(self._parametros)
+        de = self._opcion.derivacion_externa
+        parametros.update({
+            'fts_derivacion_externa_id': de.id,
+            'fts_dial_string': de.dial_string,
+        })
+        return parametros
+
+
+class GeneradorParaOpcionRepetir(GeneradorDePedazoDeDialplanParaOpcion):
+
+    def get_template(self):
+        return """
+
+        ; TEMPLATE_OPCION_REPETIR-{fts_opcion_id}
+        exten => {fts_opcion_digito},1,NoOp(FTS,REPETIR,llamada=${{ContactoId}},campana={fts_campana_id})
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/repetir/)
+        exten => {fts_opcion_digito},n,Goto(${{OriginalExten}},audio)
+        exten => {fts_opcion_digito},n,Hangup()
+
+        """
+
+    def get_parametros(self):
+        return self._parametros
+
+
+#==============================================================================
+# End
+#==============================================================================
+
+
+class GeneradorDePedazoDeDialplanParaEnd(GeneradorDePedazo):
+    """Interfaz / Clase abstracta para generadores del pedazo final del
+    dialplan para una campana.
+    """
+
+    def __init__(self, parametros):
+        self._parametros = parametros
+
+
+class GeneradorParaEnd(GeneradorDePedazoDeDialplanParaEnd):
+
+    def get_template(self):
+        return """
+
+        ; TEMPLATE_DIALPLAN_END-{fts_campana_id}
+        exten => t,1,NoOp(FTS,ERR_T,llamada=${{ContactoId}},campana={fts_campana_id})
+        exten => t,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin_err_t/)
+        exten => t,n,Hangup()
+
+        exten => i,1,NoOp(FTS,ERR_I,llamada=${{ContactoId}},campana={fts_campana_id})
+        exten => i,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin_err_i/)
+        exten => i,n,Hangup()
+
+        """
+
+    def get_parametros(self):
+        return self._parametros

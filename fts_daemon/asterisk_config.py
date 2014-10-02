@@ -28,84 +28,8 @@ logger = _logging.getLogger(__name__)
 #    # FIXME: IMPLEMENTAR y usarlo!
 #    # TODO: ver si django no tiene algo armado
 #    return value
-TEMPLATE_DIALPLAN_START = """
-
-;----------------------------------------------------------------------
-; TEMPLATE_DIALPLAN_START-{fts_campana_id}
-;   Autogenerado {date}
-;----------------------------------------------------------------------
-
-;----------------------------------------------------------------------
-; Para usar local channels
-;----------------------------------------------------------------------
-
-[FTS_local_campana_{fts_campana_id}]
-
-exten => _X.,1,NoOp(FTS,INICIO,llamada=${{EXTEN}},campana={fts_campana_id})
-exten => _X.,n,Set(ContactoId=${{CUT(EXTEN,,1)}})
-exten => _X.,n,Set(NumberToCall=${{CUT(EXTEN,,2)}})
-exten => _X.,n,Set(Intento=${{CUT(EXTEN,,3)}})
-exten => _X.,n,NoOp(FTS,ContactoId=${{ContactoId}},NumberToCall=${{NumberToCall}},Intento=${{Intento}})
-exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-pre-dial/)
-exten => _X.,n,Dial({fts_dial_url},{fts_campana_dial_timeout})
-; # TODO: *** WARN: el siguiente 'AGI()' a veces no es llamado
-exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-post-dial/dial-status/${{DIALSTATUS}}/)
-exten => _X.,n,Hangup()
-
-;----------------------------------------------------------------------
-; Dialplan de campana (audio, opciones, etc)
-;----------------------------------------------------------------------
-
-[campania_{fts_campana_id}]
-
-exten => _ftsX.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
-exten => _ftsX.,n,Set(OriginalExten=${{EXTEN}})
-exten => _ftsX.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
-exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
-exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
-exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
-exten => _ftsX.,n,Wait(1)
-exten => _ftsX.,n,Answer()
-exten => _ftsX.,n(audio),NoOp()
-"""
 
 
-TEMPLATE_DIALPLAN_HANGUP = """
-; TEMPLATE_DIALPLAN_HANGUP-{fts_campana_id}
-; TODO: alcanza 'WaitExten(10)'?
-exten => _ftsX.,n,WaitExten(10)
-exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
-exten => _ftsX.,n,Hangup()
-"""
-
-
-TEMPLATE_DIALPLAN_END = """
-
-; TEMPLATE_DIALPLAN_END-{fts_campana_id}
-exten => t,1,NoOp(FTS,ERR_T,llamada=${{ContactoId}},campana={fts_campana_id})
-exten => t,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin_err_t/)
-exten => t,n,Hangup()
-
-exten => i,1,NoOp(FTS,ERR_I,llamada=${{ContactoId}},campana={fts_campana_id})
-exten => i,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin_err_i/)
-exten => i,n,Hangup()
-
-"""
-
-TEMPLATE_FAILED = """
-
-;----------------------------------------------------------------------
-; TEMPLATE_FAILED-{fts_campana_id}
-;   Autogenerado {date}
-;
-; La generacion de configuracin para la campana {fts_campana_id}
-;   a fallado.
-;
-; {traceback_lines}
-;
-;----------------------------------------------------------------------
-
-"""
 
 TEMPLATE_QUEUE = """
 
@@ -171,6 +95,7 @@ class DialplanConfigCreator(object):
 
     def __init__(self):
         self._dialplan_config_file = DialplanConfigFile()
+        self._generador_factory = GeneradorDePedazoDeDialplanFactory()
 
     def _check_audio_file_exist(self, fts_audio_file, campana):
         if not os.path.exists(fts_audio_file):
@@ -207,23 +132,26 @@ class DialplanConfigCreator(object):
             'date': str(datetime.datetime.now())
         }
 
-        # Iniciamos generacion de dialplan
+        # START: Creamos la porción inicial del Dialplan.
+        generador_start = self._generador_factory.crear_generador_para_start(
+            param_generales)
+        partes.append(generador_start.generar_pedazo())
 
-        partes.append(TEMPLATE_DIALPLAN_START.format(**param_generales))
-
-        generador_factory = GeneradorDePedazoDeDialplanFactory()
-
+        # AUDIOS: Creamos las porciones de los audios del Dialplan.
         for audio_de_campana in audios_de_campana:
-            generador = generador_factory.crear_generador_para_audio(
+            generador = self._generador_factory.crear_generador_para_audio(
                 audio_de_campana, param_generales, campana)
             partes.append(generador.generar_pedazo())
 
-        partes.append(TEMPLATE_DIALPLAN_HANGUP.format(**param_generales))
+        # HANGUP: Creamos la porción para el hangup del Dialplan.
+        generador_hangup = self._generador_factory.crear_generador_para_hangup(
+            param_generales)
+        partes.append(generador_hangup.generar_pedazo())
 
         # TODO: derivacion: setear GrupoAtencion / QUEUE (cuando corresponda)
         # TODO: voicemail: IMPLEMENTAR!
 
-        # Genera opciones de campana
+        # OPCIONES: Creamos las porciones de las opciones del Dialplan.
         for opcion in campana.opciones.all():
             params_opcion = dict(param_generales)
             params_opcion.update({
@@ -231,12 +159,16 @@ class DialplanConfigCreator(object):
                 'fts_opcion_digito': opcion.digito,
             })
 
-            generador_dialplan = generador_factory.crear_generador_para_opcion(
-                opcion, params_opcion, campana)
+            generador_dialplan = \
+                self._generador_factory.crear_generador_para_opcion(
+                    opcion, params_opcion, campana)
 
             partes.append(generador_dialplan.generar_pedazo())
 
-        partes.append(TEMPLATE_DIALPLAN_END.format(**param_generales))
+        # END: Creamos la porción para el hangup del Dialplan.
+        generador_end = self._generador_factory.crear_generador_para_end(
+            param_generales)
+        partes.append(generador_end.generar_pedazo())
 
         return ''.join(partes)
 
@@ -278,11 +210,17 @@ class DialplanConfigCreator(object):
                     traceback_lines = "Error al intentar generar traceback"
                     logger.exception("Error al intentar generar traceback")
 
-                config_chunk = TEMPLATE_FAILED.format(
-                    fts_campana_id=campana.id,
-                    date=str(datetime.datetime.now()),
-                    traceback_lines=traceback_lines
-                )
+                param_failed = {
+                    'fts_campana_id': campana.id,
+                    'date': str(datetime.datetime.now()),
+                    'traceback_lines': traceback_lines,
+                }
+                # FAILED: Creamos la porción para el fallo del Dialplan.
+                generador_failed = \
+                    self._generador_factory.crear_generador_para_failed(
+                        param_failed)
+                config_chunk = generador_failed.generar_pedazo()
+
             dialplan.append(config_chunk)
 
         self._dialplan_config_file.write(dialplan)
