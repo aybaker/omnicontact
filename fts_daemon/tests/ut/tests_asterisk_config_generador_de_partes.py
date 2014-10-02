@@ -24,7 +24,10 @@ from fts_daemon.asterisk_config_generador_de_partes import (
     GeneradorDePedazoDeDialplanFactory, GeneradorParaFailed,
     GeneradorParaStart, GeneradorParaAudioAsterisk,
     GeneradorParaArchivoDeAudio, GeneradorParaTtsHora, GeneradorParaTtsFecha,
-    GeneradorParaTts)
+    GeneradorParaTts, GeneradorParaOpcionGrupoAtencion,
+    GeneradorParaOpcionDerivacionExterna, GeneradorParaOpcionRepetir,
+    GeneradorParaOpcionVoicemail, GeneradorParaOpcionCalificar,
+    GeneradorParaHangup, GeneradorParaEnd)
 
 from fts_web.models import (Opcion, Campana, GrupoAtencion, AudioDeCampana,
                             BaseDatosContacto, ArchivoDeAudio, Calificacion)
@@ -201,3 +204,189 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
                         generador.crear_generador_para_audio(
                             audio_de_campana, Mock(), campana),
                         GeneradorParaTtsHora))
+
+    def test_crear_generador_para_hangup(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+
+        # -----
+
+        self.assertTrue(isinstance(generador.crear_generador_para_hangup(
+                                   Mock()), GeneradorParaHangup))
+
+    def test_crear_generador_para_opcion_con_opcion_grupo_atencion(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.columnas_con_fecha = [1]
+        metadata.nombres_de_columnas = ['TELEFONO', "FECHA"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
+                                          tts="FECHA")
+        campana.audios_de_campana = [audio_de_campana]
+
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.DERIVAR_GRUPO_ATENCION)
+        campana.opciones = [opcion]
+
+        # -----
+
+        self.assertTrue(isinstance(
+                        generador.crear_generador_para_opcion(opcion, Mock(),
+                                                              campana),
+                        GeneradorParaOpcionGrupoAtencion))
+
+    def test_crear_generador_para_opcion_con_opcion_derivacion_esterna(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.columnas_con_fecha = [1]
+        metadata.nombres_de_columnas = ['TELEFONO', "FECHA"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
+                                          tts="FECHA")
+        campana.audios_de_campana = [audio_de_campana]
+
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.DERIVAR_DERIVACION_EXTERNA)
+        campana.opciones = [opcion]
+
+        # -----
+
+        self.assertTrue(isinstance(
+                        generador.crear_generador_para_opcion(opcion, Mock(),
+                                                              campana),
+                        GeneradorParaOpcionDerivacionExterna))
+
+    def test_crear_generador_para_opcion_con_opcion_repetir(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.columnas_con_fecha = [1]
+        metadata.nombres_de_columnas = ['TELEFONO', "FECHA"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
+                                          tts="FECHA")
+        campana.audios_de_campana = [audio_de_campana]
+
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.REPETIR)
+        campana.opciones = [opcion]
+
+        # -----
+
+        self.assertTrue(isinstance(
+                        generador.crear_generador_para_opcion(opcion, Mock(),
+                                                              campana),
+                        GeneradorParaOpcionRepetir))
+
+    def test_crear_generador_para_opcion_con_opcion_voicemail(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.columnas_con_fecha = [1]
+        metadata.nombres_de_columnas = ['TELEFONO', "FECHA"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
+                                          tts="FECHA")
+        campana.audios_de_campana = [audio_de_campana]
+
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.VOICEMAIL)
+        campana.opciones = [opcion]
+
+        # -----
+
+        self.assertTrue(isinstance(
+                        generador.crear_generador_para_opcion(opcion, Mock(),
+                                                              campana),
+                        GeneradorParaOpcionVoicemail))
+
+    def test_crear_generador_para_opcion_con_opcion_calificar(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.columnas_con_fecha = [1]
+        metadata.nombres_de_columnas = ['TELEFONO', "FECHA"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
+                                          tts="FECHA")
+        campana.audios_de_campana = [audio_de_campana]
+
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.CALIFICAR)
+        campana.opciones = [opcion]
+
+        # -----
+
+        self.assertTrue(isinstance(
+                        generador.crear_generador_para_opcion(opcion, Mock(),
+                                                              campana),
+                        GeneradorParaOpcionCalificar))
+
+    def test_crear_generador_para_end(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+
+        # -----
+
+        self.assertTrue(isinstance(generador.crear_generador_para_end(
+                                   Mock()), GeneradorParaEnd))
+
+        
+
+
+        
