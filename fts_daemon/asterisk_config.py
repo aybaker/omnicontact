@@ -17,8 +17,9 @@ from django.conf import settings
 
 from fts_web.models import Campana, GrupoAtencion
 import logging as _logging
-from fts_daemon.asterisk_config_generador_de_partes import \
-    NoSePuedeCrearDialplanError, GeneradorDePedazoDeDialplanFactory
+from fts_daemon.asterisk_config_generador_de_partes import (
+    NoSePuedeCrearDialplanError, GeneradorDePedazoDeDialplanFactory,
+    GeneradorDePedazoDeQueueFactory)
 
 
 logger = _logging.getLogger(__name__)
@@ -29,35 +30,6 @@ logger = _logging.getLogger(__name__)
 #    # TODO: ver si django no tiene algo armado
 #    return value
 
-
-
-TEMPLATE_QUEUE = """
-
-;----------------------------------------------------------------------
-; TEMPLATE_QUEUE-{fts_queue_name}
-;   Autogenerado {date}
-;----------------------------------------------------------------------
-; Grupo de Atencion
-;     - Id: {fts_grupo_atencion_id}
-; - Nombre: {fts_grupo_atencion_nombre}
-;----------------------------------------------------------------------
-
-[{fts_queue_name}]
-
-strategy={fts_strategy}
-timeout={fts_timeout}
-maxlen=0
-monitor-type=mixmonitor
-monitor-format=wav
-
-"""
-
-TEMPLATE_QUEUE_MEMBER = """
-
-; agente.id={fts_agente_id}
-member => SIP/{fts_member_number}
-
-"""
 
 # TODO: Las siguientes funciones deberán ser removidas en la medida que se
 # implemente el uso de los objetos que las reemplazan.
@@ -210,12 +182,10 @@ class DialplanConfigCreator(object):
                     traceback_lines = "Error al intentar generar traceback"
                     logger.exception("Error al intentar generar traceback")
 
-                param_failed = {
-                    'fts_campana_id': campana.id,
-                    'date': str(datetime.datetime.now()),
-                    'traceback_lines': traceback_lines,
-                }
                 # FAILED: Creamos la porción para el fallo del Dialplan.
+                param_failed = {'fts_campana_id': campana.id,
+                                'date': str(datetime.datetime.now()),
+                                'traceback_lines': traceback_lines}
                 generador_failed = \
                     self._generador_factory.crear_generador_para_failed(
                         param_failed)
@@ -229,6 +199,7 @@ class DialplanConfigCreator(object):
 class QueueConfigCreator(object):
     def __init__(self):
         self._queue_config_file = QueueConfigFile()
+        self._generador_factory = GeneradorDePedazoDeQueueFactory()
 
     def _generar_queue(self, grupo_atencion):
         """Genera configuracion para queue / grupos de atencion"""
@@ -243,15 +214,17 @@ class QueueConfigCreator(object):
             'date': str(datetime.datetime.now())
         }
 
-        partes.append(TEMPLATE_QUEUE.format(**param_generales))
+        # QUEUE: Creamos la porción inicial del Queue.
+        generador_queue = self._generador_factory.crear_generador_para_queue(
+            param_generales)
+        partes.append(generador_queue.generar_pedazo())
 
+        # MEMBER: Creamos la porción inicial del Queue.
         for agente in grupo_atencion.agentes.all():
-            params_opcion = dict(param_generales)
-            params_opcion.update({
-                'fts_member_number': agente.numero_interno,
-                'fts_agente_id': agente.id
-            })
-            partes.append(TEMPLATE_QUEUE_MEMBER.format(**params_opcion))
+            generador_member = \
+                self._generador_factory.crear_generador_para_member(
+                    agente, params_member)
+            partes.append(generador_member.generar_pedazo())
 
         return ''.join(partes)
 

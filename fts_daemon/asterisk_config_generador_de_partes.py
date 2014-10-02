@@ -24,6 +24,37 @@ class NoSePuedeCrearDialplanError(FtsError):
     pass
 
 
+class GeneradorDePedazo(object):
+    """Generador de pedazo generico"""
+
+    def get_template(self):
+        raise(NotImplementedError())
+
+    def get_parametros(self):
+        raise(NotImplementedError())
+
+    def _reportar_key_error(self):
+        try:
+            logger.exception("Clase: %s.\nTemplate:\n%s\n Params: %s",
+                             str(self.__class__),
+                             self.get_template(),
+                             pprint.pformat(self.get_parametros()))
+        except:
+            pass
+
+    def generar_pedazo(self):
+        template = self.get_template()
+        template = "\n".join(t.strip() for t in template.splitlines())
+        try:
+            return template.format(**self.get_parametros())
+        except KeyError:
+            self._reportar_key_error()
+            raise
+
+# ########################################################################### #
+# Factory para el Dialplan.
+
+
 class GeneradorDePedazoDeDialplanFactory(object):
 
     def crear_generador_para_failed(self, parametros):
@@ -32,9 +63,7 @@ class GeneradorDePedazoDeDialplanFactory(object):
     def crear_generador_para_start(self, parametros):
         return GeneradorParaStart(parametros)
 
-    def crear_generador_para_audio(self,
-                                   audio_de_campana,
-                                   parametros,
+    def crear_generador_para_audio(self, audio_de_campana, parametros,
                                    campana):
 
         if audio_de_campana.audio_asterisk:
@@ -85,34 +114,6 @@ class GeneradorDePedazoDeDialplanFactory(object):
 
     def crear_generador_para_end(self, parametros):
         return GeneradorParaEnd(parametros)
-
-
-class GeneradorDePedazo(object):
-    """Generador de pedazo generico"""
-
-    def get_template(self):
-        raise(NotImplementedError())
-
-    def get_parametros(self):
-        raise(NotImplementedError())
-
-    def _reportar_key_error(self):
-        try:
-            logger.exception("Clase: %s.\nTemplate:\n%s\n Params: %s",
-                             str(self.__class__),
-                             self.get_template(),
-                             pprint.pformat(self.get_parametros()))
-        except:
-            pass
-
-    def generar_pedazo(self):
-        template = self.get_template()
-        template = "\n".join(t.strip() for t in template.splitlines())
-        try:
-            return template.format(**self.get_parametros())
-        except KeyError:
-            self._reportar_key_error()
-            raise
 
 
 #==============================================================================
@@ -537,3 +538,88 @@ class GeneradorParaEnd(GeneradorDePedazoDeDialplanParaEnd):
 
     def get_parametros(self):
         return self._parametros
+
+
+# ########################################################################### #
+# Factory para las Queue.
+
+class GeneradorDePedazoDeQueueFactory(object):
+
+    def crear_generador_para_queue(self, parametros):
+        return GeneradorParaQueue(parametros)
+
+    def crear_generador_para_member(self, agente, parametros):
+        return GeneradorParaQueueMember(agente, parametros)
+
+#==============================================================================
+# Queue
+#==============================================================================
+
+
+class GeneradorDePedazoDeQueue(GeneradorDePedazo):
+    """Interfaz / Clase abstracta para generar el pedazo de queue para una
+    campana.
+    """
+
+    def __init__(self, parametros):
+        self._parametros = parametros
+
+
+class GeneradorParaQueue(GeneradorDePedazoDeQueue):
+
+    def get_template(self):
+        return """
+        ;----------------------------------------------------------------------
+        ; TEMPLATE_QUEUE-{fts_queue_name}
+        ;   Autogenerado {date}
+        ;----------------------------------------------------------------------
+        ; Grupo de Atencion
+        ;     - Id: {fts_grupo_atencion_id}
+        ; - Nombre: {fts_grupo_atencion_nombre}
+        ;----------------------------------------------------------------------
+
+        [{fts_queue_name}]
+
+        strategy={fts_strategy}
+        timeout={fts_timeout}
+        maxlen=0
+        monitor-type=mixmonitor
+        monitor-format=wav
+        """
+
+    def get_parametros(self):
+        return self._parametros
+
+
+#==============================================================================
+# Member
+#==============================================================================
+
+
+class GeneradorDePedazoDeMember(GeneradorDePedazo):
+    """Interfaz / Clase abstracta para generar el pedazo de queue Member
+    para una campana.
+    """
+
+    def __init__(self, agente, parametros):
+        self._agente = agente
+        self._parametros = parametros
+
+
+class GeneradorParaMember(GeneradorDePedazoDeMember):
+
+    def get_template(self):
+        return """
+
+        ; agente.id={fts_agente_id}
+        member => SIP/{fts_member_number}
+
+        """
+
+    def get_parametros(self):
+        params_member = dict(self._param_generales)
+        params_member.update({
+            'fts_member_number': self._agente.numero_interno,
+            'fts_agente_id': self._agente.id
+        })
+        return params_member
