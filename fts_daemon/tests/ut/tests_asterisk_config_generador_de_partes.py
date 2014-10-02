@@ -4,6 +4,7 @@
 
 from __future__ import unicode_literals
 
+import datetime
 import logging
 import tempfile
 import re
@@ -386,7 +387,128 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
         self.assertTrue(isinstance(generador.crear_generador_para_end(
                                    Mock()), GeneradorParaEnd))
 
-        
+
+class GeneradorParaFailedTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaFailed.generar_pedazo devuelva el
+    template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        # -----
+
+        param_failed = {'fts_campana_id': campana.id,
+                        'date': str(datetime.datetime.now()),
+                        'traceback_lines': "Error"}
+
+        generador = GeneradorParaFailed(param_failed)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_FAILED-{0}".format(campana.id))
+                        > 0)
 
 
-        
+class GeneradorParaStartTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaStart.generar_pedazo devuelva el
+    template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now())
+        }
+
+        generador = GeneradorParaStart(param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_DIALPLAN_START-{0}".format(
+            campana.id)))
+
+
+class GeneradorParaAudioAsteriskTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaAudioAsterisk.generar_pedazo devuelva el
+    template correcto.
+    """
+    @override_settings(FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS=False)
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+        audio_de_campana = AudioDeCampana(
+            pk=1, orden=1, campana=campana,
+            audio_asterisk='test/audio/for-asterisk.wav')
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now()),
+            'fts_audio_de_campana_id': audio_de_campana.id,
+            'fts_audio_file': 'audio file',
+        }
+
+        generador = GeneradorParaAudioAsterisk(audio_de_campana,
+                                               param_generales)
+
+        generador.get_parametros = Mock(return_value=param_generales)
+
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_DIALPLAN_PLAY_AUDIO-{0}".format(
+            audio_de_campana.id)))
+
+
+class GeneradorParaArchivoDeAudioTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaArchivoDeAudio.generar_pedazo devuelva el
+    template correcto.
+    """
+    @override_settings(FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS=False)
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+        archivo_de_audio = ArchivoDeAudio(descripcion="ADA")
+        audio_de_campana = AudioDeCampana(
+            pk=1, orden=1, campana=campana,
+            archivo_de_audio=archivo_de_audio)
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now()),
+            'fts_audio_de_campana_id': audio_de_campana.id,
+            'fts_audio_file': 'audio file',
+        }
+
+        generador = GeneradorParaArchivoDeAudio(audio_de_campana,
+                                                param_generales)
+        generador.get_parametros = Mock(return_value=param_generales)
+
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_DIALPLAN_PLAY_AUDIO-{0}".format(
+            audio_de_campana.id)))
