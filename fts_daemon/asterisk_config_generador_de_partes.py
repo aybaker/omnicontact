@@ -617,7 +617,7 @@ class GeneradorParaMember(GeneradorDePedazoDeMember):
         """
 
     def get_parametros(self):
-        params_member = dict(self._param_generales)
+        params_member = dict(self._parametros)
         params_member.update({
             'fts_member_number': self._agente.numero_interno,
             'fts_agente_id': self._agente.id
