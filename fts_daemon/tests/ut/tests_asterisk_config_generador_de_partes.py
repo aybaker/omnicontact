@@ -21,18 +21,11 @@ from fts_daemon.asterisk_config import (
     NoSePuedeCrearDialplanError, DialplanConfigCreator, QueueConfigCreator,
     AsteriskConfigReloader, DialplanConfigFile, QueueConfigFile, ConfigFile)
 
-from fts_daemon.asterisk_config_generador_de_partes import (
-    GeneradorDePedazoDeDialplanFactory, GeneradorParaFailed,
-    GeneradorParaStart, GeneradorParaAudioAsterisk,
-    GeneradorParaArchivoDeAudio, GeneradorParaTtsHora, GeneradorParaTtsFecha,
-    GeneradorParaTts, GeneradorParaOpcionGrupoAtencion,
-    GeneradorParaOpcionDerivacionExterna, GeneradorParaOpcionRepetir,
-    GeneradorParaOpcionVoicemail, GeneradorParaOpcionCalificar,
-    GeneradorParaHangup, GeneradorParaEnd)
+from fts_daemon.asterisk_config_generador_de_partes import *
 
 from fts_web.models import (Opcion, Campana, GrupoAtencion, AudioDeCampana,
                             BaseDatosContacto, ArchivoDeAudio, Calificacion,
-                            DerivacionExterna)
+                            DerivacionExterna, AgenteGrupoAtencion)
 from fts_web.tests.utiles import FTSenderBaseTest
 
 from mock import Mock
@@ -878,3 +871,104 @@ class GeneradorParaEndTest(FTSenderBaseTest):
         config = generador.generar_pedazo()
         self.assertTrue(config.find("TEMPLATE_DIALPLAN_END-{0}".format(
             campana.id)))
+
+
+# ########################################################################### #
+
+
+class GeneradorDePedazoDeQueueFactoryTest(FTSenderBaseTest):
+    """
+    Testea que la clase GeneradorDePedazoDeQueueFactory instancie el
+    objeto generador adecuado según los parametros proveidos.
+    """
+
+    def crear_generador_para_queue(self):
+        generador = GeneradorDePedazoDeQueueFactory()
+
+        # -----
+
+        self.assertTrue(isinstance(generador.crear_generador_para_queue(
+                                   Mock()), GeneradorParaQueue))
+
+    def crear_generador_para_member(self):
+        generador = GeneradorDePedazoDeQueueFactory()
+
+        # -----
+
+        self.assertTrue(isinstance(generador.crear_generador_para_member(
+                                   Mock()), GeneradorParaQueueMember))
+
+
+class GeneradorParaQueueTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaQueue.generar_pedazo devuelva el
+    template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        grupo_atencion = GrupoAtencion(nombre="TEST", timeout=1,
+                                       ring_strategy=GrupoAtencion.RINGALL)
+        grupo_atencion.save()
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.DERIVAR_GRUPO_ATENCION,
+                        grupo_atencion=grupo_atencion)
+        campana.opciones = [opcion]
+
+        # -----
+
+        param_generales = {
+            'fts_grupo_atencion_id': grupo_atencion.id,
+            'fts_grupo_atencion_nombre': grupo_atencion.nombre,
+            'fts_queue_name': grupo_atencion.get_nombre_para_asterisk(),
+            'fts_strategy': grupo_atencion.get_ring_strategy_para_asterisk(),
+            'fts_timeout': grupo_atencion.timeout,
+            'date': str(datetime.datetime.now())
+        }
+
+        generador = GeneradorParaQueue(param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_QUEUE-{0}".format(
+            grupo_atencion.get_nombre_para_asterisk())) > 0)
+
+
+class GeneradorParaMemberTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaMember.generar_pedazo devuelva el
+    template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        grupo_atencion = GrupoAtencion(nombre="TEST", timeout=1,
+                                       ring_strategy=GrupoAtencion.RINGALL)
+        grupo_atencion.save()
+        agente = AgenteGrupoAtencion(numero_interno="1234",
+                                     grupo_atencion=grupo_atencion)
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.DERIVAR_GRUPO_ATENCION,
+                        grupo_atencion=grupo_atencion)
+        campana.opciones = [opcion]
+
+        # -----
+
+        param_generales = {
+            'fts_grupo_atencion_id': grupo_atencion.id,
+            'fts_grupo_atencion_nombre': grupo_atencion.nombre,
+            'fts_queue_name': grupo_atencion.get_nombre_para_asterisk(),
+            'fts_strategy': grupo_atencion.get_ring_strategy_para_asterisk(),
+            'fts_timeout': grupo_atencion.timeout,
+            'date': str(datetime.datetime.now())
+        }
+
+        generador = GeneradorParaMember(agente, param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("agente.id={0}".format(agente.id)) > 0)
