@@ -223,7 +223,7 @@ class QueueConfigCreator(object):
         for agente in grupo_atencion.agentes.all():
             generador_member = \
                 self._generador_factory.crear_generador_para_member(
-                    agente, params_member)
+                    agente, param_generales)
             partes.append(generador_member.generar_pedazo())
 
         return ''.join(partes)
