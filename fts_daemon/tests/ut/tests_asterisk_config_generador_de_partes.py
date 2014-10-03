@@ -31,7 +31,8 @@ from fts_daemon.asterisk_config_generador_de_partes import (
     GeneradorParaHangup, GeneradorParaEnd)
 
 from fts_web.models import (Opcion, Campana, GrupoAtencion, AudioDeCampana,
-                            BaseDatosContacto, ArchivoDeAudio, Calificacion)
+                            BaseDatosContacto, ArchivoDeAudio, Calificacion,
+                            DerivacionExterna)
 from fts_web.tests.utiles import FTSenderBaseTest
 
 from mock import Mock
@@ -640,3 +641,240 @@ class GeneradorParaTtsTest(FTSenderBaseTest):
         config = generador.generar_pedazo()
         self.assertTrue(config.find("TEMPLATE_DIALPLAN_TTS-{0}".format(
             audio_de_campana.id)))
+
+
+class GeneradorParaHangupTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaHangup.generar_pedazo devuelva el
+    template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now())
+        }
+
+        generador = GeneradorParaHangup(param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_DIALPLAN_HANGUP-{0}".format(
+            campana.id)))
+
+
+class GeneradorParaOpcionVoicemailTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaOpcionVoicemail.generar_pedazo devuelva
+    el template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.VOICEMAIL)
+        campana.opciones = [opcion]
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now()),
+            'fts_opcion_id': opcion.id,
+            'fts_opcion_digito': opcion.digito,
+        }
+
+        generador = GeneradorParaOpcionVoicemail(opcion, param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_OPCION_VOICEMAIL-{0}".format(
+            opcion.id)))
+
+
+class GeneradorParaOpcionCalificarTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaOpcionCalificar.generar_pedazo devuelva
+    el template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        calificacion = Calificacion(nombre="TEST", campana=campana)
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.CALIFICAR, calificacion=calificacion)
+        campana.opciones = [opcion]
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now()),
+            'fts_opcion_id': opcion.id,
+            'fts_opcion_digito': opcion.digito,
+        }
+
+        generador = GeneradorParaOpcionCalificar(opcion, param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_OPCION_CALIFICAR-{0}-{1}-{2}\
+            ".format(opcion.id, opcion.calificacion.id,
+                     opcion.calificacion.nombre)))
+
+
+class GeneradorParaOpcionGrupoAtencionTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaOpcionGrupoAtencion.generar_pedazo
+    devuelva el template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        grupo_atencion = GrupoAtencion(nombre="TEST", timeout=1,
+                                       ring_strategy=GrupoAtencion.RINGALL)
+        grupo_atencion.save()
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.DERIVAR_GRUPO_ATENCION,
+                        grupo_atencion=grupo_atencion)
+        campana.opciones = [opcion]
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now()),
+            'fts_opcion_id': opcion.id,
+            'fts_opcion_digito': opcion.digito,
+        }
+
+        generador = GeneradorParaOpcionGrupoAtencion(opcion, param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_OPCION_DERIVAR_GRUPO_ATENCION-\
+            {0}-{1}-{2}".format(opcion.id, opcion.grupo_atencion.id,
+                                opcion.grupo_atencion.nombre)))
+
+
+class GeneradorParaOpcionDerivacionExternaTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaOpcionDerivacionExterna.generar_pedazo
+    devuelva el template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        derivacion_externa = DerivacionExterna(nombre="TEST", dial_string=1)
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
+                        derivacion_externa=derivacion_externa)
+        campana.opciones = [opcion]
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now()),
+            'fts_opcion_id': opcion.id,
+            'fts_opcion_digito': opcion.digito,
+        }
+
+        generador = GeneradorParaOpcionDerivacionExterna(opcion,
+                                                         param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find(
+            "TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA-{0}-{1}-{2}".format(
+                opcion.id, opcion.derivacion_externa.id,
+                opcion.derivacion_externa.nombre)))
+
+
+class GeneradorParaOpcionRepetirTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaOpcionRepetir.generar_pedazo
+    devuelva el template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        opcion = Opcion(digito=0, campana=campana, accion=Opcion.REPETIR)
+        campana.opciones = [opcion]
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now()),
+            'fts_opcion_id': opcion.id,
+            'fts_opcion_digito': opcion.digito,
+        }
+
+        generador = GeneradorParaOpcionRepetir(opcion, param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_OPCION_REPETIR-{0}".format(
+                        opcion.id)))
+
+
+class GeneradorParaEndTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaEnd.generar_pedazo devuelva el
+    template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now())
+        }
+
+        generador = GeneradorParaEnd(param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_DIALPLAN_END-{0}".format(
+            campana.id)))
