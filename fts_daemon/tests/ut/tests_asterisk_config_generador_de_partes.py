@@ -512,3 +512,131 @@ class GeneradorParaArchivoDeAudioTest(FTSenderBaseTest):
         config = generador.generar_pedazo()
         self.assertTrue(config.find("TEMPLATE_DIALPLAN_PLAY_AUDIO-{0}".format(
             audio_de_campana.id)))
+
+
+class GeneradorParaTtsHoraTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaTtsHora.generar_pedazo devuelva el
+    template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.columnas_con_hora = [1]
+        metadata.nombres_de_columnas = ['TELEFONO', "HORA"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
+                                          tts="HORA")
+        campana.audios_de_campana = [audio_de_campana]
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now())
+        }
+
+        generador = GeneradorParaTtsHora(audio_de_campana, param_generales)
+
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_DIALPLAN_HORA-{0}".format(
+            audio_de_campana.id)))
+
+
+class GeneradorParaTtsFechaTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaTtsFecha.generar_pedazo devuelva el
+    template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.columnas_con_fecha = [1]
+        metadata.nombres_de_columnas = ['TELEFONO', "FECHA"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
+                                          tts="FECHA")
+        campana.audios_de_campana = [audio_de_campana]
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now())
+        }
+
+        generador = GeneradorParaTtsFecha(audio_de_campana, param_generales)
+
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_DIALPLAN_FECHA-{0}".format(
+            audio_de_campana.id)))
+
+
+class GeneradorParaTtsTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaTts.generar_pedazo devuelva el
+    template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 1
+        metadata.columna_con_telefono = 0
+        metadata.nombres_de_columnas = ["TELEFONO"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
+                                          tts="TELEFONO")
+        campana.audios_de_campana = [audio_de_campana]
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now())
+        }
+
+        generador = GeneradorParaTts(audio_de_campana, param_generales)
+
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_DIALPLAN_TTS-{0}".format(
+            audio_de_campana.id)))
