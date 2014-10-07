@@ -230,6 +230,12 @@ class GeneradorDePedazoDeDialplanParaAudio(GeneradorDePedazo):
         self._audio_de_campana = audio_de_campana
         self._parametros = parametros
 
+    def _check_audio_file_exist(self, fts_audio_file, campana):
+        if not os.path.exists(fts_audio_file):
+            raise NoSePuedeCrearDialplanError(
+                "No se encontro el archivo de audio '{0}' para la campana "
+                "'{1}'".format(fts_audio_file, campana.id))
+
 
 class GeneradorParaAudioAsterisk(GeneradorDePedazoDeDialplanParaAudio):
 

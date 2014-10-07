@@ -1,0 +1,7 @@
+
+#
+# Configuracion de proxy
+#
+
+proxy=http://172.17.42.1:3127
+

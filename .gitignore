@@ -14,3 +14,4 @@ settings_local.py
 /deploy/docker/authorized_keys
 /fts_web_settings_local_customizations.py
 /dev/static_root
+/deploy/virtualenv-fig

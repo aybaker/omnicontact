@@ -1,0 +1,16 @@
+;
+; Para setear acceso a tabla CDR, configurar:
+;  - dbname
+;  - user
+;  - password
+;
+
+[global]
+hostname=172.17.42.1
+port=5432
+dbname=fts
+user=fts
+password=fts
+table=cdr
+encoding=UTF8
+timezone=UTC

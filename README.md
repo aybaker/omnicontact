@@ -39,3 +39,9 @@ Deploy a servidor de pruebas (VM):
 
     $ ./build.sh -i deploy/hosts-virtual-pruebas
 
+
+Para testear conexion con Asterisk
+----------------------------------
+
+    $ FTS_RUN_ASTERISK_TEST=1 python manage.py test fts_tests.tests.tests_asterisk_ami_http.TestAsteriskHttpClient.test_ping_y_status
+

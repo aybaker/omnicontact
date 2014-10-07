@@ -30,16 +30,13 @@ ENV LANGUAGE en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 ENV HOME /root
 
-ENV http_proxy http://172.17.42.1:3128
-ENV https_proxy http://172.17.42.1:3128
-ENV proxy http://172.17.42.1:3128
+COPY yum.conf.extra /etc/yum.conf.extra
+
+RUN echo "" >> /etc/yum.conf ;	\
+	cat /etc/yum.conf.extra >> /etc/yum.conf
 
 # Epel
 RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-
-# Instalas paquetes. 1ra linea: basicos. Demas lineas: instalados por Ansible
-#  1) '--enablerepo centosplus' workaround p/poder instalar libselinux-python
-#       Ver: https://bugs.centos.org/view.php?id=7126
 
 RUN yum groupinstall -y "Development tools"
 
@@ -78,5 +75,6 @@ COPY in_docker_start.sh /in_docker_start.sh
 
 COPY conf /opt/asterisk-11/etc/asterisk/
 
-CMD ["/in_docker_start.sh"]
+COPY cdr_pgsql.conf /opt/asterisk-11/etc/asterisk/cdr_pgsql.conf
 
+CMD ["/in_docker_start.sh"]
