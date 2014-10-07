@@ -240,6 +240,7 @@ class CampanaForm(forms.ModelForm):
                 Field('cantidad_canales'),
                 Field('cantidad_intentos'),
                 Field('segundos_ring'),
+                Field('duracion_de_audio'),
                 Field('fecha_inicio'),
                 Field('fecha_fin'),
             )
@@ -249,6 +250,7 @@ class CampanaForm(forms.ModelForm):
                 Field('cantidad_canales'),
                 Field('cantidad_intentos'),
                 Field('segundos_ring'),
+                Field('duracion_de_audio'),
                 Field('fecha_inicio'),
                 Field('fecha_fin'),
                 Field('bd_contacto')
