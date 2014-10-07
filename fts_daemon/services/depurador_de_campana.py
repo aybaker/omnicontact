@@ -14,6 +14,8 @@ from fts_daemon.models import EventoDeContacto
 from fts_web.models import Campana
 import logging as _logging
 from fts_web.services.reporte_campana import ReporteCampanaService
+from fts_web.services.generador_de_duracion_de_llamadas import (
+    GeneradorDeDuracionDeLlamandasService)
 
 
 logger = _logging.getLogger(__name__)
@@ -42,6 +44,10 @@ class DepuradorDeCampanaWorkflow(object):
         # Genera reporte CSV
         reporte_campana_service = ReporteCampanaService()
         reporte_campana_service.crea_reporte_csv(campana)
+
+        # Genera las DuracionDeLlamada para la campana.
+        generador_duracion_llamadas = GeneradorDeDuracionDeLlamandasService()
+        generador_duracion_llamadas.generar_duracion_de_llamdas(campana)
 
         # Depura EDC
         EventoDeContacto.objects.depurar_eventos_de_contacto(campana.id)
