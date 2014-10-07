@@ -295,7 +295,9 @@ class EventoDeContactoManager(models.Manager):
         """
         Devuelve los eventos de contactos de una campana.
         """
-
+        # TODO: Por ahora devuelve todos los eventos, probablemente haya que
+        # devolver solo los eventos que hacen falta para crear
+        # DuracionDeLlamada.
         campana = Campana.objects.get(pk=int(campana_id))
         cursor = connection.cursor()
         sql = """SELECT * FROM fts_daemon_eventodecontacto
