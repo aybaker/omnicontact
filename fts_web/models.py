@@ -1249,6 +1249,7 @@ class Campana(models.Model):
     segundos_ring = models.PositiveIntegerField()
     fecha_inicio = models.DateField(null=True, blank=True)
     fecha_fin = models.DateField(null=True, blank=True)
+    duracion_de_audio = models.TimeField(null=True, blank=True)
     bd_contacto = models.ForeignKey(
         'BaseDatosContacto',
         null=True, blank=True,
