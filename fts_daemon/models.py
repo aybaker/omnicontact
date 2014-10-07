@@ -379,9 +379,11 @@ class SimuladorEventoDeContactoManager():
 
         metadata = bd_contactos.get_metadata()
         assert isinstance(metadata, MetadataBaseDatosContacto)
-        metadata.cantidad_de_columnas = 1
+        metadata.cantidad_de_columnas = 4
         metadata.columna_con_telefono = 0
-        metadata.nombres_de_columnas = ["TELEF"]
+        metadata.nombres_de_columnas = ["TELEF", "NOMBRE", "FECHA", "HORA"]
+        metadata.columnas_con_fecha = [2]
+        metadata.columnas_con_hora = [3]
         metadata.primer_fila_es_encabezado = False
         metadata.save()
         bd_contactos.save()
@@ -391,7 +393,13 @@ class SimuladorEventoDeContactoManager():
             INSERT INTO fts_web_contacto
                 SELECT
                     nextval('fts_web_contacto_id_seq') as "id",
-                    '[' || (random()*1000000000000)::bigint::text || ']' as "datos",
+                    '[''' ||
+                    (random()*1000000000000)::bigint::text || ''',' ||
+                    '''nombre'',' ||
+                    '''01/01/2001'',' ||
+                    '''15:16:17''' ||
+                    ']'
+                        as "datos",
                     %s as "bd_contacto_id"
                 FROM
                     generate_series(1, %s)
