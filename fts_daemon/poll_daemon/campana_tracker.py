@@ -191,7 +191,7 @@ class DatosParaRealizarLlamada(object):
         return variables
 
 
-class CaluladorDeFetch(object):
+class CalculadorDeFetch(object):
     """Calcula la cantidad de contactos a buscar para cachear"""
 
     def __init__(self, campana):
@@ -261,7 +261,7 @@ class CampanaTracker(object):
         canales ocupados.
         """
 
-        self._calculador_de_fetch = CaluladorDeFetch(self.campana)
+        self._calculador_de_fetch = CalculadorDeFetch(self.campana)
 
     @property
     def activa(self):
