@@ -2253,3 +2253,24 @@ class ArchivoDeAudio(models.Model):
 
         self.borrado = True
         self.save()
+
+
+#==============================================================================
+# DuracionDeLlamada
+#==============================================================================
+
+class DuracionDeLlamada(models.Model):
+    """Representa la duración de las llamdas de las campanas, con el fin
+        de contar con los datos para búsquedas y estadísticas"""
+
+    # EDC.campana_id
+    campana_id = models.IntegerField()
+
+    # Número de teléfono que se llamó.
+    numero_telefonico_contacto = models.PositiveIntegerField(db_index=True)
+
+    # EDC.timestamp
+    fecha_hora_llamada = models.DateTimeField()
+
+    # CDR.duration 0 CDR.billsec
+    duracion_en_segundos = models.PositiveIntegerField()
