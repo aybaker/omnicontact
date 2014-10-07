@@ -32,4 +32,9 @@ class Command(BaseCommand):
             crear_bd_contactos_con_datos_random(cantidad)
         print("INSERT ok - BD: {0}".format(bd.id))
 
+        # Chequeamos BD
         bd.get_metadata().validar_metadatos()
+
+        # Chequeamos que datos insertados sean validos
+        un_contacto = bd.contactos.all()[0]
+        bd.get_metadata().obtener_telefono_y_datos_extras(un_contacto.datos)
