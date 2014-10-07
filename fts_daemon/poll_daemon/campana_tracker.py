@@ -9,10 +9,10 @@ from datetime import datetime
 import pprint
 import random
 
+from django.conf import settings
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import Campana
 import logging as _logging
-from django.conf import settings
 
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
@@ -191,6 +191,27 @@ class DatosParaRealizarLlamada(object):
         return variables
 
 
+class CaluladorDeFetch(object):
+    """Calcula la cantidad de contactos a buscar para cachear"""
+
+    def __init__(self, campana):
+        self._fetch_min = campana.cantidad_canales * 2
+        """Cantidad minima a buscar en BD para cachear"""
+
+        self._fetch_max = campana.cantidad_canales * 5
+        """Cantidad maxima a buscar en BD para cachear"""
+
+        if self._fetch_min < 20:
+            self._fetch_min = 20
+
+        if self._fetch_max < 100:
+            self._fetch_max = 100
+
+    def get_fetch_size(self):
+        # EX: _get_random_fetch()
+        return random.randint(self._fetch_min, self._fetch_max)
+
+
 class CampanaTracker(object):
     """Trackea los envios pendientes de UNA campaña. Tambien trackea
     (de manera aproximada) las llamadas en curso para dicha campaña.
@@ -224,12 +245,6 @@ class CampanaTracker(object):
         ser None, o fuera de rango (o sea, no en curso).
         """
 
-        self.fetch_min = self.campana.cantidad_canales * 2
-        """Cantidad minima a buscar en BD para cachear"""
-
-        self.fetch_max = self.campana.cantidad_canales * 5
-        """Cantidad maxima a buscar en BD para cachear"""
-
         self._contactos_en_curso = []
         """Lista con id de contactos con llamadas en curso.
 
@@ -246,11 +261,7 @@ class CampanaTracker(object):
         canales ocupados.
         """
 
-        if self.fetch_min < 20:
-            self.fetch_min = 20
-
-        if self.fetch_max < 100:
-            self.fetch_max = 100
+        self._calculador_de_fetch = CaluladorDeFetch(self.campana)
 
     @property
     def activa(self):
@@ -337,9 +348,6 @@ class CampanaTracker(object):
             "lista_contactos_en_curso no es int o long"
         self._contactos_en_curso = list(lista_contactos_en_curso)
 
-    def _get_random_fetch(self):
-        return random.randint(self.fetch_min, self.fetch_max)
-
     def _obtener_pendientes(self):
         """Devuelve lista de ContactoPendiente con info de
         contactos pendientes de contactar.
@@ -348,7 +356,7 @@ class CampanaTracker(object):
 
         :returns: lista de ContactoPendiente
         """
-        limit = self._get_random_fetch()
+        limit = self._calculador_de_fetch.get_fetch_size()
         manager = EventoDeContacto.objects_gestion_llamadas
         return manager.obtener_pendientes(
             self.campana.id,
@@ -363,7 +371,7 @@ class CampanaTracker(object):
 
         :returns: lista de ContactoPendiente
         """
-        limit = self._get_random_fetch()
+        limit = self._calculador_de_fetch.get_fetch_size()
         manager = EventoDeContacto.objects_gestion_llamadas
         return manager.obtener_pendientes_no_en_curso(
             self.campana.id,
