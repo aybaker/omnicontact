@@ -291,22 +291,23 @@ class EventoDeContactoManager(models.Manager):
             "tabla depurada tardo:  %s seg"):
             cursor.execute(sql, params)
 
-    def obtener_eventos_de_contacto_de_una_campana(self, campana_id):
+    def obtener_eventos_de_contacto_para_duracion_llamada(self, campana_id):
         """
-        Devuelve los eventos de contactos de una campana.
+        Devuelve los eventos de contactos de una campana para las llamdas
+        que fueron atendidas.
         """
-        # TODO: Por ahora devuelve todos los eventos, probablemente haya que
-        # devolver solo los eventos que hacen falta para crear
-        # DuracionDeLlamada.
+
         campana = Campana.objects.get(pk=int(campana_id))
         cursor = connection.cursor()
         sql = """SELECT * FROM fts_daemon_eventodecontacto
-                  WHERE campana_id = %s"""
-        params = [campana.id]
+                  WHERE campana_id = %s
+                  AND evento IN (%s)"""
+        params = [campana.id,
+                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
 
         with log_timing(logger,
-                        "obtener_eventos_de_contacto_de_una_campana() tardo "
-                        " %s seg"):
+                        "obtener_eventos_de_contacto_para_duracion_llamada() "
+                        "tardo %s seg"):
             cursor.execute(sql, params)
             values = cursor.fetchall()
         return values
