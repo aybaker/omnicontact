@@ -6,3 +6,4 @@ asterisk:
    - "7088:7088"
   volumes:
    - asterisk/:/srv/asterisk
+   - asterisk/runtime/var/run/asterisk/:/opt/asterisk-11/var/run/asterisk
