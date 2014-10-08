@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Reporte de número Teléfono</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+        <form role="form" method="post" enctype="multipart/form-data" >
+            {% csrf_token %}                         
+            <div class="col-lg-4">
+                {% crispy form %}
+                 <button type="submit" id="id_guardar" class="btn btn-primary btn-lg modal_proceso_grande">
+                    <span class="glyphicon glyphicon-search"></span>
+                    Buscar Teléfono
+                </button>
+            </div>
+             <div class="col-lg-6">
+
+                <h4>Reporte de Teléfono</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="fts-table-bg">
+                            <th colspan="6">Teléfono</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# for  #}
+                            <tr>
+                                
+                            </tr>
+                         {# empty #}
+                            <tr>
+                                <td> 
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron llamadas para el número de teléfono ingresado.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                        {# endfor #}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+        </div>
+    </div>
+{% endblock %}
