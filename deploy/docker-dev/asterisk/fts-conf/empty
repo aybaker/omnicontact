@@ -1,0 +1,2 @@
+; Archivo vacio, para usar de base para config. de extension y queue
+; Hace falta para que sea copiado en docker y mantener los permisos del host
