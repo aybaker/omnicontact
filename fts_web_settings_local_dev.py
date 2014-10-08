@@ -37,7 +37,24 @@ FTS_ENHANCED_URLS = True
 
 # SECRET_KEY = 'xxx'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
+MEDIA_ROOT = os.path.join(BASE_DIR, '/opt/fts-dev/media_root')
+if not os.path.exists(MEDIA_ROOT):
+    print ""
+    print ""
+    print ""
+    print ""
+    print "********** <ERROR> ****************************************"
+    print ""
+    print " No se encontro el directorio para MEDIA_ROOT: {0}".format(
+        MEDIA_ROOT)
+    print "   $ sudo mkdir -p {0}".format(MEDIA_ROOT)
+    print "   $ sudo chown $UID {0}".format(MEDIA_ROOT)
+    print ""
+    print "********** </ERROR> ****************************************"
+    print ""
+    print ""
+    print ""
+    print ""
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'dev', 'static_root')
 
@@ -89,13 +106,16 @@ ASTERISK = {
 }
 
 # Para usar Asterisk@Docker
-FTS_DIALPLAN_FILENAME = os.path.join(BASE_DIR, "deploy/docker-dev/asterisk/fts-conf/extensions_fts.conf")
+FTS_DIALPLAN_FILENAME = os.path.join(BASE_DIR,
+    "deploy/docker-dev/asterisk/fts-conf/extensions_fts.conf")
 
 # Para usar Asterisk@Docker
-FTS_QUEUE_FILENAME = os.path.join(BASE_DIR, "deploy/docker-dev/asterisk/fts-conf/queues_fts.conf")
+FTS_QUEUE_FILENAME = os.path.join(BASE_DIR,
+    "deploy/docker-dev/asterisk/fts-conf/queues_fts.conf")
 
 # Para usar Asterisk@Docker
-FTS_RELOAD_CMD = [os.path.join(BASE_DIR, "deploy/docker-dev/asterisk/reload_asterisk.sh")]
+FTS_RELOAD_CMD = [os.path.join(BASE_DIR,
+    "deploy/docker-dev/asterisk/reload_asterisk.sh")]
 
 # Ubuntu (wav -> wav)
 TMPL_FTS_AUDIO_CONVERSOR = ["sox", "-t", "wav", "<INPUT_FILE>",
@@ -177,7 +197,8 @@ FTS_SETTING_CUSTOMIZERS = [customize_INSTALLED_APPS]
 if 'FTS_SIMULADOR_DAEMON' in os.environ:
     def customize_simulador(local_vars):
         # Apunta a uWSGI
-        local_vars['ASTERISK']['HTTP_AMI_URL'] = 'http://127.0.0.1:8080/asterisk-ami-http/simulador'  #@IgnorePep8
+        local_vars['ASTERISK']['HTTP_AMI_URL'] = (""
+            "http://127.0.0.1:8080/asterisk-ami-http/simulador")
         local_vars['FTS_TESTING_MODE'] = True
         local_vars['FTS_DAEMON_SLEEP_SIN_TRABAJO'] = 0.1
         local_vars['FTS_DAEMON_SLEEP_LIMITE_DE_CANALES'] = 0.1
