@@ -31,10 +31,12 @@ class GeneradorDeDuracionDeLlamandasService(object):
 
     def _obtener_eventos_de_contacto_de_campana(self, campana):
         """
-        Devuelve los EventoDeContacto de la campana.
+        Devuelve los EventoDeContacto de la campana que tienen el evento:
+        EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER
+
+        Supone que un contacto de una campana atiende una sola vez, por lo que
+        habrá un registro por contacto que haya atendido.
         """
-        # FIXME: Por ahora la consulta trae TODOS los eventos de la campana.
-        # Hay que filtrar solo los que hacen falta.
 
         eventos_de_contacto =  \
             EventoDeContacto.object.obtener_eventos_de_contacto_de_una_campana(
@@ -44,11 +46,11 @@ class GeneradorDeDuracionDeLlamandasService(object):
                                      numero_telefonico):
         """
         Devuelve la duración de la llamada obtenida de CDR que genera Asterisk.
-        Se considera que esta configurado con la opción unanswered en NO.
+        Se considera que esta configurado con la opción *unanswered en NO.
         Por lo que *supongo que debería haber un solo registro del contacto de
         la campana, simempre y cuádo la llamda haya sido atendida.
 
-        Unanswered: Log unanswered calls. Normally, only answered calls result
+        *unanswered: Log unanswered calls. Normally, only answered calls result
         in a CDR. Logging all call attempts can result in a large number of
         extra call records that most people do not care about. The default
         value is no.
@@ -57,7 +59,8 @@ class GeneradorDeDuracionDeLlamandasService(object):
         cursor = connection.cursor()
         sql = """SELECT duration FROM cdr
                   WHERE dcontext LIKE '%s-%s-%'
-                  AND channel LIKE 'FTS_local_campana_%s'"""
+                  AND channel LIKE 'FTS_local_campana_%s'
+                  AND disposition in ('ANSWERED')"""
         params = [contacto.id, numero_telefonico, campana.id]
 
         with log_timing(logger, "_obtener_duracion_de_llamada() tardo %s seg"):
@@ -65,9 +68,17 @@ class GeneradorDeDuracionDeLlamandasService(object):
             value = cursor.fetchone()
         return value[0]
 
-    def generar_duracion_de_llamdas(self, campana):
+    def generar_duracion_de_llamdas_para_campana(self, campana):
         """
-        Genera las DuracionDeLlamada para la campana.
+        Genera las DuracionDeLlamada para la campana. Es llamado desde el
+        proceso de depuración de la campana.
+        Valida que la campana este en el estado correcto.
+        Obtiene los eventos de contacto para las llamadas contestadas de la
+        campana y por cada evento busca en cdr la duración de esa llamada que
+        genero el evento de contacto.
+
+        Supone que el cdr esta completo para la campana y existen todos los
+        registros de las llamdas contestadas.
         """
 
         # Validamos la campana.
