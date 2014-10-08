@@ -494,3 +494,19 @@ class ArchivoAudioForm(forms.ModelForm):
             la Campaña. Si ya existe uno y guarda otro, el audio será
             reemplazado.""",
         }
+
+
+# =============================================================================
+# Reporte De Teléfono
+# =============================================================================
+
+class ReporteTelefonoForm(forms.Form):
+    numero_telefono = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super(ReporteTelefonoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('numero_telefono'),
+        )
