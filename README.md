@@ -40,6 +40,14 @@ Deploy a servidor de pruebas (VM):
     $ ./build.sh -i deploy/hosts-virtual-pruebas
 
 
+Asterisk@Docker
+---------------
+
+Para lanzar Asterisk:
+
+    $ ./deploy/docker-dev/asterisk/run_asterisk.sh
+
+
 Para testear conexion con Asterisk
 ----------------------------------
 
