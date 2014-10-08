@@ -45,7 +45,7 @@ Asterisk@Docker
 
 Para lanzar Asterisk:
 
-    $ ./deploy/docker-dev/asterisk/run_asterisk.sh
+    $ ./deploy/docker-dev/run.sh
 
 
 Para testear conexion con Asterisk

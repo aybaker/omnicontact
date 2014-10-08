@@ -29,7 +29,7 @@ import os
 
 from fts_tests.models import customize_INSTALLED_APPS
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -78,10 +78,8 @@ INTERNAL_IPS = (
 # }
 
 #
-# Para conectarse a Asterisk
-# VER: deploy/asterisk-11-on-docker/Dockerfile
-#
-# TODO: DIAL_URL
+# Para conectarse a Asterisk@Docker
+#  - TODO: DIAL_URL
 #
 ASTERISK = {
     'USERNAME': 'admin',
@@ -90,31 +88,14 @@ ASTERISK = {
     'DIAL_URL': "IAX2/127.0.0.1/${NumberToCall}",
 }
 
-#
-# VER: deploy/asterisk-11-on-docker/Dockerfile
-#
+# Para usar Asterisk@Docker
+FTS_DIALPLAN_FILENAME = os.path.join(BASE_DIR, "deploy/docker-dev/asterisk/fts-conf/extensions_fts.conf")
 
-FTS_DIALPLAN_FILENAME = "/opt/data-tsunami/fts/asterisk/conf/extensions_fts.conf"
+# Para usar Asterisk@Docker
+FTS_QUEUE_FILENAME = os.path.join(BASE_DIR, "deploy/docker-dev/asterisk/fts-conf/queues_fts.conf")
 
-#
-# VER: deploy/asterisk-11-on-docker/Dockerfile
-#
-
-FTS_QUEUE_FILENAME = "/opt/data-tsunami/fts/asterisk/conf/queues_fts.conf"
-
-if not os.path.exists(os.path.dirname(FTS_QUEUE_FILENAME)):
-    raise(Exception("El directorio {0} no existe. "
-                    "Para crearlo, ejecute "
-                    "./deploy/asterisk-11-on-docker/run_asterisk.sh"
-                    "".format(os.path.dirname(FTS_QUEUE_FILENAME))))
-
-#
-# Hacemos que reload falle, asi la campana se pausa, y hay
-# posibilidad de reiniciar asterisk@docker
-#
-
-FTS_RELOAD_CMD = ["{0}/deploy/asterisk-11-on-docker/reload_asterisk.sh"
-                  "".format(os.path.abspath(os.path.dirname(__file__)))]
+# Para usar Asterisk@Docker
+FTS_RELOAD_CMD = [os.path.join(BASE_DIR, "deploy/docker-dev/asterisk/reload_asterisk.sh")]
 
 # Ubuntu (wav -> wav)
 TMPL_FTS_AUDIO_CONVERSOR = ["sox", "-t", "wav", "<INPUT_FILE>",
