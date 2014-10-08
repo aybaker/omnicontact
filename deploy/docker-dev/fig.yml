@@ -7,3 +7,4 @@ asterisk:
   volumes:
    - asterisk/:/srv/asterisk
    - asterisk/runtime/var/run/asterisk/:/opt/asterisk-11/var/run/asterisk
+   - /opt/fts-dev/media_root
