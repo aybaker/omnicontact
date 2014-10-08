@@ -47,6 +47,11 @@ Para lanzar Asterisk:
 
     $ ./deploy/docker-dev/run.sh
 
+Para crear una campaña de prueba que tenga un archivo de audio valido:
+
+    $ USE_PG=1 python manage.py crear_campana_basica --bd=28 --canales=5 \
+        --audio=/path/to/project/test/wavs/8k16bitpcm.wav
+
 
 Para testear conexion con Asterisk
 ----------------------------------
