@@ -39,8 +39,8 @@ class GeneradorDeDuracionDeLlamandasService(object):
         """
 
         eventos_de_contacto =  \
-            EventoDeContacto.object.obtener_eventos_de_contacto_de_una_campana(
-                campana.id)
+            EventoDeContacto.objects.\
+            obtener_eventos_de_contacto_para_duracion_llamada(campana.id)
 
     def _obtener_duracion_de_llamada(self, campana, contacto,
                                      numero_telefonico):
