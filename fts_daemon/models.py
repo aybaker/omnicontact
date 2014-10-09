@@ -291,28 +291,7 @@ class EventoDeContactoManager(models.Manager):
             "tabla depurada tardo:  %s seg"):
             cursor.execute(sql, params)
 
-    def obtener_eventos_de_contacto_para_duracion_llamada(self, campana_id):
-        """
-        Devuelve los eventos de contactos de una campana para las llamdas
-        que fueron atendidas.
-        """
-
-        campana = Campana.objects.get(pk=int(campana_id))
-        cursor = connection.cursor()
-        sql = """SELECT * FROM fts_daemon_eventodecontacto
-                  WHERE campana_id = %s
-                  AND evento IN (%s)"""
-        params = [campana.id,
-                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER]
-
-        with log_timing(logger,
-                        "obtener_eventos_de_contacto_para_duracion_llamada() "
-                        "tardo %s seg"):
-            cursor.execute(sql, params)
-            values = cursor.fetchall()
-        return values
-
-
+    
 class SimuladorEventoDeContactoManager():
     """Simula acciones. Estos metodos son utilizados para pruebas,
     o simular distintas acciones, pero NO deben utilizarse
