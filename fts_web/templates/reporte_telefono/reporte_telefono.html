@@ -21,30 +21,36 @@
                 </button>
             </div>
              <div class="col-lg-6">
-
-                <h4>Reporte de Teléfono</h4>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr class="fts-table-bg">
-                            <th colspan="6">Teléfono</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {# for  #}
-                            <tr>
-                                
+                {% if reporte_telefono %}
+                    <h4>Reporte de Teléfono</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <th>Fecha / Hora</th>
+                                <th>Teléfono</th>
+                                <th>Duración Llamada en Segundos</th>
                             </tr>
-                         {# empty #}
-                            <tr>
-                                <td> 
-                                    <p class="text-center text-danger">
-                                        <em>No se encontraron llamadas para el número de teléfono ingresado.</em>
-                                    </p>
-                                </td>
-                            </tr>
-                        {# endfor #}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for detalle_de_llamda in reporte_telefono %}
+                                <tr>
+                                    <td> {{ detalle_de_llamda.fecha_hora_llamada }} </td>
+                                    <td> {{ detalle_de_llamda.numero_telefono }} </td>
+                                    <td> {{ detalle_de_llamda.duracion_en_segundos }} </td>
+                                    
+                                </tr>
+                             {% empty %}
+                                <tr>
+                                    <td> 
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron llamadas para el número de teléfono ingresado.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
             </div>
         </form>
         </div>
