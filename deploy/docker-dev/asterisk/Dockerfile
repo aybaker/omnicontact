@@ -57,6 +57,9 @@ RUN mv /asterisk-11.9.0 /asterisk-11.9.0-src
 
 WORKDIR /asterisk-11.9.0-src
 
+RUN yum install -y \
+	postgresql-devel
+
 RUN ./configure --prefix=/opt/asterisk-11
 
 RUN make -j 2
