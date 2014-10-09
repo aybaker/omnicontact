@@ -49,8 +49,7 @@ Para lanzar Asterisk:
 
 Para crear una campaña de prueba que tenga un archivo de audio valido:
 
-    $ USE_PG=1 python manage.py crear_campana_basica --bd=28 --canales=5 \
-        --audio=/path/to/project/test/wavs/8k16bitpcm.wav
+    $ USE_PG=1 python manage.py crear_campana_basica --bd=28 --canales=5 --audio=test/wavs/8k16bitpcm.wav
 
 
 Para testear conexion con Asterisk
