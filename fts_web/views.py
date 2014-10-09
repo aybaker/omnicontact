@@ -15,8 +15,8 @@ from fts_web.views_daemon_status import *  # @UnusedWildImport
 from fts_web.views_derivacion import *  # @UnusedWildImport
 from fts_web.views_grupo_atencion import *  # @UnusedWildImport
 from fts_web.forms import ReporteTelefonoForm
-from fts_web.services.reporte_de_numero_telefono import (
-    ReporteDeTelefonoService)
+from fts_web.services.reporte_de_numero_de_telefono import (
+    ReporteDeTelefonoService, NumeroDeTelefonoInvalidoError)
 
 import logging as logging_
 
@@ -69,11 +69,21 @@ class ReporteTelefonoView(FormView):
         numero_telefono = form.cleaned_data.get('numero_telefono')
 
         reporte_telefono_service = ReporteDeTelefonoService()
-        reporte_telefono_dto = reporte_telefono_service.obtener_reporte(
-            numero_telefono)
+        try:
+            reporte_telefono = reporte_telefono_service.obtener_reporte(
+                numero_telefono)
+        except NumeroDeTelefonoInvalidoError:
+            message = '<strong>Operación Errónea!</strong> \
+                El número de teléfono ingresado no es válido.'
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return self.form_invalid(form)
 
         return self.render_to_response(self.get_context_data(
-            reporte_telefono=reporte_telefono_dto))
+            form=form, reporte_telefono=reporte_telefono))
 
 
 # =============================================================================
