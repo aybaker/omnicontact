@@ -6,9 +6,10 @@ BASEDIR=$(cd $(dirname $0); pwd)
 VIRTUALENV_DIR="$BASEDIR/../$VIRTUALENV_NAME"
 
 if [ -d $VIRTUALENV_DIR ] ; then
-	. $VIRTUALENV_DIR/bin/activate
+        . $VIRTUALENV_DIR/bin/activate
 else
-	workon $VIRTUALENV_NAME
+        which virtualenvwrapper.sh && source $(which virtualenvwrapper.sh)
+        workon $VIRTUALENV_NAME
 fi
 
 cd $BASEDIR
@@ -24,4 +25,10 @@ if [ ! -e asterisk/conf-runtime/cdr_pgsql.conf ] ; then
 fi
 
 fig up
+
+
+
+
+
+
 
