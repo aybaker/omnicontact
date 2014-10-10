@@ -30,7 +30,7 @@ ENV LANGUAGE en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 ENV HOME /root
 
-COPY yum.conf.extra /etc/yum.conf.extra
+COPY conf-build/yum.conf.extra /etc/yum.conf.extra
 
 RUN echo "" >> /etc/yum.conf ;	\
 	cat /etc/yum.conf.extra >> /etc/yum.conf
@@ -41,10 +41,11 @@ RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noa
 RUN yum groupinstall -y "Development tools"
 
 RUN yum --enablerepo centosplus install -y \
-    openssh-server sudo passwd 
-
-RUN yum --enablerepo centosplus install -y \
-    wget 
+    openssh-server sudo passwd \
+    wget \
+    ncurses-devel \
+    libxslt-devel \
+    sqlite-devel
 
 WORKDIR /
 
@@ -52,16 +53,12 @@ RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/releases/asterisk-
 
 RUN tar xzf asterisk-11.9.0.tar.gz
 
-WORKDIR /asterisk-11.9.0
+RUN mv /asterisk-11.9.0 /asterisk-11.9.0-src
 
-RUN yum --enablerepo centosplus install -y \
-    ncurses-devel
+WORKDIR /asterisk-11.9.0-src
 
-RUN yum --enablerepo centosplus install -y \
-    libxslt-devel
-
-RUN yum --enablerepo centosplus install -y \
-    sqlite-devel
+RUN yum install -y \
+	postgresql-devel
 
 RUN ./configure --prefix=/opt/asterisk-11
 
@@ -71,10 +68,4 @@ RUN make samples
 
 EXPOSE 2000 2727 4520 4569 5000 5038 5060 7088
 
-COPY in_docker_start.sh /in_docker_start.sh
-
-COPY conf /opt/asterisk-11/etc/asterisk/
-
-COPY cdr_pgsql.conf /opt/asterisk-11/etc/asterisk/cdr_pgsql.conf
-
-CMD ["/in_docker_start.sh"]
+CMD ["/srv/asterisk/in_docker_start.sh"]

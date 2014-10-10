@@ -40,6 +40,20 @@ Deploy a servidor de pruebas (VM):
     $ ./build.sh -i deploy/hosts-virtual-pruebas
 
 
+Asterisk@Docker
+---------------
+
+Para lanzar Asterisk:
+
+    $ ./deploy/docker-dev/run.sh
+
+Para crear una campaña de prueba que tenga un archivo de audio valido:
+
+    $ USE_PG=1 python manage.py crear_campana_basica --bd=28 --canales=5 --audio=test/wavs/8k16bitpcm.wav
+
+Hay más informacion en deploy/README.txt
+
+
 Para testear conexion con Asterisk
 ----------------------------------
 

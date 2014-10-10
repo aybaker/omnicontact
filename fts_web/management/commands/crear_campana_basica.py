@@ -28,19 +28,28 @@ class Tmp(FTSenderBaseTest):
 
 
 def setear_audio(options, campana):
-    if options['audio']:
-        fd, tmp = tempfile.mkstemp(dir=settings.MEDIA_ROOT, suffix=".wav")
-        # Preparamos datos
-        tmp_file_obj = os.fdopen(fd, 'w')
-        tmp_file_obj.write(
-            open(options['audio'], 'r').read()
-        )
-        tmp_file_obj.flush()
+    if not options['audio']:
+        return
 
-        campana.audio_original = tmp
-        campana.save()
-        campana = Campana.objects.get(pk=campana.id)
-        convertir_audio_de_campana(campana)
+    fd, tmp = tempfile.mkstemp(dir=settings.MEDIA_ROOT, suffix=".wav")
+    # Preparamos datos
+    tmp_file_obj = os.fdopen(fd, 'w')
+    tmp_file_obj.write(
+        open(options['audio'], 'r').read()
+    )
+    tmp_file_obj.flush()
+
+    audios_de_campana = campana.audios_de_campana.all()
+    for audio_de_campana in (audios_de_campana[0], audios_de_campana[4]):
+        assert audio_de_campana.audio_original, \
+            ("Al parecer, la instancia de AudioDeCampana no posee un "
+             "archivo asociado (seguramente es un AudioDeCampana de tipo TTS)")
+
+        solo_nombre_de_archivo = os.path.split(tmp)[1]
+        audio_de_campana.audio_original = solo_nombre_de_archivo
+        audio_de_campana.audio_asterisk = ''
+        audio_de_campana.save()
+        convertir_audio_de_campana(audio_de_campana)
 
     return Campana.objects.get(pk=campana.id)
 
