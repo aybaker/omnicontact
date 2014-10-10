@@ -2,25 +2,44 @@
 Aqui estan los archivos relacionados con deploys, ya sean en servidores
 reales, docker, etc.
 
+============
 Docker / Fig
 ============
 
+Instalación
+-----------
+
 Antes que nada, hace falta instalar Docker:
 
-    http://www.yongnuoargentina.com.ar/disparadores/rf603-nikon
+    http://docs.docker.com/installation/ubuntulinux/#ubuntu-trusty-1404-lts-64-bit
+
+Y para que no haga falta usar 'sudo':
+
+    $ sudo adduser $USER docker
+
+Ahora hará falta reiniciar el equipo para que tome los cambios producidos
+por el comando anterior
+
+
+Build de contenedor Docker
+--------------------------
 
 Para utilizar Docker/Fig, es necesario crear un virtualenv en el
 directorio 'deploy/docker-dev/'.
 
 Para crearlo, ejecutar:
 
-    $ virtualenv deploy/docker-dev/virtualenv-fig
-    $ ./deploy/docker-dev/virtualenv-fig/bin/pip install -r deploy/docker-dev/requirements.txt
+    $ virtualenv deploy/virtualenv-fig
+    $ ./deploy/virtualenv-fig/bin/pip install -r deploy/requirements.txt
 
 Para crear las imagenes de Docker (esto hay que realizarlo solo una vez):
 
+    $ cp deploy/docker-dev/asterisk/conf-build/yum.conf.extra.sample deploy/docker-dev/asterisk/conf-build/yum.conf.extra
+    $ vi deploy/docker-dev/asterisk/conf-build/yum.conf.extra
     $ ./deploy/docker-dev/build.sh
 
+
+========
 Asterisk
 ========
 
