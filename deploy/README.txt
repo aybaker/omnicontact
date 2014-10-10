@@ -5,6 +5,10 @@ reales, docker, etc.
 Docker / Fig
 ============
 
+Antes que nada, hace falta instalar Docker:
+
+    http://www.yongnuoargentina.com.ar/disparadores/rf603-nikon
+
 Para utilizar Docker/Fig, es necesario crear un virtualenv en el
 directorio 'deploy/docker-dev/'.
 
