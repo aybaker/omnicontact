@@ -47,7 +47,9 @@ class DepuradorDeCampanaWorkflow(object):
 
         # Genera las DuracionDeLlamada para la campana.
         generador_duracion_llamadas = GeneradorDeDuracionDeLlamandasService()
-        generador_duracion_llamadas.generar_duracion_de_llamdas(campana)
+        # FIXME: Desmarcar el comentario cuando se implemte el CDR.
+        # generador_duracion_llamadas.generar_duracion_de_llamdas_para_campana(
+        #    campana)
 
         # Depura EDC
         EventoDeContacto.objects.depurar_eventos_de_contacto(campana.id)

@@ -27,6 +27,7 @@ admin.site.register(models.AudioDeCampana)
 admin.site.register(models.DerivacionExterna)
 admin.site.register(models.GrupoAtencion)
 admin.site.register(models.AgenteGrupoAtencion)
+admin.site.register(models.DuracionDeLlamada)
 
 admin.site.register(models.BaseDatosContacto)
 admin.site.register(models.Contacto, ContactoAdmin)
