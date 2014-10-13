@@ -82,7 +82,11 @@ Si se encuentran mensajes del estilo:
 
     FATAL:  no pg_hba.conf entry for host "172.17.0.XXX", user "XXX", database "XXX", SSL off
 
-es porque PostgreSql no permite acceso a la BD desde los IP de Docker.
+es porque PostgreSql no permite acceso a la BD desde los IP de Docker. Esto mismo
+error se refleja en los logs de Asterisk con mensajes del estilo:
+
+    asterisk_1 | [Oct 13 15:34:51] ERROR[64][C-00000000]: cdr_pgsql.c:191 pgsql_log: Unable to connect to database server 172.17.42.1.  Calls will not be logged!
+    asterisk_1 | [Oct 13 15:34:51] ERROR[64][C-00000000]: cdr_pgsql.c:192 pgsql_log: Reason: FATAL:  no pg_hba.conf entry for host "172.17.0.14", user "fts", database "fts", SSL on
 
 Para solucionar esto, hace falta editar 'pg_hba.conf', y agregar
 permisos a las conexiones provenientes desde '172.17.0.0/24':
@@ -97,3 +101,8 @@ agregar una linea, para que quede:
 
     host    all        all   127.0.0.1/32    md5
     host    all        all   172.17.0.0/24   md5
+
+Luego de cambiar estos archivos de configuración hace falta hacer reload
+de la configuración de PostgreSql:
+
+    $ sudo service postgresql reload
