@@ -14,22 +14,15 @@ import logging as _logging
 logger = _logging.getLogger(__name__)
 
 
+class EstadoDeCampanaInvalidoError(Exception):
+    pass
+
+
 class GeneradorDeDuracionDeLlamandasService(object):
     """
     Genera los registros de DuracionDeLlamada para las llamdas realizadas en
     la campana.
     """
-
-    def _validar_estado_correcto_de_campana(self, campana):
-        """
-        Valida que la campana se encuentre en el estado correcto. De lo
-        contrario podrían no existir los registros de EventoDeContacto de esta
-        campana y no se podría crear las DuracionDeLlamada.
-        """
-
-        # TODO: Implementar.
-
-        return True
 
     def _drop_tabla_temporal_si_existe(self):
 
@@ -89,8 +82,6 @@ class GeneradorDeDuracionDeLlamandasService(object):
         Supone que el cdr esta completo para la campana y existen todos los
         registros de las llamdas contestadas.
         """
-
-        self._validar_estado_correcto_de_campana(campana)
 
         self._drop_tabla_temporal_si_existe()
 
