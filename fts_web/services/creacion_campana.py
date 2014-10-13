@@ -80,7 +80,7 @@ class ActivacionCampanaTemplateService(object):
         mensaje_error = ""
 
         try:
-            self.dialplan_config_creator.create_config_file()
+            self.dialplan_config_creator.create_dialplan()
         except:
             logger.exception("ActivacionCampanaTemplateService: error al "
                              "intentar dialplan_config_creator()")
@@ -91,7 +91,7 @@ class ActivacionCampanaTemplateService(object):
         try:
             # Esto es algo redundante! Para que re-crear los queues?
             # Total, esto lo hace GrupoDeAtencion!
-            self.queue_config_creator.create_config_file()
+            self.queue_config_creator.create_queue()
         except:
             logger.exception("ActivacionCampanaTemplateService: error al "
                              "intentar queue_config_creator()")
