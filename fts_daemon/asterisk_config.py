@@ -93,7 +93,7 @@ class DialplanConfigCreator(object):
         param_generales = {
             'fts_campana_id': campana.id,
             'fts_campana_dial_timeout': campana.segundos_ring,
-            'fts_agi_server': '127.0.0.1',  # TODO: mover a settings
+            'fts_agi_server': settings.FTS_AGI_DAEMON_HOST,
             'fts_dial_url': settings.ASTERISK['DIAL_URL'],
             'date': str(datetime.datetime.now())
         }

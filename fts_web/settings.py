@@ -284,6 +284,11 @@ FTS_ASTERISK_CONFIG_CHECK_AUDIO_FILE_EXISTS = True
 # DEPLOY -> Daemon
 #==============================================================================
 
+FTS_AGI_DAEMON_HOST = "127.0.0.1"
+"""Host o IP a utilizar desde Asterisk para que la app AGI()
+pueda llamar al daemon AGI
+"""
+
 FTS_FAST_AGI_DAEMON_PROXY_URL = None
 """URL donde `fastagi_daemon` realizará el request.
 Debe ser el URL para acceder a Django (SIN el / final)
