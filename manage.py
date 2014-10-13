@@ -4,7 +4,7 @@ import sys
 
 if __name__ == "__main__":
 
-    if sys.version_info.major != 2 or sys.version_info.minor != 6:
+    if sys.version_info[0] != 2 or sys.version_info[1] != 6:
         print ""
         print " ERROR:"
         print "   Debe usar Python 2.6"
