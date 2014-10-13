@@ -71,6 +71,9 @@ class TestMockeoDeServicios(TestCase):
             servicio_b.some_method_b()
 
     def test_create_autospec_side_effect(self):
+        """
+        EJEMPLO de como usar 'side_effect'
+        """
 
         # creamos mock usando `create_autospec()`
         servicio_b = create_autospec(ServicioB)
@@ -83,6 +86,9 @@ class TestMockeoDeServicios(TestCase):
             servicio_b.some_method_b("VALUE")
 
     def test_create_autospec_return_value(self):
+        """
+        EJEMPLO de como usar 'return_value'
+        """
 
         # creamos mock usando `create_autospec()`
         servicio_b = create_autospec(ServicioB)
@@ -91,3 +97,18 @@ class TestMockeoDeServicios(TestCase):
         servicio_b.some_method_b.return_value = 'a-b-c'
 
         self.assertEquals(servicio_b.some_method_b("VAL"), 'a-b-c')
+
+    def test_metodo_de_servicio_de_servicio(self):
+        """
+        EJEMPLO de como mockear ATRIBUTO.
+
+        El truco es pasar una instancia y usar `instance=True`
+        """
+        # creamos mock usando `create_autospec()`
+        servicio_b = create_autospec(ServicioB(), instance=True)
+
+        # seteamos `return_value`
+        servicio_b.servicio_a.some_method_a.return_value = 'd-e-f'
+
+        self.assertEquals(servicio_b.servicio_a.some_method_a("VAL"),
+                          'd-e-f')
