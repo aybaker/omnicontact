@@ -15,11 +15,11 @@ fi
 cd $BASEDIR
 # -~-~-~-~-~ >8 >8 -~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-if [ ! -e asterisk/conf-runtime/cdr_pgsql.conf ] ; then
+if [ ! -e $BASEDIR/asterisk/conf-runtime/cdr_pgsql.conf ] ; then
 	echo ""
-	echo "*** ERROR: no existe asterisk/conf-runtime/cdr_pgsql.conf"
+	echo "*** ERROR: no existe $BASEDIR/asterisk/conf-runtime/cdr_pgsql.conf"
 	echo ""
-	echo " Creelo, usando 'asterisk/conf-runtime/cdr_pgsql.conf.sample' de referencia"
+	echo " Creelo, usando '$BASEDIR/asterisk/conf-runtime/cdr_pgsql.conf.sample' de referencia"
 	echo ""
 	exit 1
 fi
