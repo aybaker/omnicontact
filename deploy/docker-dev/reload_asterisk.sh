@@ -1,10 +1,18 @@
 #!/bin/bash
 
+# -~-~-~-~-~ 8< 8< -~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+VIRTUALENV_NAME="virtualenv-fig"
 BASEDIR=$(cd $(dirname $0); pwd)
+VIRTUALENV_DIR="$BASEDIR/../$VIRTUALENV_NAME"
 
-. $BASEDIR/../../virtualenv-fig/bin/activate
+if [ -d $VIRTUALENV_DIR ] ; then
+        . $VIRTUALENV_DIR/bin/activate
+else
+        which virtualenvwrapper.sh && source $(which virtualenvwrapper.sh)
+        workon $VIRTUALENV_NAME
+fi
 
-cd $BASEDIR/..
+cd $BASEDIR
+# -~-~-~-~-~ >8 >8 -~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
 fig run asterisk /opt/asterisk-11/sbin/asterisk -x reload
-
