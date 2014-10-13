@@ -101,3 +101,8 @@ agregar una linea, para que quede:
 
     host    all        all   127.0.0.1/32    md5
     host    all        all   172.17.0.0/24   md5
+
+Luego de cambiar estos archivos de configuración hace falta hacer reload
+de la configuración de PostgreSql:
+
+    $ sudo service postgresql reload
