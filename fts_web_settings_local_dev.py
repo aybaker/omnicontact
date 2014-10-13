@@ -115,7 +115,7 @@ FTS_QUEUE_FILENAME = os.path.join(BASE_DIR,
 
 # Para usar Asterisk@Docker
 FTS_RELOAD_CMD = [os.path.join(BASE_DIR,
-    "deploy/docker-dev/asterisk/reload_asterisk.sh")]
+    "deploy/docker-dev/reload_asterisk.sh")]
 
 # Ubuntu (wav -> wav)
 TMPL_FTS_AUDIO_CONVERSOR = ["sox", "-t", "wav", "<INPUT_FILE>",
