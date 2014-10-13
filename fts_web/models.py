@@ -1107,6 +1107,7 @@ class CampanaManager(models.Manager):
             segundos_ring=campana.segundos_ring,
             fecha_inicio=campana.fecha_inicio,
             fecha_fin=campana.fecha_fin,
+            duracion_de_audio=campana.duracion_de_audio,
             bd_contacto=campana.bd_contacto,
         )
 
