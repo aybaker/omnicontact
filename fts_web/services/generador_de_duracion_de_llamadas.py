@@ -14,10 +14,6 @@ import logging as _logging
 logger = _logging.getLogger(__name__)
 
 
-class EstadoDeCampanaInvalidoError(Exception):
-    pass
-
-
 class GeneradorDeDuracionDeLlamandasService(object):
     """
     Genera los registros de DuracionDeLlamada para las llamdas realizadas en
