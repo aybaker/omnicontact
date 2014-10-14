@@ -1230,7 +1230,7 @@ class EventoDeContacto(models.Model):
     EVENTO_DAEMON_ORIGINATE_SUCCESSFUL = 11
     """El originate se produjo exitosamente.
 
-    *Este eventofts_web_contacto es registrado por el daemon que realiza las llamadas.*
+    *Este evento es registrado por el daemon que realiza las llamadas.*
     """
 
     EVENTO_DAEMON_ORIGINATE_FAILED = 12
