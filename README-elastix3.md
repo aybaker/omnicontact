@@ -37,7 +37,10 @@ Known Issues
 
 1. El setup de Asterisk *NO* es realizado por los scripts de inicio.
 
-2. Luego de instalar el sistema, los servicios NO levantan por un largo tiempo,
+2. La instalación de Nginx produce problemas porque intenta usar el puerto 80,
+que es usado por Apache.
+
+3. Luego de instalar el sistema, los servicios NO levantan por un largo tiempo,
 incluyendo los servicios de FTSender (nginx, supervisord, fts) y hasta
 el mismo Asterisk.
 
