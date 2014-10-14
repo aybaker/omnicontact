@@ -339,13 +339,13 @@ ASTERISK = {
     #'LOCAL_CHANNEL': None,
     #'EXTEN': None,
     #'PRIORITY': None,
-    'USERNAME': None, # Usuario para AMI
-    'PASSWORD': None, # Password para usuario para AMI
+    'USERNAME': None,  # Usuario para AMI
+    'PASSWORD': None,  # Password para usuario para AMI
     'HTTP_AMI_URL': None,
         # URL usado por Daemon p/acceder a Asterisk AMI via HTTP
         # Ej:
         #    "http://1.2.3.4:7088"
-    'DIAL_URL': None, # URL de Dial(). Debe contener '${NumberToCall}'
+    'DIAL_URL': None,  # URL de Dial(). Debe contener '${NumberToCall}'
         # URL a pasar a app. Dial()
         # Ej:
         #    "IAX2/1.2.3.4/${NumberToCall}"
