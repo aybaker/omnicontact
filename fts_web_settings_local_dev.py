@@ -27,6 +27,10 @@ Y luego de eso, las customizaciones.
 
 import os
 
+assert "FTS_SYSTEM_TEST" not in os.environ, (
+    "ERROR! Se ha importado settings de 'dev' mientras se ejecutan "
+    "los system tests")
+
 from fts_tests.models import customize_INSTALLED_APPS
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
