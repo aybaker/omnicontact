@@ -20,7 +20,7 @@
                     Buscar Teléfono
                 </button>
             </div>
-             <div class="col-lg-6">
+             <div class="col-lg-8">
                 {% if reporte_telefono %}
                     <h4>Reporte de Teléfono</h4>
                     <table class="table table-bordered">
@@ -29,15 +29,16 @@
                                 <th>Fecha / Hora</th>
                                 <th>Teléfono</th>
                                 <th>Duración Llamada en Segundos</th>
+                                <th>Campaña</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for detalle_de_llamda in reporte_telefono %}
                                 <tr>
-                                    <td> {{ detalle_de_llamda.fecha_hora_llamada }} </td>
+                                    <td> {{ detalle_de_llamda.fecha_hora_llamada|date:"d/m/Y H:i" }} </td>
                                     <td> {{ detalle_de_llamda.numero_telefono }} </td>
                                     <td> {{ detalle_de_llamda.duracion_en_segundos }} </td>
-                                    
+                                    <td> {{ detalle_de_llamda.campana }} </td>
                                 </tr>
                              {% empty %}
                                 <tr>

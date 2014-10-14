@@ -896,7 +896,7 @@ class GeneradorDePedazoDeQueueFactoryTest(FTSenderBaseTest):
         # -----
 
         self.assertTrue(isinstance(generador.crear_generador_para_member(
-                                   Mock()), GeneradorParaQueueMember))
+                                   Mock()), GeneradorParaMember))
 
 
 class GeneradorParaQueueTest(FTSenderBaseTest):

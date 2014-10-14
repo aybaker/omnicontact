@@ -1107,6 +1107,7 @@ class CampanaManager(models.Manager):
             segundos_ring=campana.segundos_ring,
             fecha_inicio=campana.fecha_inicio,
             fecha_fin=campana.fecha_fin,
+            duracion_de_audio=campana.duracion_de_audio,
             bd_contacto=campana.bd_contacto,
         )
 
@@ -2259,9 +2260,23 @@ class ArchivoDeAudio(models.Model):
 # DuracionDeLlamada
 #==============================================================================
 
+class DuracionDeLlamadaManager(models.Manager):
+    """Manager para DuracionDeLlamada"""
+
+    def obtener_duracion_de_llamdas(self, numero_telefono):
+        return self.filter(numero_telefono=numero_telefono)
+
+
 class DuracionDeLlamada(models.Model):
     """Representa la duración de las llamdas de las campanas, con el fin
         de contar con los datos para búsquedas y estadísticas"""
+
+    objects_default = models.Manager()
+    # Por defecto django utiliza el primer manager instanciado. Se aplica al
+    # admin de django, y no aplica las customizaciones del resto de los
+    # managers que se creen.
+
+    objects = DuracionDeLlamadaManager()
 
     campana = models.ForeignKey('Campana')
 

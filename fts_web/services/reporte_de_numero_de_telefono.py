@@ -36,8 +36,8 @@ class ReporteDeTelefonoService(object):
         pasado por paramentro. Devuelve una lista de objetos o None si no
         encuentra nada.
         """
-        return DuracionDeLlamada.objects.filter(
-            numero_telefono=numero_telefono)
+        return DuracionDeLlamada.objects.obtener_duracion_de_llamdas(
+            numero_telefono)
 
     def obtener_reporte(self, numero_telefono):
         self._valida_numero_telefono(numero_telefono)

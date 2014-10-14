@@ -555,7 +555,7 @@ class GeneradorDePedazoDeQueueFactory(object):
         return GeneradorParaQueue(parametros)
 
     def crear_generador_para_member(self, agente, parametros):
-        return GeneradorParaQueueMember(agente, parametros)
+        return GeneradorParaMember(agente, parametros)
 
 #==============================================================================
 # Queue

@@ -97,6 +97,11 @@ FTS_FDCD_INITIAL_WAIT = 20.0
 Default: 20.0 (inicia ejecucion del loop despues de 20 segundos)
 """
 
+FTS_NOMBRE_TABLA_CDR = 'cdr'
+"""
+Nombre personalizado de la tabla  CDR de Asterisk.
+"""
+
 #FTS_JOIN_TIMEOUT_MARGIN = 5
 #"""Cuantos segundos esperar (mas alla del timeout para ORIGINATE)
 #para que el proceso hijo termine
