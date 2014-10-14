@@ -28,15 +28,3 @@ class ObtenerReporteDeLlamadasDeUnNumeroTelefonicoTest(FTSenderBaseTest):
     def test_falla_con_numero_telefono_invalido(self):
         with self.assertRaises(NumeroDeTelefonoInvalidoError):
             self.reporte_de_telefono_service.obtener_reporte('35133sdfsd')
-
-    def test_funciona_con_numero_telefono_valido(self):
-        duracion_de_llamada = DuracionDeLlamada(pk=1)
-
-        self.reporte_de_telefono_service.\
-            _obtener_duracion_de_llamadas_de_numero_telefono.return_value = [
-                duracion_de_llamada]
-
-        # -----
-
-        self.assertEqual(self.reporte_de_telefono_service.obtener_reporte(
-            '3513368309'), [duracion_de_llamada])
