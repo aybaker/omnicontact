@@ -36,12 +36,12 @@ class GeneradorDeDuracionDeLlamandasService(object):
 
         cursor = connection.cursor()
         sql = """CREATE TABLE fts_custom_cdr_temporal AS SELECT
-        CAST(substring(channel from '_(\d+)$') as integer) as campana_id,
-        CAST(substring(dcontext from '(\d+)') as integer) as contacto_id,
-        substring(dcontext from '-(\d+)-') as numero_telefono,
+        CAST(substring(dcontext from '_(\d+)$') as integer) as campana_id,
+        CAST(substring(dst from '(\d+)') as integer) as contacto_id,
+        substring(dst from '-(\d+)-') as numero_telefono,
         duration as duracion_en_segundos
         FROM {0}
-        WHERE channel = 'FTS_local_campana_%(campana_id)s'
+        WHERE dcontext = 'FTS_local_campana_%(campana_id)s'
         AND disposition IN ('ANSWERED')
         """.format(settings.FTS_NOMBRE_TABLA_CDR)
         params = {'campana_id': campana.id}
@@ -65,10 +65,10 @@ class GeneradorDeDuracionDeLlamandasService(object):
         fts_daemon_eventodecontacto.contacto_id =
         fts_custom_cdr_temporal.contacto_id
         WHERE fts_daemon_eventodecontacto.campana_id = %(campana_id)s
-        AND fts_daemon_eventodecontacto.evento IN (%(evento_answer)s)
+        AND fts_daemon_eventodecontacto.evento IN (%(evento_iniciado)s)
         """
-        params = {'campana_id': campana.id, 'evento_answer':
-                  EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_ANSWER}
+        params = {'campana_id': campana.id, 'evento_iniciado':
+                  EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO}
 
         with log_timing(logger,
                         "_insertar_duracion_de_llamdas() tardo %s seg"):
