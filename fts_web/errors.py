@@ -58,20 +58,36 @@ class FtsParserCsvImportacionError(FtsError):
     def __init__(self, numero_fila, numero_columna, fila, valor_celda, *args,
                  **kwargs):
         super(FtsParserCsvImportacionError, self).__init__(*args, **kwargs)
-        self.numero_fila = numero_fila
-        self.numero_columna = numero_columna
+        self._numero_fila = numero_fila
+        self._numero_columna = numero_columna
 
         # Transformamos en unicode, ignorando errores ('replace')
         fila_unicode = [unicode(item, errors='replace') for item in fila]
-        self.fila = u', '.join(fila_unicode)
+        self._fila = u', '.join(fila_unicode)
 
         # Transformamos en unicode, ignorando errores ('replace')
-        self.valor_celda = unicode(valor_celda, errors='replace')
+        self._valor_celda = unicode(valor_celda, errors='replace')
+
+    @property
+    def numero_fila(self):
+        return self._numero_fila
+
+    @property
+    def numero_columna(self):
+        return self._numero_columna
+
+    @property
+    def fila(self):
+        return self._fila
+
+    @property
+    def valor_celda(self):
+        return self._valor_celda
 
     def __str__(self):
         return (u"Fila con problema: '{0}'. "
-                "Celda: '{1}'").format(self.fila,
-                                       self.valor_celda)
+                "Celda: '{1}'").format(self._fila,
+                                       self._valor_celda)
 
 
 class FtsParserCsvDelimiterError(FtsError):
