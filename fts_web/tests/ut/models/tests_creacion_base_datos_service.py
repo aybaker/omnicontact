@@ -4,17 +4,15 @@
 
 from __future__ import unicode_literals
 
-import json
-
 from django.core.files import File
-
-from mock import Mock
-
+from django.test.utils import override_settings
 from fts_web.errors import FtsArchivoImportacionInvalidoError
-from fts_web.models import BaseDatosContacto
-from fts_web.services.base_de_datos_contactos import CreacionBaseDatosService, \
-    PredictorMetadataService, NoSePuedeInferirMetadataError
-from fts_web.tests.utiles import FTSenderBaseTest
+from fts_web.models import BaseDatosContacto, Contacto
+from fts_web.services.base_de_datos_contactos import \
+    CreacionBaseDatosService, PredictorMetadataService, \
+    NoSePuedeInferirMetadataError
+from fts_web.tests.utiles import FTSenderBaseTest, get_test_resource_directory
+from mock import Mock
 
 
 class TestGeneraBaseDatosContacto(FTSenderBaseTest):
@@ -228,3 +226,39 @@ class TestSaneadorValidadorNombreDeCampo(FTSenderBaseTest):
                               "".format(nombre_original,
                                         resultado,
                                         nombre_saneado_esperado))
+
+
+class TestImportarDesdeCsvNoAscii(FTSenderBaseTest):
+
+    @override_settings(MEDIA_ROOT=get_test_resource_directory())
+    def test_importa_archivo_utf8_correctamente(self):
+        bd = BaseDatosContacto(id=1)
+        bd.nombre_archivo_importacion = ("bd-contactos-utf8.csv")
+        bd.archivo_importacion = ("csv-codificacion/"
+                                  "bd-contactos-utf8.csv")
+        bd.save = Mock()
+
+        # -----
+        service = CreacionBaseDatosService()
+        service.genera_base_dato_contacto(bd)
+
+        metadata = bd.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.nombres_de_columnas = ["TELEFONO", "NOMBRE"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+
+        service.importa_contactos(bd)
+
+        self.assertEquals(Contacto.objects.count(), 2)
+        contactos = list(Contacto.objects.all())
+        contactos_dict = dict(
+            [(metadata.obtener_telefono_y_datos_extras(c.datos))
+             for c in contactos])
+
+        self.assertIn('375849371648', contactos_dict)
+        self.assertIn('957327493493', contactos_dict)
+
+        self.assertEquals(contactos_dict['957327493493']['NOMBRE'],
+                          "\u4f50\u85e4")
