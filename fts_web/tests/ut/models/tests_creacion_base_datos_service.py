@@ -6,7 +6,8 @@ from __future__ import unicode_literals
 
 from django.core.files import File
 from django.test.utils import override_settings
-from fts_web.errors import FtsArchivoImportacionInvalidoError
+from fts_web.errors import FtsArchivoImportacionInvalidoError, \
+    FtsParserCsvImportacionError
 from fts_web.models import BaseDatosContacto, Contacto
 from fts_web.services.base_de_datos_contactos import \
     CreacionBaseDatosService, PredictorMetadataService, \
@@ -262,3 +263,28 @@ class TestImportarDesdeCsvNoAscii(FTSenderBaseTest):
 
         self.assertEquals(contactos_dict['957327493493']['NOMBRE'],
                           "\u4f50\u85e4")
+
+    @override_settings(MEDIA_ROOT=get_test_resource_directory())
+    def test_reporta_error_de_importacion_de_datos_no_utf8(self):
+        bd = BaseDatosContacto(id=1)
+        bd.nombre_archivo_importacion = ("bd-contactos-iso-8859-2.csv")
+        bd.archivo_importacion = ("csv-codificacion/"
+                                  "bd-contactos-iso-8859-2.csv")
+        bd.save = Mock()
+
+        # -----
+        service = CreacionBaseDatosService()
+        service.genera_base_dato_contacto(bd)
+
+        metadata = bd.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.nombres_de_columnas = ["TELEFONO", "NOMBRE"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+
+        try:
+            service.importa_contactos(bd)
+            self.fail("Importacion de datos deberia haber fallado")
+        except FtsParserCsvImportacionError as parse_exception:
+            self.assertEquals(parse_exception.valor_celda, u"Tel\ufffdfono")
