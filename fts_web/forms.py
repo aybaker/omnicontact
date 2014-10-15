@@ -182,6 +182,14 @@ class TemplateForm(forms.ModelForm):
         self.fields['bd_contacto'].queryset =\
             BaseDatosContacto.objects.obtener_definidas()
 
+        # FIXME: Al ser el campo un TimeField, da un error al visualizar un
+        # dato cargado.
+        # self.fields['duracion_de_audio'].widget = DateTimePicker(
+        #     options={"format": "HH:mm:ss", "pickDate": False,
+        #              "pickSeconds": True, "useSeconds": True},
+        #     icon_attrs={'class': 'glyphicon glyphicon-time'})
+        self.fields['duracion_de_audio'].help_text = 'Ejemplo: 00:04:30'
+
         self.helper = FormHelper()
         self.helper.form_tag = False
 
@@ -190,6 +198,7 @@ class TemplateForm(forms.ModelForm):
             Field('cantidad_canales'),
             Field('cantidad_intentos'),
             Field('segundos_ring'),
+            Field('duracion_de_audio'),
             Field('bd_contacto')
         )
         self.helper.layout = layout
@@ -199,6 +208,7 @@ class TemplateForm(forms.ModelForm):
         exclude = ('estado', 'fecha_inicio', 'fecha_fin', 'es_template')
 
         labels = {
+            'duracion_de_audio': 'Duración de los audios (HH:MM:SS)',
             'bd_contacto': 'Base de Datos de referencia para TTS',
         }
         help_texts = {
