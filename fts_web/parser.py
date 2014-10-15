@@ -255,6 +255,9 @@ def validate_telefono(number):
     return False
 
 
+PATTERN_SANITIZE_NUMBER = re.compile("[^0-9]")
+
+
 def sanitize_number(number):
     number = unicode(number)
-    return re.sub("[^0-9]", "", number)
+    return PATTERN_SANITIZE_NUMBER.sub("", number)
