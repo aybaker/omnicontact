@@ -697,9 +697,9 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
         activacion_campana_service.dialplan_config_creator.\
-            create_config_file = Mock()
+            create_dialplan = Mock()
         activacion_campana_service.queue_config_creator.\
-            create_config_file = Mock()
+            create_queue = Mock()
         activacion_campana_service.reload_asterisk_config.reload_config = \
             Mock(return_value=0)
 
@@ -711,9 +711,9 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
         activacion_campana_service.dialplan_config_creator.\
-            create_config_file = Mock(side_effect=RestablecerDialplanError())
+            create_dialplan = Mock(side_effect=RestablecerDialplanError())
         activacion_campana_service.queue_config_creator.\
-            create_config_file = Mock()
+            create_queue = Mock()
         activacion_campana_service.reload_asterisk_config.reload_config = \
             Mock(return_value=0)
 
@@ -726,9 +726,9 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
         activacion_campana_service.dialplan_config_creator.\
-            create_config_file = Mock()
+            create_dialplan = Mock()
         activacion_campana_service.queue_config_creator.\
-            create_config_file = Mock(side_effect=RestablecerDialplanError())
+            create_queue = Mock(side_effect=RestablecerDialplanError())
         activacion_campana_service.reload_asterisk_config.reload_config = \
             Mock(return_value=0)
 
@@ -741,9 +741,9 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
         activacion_campana_service.dialplan_config_creator.\
-            create_config_file = Mock()
+            create_dialplan = Mock()
         activacion_campana_service.queue_config_creator.\
-            create_config_file = Mock()
+            create_queue = Mock()
         activacion_campana_service.reload_asterisk_config.reload_config = \
             Mock(side_effect=RestablecerDialplanError())
 
@@ -756,9 +756,9 @@ class RestablecerDialplanCampanaTest(FTSenderBaseTest):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
         activacion_campana_service.dialplan_config_creator.\
-            create_config_file = Mock()
+            create_dialplan = Mock()
         activacion_campana_service.queue_config_creator.\
-            create_config_file = Mock()
+            create_queue = Mock()
         activacion_campana_service.reload_asterisk_config.reload_config = \
             Mock(return_value=1)
 
