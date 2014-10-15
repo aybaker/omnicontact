@@ -4,6 +4,10 @@
 ;  - user
 ;  - password
 ;
+; Para el ambiente de testing, utilizar los mismos parametros, y
+;  anteponer 'test_' al nombre de la BD
+;
+
 
 [global]
 ; usar 172.17.42.1 como IP, NUNCA 127.0.0.1 (a no ser que sepas lo q' estas haciendo!)

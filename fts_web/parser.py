@@ -62,6 +62,35 @@ class ParserCsv(object):
                                base_datos_contactos.get_metadata()
                                )
 
+    def _transformar_en_unicode(self, row, numero_fila):
+        """Recibe lista con datos de una linea del CSV, y transforma
+        los elementos de la lista en unicodes.
+
+        :returns: lista con datos del CSV, como unicodes
+        :raises: FtsParserCsvImportacionError
+        """
+        try:
+            return [unicode(column, 'utf-8') for column in row]
+        except UnicodeDecodeError:
+            # Aja! Una columna no es utf-8 valido!
+            celda_problematica = None
+            try:
+                for column in row:
+                    celda_problematica = column
+                    unicode(column, 'utf-8')
+                # Alguna columna deberia fallar, pero por las dudas limpiamos
+                # 'celda_problematica' si el 'for' termina de procesar todas
+                # las columnas. Esto NO DEBERIA SUCEDER!
+                celda_problematica = None
+            except UnicodeDecodeError:
+                pass
+
+            raise FtsParserCsvImportacionError(
+                numero_fila=numero_fila,
+                numero_columna='',
+                fila=row,
+                valor_celda=celda_problematica or '?')
+
     def _read_file(self, file_obj, dialect, metadata):
 
         assert isinstance(metadata, MetadataBaseDatosContactoDTO)
@@ -79,6 +108,8 @@ class ParserCsv(object):
                 raise FtsParserMaxRowError("El archivo CSV "
                                            "posee mas registros de los "
                                            "permitidos.")
+
+            curr_row = self._transformar_en_unicode(curr_row, i)
 
             telefono = sanitize_number(
                 curr_row[metadata.columna_con_telefono].strip())
@@ -255,5 +286,9 @@ def validate_telefono(number):
     return False
 
 
+PATTERN_SANITIZE_NUMBER = re.compile("[^0-9]")
+
+
 def sanitize_number(number):
-    return re.sub("[^0-9]", "", str(number))
+    number = unicode(number)
+    return PATTERN_SANITIZE_NUMBER.sub("", number)

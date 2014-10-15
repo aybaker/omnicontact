@@ -1,0 +1,10 @@
+asterisk:
+  build: asterisk/
+  command: /srv/asterisk/in_docker_start_integration_testing.sh
+  ports:
+   - "5061:5060"
+   - "7089:7088"
+  volumes:
+   - asterisk/:/srv/asterisk
+   - asterisk/runtime/var/run/asterisk/:/opt/asterisk-11/var/run/asterisk
+   - /opt/fts-integration-testing/media_root
