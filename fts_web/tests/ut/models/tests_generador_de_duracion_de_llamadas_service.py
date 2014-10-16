@@ -5,9 +5,10 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import connection
 from django.test.testcases import TestCase
+from django.utils.unittest.case import skipUnless
 from mock import Mock, create_autospec
 
-from fts_web.tests.utiles import FTSenderBaseTest
+from fts_web.tests.utiles import FTSenderBaseTest, default_db_is_postgresql
 from fts_web.models import (BaseDatosContacto, Campana, Contacto,
                             DuracionDeLlamada)
 from fts_daemon.models import (EventoDeContacto)
