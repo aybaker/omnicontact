@@ -49,6 +49,7 @@ class GeneradorDeDuracionDeLlamadasTest(FTSenderBaseTest):
             evento_contacto.save()
         return campana
 
+    @skipUnless(default_db_is_postgresql(), "Requiere PostgreSql")
     def test_generar_duracion_de_llamdas_para_campana_no_falla(self):
         campana = self._crea_campana_con_eventos()
 
