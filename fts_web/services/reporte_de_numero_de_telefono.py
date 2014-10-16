@@ -42,7 +42,7 @@ class BusquedaDeLlamadasService(object):
         return DuracionDeLlamada.objects.obtener_duracion_de_llamdas(
             numero_telefono)
 
-    def obtener_reporte(self, numero_telefono):
+    def buscar_llamadas(self, numero_telefono):
         self._valida_numero_telefono(numero_telefono)
 
         duracion_de_llamadas = \
