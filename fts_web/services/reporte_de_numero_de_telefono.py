@@ -51,12 +51,12 @@ class BusquedaDeLlamadasService(object):
 
         listado_de_llamadas = []
         for duracion_de_llamada in duracion_de_llamadas:
-            listado_de_llamadas.append(ReporteDeTelefonoDTO(
+            listado_de_llamadas.append(BusquedaDeLlamadasDTO(
                                        duracion_de_llamada))
         return listado_de_llamadas
 
 
-class ReporteDeTelefonoDTO(object):
+class BusquedaDeLlamadasDTO(object):
     def __init__(self, duracion_de_llamada):
         self.duracion_de_llamada = duracion_de_llamada
         self.opciones_seleccionadas = self._obtener_opciones_seleccionadas()
