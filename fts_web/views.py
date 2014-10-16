@@ -70,7 +70,7 @@ class ReporteTelefonoView(FormView):
 
         reporte_telefono_service = ReporteDeTelefonoService()
         try:
-            reporte_telefono = reporte_telefono_service.obtener_reporte(
+            listado_de_llamadas = reporte_telefono_service.obtener_reporte(
                 numero_telefono)
         except NumeroDeTelefonoInvalidoError:
             message = '<strong>Operación Errónea!</strong> \
@@ -83,7 +83,7 @@ class ReporteTelefonoView(FormView):
             return self.form_invalid(form)
 
         return self.render_to_response(self.get_context_data(
-            form=form, reporte_telefono=reporte_telefono))
+            form=form, listado_de_llamadas=listado_de_llamadas))
 
 
 # =============================================================================
