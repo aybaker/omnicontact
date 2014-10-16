@@ -2279,14 +2279,8 @@ class DuracionDeLlamada(models.Model):
     objects = DuracionDeLlamadaManager()
 
     campana = models.ForeignKey('Campana')
-
-    # Número de teléfono que se llamó.
-    numero_telefono = models.CharField(
-        max_length=13,
-    )
-
-    # EDC.timestamp
+    numero_telefono = models.CharField(max_length=13)
     fecha_hora_llamada = models.DateTimeField()
-
-    # CDR.duration 0 CDR.billsec
     duracion_en_segundos = models.PositiveIntegerField()
+    eventos_del_contacto = models.TextField()
+
