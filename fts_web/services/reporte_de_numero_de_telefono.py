@@ -19,7 +19,7 @@ class NumeroDeTelefonoInvalidoError(FtsError):
     pass
 
 
-class ReporteDeTelefonoService(object):
+class BusquedaDeLlamadasService(object):
 
     def _valida_numero_telefono(self, numero_telefono):
         """

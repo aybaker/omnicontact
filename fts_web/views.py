@@ -16,7 +16,7 @@ from fts_web.views_derivacion import *  # @UnusedWildImport
 from fts_web.views_grupo_atencion import *  # @UnusedWildImport
 from fts_web.forms import ReporteTelefonoForm
 from fts_web.services.reporte_de_numero_de_telefono import (
-    ReporteDeTelefonoService, NumeroDeTelefonoInvalidoError)
+    BusquedaDeLlamadasService, NumeroDeTelefonoInvalidoError)
 
 import logging as logging_
 
@@ -68,7 +68,7 @@ class ReporteTelefonoView(FormView):
         """
         numero_telefono = form.cleaned_data.get('numero_telefono')
 
-        reporte_telefono_service = ReporteDeTelefonoService()
+        reporte_telefono_service = BusquedaDeLlamadasService()
         try:
             listado_de_llamadas = reporte_telefono_service.obtener_reporte(
                 numero_telefono)
