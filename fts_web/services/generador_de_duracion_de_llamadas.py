@@ -33,7 +33,7 @@ class GeneradorDeDuracionDeLlamandasService(object):
 
         cursor = connection.cursor()
         sql = """CREATE TABLE fts_custom_edc_temporal AS SELECT
-        campana_id, contacto_id, array_agg(evento) as eventos_del_contacto
+        campana_id, contacto_id, json_agg(evento) as eventos_del_contacto
         FROM fts_web_contacto INNER JOIN fts_daemon_eventodecontacto
         ON fts_web_contacto.id = fts_daemon_eventodecontacto.contacto_id
         WHERE campana_id = %(campana_id)s
