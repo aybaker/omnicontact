@@ -48,7 +48,11 @@
                                             {% endif %}
                                         {% endfor %}
                                     </td>
-                                    <td> {{ detalle_de_llamada.duracion_de_llamada.campana }} </td>
+                                    <td> 
+                                        <a href="{% url 'detalle_campana' detalle_de_llamada.duracion_de_llamada.campana.id %}">
+                                            {{ detalle_de_llamada.duracion_de_llamada.campana }}
+                                        </a>
+                                    </td>
                                 </tr>
                              {% empty %}
                                 <tr>
