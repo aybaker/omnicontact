@@ -17,28 +17,38 @@
                 {% crispy form %}
                  <button type="submit" id="id_guardar" class="btn btn-primary btn-lg modal_proceso_grande">
                     <span class="glyphicon glyphicon-search"></span>
-                    Buscar Teléfono
+                    Buscar Llamadas
                 </button>
             </div>
              <div class="col-lg-8">
-                {% if reporte_telefono %}
+                {% if listado_de_llamadas %}
                     <h4>Reporte de Teléfono</h4>
                     <table class="table table-bordered">
                         <thead>
                             <tr class="fts-table-bg">
                                 <th>Fecha / Hora</th>
                                 <th>Teléfono</th>
-                                <th>Duración Llamada en Segundos</th>
+                                <th>Duración en segundos</th>                                
+                                <th>Opciones seleccionadas</th>
                                 <th>Campaña</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for detalle_de_llamda in reporte_telefono %}
+                            {% for detalle_de_llamada in listado_de_llamadas %}
                                 <tr>
-                                    <td> {{ detalle_de_llamda.fecha_hora_llamada|date:"d/m/Y H:i" }} </td>
-                                    <td> {{ detalle_de_llamda.numero_telefono }} </td>
-                                    <td> {{ detalle_de_llamda.duracion_en_segundos }} </td>
-                                    <td> {{ detalle_de_llamda.campana }} </td>
+                                    <td> {{ detalle_de_llamada.duracion_de_llamada.fecha_hora_llamada|date:"d/m/Y H:i" }} </td>
+                                    <td> {{ detalle_de_llamada.duracion_de_llamada.numero_telefono }} </td>
+                                    <td> {{ detalle_de_llamada.duracion_de_llamada.duracion_en_segundos }} </td>
+                                    <td> 
+                                        {% for opcion_seleccionada in detalle_de_llamada.opciones_seleccionadas %}
+                                            {% if forloop.last %}
+                                                {{ opcion_seleccionada }}
+                                            {% else %}
+                                                {{ opcion_seleccionada }} -
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td> {{ detalle_de_llamada.duracion_de_llamada.campana }} </td>
                                 </tr>
                              {% empty %}
                                 <tr>
