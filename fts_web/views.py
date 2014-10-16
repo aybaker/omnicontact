@@ -68,9 +68,9 @@ class ReporteTelefonoView(FormView):
         """
         numero_telefono = form.cleaned_data.get('numero_telefono')
 
-        reporte_telefono_service = BusquedaDeLlamadasService()
+        busqueda_de_llamadas_service = BusquedaDeLlamadasService()
         try:
-            listado_de_llamadas = reporte_telefono_service.obtener_reporte(
+            listado_de_llamadas = busqueda_de_llamadas_service.obtener_reporte(
                 numero_telefono)
         except NumeroDeTelefonoInvalidoError:
             message = '<strong>Operación Errónea!</strong> \
