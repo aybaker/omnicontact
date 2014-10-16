@@ -45,7 +45,7 @@ class GeneradorDeDuracionDeLlamadasTest(FTSenderBaseTest):
             evento_contacto = EventoDeContacto(pk=ie)
             evento_contacto.campana_id = 1
             evento_contacto.contacto_id = ie
-            evento_contacto.evento = 22
+            evento_contacto.evento = 50
             evento_contacto.dato = 1
             evento_contacto.save()
         return campana
