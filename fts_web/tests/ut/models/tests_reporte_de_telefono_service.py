@@ -8,23 +8,23 @@ from mock import Mock, create_autospec
 from fts_web.tests.utiles import FTSenderBaseTest
 from fts_web.models import DuracionDeLlamada
 from fts_web.services.reporte_de_numero_de_telefono import (
-    ReporteDeTelefonoService, NumeroDeTelefonoInvalidoError)
+    BusquedaDeLlamadasService, NumeroDeTelefonoInvalidoError)
 
 
-class ObtenerReporteDeLlamadasDeUnNumeroTelefonicoTest(FTSenderBaseTest):
+class BuscarLlamadasDeUnNumeroTelefonicoTest(FTSenderBaseTest):
     """
-    Unit Test del método ReporteDeTelefonoService.obtener_reporte()
+    Unit Test del método BusquedaDeLlamadasService.buscar_llamadas()
     """
 
     def setUp(self):
-        self.reporte_de_telefono_service = ReporteDeTelefonoService()
-        self.reporte_de_telefono_service = Mock(
-            spec_set=self.reporte_de_telefono_service,
-            wraps=self.reporte_de_telefono_service)
+        self.busqueda_de_llamadas_service = BusquedaDeLlamadasService()
+        self.busqueda_de_llamadas_service = Mock(
+            spec_set=self.busqueda_de_llamadas_service,
+            wraps=self.busqueda_de_llamadas_service)
 
     def test_funciona_con_numero_telefono_valido(self):
-        self.reporte_de_telefono_service.obtener_reporte('3513368309')
+        self.busqueda_de_llamadas_service.buscar_llamadas('3513368309')
 
     def test_falla_con_numero_telefono_invalido(self):
         with self.assertRaises(NumeroDeTelefonoInvalidoError):
-            self.reporte_de_telefono_service.obtener_reporte('35133sdfsd')
+            self.busqueda_de_llamadas_service.buscar_llamadas('35133sdfsd')
