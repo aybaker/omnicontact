@@ -80,10 +80,15 @@ class BusquedaDeLlamadasView(FormView):
                 messages.ERROR,
                 message,
             )
-            return self.form_invalid(form)
+            return self.render_to_response(self.get_context_data(
+                form=form, sin_resultado=True))
+
+        if listado_de_llamadas:
+            return self.render_to_response(self.get_context_data(
+                form=form, listado_de_llamadas=listado_de_llamadas))
 
         return self.render_to_response(self.get_context_data(
-            form=form, listado_de_llamadas=listado_de_llamadas))
+            form=form, sin_resultado=True))
 
 
 # =============================================================================

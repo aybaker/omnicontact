@@ -21,8 +21,27 @@
                 </button>
             </div>
              <div class="col-lg-8">
-                {% if listado_de_llamadas %}
-                    <h4>Reporte de Teléfono</h4>
+
+                <h4>Listado de Llamadas</h4>
+
+                {% if sin_resultado %}
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <th>Sin Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                <tr>
+                                    <td> 
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron llamadas para el número de teléfono ingresado.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                        </tbody>
+                    </table>
+                {% else %}
                     <table class="table table-bordered">
                         <thead>
                             <tr class="fts-table-bg">
@@ -53,15 +72,7 @@
                                             {{ detalle_de_llamada.duracion_de_llamada.campana }}
                                         </a>
                                     </td>
-                                </tr>
-                             {% empty %}
-                                <tr>
-                                    <td> 
-                                        <p class="text-center text-danger">
-                                            <em>No se encontraron llamadas para el número de teléfono ingresado.</em>
-                                        </p>
-                                    </td>
-                                </tr>
+                                </tr>                            
                             {% endfor %}
                         </tbody>
                     </table>
