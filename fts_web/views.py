@@ -57,7 +57,7 @@ class BusquedaDeLlamadasView(FormView):
     Esta vista se encarga listar las llamadas de un número telefónico.
     """
 
-    form_class = ReporteTelefonoForm
+    form_class = BusquedaDeLlamadasForm
     template_name = 'busqueda_llamadas/busqueda_llamadas.html'
 
     def form_valid(self, form):

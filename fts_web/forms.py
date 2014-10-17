@@ -507,14 +507,14 @@ class ArchivoAudioForm(forms.ModelForm):
 
 
 # =============================================================================
-# Reporte De Teléfono
+# Búsqueda de Llamadas
 # =============================================================================
 
-class ReporteTelefonoForm(forms.Form):
+class BusquedaDeLlamadasForm(forms.Form):
     numero_telefono = forms.CharField()
 
     def __init__(self, *args, **kwargs):
-        super(ReporteTelefonoForm, self).__init__(*args, **kwargs)
+        super(BusquedaDeLlamadasForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
