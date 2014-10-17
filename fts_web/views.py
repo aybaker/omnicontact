@@ -58,7 +58,7 @@ class BusquedaDeLlamadasView(FormView):
     """
 
     form_class = ReporteTelefonoForm
-    template_name = 'reporte_telefono/reporte_telefono.html'
+    template_name = 'busqueda_llamadas/busqueda_llamadas.html'
 
     def form_valid(self, form):
         """
