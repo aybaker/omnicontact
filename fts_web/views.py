@@ -49,12 +49,12 @@ class AcercaTemplateView(TemplateView):
 
 
 # =============================================================================
-# Reporte de Teléfono
+# Búsqueda de Llamadas
 # =============================================================================
 
-class ReporteTelefonoView(FormView):
+class BusquedaDeLlamadasView(FormView):
     """
-    Esta vista se encarga del reporte de llamadas de un número telefónico.
+    Esta vista se encarga listar las llamadas de un número telefónico.
     """
 
     form_class = ReporteTelefonoForm

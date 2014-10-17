@@ -277,9 +277,9 @@ urlpatterns = patterns('',
     #==========================================================================
     # Reporte de Teléfono
     #==========================================================================
-    url(r'^telefono/$',
-        login_required(views.ReporteTelefonoView.as_view()),
-        name='reporte_telefono',
+    url(r'^busqueda/llamadas$',
+        login_required(views.BusquedaDeLlamadasView.as_view()),
+        name='busqueda_de_llamadas',
     ),
 
     #==========================================================================
