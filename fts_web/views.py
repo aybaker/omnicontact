@@ -14,7 +14,7 @@ from fts_web.views_campana_template import *  # @UnusedWildImport
 from fts_web.views_daemon_status import *  # @UnusedWildImport
 from fts_web.views_derivacion import *  # @UnusedWildImport
 from fts_web.views_grupo_atencion import *  # @UnusedWildImport
-from fts_web.forms import ReporteTelefonoForm
+from fts_web.forms import BusquedaDeLlamadasForm
 from fts_web.services.reporte_de_numero_de_telefono import (
     BusquedaDeLlamadasService, NumeroDeTelefonoInvalidoError)
 
