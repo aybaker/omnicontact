@@ -7,7 +7,7 @@ from mock import Mock, create_autospec
 
 from fts_web.tests.utiles import FTSenderBaseTest
 from fts_web.models import DuracionDeLlamada
-from fts_web.services.reporte_de_numero_de_telefono import (
+from fts_web.services.busqueda_de_llamadas_de_numero_de_telefono import (
     BusquedaDeLlamadasService, NumeroDeTelefonoInvalidoError)
 
 
