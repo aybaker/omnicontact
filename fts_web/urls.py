@@ -275,7 +275,7 @@ urlpatterns = patterns('',
     ),
 
     #==========================================================================
-    # Reporte de Teléfono
+    # Búsqueda de Llamadas
     #==========================================================================
     url(r'^busqueda/llamadas$',
         login_required(views.BusquedaDeLlamadasView.as_view()),
