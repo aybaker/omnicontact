@@ -20,6 +20,10 @@ class NumeroDeTelefonoInvalidoError(FtsError):
 
 
 class BusquedaDeLlamadasService(object):
+    """
+    Realiza la búsqueda de las llamadas realizadas a un número de teléfono
+    pasado por parámetro.
+    """
 
     def _valida_numero_telefono(self, numero_telefono):
         """
@@ -43,6 +47,11 @@ class BusquedaDeLlamadasService(object):
             numero_telefono)
 
     def buscar_llamadas(self, numero_telefono):
+        """
+        Método publico del servicio llamado para realizar la búsqueda de las
+        llamadas realizadas por un número de teléfono.
+        """
+
         self._valida_numero_telefono(numero_telefono)
 
         duracion_de_llamadas = \
@@ -54,6 +63,10 @@ class BusquedaDeLlamadasService(object):
 
 
 class ResultadoDeBusquedaDeLlamadas(object):
+    """
+    Se encarga de instanciar los objeto de transferencia de datos y generar
+    una lista con los mismos.
+    """
 
     def listado_de_llamadas(self, duracion_de_llamadas):
         listado_de_llamadas = []
@@ -64,11 +77,22 @@ class ResultadoDeBusquedaDeLlamadas(object):
 
 
 class DetalleDeLlamadaDTO(object):
+    """
+    Representa los datos para cada instancia de DuracionDeLlamada de una
+    campana.
+    """
+
     def __init__(self, duracion_de_llamada):
         self.duracion_de_llamada = duracion_de_llamada
         self.opciones_seleccionadas = self._obtener_opciones_seleccionadas()
 
     def _obtener_opciones_seleccionadas(self):
+        """
+        Para cada evento de contacto de las instancias DuracionDeLlamada
+        obtiene el objeto opción que corresponde en cada caso y las almacena
+        en una lista que setea en el atributo opciones_seleccionadas.
+        """
+
         eventos_del_contacto = json.loads(
             self.duracion_de_llamada.eventos_del_contacto)
 
