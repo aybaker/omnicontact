@@ -20,45 +20,25 @@ class GeneradorDeDuracionDeLlamandasService(object):
     la campana.
     """
 
-    def _drop_tablas_temporales_si_existen(self):
+    def _drop_tabla_temporal_si_existe(self):
+        """
+        La tabla fts_custom_cdr_temporal se usa de manera temporal en la
+        conformación de las DuracionDeLlamada para una campana.
+        """
 
         cursor = connection.cursor()
-        sql = """DROP TABLE IF EXISTS  fts_custom_cdr_temporal;
-                 DROP TABLE IF EXISTS  fts_custom_edc_temporal"""
+        sql = """DROP TABLE IF EXISTS fts_custom_cdr_temporal"""
 
         with log_timing(logger, "_drop_tabla_temporal_si_existe tardo %s seg"):
             cursor.execute(sql)
 
-    def _crear_tabla_temporal_desde_edc(self, campana):
-
-        cursor = connection.cursor()
-        sql = """CREATE TABLE fts_custom_edc_temporal AS SELECT
-        campana_id, contacto_id, json_agg(evento) as eventos_del_contacto
-        FROM fts_web_contacto INNER JOIN fts_daemon_eventodecontacto
-        ON fts_web_contacto.id = fts_daemon_eventodecontacto.contacto_id
-        WHERE campana_id = %(campana_id)s
-        AND fts_daemon_eventodecontacto.evento IN (%(opcion_0)s, %(opcion_1)s,
-            %(opcion_2)s, %(opcion_3)s, %(opcion_4)s, %(opcion_5)s,
-            %(opcion_6)s, %(opcion_7)s, %(opcion_8)s, %(opcion_9)s)
-        GROUP BY contacto_id, campana_id
-        """
-        params = {'campana_id': campana.id,
-                  'opcion_0': EventoDeContacto.EVENTO_ASTERISK_OPCION_0,
-                  'opcion_1': EventoDeContacto.EVENTO_ASTERISK_OPCION_1,
-                  'opcion_2': EventoDeContacto.EVENTO_ASTERISK_OPCION_2,
-                  'opcion_3': EventoDeContacto.EVENTO_ASTERISK_OPCION_3,
-                  'opcion_4': EventoDeContacto.EVENTO_ASTERISK_OPCION_4,
-                  'opcion_5': EventoDeContacto.EVENTO_ASTERISK_OPCION_5,
-                  'opcion_6': EventoDeContacto.EVENTO_ASTERISK_OPCION_6,
-                  'opcion_7': EventoDeContacto.EVENTO_ASTERISK_OPCION_7,
-                  'opcion_8': EventoDeContacto.EVENTO_ASTERISK_OPCION_8,
-                  'opcion_9': EventoDeContacto.EVENTO_ASTERISK_OPCION_9}
-
-        with log_timing(logger,
-                        "_crear_tabla_temporal_desde_edc() tardo %s seg"):
-            cursor.execute(sql, params)
-
     def _crear_tabla_temporal_desde_cdr(self, campana):
+        """
+        La tabla que se crea (fts_custom_cdr_temporal) reune los atributos
+        necesarios de la tabla de CDR para luego poder combinarla con los
+        registros de EventoDeContacto para una campana y conformar la
+        DuracionDeLlamada para esa campana.
+        """
 
         cursor = connection.cursor()
         sql = """CREATE TABLE fts_custom_cdr_temporal AS SELECT
@@ -79,25 +59,47 @@ class GeneradorDeDuracionDeLlamandasService(object):
             cursor.execute(sql, params)
 
     def _insertar_duracion_de_llamdas(self, campana):
-
+        """
+        Realiza los inserciones en DuracionDeLlamada para una campana de los
+        registros obtenidos de la combinación de EventoDeContacto y la tabla
+        CDR.
+        """
         cursor = connection.cursor()
+
         sql = """INSERT INTO fts_web_duraciondellamada
         (fecha_hora_llamada, duracion_en_segundos, campana_id, numero_telefono,
-         eventos_del_contacto)
+        eventos_del_contacto)
         SELECT
         fts_custom_cdr_temporal.timestamp,
         fts_custom_cdr_temporal.duracion_en_segundos,
         fts_custom_cdr_temporal.campana_id,
         fts_custom_cdr_temporal.numero_telefono,
-        fts_custom_edc_temporal.eventos_del_contacto
-        FROM  fts_custom_edc_temporal
-        INNER JOIN fts_custom_cdr_temporal ON
-        fts_custom_edc_temporal.contacto_id =
-        fts_custom_cdr_temporal.contacto_id
-        WHERE fts_custom_edc_temporal.campana_id = %(campana_id)s
+        sub_query.eventos_del_contacto
+        FROM fts_custom_cdr_temporal
+        INNER JOIN
+            (SELECT
+            campana_id, contacto_id, json_agg(evento) AS eventos_del_contacto
+            FROM fts_daemon_eventodecontacto
+            WHERE campana_id = %(campana_id)s
+            AND evento IN (%(opcion_0)s, %(opcion_1)s, %(opcion_2)s,
+                           %(opcion_3)s, %(opcion_4)s, %(opcion_5)s,
+                           %(opcion_6)s, %(opcion_7)s, %(opcion_8)s,
+                           %(opcion_9)s)
+            GROUP BY campana_id, contacto_id) AS sub_query
+        ON fts_custom_cdr_temporal.contacto_id = sub_query.contacto_id
+        WHERE fts_custom_cdr_temporal.campana_id = %(campana_id)s
         """
-        params = {'campana_id': campana.id, 'evento_iniciado':
-                  EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO}
+        params = {'campana_id': campana.id,
+                  'opcion_0': EventoDeContacto.EVENTO_ASTERISK_OPCION_0,
+                  'opcion_1': EventoDeContacto.EVENTO_ASTERISK_OPCION_1,
+                  'opcion_2': EventoDeContacto.EVENTO_ASTERISK_OPCION_2,
+                  'opcion_3': EventoDeContacto.EVENTO_ASTERISK_OPCION_3,
+                  'opcion_4': EventoDeContacto.EVENTO_ASTERISK_OPCION_4,
+                  'opcion_5': EventoDeContacto.EVENTO_ASTERISK_OPCION_5,
+                  'opcion_6': EventoDeContacto.EVENTO_ASTERISK_OPCION_6,
+                  'opcion_7': EventoDeContacto.EVENTO_ASTERISK_OPCION_7,
+                  'opcion_8': EventoDeContacto.EVENTO_ASTERISK_OPCION_8,
+                  'opcion_9': EventoDeContacto.EVENTO_ASTERISK_OPCION_9}
 
         with log_timing(logger,
                         "_insertar_duracion_de_llamdas() tardo %s seg"):
@@ -105,16 +107,13 @@ class GeneradorDeDuracionDeLlamandasService(object):
 
     def generar_duracion_de_llamdas_para_campana(self, campana):
         """
-        Genera las DuracionDeLlamada para la campana. Es llamado desde el
-        proceso de depuración de la campana.
-
-        Supone que el cdr esta completo para la campana y existen todos los
-        registros de las llamdas contestadas.
+        Método público  llamado desde el proceso de depuración de la campana
+        que se encarga de llamar a los métodos que realizan las consultas e
+        inserciones necesarias para la creación de los registros de
+        DuracionDeLlamada para la campana que se pasa por parámetro.
         """
 
-        self._drop_tablas_temporales_si_existen()
-
-        self._crear_tabla_temporal_desde_edc(campana)
+        self._drop_tabla_temporal_si_existe()
 
         self._crear_tabla_temporal_desde_cdr(campana)
 
