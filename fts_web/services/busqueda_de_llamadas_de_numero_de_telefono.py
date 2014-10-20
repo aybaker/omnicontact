@@ -49,14 +49,21 @@ class BusquedaDeLlamadasService(object):
             self._obtener_duracion_de_llamadas_de_numero_telefono(
                 numero_telefono)
 
+        resultado_de_busqueda = ResultadoDeBusquedaDeLlamadas()
+        return resultado_de_busqueda.listado_de_llamadas(duracion_de_llamadas)
+
+
+class ResultadoDeBusquedaDeLlamadas(object):
+
+    def listado_de_llamadas(self, duracion_de_llamadas):
         listado_de_llamadas = []
         for duracion_de_llamada in duracion_de_llamadas:
-            listado_de_llamadas.append(BusquedaDeLlamadasDTO(
+            listado_de_llamadas.append(DetalleDeLlamadaDTO(
                                        duracion_de_llamada))
         return listado_de_llamadas
 
 
-class BusquedaDeLlamadasDTO(object):
+class DetalleDeLlamadaDTO(object):
     def __init__(self, duracion_de_llamada):
         self.duracion_de_llamada = duracion_de_llamada
         self.opciones_seleccionadas = self._obtener_opciones_seleccionadas()
@@ -74,7 +81,6 @@ class BusquedaDeLlamadasDTO(object):
                 self.duracion_de_llamada.campana.opciones.get(
                     digito=digito_seleccionado)
 
-            opciones_seleccionas.append(
-                opcion_selectionada.get_descripcion_de_opcion())
+            opciones_seleccionas.append(opcion_selectionada)
 
         return opciones_seleccionas
