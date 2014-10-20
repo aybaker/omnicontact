@@ -61,9 +61,9 @@
                                     <td> 
                                         {% for opcion_seleccionada in detalle_de_llamada.opciones_seleccionadas %}
                                             {% if forloop.last %}
-                                                {{ opcion_seleccionada }}
+                                                {{ opcion_seleccionada.get_descripcion_de_opcion }}
                                             {% else %}
-                                                {{ opcion_seleccionada }} -
+                                                {{ opcion_seleccionada.get_descripcion_de_opcion }} -
                                             {% endif %}
                                         {% endfor %}
                                     </td>
