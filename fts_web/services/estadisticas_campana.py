@@ -10,8 +10,10 @@ from __future__ import unicode_literals
 from collections import defaultdict
 import logging
 import pygal
+import json
 
-from fts_web.models import AgregacionDeEventoDeContacto, Campana
+from fts_web.models import (AgregacionDeEventoDeContacto, Campana,
+                            DuracionDeLlamada)
 from pygal.style import Style
 
 
@@ -245,3 +247,69 @@ class EstadisticasCampanaService(object):
             }
         else:
             logger.info("Campana %s NO obtuvo estadísticas.", campana.id)
+
+
+# =============================================================================
+# Nuevos objetos para el cálculo de estadísticas para reportes
+# =============================================================================
+
+class EstadisticasDeCampanaParaReporteServiceV2(object):
+    """
+    Nuevo objeto encargado de los cálculos de las estadísticas necesarias para
+    los diferentes reportes.
+    Este objeto es accedido en el momento de depuración de la campana
+    referida después del cálculos de las DuracionDeLlamada de la misma.
+    """
+
+    def __init__(self):
+        self._estadisticas_para_duracion_de_llamada = \
+            EstadisticasDeCampanaParaDuracionDeLlamadas()
+
+    def procesar_estadisticas(self, campana):
+        self._estadisticas_para_duracion_de_llamada.generar_estadistica(
+            campana)
+
+
+class EstadisticasDeCampanaParaDuracionDeLlamadas(object):
+    """
+    Obtiene, calcula y guarda en Campana los datos estadísticos para las
+    duraciones de las llamadas de una campana pasada por parámetro.
+    """
+
+    def _obtener_duracion_de_llamada(self, campana):
+        return DuracionDeLlamada.objects.obtener_objetos_de_una_campana(
+            campana)
+
+    def _calcular_estadisticas(self, duracion_de_audio, duracion_de_llamadas):
+        cantidad_no_escucharon_todo = 0
+        cantidad_escucharon_todo = 0
+        for duracion_de_llamada in duracion_de_llamadas:
+            if duracion_de_audio < duracion_de_llamada.duracion_en_segundos:
+                cantidad_no_escucharon_todo += 1
+            else:
+                cantidad_escucharon_todo += 1
+
+        return json.dumps({
+            "duracion_de_llamadas": {
+                "no_escucharon_todo_el_mensaje": cantidad_no_escucharon_todo,
+                "si_escucharon_todo_el_mensaje": cantidad_escucharon_todo,
+            }
+        })
+
+    def _guardar_estadisticas(self, campana, estadisticas_calculadas):
+        campana.metadata_estadisticas = estadisticas_calculadas
+        campana.save()
+
+    def generar_estadisticas(self, campana):
+        """
+        Se encarga de guardar en Campana el cálculo de las estadísticas para
+        la duración de las llamadas de la campana.
+        """
+
+        duracion_de_llamadas = \
+            self._obtener_duracion_de_llamada(campana)
+
+        estadisticas_calculadas = self._calcular_estadisticas(
+            campana.duracion_de_audio, duracion_de_llamadas)
+
+        self._guardar_estadisticas(campana, estadisticas_calculadas)
