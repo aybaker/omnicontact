@@ -12,8 +12,9 @@ os_timezone=/usr/share/zoneinfo/America/Argentina/Cordoba
 db_password=leHanFin7
 
 dj_sett_SECRET_KEY='ViejLawyev1reOsFim7EykVebwybUc63onAbpewwol'
-dj_sett_ASTERISK_USERNAME=astermind
-dj_sett_ASTERISK_PASSWORD=astermindXdd
+dj_sett_ASTERISK_USERNAME=admin
+dj_sett_ASTERISK_PASSWORD=7freipCyWret
+
 # TODO: usar 'ASTERISK_AMI_HTTP_PORT' en vez de 7088
 dj_sett_ASTERISK_HTTP_AMI_URL=http://127.0.0.1:7088
 dj_sett_ASTERISK_DIAL_URL=IAX2/127.0.0.1/${NumberToCall}

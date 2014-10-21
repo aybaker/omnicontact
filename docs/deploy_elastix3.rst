@@ -14,6 +14,23 @@ instalado usando la imagen ISO ``Elastix-3.0.0-RC1-i386-bin-17jun2014.iso``.
     Asterisk 11.8.1
 
 
+Parámetros de Asterisk
+----------------------
+
+Antes de realizar el deploy, hace falta setear en el archivo
+de inventario las siguientes variables:
+
+
+.. code::
+
+    dj_sett_ASTERISK_USERNAME=admin
+    dj_sett_ASTERISK_PASSWORD=**********
+
+
+El valor de ``dj_sett_ASTERISK_PASSWORD`` debe ser obtenido de
+``/etc/asterisk/manager.conf``.
+
+
 Deploy
 ------
 
@@ -65,19 +82,31 @@ siguientes modificaciones:
 
 1. Habilitar AMI via HTTP
 
-
 .. code::
 
     $ vim /etc/asterisk/http.conf
 
-para que quede:
-
+Comentar ``prefix`` y utilizar puerto ``7088``:
 
 .. code::
 
     enabled=yes
     bindport=7088
     ;prefix=asterisk
+
+.. code::
+
+    vim /etc/asterisk/manager.conf
+
+Agregar ``webenabled``:
+
+.. code::
+
+    [general]
+    enabled = yes
+    webenabled = yes
+    port = 5038
+    bindaddr = 0.0.0.0
 
 
 Known Issues
