@@ -1652,6 +1652,25 @@ class Campana(models.Model):
         """
         return self.estado == Campana.ESTADO_EN_DEFINICION
 
+    def obtener_duracion_de_audio_en_segundos(self):
+        """
+        Devuelve la duración del audio de la campana en segundos aplicando el
+        margen esablecido de diferencia que determina si el mensaje se escucho
+        de manera completa o no.
+
+        El margen que se aplica es del (5%) de la duración del audio.
+        """
+
+        duracion_de_audio_en_texto = self.duracion_de_audio.isoformat()
+        unidades = duracion_de_audio_en_texto.split(':')
+
+        duracion_de_audio_en_segundo = (int(unidades[0]) * 3600 +
+                                        int(unidades[1]) * 60 +
+                                        int(unidades[2]))
+
+        return (duracion_de_audio_en_segundo -
+                duracion_de_audio_en_segundo * 0.05)
+
     def clean(self, *args, **kwargs):
         """
         Valida que al crear una campaña la fechas de
