@@ -8,6 +8,11 @@ Este documento describe el proceso de deploy de FTS en Elastix 3. Estas
 instrucciones y comandos fueron probados en Elastix 3.0.0 RC1, 
 instalado usando la imagen ISO ``Elastix-3.0.0-RC1-i386-bin-17jun2014.iso``.
 
+.. code::
+
+    $ asterisk -V
+    Asterisk 11.8.1
+
 
 Deploy
 ------
@@ -50,6 +55,29 @@ para que quede, por ejemplo:
     	server_name  _;
 
 Esto hace falta porque porque el puerto 80 es utilizado por Apache.
+
+
+Configuración de Asterisk
+-------------------------
+
+Para el correcto funcionamiento del sistema, hace falta realizar las
+siguientes modificaciones:
+
+1. Habilitar AMI via HTTP
+
+
+.. code::
+
+    $ vim /etc/asterisk/http.conf
+
+para que quede:
+
+
+.. code::
+
+    enabled=yes
+    bindport=7088
+    ;prefix=asterisk
 
 
 Known Issues
