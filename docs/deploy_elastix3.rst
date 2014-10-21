@@ -1,8 +1,9 @@
 .. highlight:: bash
 
 
+###################
 Deploy en Elastix 3
-===================
+###################
 
 Este documento describe el proceso de deploy de FTS en Elastix 3. Estas
 instrucciones y comandos fueron probados en Elastix 3.0.0 RC1, 
@@ -14,8 +15,9 @@ instalado usando la imagen ISO ``Elastix-3.0.0-RC1-i386-bin-17jun2014.iso``.
     Asterisk 11.8.1
 
 
+**********************
 Parámetros de Asterisk
-----------------------
+**********************
 
 Antes de realizar el deploy, hace falta setear en el archivo
 de inventario las siguientes variables:
@@ -31,8 +33,9 @@ El valor de ``dj_sett_ASTERISK_PASSWORD`` debe ser obtenido de
 ``/etc/asterisk/manager.conf``.
 
 
+**********************
 Deploy
-------
+**********************
 
 El script de deploy debe incluir el parametro ``--skip-tags=asterisk``:
 
@@ -51,8 +54,9 @@ Si se utilizara directamente el script de build:
 Esto es necesario porque Elastix ya posee Asterisk instalado.
 
 
+**********************
 Nginx
------
+**********************
 
 Luego de que se instale Nginx, hace falta modificar el puerto 80
 por alguno que no esté en uso (ej: 81)
@@ -74,13 +78,16 @@ para que quede, por ejemplo:
 Esto hace falta porque porque el puerto 80 es utilizado por Apache.
 
 
+*************************
 Configuración de Asterisk
--------------------------
+*************************
 
 Para el correcto funcionamiento del sistema, hace falta realizar las
 siguientes modificaciones:
 
+
 1. Habilitar AMI via HTTP
+=========================
 
 .. code::
 
@@ -109,7 +116,8 @@ Agregar ``webenabled``:
     bindaddr = 0.0.0.0
 
 
-2. Incluir dialplan generado por FTS:
+2. Incluir dialplan generado por FTS
+====================================
 
 Por ejemplo, editar ``/etc/asterisk/extensions_custom.conf``:
 
@@ -128,7 +136,8 @@ El path especificado debe ser el mismo path configurado en la variable
 ``dj_sett_FTS_DIALPLAN_FILENAME`` en el archivo de inventario. 
 
 
-3. Incluir queues generado por FTS:
+3. Incluir queues generado por FTS
+==================================
 
 Por ejemplo, editar ``/etc/asterisk/queues_custom.conf``:
 
@@ -147,8 +156,58 @@ El path especificado debe ser el mismo path configurado en la variable
 ``dj_sett_FTS_QUEUE_FILENAME`` en el archivo de inventario. 
 
 
+4. Configurar CDR
+=================
+
+
+.. note::
+
+    Estos pasos para configurar el CDR son un bosquejo, todavia
+    no han sido probados.
+
+
+Antes que nada hace falta activar el modulo cdr_pgsql:
+
+.. code::
+
+    $ vim /etc/asterisk/modules.conf
+
+
+y comentar la línea que dice ``noload => cdr_pgsql.so``, de manera que quede:
+
+.. code::
+
+    ;noload => cdr_pgsql.so
+
+
+Crear el archivo ``cdr_pgsql.conf``:
+
+.. code::
+
+    $ vim /etc/asterisk/cdr_pgsql.conf
+
+de manera que contenga los parametros de conexion:
+
+.. code::
+
+    [global]
+    hostname=127.0.0.1
+    port=5432
+    dbname=ftsender
+    user=ftsender
+    password=<PASSWORD>
+    table=cdr
+    encoding=UTF8
+    timezone=UTC
+
+
+El ``password`` para conectarse a la BD es el especificado
+en la configuración ``db_password`` del archivo de inventario.
+
+
+*************************
 Known Issues
-------------
+*************************
 
 1. El setup de Asterisk *NO* es realizado por los scripts de inicio.
 
@@ -178,8 +237,9 @@ puede lanzarse manualmente:
     $ /etc/rc3.d/S66elastix-firstboot start
 
 
+***********************************
 Archivo de inventario de referencia
-----------------------
+***********************************
     
 El archivo de inventario utilizado para hacer el deploy fue
 el siguiente:
@@ -215,4 +275,3 @@ el siguiente:
 	dj_sett_TMPL_FTS_AUDIO_CONVERSOR_EXTENSION='.wav'
 	
 	dj_sett_FTS_BASE_DATO_CONTACTO_DUMP_PATH='/home/ftsender/deploy/dumps_bd_contacto/'
-    
