@@ -11,6 +11,8 @@ from collections import defaultdict
 import logging
 import pygal
 import json
+import datetime
+import re
 
 from fts_web.models import (AgregacionDeEventoDeContacto, Campana,
                             DuracionDeLlamada)
@@ -266,7 +268,7 @@ class EstadisticasDeCampanaParaReporteServiceV2(object):
             EstadisticasDeCampanaParaDuracionDeLlamadas()
 
     def procesar_estadisticas(self, campana):
-        self._estadisticas_para_duracion_de_llamada.generar_estadistica(
+        self._estadisticas_para_duracion_de_llamada.generar_estadisticas(
             campana)
 
 
@@ -283,8 +285,13 @@ class EstadisticasDeCampanaParaDuracionDeLlamadas(object):
     def _calcular_estadisticas(self, duracion_de_audio, duracion_de_llamadas):
         cantidad_no_escucharon_todo = 0
         cantidad_escucharon_todo = 0
+
         for duracion_de_llamada in duracion_de_llamadas:
-            if duracion_de_audio < duracion_de_llamada.duracion_en_segundos:
+            duracion_de_audio_en_segundos = getSec(
+                duracion_de_audio.isoformat())
+
+            if (duracion_de_audio_en_segundos
+               < duracion_de_llamada.duracion_en_segundos):
                 cantidad_no_escucharon_todo += 1
             else:
                 cantidad_escucharon_todo += 1
@@ -313,3 +320,12 @@ class EstadisticasDeCampanaParaDuracionDeLlamadas(object):
             campana.duracion_de_audio, duracion_de_llamadas)
 
         self._guardar_estadisticas(campana, estadisticas_calculadas)
+
+
+def getSec(s):
+    """
+    Solución barata de Stackoverflow:
+    http://stackoverflow.com/questions/6402812/how-to-convert-an-hmmss-time-string-to-seconds-in-python
+    """
+    l = s.split(':')
+    return int(l[0]) * 3600 + int(l[1]) * 60 + int(l[2])
