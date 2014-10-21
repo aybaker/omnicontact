@@ -46,7 +46,7 @@ class GeneradorDeDuracionDeLlamandasService(object):
         CAST(substring(dcontext from '_(\d+)$') as integer) as campana_id,
         CAST(substring(dst from '(\d+)') as integer) as contacto_id,
         substring(dst from '-(\d+)-') as numero_telefono,
-        duration as duracion_en_segundos
+        billsec as duracion_en_segundos
         FROM {0}
         WHERE dcontext = 'FTS_local_campana_%(campana_id)s'
         AND disposition IN ('ANSWERED')
