@@ -31,9 +31,9 @@ class GenerarEstadisticasTests(FTSenderBaseTest):
 
         queryset_emulado_duracion_de_llamadas = []
         for i in range(1, 5):
-            # Las dos primeras duran (188" y 189") lo que no se contemplan como
-            # escuchadas, debido al margen de 5%. La duración del audio es de
-            # 00:03:20 (200").
+            # Las dos primeras DuracionDeLlamada duran (188" y 189") lo que
+            # no se contemplan como escuchadas, debido al margen de 5%.
+            # La duración del audio de campana es de 00:03:20 (200").
             duracion_en_segundos = 187 + i
 
             duracion_de_llamada = DuracionDeLlamada(
