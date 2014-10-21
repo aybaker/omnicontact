@@ -109,20 +109,58 @@ Agregar ``webenabled``:
     bindaddr = 0.0.0.0
 
 
+2. Incluir dialplan generado por FTS:
+
+Por ejemplo, editar ``/etc/asterisk/extensions_custom.conf``:
+
+.. code::
+
+    $ vim /etc/asterisk/extensions_custom.conf
+
+
+Y agregar el ``#include``:
+    
+.. code::
+
+    #include /etc/ftsender/asterisk/extensions.conf
+    
+El path especificado debe ser el mismo path configurado en la variable
+``dj_sett_FTS_DIALPLAN_FILENAME`` en el archivo de inventario. 
+
+
+3. Incluir queues generado por FTS:
+
+Por ejemplo, editar ``/etc/asterisk/queues_custom.conf``:
+
+.. code::
+
+    $ vim /etc/asterisk/queues_custom.conf
+
+
+Y agregar el ``#include``:
+    
+.. code::
+
+    #include /etc/asterisk/queues_custom.conf
+    
+El path especificado debe ser el mismo path configurado en la variable
+``dj_sett_FTS_QUEUE_FILENAME`` en el archivo de inventario. 
+
+
 Known Issues
 ------------
 
 1. El setup de Asterisk *NO* es realizado por los scripts de inicio.
 
 2. La instalación de Nginx produce problemas porque intenta usar el puerto 80,
-que es usado por Apache.
+   que es usado por Apache.
 
 3. Luego de instalar el sistema, los servicios NO levantan por un largo tiempo,
-incluyendo los servicios de FTSender (nginx, supervisord, fts) y hasta
-el mismo Asterisk.
+   incluyendo los servicios de FTSender (nginx, supervisord, fts) y hasta
+   el mismo Asterisk.
 
-El problema es el proceso ``S66elastix-firstboot`` que se queda esperando
-la respuesta del usuario:
+   El problema es el proceso ``S66elastix-firstboot`` que se queda esperando
+   la respuesta del usuario:
 
 
 .. code::
@@ -132,10 +170,8 @@ la respuesta del usuario:
     root      2448  0.1  0.4  32964  8868 ?        S    17:48   0:00      \_ /usr/bin/php /usr/bin/elastix-admin-passwords --init
     root      2523  0.0  0.0   4860  1324 ?        S    17:48   0:00          \_ /usr/bin/dialog --no-cancel --output-fd 3 --backtitle Elastix password configuration (Screen 1 of 4) --insecure --passwordbox The Elastix system 
 
-
 Haciendo kill de esos procesos se logra que el sistema termina de bootear. Y luego
 puede lanzarse manualmente:
-
 
 .. code::
 
