@@ -28,6 +28,9 @@ class ServicioB(object):
     def some_method_b(self, un_param):
         raise(UnaExcepcion())
 
+    def method_that_call_another_method(self):
+        return self.some_method_b('')
+
 
 class TestAntipatternsMockeoDeServicios(TestCase):
     """Demuestra formas peligrosas de utilizar mocks, con ejemplos
@@ -173,3 +176,32 @@ class TestMockeoDeServicio(TestCase):
         self.servicio_b.servicio_a.some_method_a.return_value = 'abc'
         value = self.servicio_b.servicio_a.some_method_a()
         self.assertEquals(value, 'abc')
+
+
+class TestLlamadaViaSelfEnServicio(TestCase):
+
+    def test_llamada_via_self_no_es_mockeada(self):
+        """
+        `method_that_call_another_method()` llama a `self.some_method_b()`.
+
+        Pero `some_method_b()` es ejecutado SIN IMPORTAR que se haya seteado
+        `some_method_b.return_value = 'abc'`
+        """
+        self.servicio_b = ServicioB()
+        self.servicio_b = Mock(spec_set=self.servicio_b, wraps=self.servicio_b)
+
+        self.servicio_b.some_method_b.return_value = 'abc'
+        with self.assertRaises(UnaExcepcion):
+            self.servicio_b.method_that_call_another_method()
+
+    def test_fix_llamada_via_self(self):
+        """
+        Para solucionar el problema, moquear el metodo ANTES que la instancia
+        del servicio.
+        """
+        self.servicio_b = ServicioB()
+        self.servicio_b.some_method_b = Mock(return_value='zyx')
+        self.servicio_b = Mock(spec_set=self.servicio_b, wraps=self.servicio_b)
+
+        value = self.servicio_b.method_that_call_another_method()
+        self.assertEquals(value, 'zyx')

@@ -4,11 +4,17 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 from django.db import connection
+from django.conf import settings
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        pg = 'django.db.backends.postgresql_psycopg2'
+        if settings.DATABASES['default']['ENGINE'] != pg:
+            print("Ignorando migracion: BD no es postgresql")
+            return
+
         cursor = connection.cursor()
         sql = """
         CREATE TABLE cdr (

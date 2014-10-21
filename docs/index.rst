@@ -104,6 +104,7 @@ Contents
    :glob:
 
    deploy
+   deploy_elastix3
    release_notes
    release_notes_old
    fts_web_*
