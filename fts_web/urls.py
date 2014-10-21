@@ -274,6 +274,13 @@ urlpatterns = patterns('',
         name='exporta_campana_reporte',
     ),
 
+    # Nuevas url de gráficos de reportes
+    url(r'^campana/(?P<pk>\d+)/grafico/duracion_de_llamada$',
+        login_required(views.CreaGraficoDeDuracionDeLlamada.as_view()),
+        name='grafico_de_duracion_de_llamada',
+    ),
+
+
     #==========================================================================
     # Búsqueda de Llamadas
     #==========================================================================
