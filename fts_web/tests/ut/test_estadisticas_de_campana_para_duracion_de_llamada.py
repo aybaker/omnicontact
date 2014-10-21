@@ -23,7 +23,7 @@ class GenerarEstadisticasTests(FTSenderBaseTest):
     EstadisticasDeCampanaParaDuracionDeLlamadas.generar_estadisticas()
     """
 
-    def test_funciona_bien(self):
+    def test_funciona_bien_con_2_llamadas_escuchadas_y_dos_no(self):
 
         campana = Campana(pk=1)
         campana.duracion_de_audio = datetime.time(0, 3, 20)
@@ -31,10 +31,15 @@ class GenerarEstadisticasTests(FTSenderBaseTest):
 
         queryset_emulado_duracion_de_llamadas = []
         for i in range(1, 5):
+            # Las dos primeras duran (188" y 189") lo que no se contemplan como
+            # escuchadas, debido al margen de 5%. La duración del audio es de
+            # 00:03:20 (200").
+            duracion_en_segundos = 187 + i
+
             duracion_de_llamada = DuracionDeLlamada(
                 pk=i, campana=campana, numero_telefono='3513368309',
                 fecha_hora_llamada=datetime.datetime.now(),
-                duracion_en_segundos=120)
+                duracion_en_segundos=duracion_en_segundos)
 
             queryset_emulado_duracion_de_llamadas.append(duracion_de_llamada)
 
@@ -56,5 +61,5 @@ class GenerarEstadisticasTests(FTSenderBaseTest):
 
         self.assertEqual(campana.metadata_estadisticas,
                          json.dumps({"duracion_de_llamadas": {
-                                    "no_escucharon_todo_el_mensaje": 0,
-                                    "si_escucharon_todo_el_mensaje": 4}}))
+                                    "no_escucharon_todo_el_mensaje": 2,
+                                    "si_escucharon_todo_el_mensaje": 2}}))
