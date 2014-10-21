@@ -11,8 +11,6 @@ from collections import defaultdict
 import logging
 import pygal
 import json
-import datetime
-import re
 
 from fts_web.models import (AgregacionDeEventoDeContacto, Campana,
                             DuracionDeLlamada)
