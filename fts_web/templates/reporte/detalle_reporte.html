@@ -195,6 +195,29 @@
                             </tr>
                         </tbody>
                     </table>
+
+
+                     <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <td colspan="2">
+                                    <h4>Mensaje escuchado.</h4>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td align="center">
+                                    <div class="graficos-avances">
+                                        <figure>
+                                            <embed type="image/svg+xml" src="{% url 'grafico_de_duracion_de_llamada' campana.pk %}" width="550" height="400"/>
+                                        </figure>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
                 </div>
             </div>
         {% endwith %}
