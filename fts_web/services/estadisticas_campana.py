@@ -277,8 +277,7 @@ class EstadisticasDeCampanaParaDuracionDeLlamadas(object):
     """
 
     def _obtener_duracion_de_llamada(self, campana):
-        return DuracionDeLlamada.objects.obtener_objetos_de_una_campana(
-            campana)
+        return DuracionDeLlamada.objects.obtener_de_campana(campana)
 
     def _calcular_estadisticas(self, duracion_de_audio_en_segundos,
                                duracion_de_llamadas):

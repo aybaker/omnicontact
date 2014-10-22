@@ -2282,7 +2282,7 @@ class DuracionDeLlamadaManager(models.Manager):
     def obtener_duracion_de_llamdas(self, numero_telefono):
         return self.filter(numero_telefono=numero_telefono)
 
-    def obtener_objetos_de_una_campana(self, campana):
+    def obtener_de_campana(self, campana):
         return self.filter(campana=campana)
 
 
