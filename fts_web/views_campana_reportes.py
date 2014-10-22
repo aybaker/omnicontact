@@ -5,8 +5,6 @@ from __future__ import unicode_literals
 import json
 import pygal
 
-from pygal.style import Style
-
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
