@@ -307,12 +307,22 @@ class EstadisticasDeCampanaParaDuracionDeLlamadas(object):
         Se encarga de guardar en Campana el cálculo de las estadísticas para
         la duración de las llamadas de la campana.
         """
-
+        # Obtenemos las duraciones de las llamada de la campana.
         duracion_de_llamadas = \
             self._obtener_duracion_de_llamada(campana)
 
-        estadisticas_calculadas = self._calcular_estadisticas(
-            campana.obtener_duracion_de_audio_en_segundos(),
-            duracion_de_llamadas)
+        # Obtenemos la duración del audio de la campana y le restamos el
+        # porcentaje establecido que diferencia de un mensaje escuchado y no.
+        duracion_de_audio_en_segundos = \
+            campana.obtener_duracion_de_audio_en_segundos()
 
+        diferencia_duracion_de_audio = 0.05
+        duracion_de_audio_en_segundos -= (
+            duracion_de_audio_en_segundos * diferencia_duracion_de_audio)
+
+        # Obtenemos el calculo de las estadísticas para la campana.
+        estadisticas_calculadas = self._calcular_estadisticas(
+            duracion_de_audio_en_segundos, duracion_de_llamadas)
+
+        # Guardamos las estadísticas en la campana.
         self._guardar_estadisticas(campana, estadisticas_calculadas)

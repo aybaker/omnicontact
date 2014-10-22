@@ -1654,18 +1654,13 @@ class Campana(models.Model):
 
     def obtener_duracion_de_audio_en_segundos(self):
         """
-        Devuelve la duración del audio de la campana en segundos aplicando el
-        margen esablecido de diferencia que determina si el mensaje se escucho
-        de manera completa o no.
-
-        El margen que se aplica es del (5%) de la duración del audio.
+        Devuelve la duración del audio de la campana en segundos.
         """
         duracion_de_audio_en_segundo = (self.duracion_de_audio.hour * 3600 +
                                         self.duracion_de_audio.minute * 60 +
                                         self.duracion_de_audio.second)
 
-        return (duracion_de_audio_en_segundo -
-                duracion_de_audio_en_segundo * 0.05)
+        return duracion_de_audio_en_segundo
 
     def clean(self, *args, **kwargs):
         """
