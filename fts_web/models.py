@@ -1251,7 +1251,7 @@ class Campana(models.Model):
     fecha_inicio = models.DateField(null=True, blank=True)
     fecha_fin = models.DateField(null=True, blank=True)
     duracion_de_audio = models.TimeField(null=True, blank=True)
-    metadata_estadisticas = models.TextField(null=True, blank=True)
+    estadisticas = models.TextField(null=True, blank=True)
     bd_contacto = models.ForeignKey(
         'BaseDatosContacto',
         null=True, blank=True,
