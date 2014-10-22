@@ -12,6 +12,8 @@ import logging
 import pygal
 import json
 
+from django.conf import settings
+
 from fts_web.models import (AgregacionDeEventoDeContacto, Campana,
                             DuracionDeLlamada)
 from pygal.style import Style
@@ -316,7 +318,8 @@ class EstadisticasDeCampanaParaDuracionDeLlamadas(object):
         duracion_de_audio_en_segundos = \
             campana.obtener_duracion_de_audio_en_segundos()
 
-        diferencia_duracion_de_audio = 0.05
+        diferencia_duracion_de_audio = \
+            settings.FTS_MARGEN_DIFERENCIA_DURACION_LLAMADAS
         duracion_de_audio_en_segundos -= (
             duracion_de_audio_en_segundos * diferencia_duracion_de_audio)
 

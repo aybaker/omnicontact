@@ -67,6 +67,11 @@ FTS_SETTING_CUSTOMIZERS = []
 FTS_MAX_CANTIDAD_CONTACTOS = 60000
 """Límite de contactos que pueden ser importados a la base de datos."""
 
+FTS_MARGEN_DIFERENCIA_DURACION_LLAMADAS = 0.05
+"""Margen en porcentaje que diferencia que el mensaje de una campana fue
+   escuchado completo o no. Se aplica sobre la duración de las llamadas."""
+
+
 #Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
