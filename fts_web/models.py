@@ -1660,18 +1660,12 @@ class Campana(models.Model):
 
         El margen que se aplica es del (5%) de la duración del audio.
         """
+        duracion_de_audio_en_segundo = (self.duracion_de_audio.hour * 3600 +
+                                        self.duracion_de_audio.minute * 60 +
+                                        self.duracion_de_audio.second)
 
-        if self.duracion_de_audio:
-            duracion_de_audio_en_texto = self.duracion_de_audio.isoformat()
-            unidades = duracion_de_audio_en_texto.split(':')
-
-            duracion_de_audio_en_segundo = (int(unidades[0]) * 3600 +
-                                            int(unidades[1]) * 60 +
-                                            int(unidades[2]))
-
-            return (duracion_de_audio_en_segundo -
-                    duracion_de_audio_en_segundo * 0.05)
-        return None
+        return (duracion_de_audio_en_segundo -
+                duracion_de_audio_en_segundo * 0.05)
 
     def clean(self, *args, **kwargs):
         """
