@@ -370,8 +370,8 @@ class CreaGraficoDeDuracionDeLlamada(TemplateView):
             Campana, pk=self.kwargs['pk']
         )
 
-        metadata_estadisticas = json.loads(campana.metadata_estadisticas)
-        datos = metadata_estadisticas['duracion_de_llamadas']
+        estadisticas = json.loads(campana.estadisticas)
+        datos = estadisticas['duracion_de_llamadas']
 
         torta = pygal.Pie(legend_at_bottom=True,
                           style=ESTILO_VERDE_ROJO_NARANJA,

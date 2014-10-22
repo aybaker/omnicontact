@@ -59,7 +59,7 @@ class GenerarEstadisticasTests(FTSenderBaseTest):
         self.estadisticas_para_duracion_de_llamadas.generar_estadisticas(
             campana)
 
-        self.assertEqual(campana.metadata_estadisticas,
+        self.assertEqual(campana.estadisticas,
                          json.dumps({"duracion_de_llamadas": {
                                     "no_escucharon_todo_el_mensaje": 2,
                                     "si_escucharon_todo_el_mensaje": 2}}))

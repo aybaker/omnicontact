@@ -300,7 +300,7 @@ class EstadisticasDeCampanaParaDuracionDeLlamadas(object):
         })
 
     def _guardar_estadisticas(self, campana, estadisticas_calculadas):
-        campana.metadata_estadisticas = estadisticas_calculadas
+        campana.estadisticas = estadisticas_calculadas
         campana.save()
 
     def generar_estadisticas(self, campana):
