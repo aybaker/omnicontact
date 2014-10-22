@@ -8,18 +8,19 @@ para la web.
 from __future__ import unicode_literals
 
 from collections import defaultdict
-import logging
 import pygal
 import json
+from pygal.style import Style
 
+from django.db import connection
 from django.conf import settings
 
 from fts_web.models import (AgregacionDeEventoDeContacto, Campana,
                             DuracionDeLlamada)
-from pygal.style import Style
+from fts_web.utiles import log_timing
+import logging as _logging
 
-
-logger = logging.getLogger(__name__)
+logger = _logging.getLogger(__name__)
 
 ESTILO_VERDE_ROJO_NARANJA = Style(
     background='transparent',
@@ -281,24 +282,46 @@ class EstadisticasDeCampanaParaDuracionDeLlamadas(object):
     def _obtener_duracion_de_llamada(self, campana):
         return DuracionDeLlamada.objects.obtener_de_campana(campana)
 
-    def _calcular_estadisticas(self, duracion_de_audio_en_segundos,
-                               duracion_de_llamadas):
-        cantidad_no_escucharon_todo = 0
-        cantidad_escucharon_todo = 0
+    def _calcular_estadisticas(self, campana, duracion_de_llamadas):
+        cursor = connection.cursor()
+        sql = """SELECT
+        COUNT(duracion_en_segundos) AS si_escucharon_todo,
+        (SELECT COUNT(duracion_en_segundos) AS no_escucharon_todo
+         FROM fts_web_duraciondellamada
+         WHERE campana_id = %(campana_id)s
+         AND duracion_en_segundos < %(duracion_de_audio)s)
+        FROM fts_web_duraciondellamada
+        WHERE campana_id = %(campana_id)s
+        AND duracion_en_segundos >= %(duracion_de_audio)s
+        """
 
-        for duracion_de_llamada in duracion_de_llamadas:
-            if (duracion_de_llamada.duracion_en_segundos <
-                    duracion_de_audio_en_segundos):
-                cantidad_no_escucharon_todo += 1
-            else:
-                cantidad_escucharon_todo += 1
+        params = {'campana_id': campana.id,
+                  'duracion_de_audio':
+                  self._obtener_duracion_de_audio_en_segundos(campana)}
+
+        with log_timing(logger, "_calcular_estadisticas() tardo %s seg"):
+            cursor.execute(sql, params)
+            values = cursor.fetchone()
 
         return json.dumps({
             "duracion_de_llamadas": {
-                "no_escucharon_todo_el_mensaje": cantidad_no_escucharon_todo,
-                "si_escucharon_todo_el_mensaje": cantidad_escucharon_todo,
+                "si_escucharon_todo_el_mensaje": values[0],
+                "no_escucharon_todo_el_mensaje": values[1],
             }
         })
+
+    def _obtener_duracion_de_audio_en_segundos(self, campana):
+        # Obtenemos la duración del audio de la campana.
+        duracion_de_audio_en_segundos = \
+            campana.obtener_duracion_de_audio_en_segundos()
+        # Le restamos el porcentaje establecido que diferencia de un mensaje
+        # escuchado y un mensaje no escuchado.
+        diferencia_duracion_de_audio = \
+            settings.FTS_MARGEN_DIFERENCIA_DURACION_LLAMADAS
+        duracion_de_audio_en_segundos -= (
+            duracion_de_audio_en_segundos * diferencia_duracion_de_audio)
+
+        return duracion_de_audio_en_segundos
 
     def _guardar_estadisticas(self, campana, estadisticas_calculadas):
         campana.estadisticas = estadisticas_calculadas
@@ -313,19 +336,9 @@ class EstadisticasDeCampanaParaDuracionDeLlamadas(object):
         duracion_de_llamadas = \
             self._obtener_duracion_de_llamada(campana)
 
-        # Obtenemos la duración del audio de la campana y le restamos el
-        # porcentaje establecido que diferencia de un mensaje escuchado y no.
-        duracion_de_audio_en_segundos = \
-            campana.obtener_duracion_de_audio_en_segundos()
-
-        diferencia_duracion_de_audio = \
-            settings.FTS_MARGEN_DIFERENCIA_DURACION_LLAMADAS
-        duracion_de_audio_en_segundos -= (
-            duracion_de_audio_en_segundos * diferencia_duracion_de_audio)
-
         # Obtenemos el calculo de las estadísticas para la campana.
         estadisticas_calculadas = self._calcular_estadisticas(
-            duracion_de_audio_en_segundos, duracion_de_llamadas)
+            campana, duracion_de_llamadas)
 
         # Guardamos las estadísticas en la campana.
         self._guardar_estadisticas(campana, estadisticas_calculadas)
