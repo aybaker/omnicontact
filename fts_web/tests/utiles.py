@@ -343,6 +343,7 @@ class FTSenderTestUtilsMixin(object):
             segundos_ring=5,
             fecha_inicio=fecha_inicio,
             fecha_fin=fecha_fin,
+            duracion_de_audio=datetime.time(0, 3, 20),
             bd_contacto=bd_contactos,
             # audio_original="test/audio/original.wav",
             # audio_asterisk="test/audio/for-asterisk.wav",

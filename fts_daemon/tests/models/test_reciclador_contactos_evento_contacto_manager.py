@@ -35,6 +35,7 @@ def _crea_campana_con_eventos():
     campana.cantidad_intentos = 1
     campana.segundos_ring = 1
     campana.estado = Campana.ESTADO_FINALIZADA
+    campana.duracion_de_audio = datetime.time(0, 3, 20)
     campana.bd_contacto = base_dato_contacto
     campana.save()
 
