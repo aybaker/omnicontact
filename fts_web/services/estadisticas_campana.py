@@ -242,6 +242,20 @@ class EstadisticasCampanaService(object):
                 len(total_atendidos_intentos) + 1))
             barra_atendidos_intentos.add('Cantidad', intentos)
 
+            # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            # Hack fiero para pasar los datos de las duraciones de llamadas
+            # al template. Se eliminará con el refactor de este servicio.
+            # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            estadisticas = json.loads(campana.estadisticas)
+            datos = estadisticas['duracion_de_llamadas']
+            estadisticas.update({
+                'si_escucharon_todo_el_mensaje':
+                    datos['si_escucharon_todo_el_mensaje'],
+                'no_escucharon_todo_el_mensaje':
+                    datos['no_escucharon_todo_el_mensaje'],
+                })
+            # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
             return {
                 'estadisticas': estadisticas,
                 'torta_general': torta_general,
