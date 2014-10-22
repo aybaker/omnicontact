@@ -32,13 +32,13 @@ class CreaGraficoDeDuracionDeLlamada(TemplateView):
                           style=ESTILO_VERDE_ROJO_NARANJA,
                           no_data_text='No se encontraron datos.',
                           no_data_font_size=32,
-                          legend_font_size=25,
-                          truncate_legend=10,
+                          legend_font_size=20,
+                          truncate_legend=30,
                           tooltip_font_size=30)
 
-        torta.add('SI escucharon todo el mensaje.',
+        torta.add('Escucharon',
                   datos['si_escucharon_todo_el_mensaje'])
-        torta.add('NO escucharon todo el mensaje.',
+        torta.add('NO Escucharon',
                   datos['no_escucharon_todo_el_mensaje'])
 
         return HttpResponse(torta.render(), content_type='image/svg+xml')
