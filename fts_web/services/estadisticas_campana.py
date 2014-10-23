@@ -246,8 +246,8 @@ class EstadisticasCampanaService(object):
             # Hack fiero para pasar los datos de las duraciones de llamadas
             # al template. Se eliminará con el refactor de este servicio.
             # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-            estadisticas = json.loads(campana.estadisticas)
-            datos = estadisticas['duracion_de_llamadas']
+            estadisticas_de_campana = json.loads(campana.estadisticas)
+            datos = estadisticas_de_campana['duracion_de_llamadas']
             estadisticas.update({
                 'si_escucharon_todo_el_mensaje':
                     datos['si_escucharon_todo_el_mensaje'],
