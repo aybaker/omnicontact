@@ -40,6 +40,7 @@ class GenerarEstadisticasTests(FTSenderBaseTest):
                 pk=i, campana=campana, numero_telefono='3513368309',
                 fecha_hora_llamada=datetime.datetime.now(),
                 duracion_en_segundos=duracion_en_segundos)
+            duracion_de_llamada.save()
 
             queryset_emulado_duracion_de_llamadas.append(duracion_de_llamada)
 

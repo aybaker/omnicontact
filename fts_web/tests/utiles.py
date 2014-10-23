@@ -336,6 +336,9 @@ class FTSenderTestUtilsMixin(object):
             fecha_inicio = datetime.date.today()
             fecha_fin = fecha_inicio + datetime.timedelta(days=10)
 
+        estadisticas = '{"duracion_de_llamadas": \
+            {"no_escucharon_todo_el_mensaje": 0, \
+            "si_escucharon_todo_el_mensaje": 0}}'
         c = Campana(
             nombre="campaña-" + ru(),
             cantidad_canales=cantidad_canales,
@@ -344,6 +347,7 @@ class FTSenderTestUtilsMixin(object):
             fecha_inicio=fecha_inicio,
             fecha_fin=fecha_fin,
             duracion_de_audio=datetime.time(0, 3, 20),
+            estadisticas=estadisticas,
             bd_contacto=bd_contactos,
             # audio_original="test/audio/original.wav",
             # audio_asterisk="test/audio/for-asterisk.wav",
