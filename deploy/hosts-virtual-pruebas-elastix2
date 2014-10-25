@@ -7,6 +7,8 @@
 OPEN_BR='{'
 CLOSE_BR='}'
 
+fts_distribution=elastix2
+
 os_timezone=/usr/share/zoneinfo/America/Argentina/Cordoba
 
 db_password=car8knutPy

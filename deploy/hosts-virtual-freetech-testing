@@ -9,6 +9,8 @@
 OPEN_BR='{'
 CLOSE_BR='}'
 
+fts_distribution=centos6
+
 os_timezone=/usr/share/zoneinfo/America/Argentina/Buenos_Aires
 
 db_password=ivujfakCiph9cyGhocfonn7
