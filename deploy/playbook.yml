@@ -4,3 +4,5 @@
   roles:
     - ftsender_server
   remote_user: ftsender
+  vars_files:
+    - "roles/ftsender_server/defaults/vars-{{fts_distribution|default('centos6')}}.yml"
