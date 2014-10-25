@@ -14,6 +14,7 @@ from fts_web.services.base_de_datos_contactos import \
     NoSePuedeInferirMetadataError
 from fts_web.tests.utiles import FTSenderBaseTest, get_test_resource_directory
 from mock import Mock
+from fts_web.utiles import ValidadorDeNombreDeCampoExtra
 
 
 class TestGeneraBaseDatosContacto(FTSenderBaseTest):
@@ -172,7 +173,7 @@ class TestInfiereMetadata(FTSenderBaseTest):
 class TestValidadorNombreDeCampo(FTSenderBaseTest):
 
     def test_valida_nombres_validos(self):
-        service = CreacionBaseDatosService()
+        service = ValidadorDeNombreDeCampoExtra()
         NOMBRES_VALIDOS = [
                            "NOMBRE",
                            "EMAIL_PERSONA",
@@ -186,7 +187,7 @@ class TestValidadorNombreDeCampo(FTSenderBaseTest):
                             "realidad es VALIDO".format(nombre_columna))
 
     def test_detecta_nombres_invalidos(self):
-        service = CreacionBaseDatosService()
+        service = ValidadorDeNombreDeCampoExtra()
         NOMBRES_INVALIDOS = [
                            "NOMBRE ",
                            " NOMBRE",

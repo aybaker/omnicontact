@@ -106,10 +106,6 @@ class CreacionBaseDatosService(object):
         """
         base_datos_contacto.define()
 
-    def validar_nombre_de_columna(self, nombre):
-        """Devuelve True si el nombre de columna es valido"""
-        return REGEX_NOMBRE_DE_COLUMNA_VALIDO.match(nombre)
-
     # def inferir_metadata(self, base_datos_contacto):
     #     """Devuelve instancia de MetadataBaseDatosContactoDTO que describe
     #     la metadata del archivo desde el cual se creará la BD.
@@ -134,8 +130,6 @@ class NoSePuedeInferirMetadataError(FtsError):
 
 
 DOUBLE_SPACES = re.compile(r' +')
-
-REGEX_NOMBRE_DE_COLUMNA_VALIDO = re.compile(r'^[A-Z0-9_]+$')
 
 
 class PredictorMetadataService(object):

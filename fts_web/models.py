@@ -19,7 +19,7 @@ from django.utils.timezone import now
 from fts_daemon.audio_conversor import ConversorDeAudioService
 from fts_web.errors import (FtsRecicladoCampanaError,
                             FTSOptimisticLockingError)
-from fts_web.utiles import upload_to, log_timing
+from fts_web.utiles import upload_to, log_timing, ValidadorDeNombreDeCampoExtra
 
 
 logger = logging.getLogger(__name__)
