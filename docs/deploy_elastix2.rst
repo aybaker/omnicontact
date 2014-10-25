@@ -26,7 +26,6 @@ Preparación para deploy
 .. code::
 
     $ sudo yum install python-simplejson
-    $ sudo mkdir /etc/sudoers.d
 
 
 **********************
