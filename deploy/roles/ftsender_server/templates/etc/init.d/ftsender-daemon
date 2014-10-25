@@ -3,6 +3,7 @@
 # ftsender-daemon
 #
 # chkconfig: - 95 9
+# description:  Daemon WEB de FTSender
 
 # Source function library.
 . /etc/rc.d/init.d/functions
