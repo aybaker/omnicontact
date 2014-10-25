@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Reload de uWSGI
-service ftsender-daemon reload
+/sbin/service ftsender-daemon reload
 
 # fts-celery-worker-finalizar-campana
 test -e /home/ftsender/deploy/run/celery-finalizar-campana.pid && pkill -SIGTERM -u ftsender -P $(cat /home/ftsender/deploy/run/celery-finalizar-campana.pid)
