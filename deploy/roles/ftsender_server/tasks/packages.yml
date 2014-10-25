@@ -5,8 +5,8 @@
   register: epel_installed
   ignore_errors: True
   when: (
-    ansible_distribution == "CentOS" and
-    ansible_distribution_major_version|int == 6
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
     )
   tags:
     - yum
@@ -16,8 +16,8 @@
   register: repo_pg_installed
   ignore_errors: True
   when: (
-    ansible_distribution == "CentOS" and
-    ansible_distribution_major_version|int == 6
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
     )
   tags:
     - yum
@@ -27,8 +27,8 @@
   sudo: yes
   yum: name={{ RPM_REPO_EPEL }} state=present
   when: (
-    ansible_distribution == "CentOS" and
-    ansible_distribution_major_version|int == 6
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
     )
   tags:
     - yum
@@ -38,8 +38,8 @@
   sudo: yes
   yum: name={{ RPM_REPO_POSTGRESQL }} state=present
   when: (
-    ansible_distribution == "CentOS" and
-    ansible_distribution_major_version|int == 6
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
     )
   tags:
     - yum
@@ -73,8 +73,8 @@
   with_items:
     - ntpdate
   when: (
-    ansible_distribution == "CentOS" and
-    ansible_distribution_major_version|int == 6
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
     )
   tags:
     - yum
@@ -103,8 +103,8 @@
     - postgresql93-devel
     - postgresql93-plpython
   when: (
-    ansible_distribution == "CentOS" and
-    ansible_distribution_major_version|int == 6
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
     )
   tags:
     - yum
@@ -119,9 +119,8 @@
     - postgresql91-server
     - postgresql91-devel
     - postgresql91-plpython
-  when: not (
-    ansible_distribution == "CentOS" and
-    ansible_distribution_major_version|int == 6
+  when: (
+    fts_distribution == "elastix2"
     )
   tags:
     - yum
@@ -155,9 +154,8 @@
     - python26
     - python26-virtualenv
     - python26-devel
-  when: not (
-    ansible_distribution == "CentOS" and
-    ansible_distribution_major_version|int == 6
+  when: (
+    fts_distribution == "elastix2"
     )
   tags:
     - yum
