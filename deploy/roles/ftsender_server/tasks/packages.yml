@@ -141,6 +141,7 @@
     - gcc-c++
     - sqlite-devel
     - libuuid-devel
+  when: fts_distribution == "centos6"
   tags:
     - asterisk
     - yum
