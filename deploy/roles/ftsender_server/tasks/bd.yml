@@ -7,8 +7,8 @@
 - name: Initiate database
   sudo: yes
   command: >
-    service postgresql-9.3 initdb
-    creates=/var/lib/pgsql/9.3/data/postgresql.conf
+    /sbin/service postgresql-{{pgsql_version}} initdb
+    creates=/var/lib/pgsql/{{pgsql_version}}/data/postgresql.conf
   tags:
     - db
     - docker
@@ -16,7 +16,7 @@
 
 - name: Start PostgreSQL and enable at boot
   sudo: yes
-  service: name=postgresql-9.3 enabled=yes state=started
+  service: name=postgresql-{{pgsql_version}} enabled=yes state=started
   tags:
     - db
     - docker
@@ -25,14 +25,14 @@
 - name: Copy pg_hba.conf
   sudo: yes
   register: pg_hba_updated
-  copy: src=pg_hba.conf dest=/var/lib/pgsql/9.3/data/
+  copy: src=pg_hba.conf dest=/var/lib/pgsql/{{pgsql_version}}/data/
   tags:
     - db
     - docker
 
 - name: Copy postgresql-fts.conf
   sudo: yes
-  template: src=etc/pgsql/postgresql-fts.conf dest=/var/lib/pgsql/9.3/data/
+  template: src=etc/pgsql/postgresql-fts.conf dest=/var/lib/pgsql/{{pgsql_version}}/data/
   register: postgresql_fts_updated
   tags:
     - db
@@ -42,10 +42,10 @@
   sudo: yes
   lineinfile: >
     state=present
-    dest=/var/lib/pgsql/9.3/data/postgresql.conf
-    regexp="^include\s+'/var/lib/pgsql/9.3/data/postgresql-fts.conf'"
+    dest=/var/lib/pgsql/{{pgsql_version}}/data/postgresql.conf
+    regexp="^include\s+'/var/lib/pgsql/{{pgsql_version}}/data/postgresql-fts.conf'"
     insertafter=EOF
-    line="include '/var/lib/pgsql/9.3/data/postgresql-fts.conf'"
+    line="include '/var/lib/pgsql/{{pgsql_version}}/data/postgresql-fts.conf'"
   # TODO: reload (si cambio el archivo)
   tags:
     - db
@@ -53,7 +53,7 @@
 
 - name: Reload PostgreSql
   sudo: yes
-  service: name=postgresql-9.3 state=reloaded
+  service: name=postgresql-{{pgsql_version}} state=reloaded
   when: pg_hba_updated.changed or postgresql_fts_updated.changed
   tags:
     - db
