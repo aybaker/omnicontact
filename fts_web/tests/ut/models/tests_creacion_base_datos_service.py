@@ -169,10 +169,10 @@ class TestInfiereMetadata(FTSenderBaseTest):
             service.inferir_metadata_desde_lineas(lineas)
 
 
-class TestSaneadorValidadorNombreDeCampo(FTSenderBaseTest):
+class TestValidadorNombreDeCampo(FTSenderBaseTest):
 
     def test_valida_nombres_validos(self):
-        service = PredictorMetadataService()
+        service = CreacionBaseDatosService()
         NOMBRES_VALIDOS = [
                            "NOMBRE",
                            "EMAIL_PERSONA",
@@ -186,13 +186,14 @@ class TestSaneadorValidadorNombreDeCampo(FTSenderBaseTest):
                             "realidad es VALIDO".format(nombre_columna))
 
     def test_detecta_nombres_invalidos(self):
-        service = PredictorMetadataService()
+        service = CreacionBaseDatosService()
         NOMBRES_INVALIDOS = [
                            "NOMBRE ",
                            " NOMBRE",
                            " NOMBRE ",
                            "EMAIL PERSONA",
                            "FACTURA_EN_$",
+                           "FACTURA_ÑOÑA",
                            "",
                            ]
         for nombre_columna in NOMBRES_INVALIDOS:
@@ -200,6 +201,9 @@ class TestSaneadorValidadorNombreDeCampo(FTSenderBaseTest):
                              "validar_nombre_de_columna() ha reportado como "
                              "VALIDO el nombre de columna '{0}', que en "
                              "realidad es INVALIDO".format(nombre_columna))
+
+
+class TestSaneadorNombreDeCampo(FTSenderBaseTest):
 
     def test_sanea_correctamente(self):
         service = PredictorMetadataService()
