@@ -461,7 +461,13 @@ class MetadataBaseDatosContactoDTO(object):
         assert len(self.nombres_de_columnas) == self.cantidad_de_columnas, \
             "len(nombres_de_columnas) != cantidad_de_columnas"
 
-        assert self.primer_fila_es_encabezado in (True, False)
+        validador = ValidadorDeNombreDeCampoExtra()
+        for nombre_columna in self.nombres_de_columnas:
+            assert validador.validar_nombre_de_columna(nombre_columna), \
+                "El nombre del campo extra / columna no es valido"
+
+        assert self.primer_fila_es_encabezado in (True, False), \
+            "primer_fila_es_encabezado no es un booleano valido"
 
     def dato_extra_es_hora(self, nombre_de_columna):
         """
