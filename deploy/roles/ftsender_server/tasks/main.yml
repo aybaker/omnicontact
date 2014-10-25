@@ -49,6 +49,7 @@
     dest=/etc/sudoers.d/ftsender
     owner=root group=root mode=0440
   sudo: yes
+  when: fts_distribution == "centos6" or fts_distribution == "elastix3"
   tags:
     - sudo
 
