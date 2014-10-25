@@ -4,6 +4,10 @@
   command: test -f /etc/yum.repos.d/epel.repo
   register: epel_installed
   ignore_errors: True
+  when: (
+    ansible_distribution == "CentOS" and
+    ansible_distribution_major_version|int == 6
+    )
   tags:
     - yum
 
@@ -11,6 +15,10 @@
   command: test -f /etc/yum.repos.d/pgdg-93-centos.repo
   register: repo_pg_installed
   ignore_errors: True
+  when: (
+    ansible_distribution == "CentOS" and
+    ansible_distribution_major_version|int == 6
+    )
   tags:
     - yum
 
@@ -18,6 +26,10 @@
   when: epel_installed|failed
   sudo: yes
   yum: name={{ RPM_REPO_EPEL }} state=present
+  when: (
+    ansible_distribution == "CentOS" and
+    ansible_distribution_major_version|int == 6
+    )
   tags:
     - yum
 
@@ -25,6 +37,10 @@
   when: repo_pg_installed|failed
   sudo: yes
   yum: name={{ RPM_REPO_POSTGRESQL }} state=present
+  when: (
+    ansible_distribution == "CentOS" and
+    ansible_distribution_major_version|int == 6
+    )
   tags:
     - yum
 
@@ -46,8 +62,20 @@
     - libxslt-devel
     - python-devel
     - ntp
-    - ntpdate
     - supervisor
+  tags:
+    - yum
+    - docker-image
+
+- name: Install basic packages only on CentOS 6
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - ntpdate
+  when: (
+    ansible_distribution == "CentOS" and
+    ansible_distribution_major_version|int == 6
+    )
   tags:
     - yum
     - docker-image
@@ -56,16 +84,45 @@
   sudo: yes
   yum: name={{item}} state=installed
   with_items:
-    - postgresql93
-    - postgresql93-contrib
-    - postgresql93-server
-    - postgresql93-devel
-    - postgresql93-plpython
     - nginx
     - munin
     - munin-node
     - redis
     - sox
+  tags:
+    - yum
+    - docker-image
+
+- name: Install PostgreSql 9.3
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - postgresql93
+    - postgresql93-contrib
+    - postgresql93-server
+    - postgresql93-devel
+    - postgresql93-plpython
+  when: (
+    ansible_distribution == "CentOS" and
+    ansible_distribution_major_version|int == 6
+    )
+  tags:
+    - yum
+    - docker-image
+
+- name: Install PostgreSql 9.1
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - postgresql91
+    - postgresql91-contrib
+    - postgresql91-server
+    - postgresql91-devel
+    - postgresql91-plpython
+  when: not (
+    ansible_distribution == "CentOS" and
+    ansible_distribution_major_version|int == 6
+    )
   tags:
     - yum
     - docker-image
@@ -87,5 +144,21 @@
     - libuuid-devel
   tags:
     - asterisk
+    - yum
+    - docker-image
+
+- name: Install Python 2.6 and git
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - git
+    - python26
+    - python26-virtualenv
+    - python26-devel
+  when: not (
+    ansible_distribution == "CentOS" and
+    ansible_distribution_major_version|int == 6
+    )
+  tags:
     - yum
     - docker-image
