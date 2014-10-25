@@ -33,7 +33,6 @@
 - name: Check target server
   fail: msg="Target server isn't supported {{ansible_distribution}}"
   when: >
-    lookup("env","DO_CHECKS") != "no" and
     ansible_distribution != "CentOS"
   tags:
     - checks
@@ -49,7 +48,10 @@
     dest=/etc/sudoers.d/ftsender
     owner=root group=root mode=0440
   sudo: yes
-  when: fts_distribution == "centos6" or fts_distribution == "elastix3"
+  when: (
+    ansible_distribution == "CentOS" and
+    ansible_distribution_major_version|int == 6
+    )
   tags:
     - sudo
 
