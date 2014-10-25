@@ -221,6 +221,7 @@ Para crear el servidor de deploy se instalaron algunos paquetes, y se creó el u
 
 .. code::
 
+    root@ftsender-deployer $ yum groupinstall "Development tools"
     root@ftsender-deployer $ rpm -vih http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm
     root@ftsender-deployer $ yum install python-virtualenv git
     root@ftsender-deployer $ adduser deployer
