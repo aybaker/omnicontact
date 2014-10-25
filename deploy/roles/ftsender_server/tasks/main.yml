@@ -38,6 +38,11 @@
   tags:
     - checks
 
+- name: Print fts_distribution
+  # nos aseguramos q' "fts_distribution" haya sido definida.
+  # si no fue definida, esta task generara un error
+  debug: msg="fts_distribution es {{fts_distribution}}"
+
 - name: Setup sudoers.d/ftsender 
   template: >
     src=etc/sudoers.d/ftsender
