@@ -441,19 +441,25 @@ class MetadataBaseDatosContactoDTO(object):
 
     def validar_metadatos(self):
         """Valida que los datos de metadatos estan completos"""
-        assert self.cantidad_de_columnas > 0
-        assert self.columna_con_telefono >= 0
-        assert self.columna_con_telefono < self.cantidad_de_columnas
+        assert self.cantidad_de_columnas > 0, "cantidad_de_columnas es <= 0"
+        assert self.columna_con_telefono >= 0, "columna_con_telefono < 0"
+        assert self.columna_con_telefono < self.cantidad_de_columnas, \
+            "columna_con_telefono >= cantidad_de_columnas"
 
         for index_columna in self.columnas_con_fecha:
-            assert index_columna >= 0
-            assert index_columna < self.cantidad_de_columnas
+            assert index_columna >= 0, "columnas_con_fecha: index_columna < 0"
+            assert index_columna < self.cantidad_de_columnas, (""
+                "columnas_con_fecha: "
+                "index_columna >= cantidad_de_columnas")
 
         for index_columna in self.columnas_con_hora:
-            assert index_columna >= 0
-            assert index_columna < self.cantidad_de_columnas
+            assert index_columna >= 0, "columnas_con_hora: index_columna < 0"
+            assert index_columna < self.cantidad_de_columnas, (""
+                "columnas_con_hora: "
+                "index_columna >= cantidad_de_columnas")
 
-        assert len(self.nombres_de_columnas) == self.cantidad_de_columnas
+        assert len(self.nombres_de_columnas) == self.cantidad_de_columnas, \
+            "len(nombres_de_columnas) != cantidad_de_columnas"
 
         assert self.primer_fila_es_encabezado in (True, False)
 
