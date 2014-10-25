@@ -26,6 +26,11 @@
 #
 #----------------------------------------------------------------------
 
+- name: Print fts_distribution
+  # nos aseguramos q' "fts_distribution" haya sido definida.
+  # si no fue definida, esta task generara un error
+  debug: msg="fts_distribution es {{fts_distribution}}"
+
 #----------------------------------------------------------------------
 # Setup general, SO, packages, nginx, NTP, etc
 #----------------------------------------------------------------------
@@ -36,11 +41,6 @@
     ansible_distribution != "CentOS"
   tags:
     - checks
-
-- name: Print fts_distribution
-  # nos aseguramos q' "fts_distribution" haya sido definida.
-  # si no fue definida, esta task generara un error
-  debug: msg="fts_distribution es {{fts_distribution}}"
 
 - name: Setup sudoers.d/ftsender 
   template: >
