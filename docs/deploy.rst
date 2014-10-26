@@ -5,6 +5,11 @@ Deploy
 ======
 
 
+.. caution::
+
+    A fines de octubre/2014 se creo un nuevo deployer, repositorio git y servidor de doc. Estos
+    cambios todavia no estan reflejados en la documentación.
+
 IP de servidores
 ----------------
 
