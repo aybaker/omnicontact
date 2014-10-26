@@ -42,6 +42,10 @@
   tags:
     - yum
 
+#----------------------------------------------------------------------
+# Ahora largamos instalacion de paquetes
+#----------------------------------------------------------------------
+
 - name: Install Development tools
   sudo: yes
   yum: name="@Development tools" state=present
