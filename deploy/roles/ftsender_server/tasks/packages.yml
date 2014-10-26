@@ -1,5 +1,9 @@
 ---
 
+#----------------------------------------------------------------------
+# Checks
+#----------------------------------------------------------------------
+
 - name: Check - Repositorio EPEL 
   command: test -f /etc/yum.repos.d/epel.repo
   register: epel_installed
@@ -13,6 +17,10 @@
   ignore_errors: True
   tags:
     - yum
+
+#----------------------------------------------------------------------
+# Instalacion de Repos
+#----------------------------------------------------------------------
 
 - name: Instala Repositorio EPEL
   sudo: yes
