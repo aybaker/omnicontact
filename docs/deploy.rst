@@ -10,6 +10,17 @@ Deploy
     A fines de octubre/2014 se creo un nuevo deployer, repositorio git y servidor de doc. Estos
     cambios todavia no estan reflejados en la documentación.
 
+.. note::
+
+    Los scripts de deploy estan probados extensivamente en arquitectura i386.
+
+    Para usarlos en amd64, al menos hará falta definir `BUILD_ASTERISK_CFLAGS` en el archivo
+    de inventario (en los casos en que el script de deploy debe compilar e instalar Asterisk),
+    por ejemplo:
+
+        `BUILD_ASTERISK_CFLAGS=''`
+
+
 IP de servidores
 ----------------
 
