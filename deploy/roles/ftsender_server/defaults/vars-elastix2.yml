@@ -1,5 +1,1 @@
-# pgsql_version: 9.1
-pgsql_version: 9.3
-
-# RPM that register PostgreSql repo
-RPM_REPO_POSTGRESQL: 'http://yum.postgresql.org/9.3/redhat/rhel-5-i386/pgdg-centos93-9.3-1.noarch.rpm'
+pgsql_version: 9.1
