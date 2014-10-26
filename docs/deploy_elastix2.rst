@@ -226,7 +226,10 @@ Known Issues
 3. En una primera prueba, la tabla de CDR no posee registros. Esto pudo suceder
    porque la BD de prueba no posee nros. de telefonos validos.
 
-4. La llamada a plpython falla
+4. La llamada a plpython falla. Se implemento el deploy con
+   PostgreSql 9.3 en 04c962b671739aed77cb94fb322c65b1a33195fa, pero esa version
+   de PostgreSql tambien usa Python 2.4, asi que no existe solución facil o rapida
+   para este issue.
 
 .. code::
 
