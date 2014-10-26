@@ -19,5 +19,7 @@ echo ""
 echo "Para rsync:"
 echo ""
 echo "    rsync -acv --delete docs/_build/html deployer@192.168.99.224:/var/www/html/ftsender/docs/"
+echo "        o"
+echo "    rsync -e 'ssh -p 24922' -acv --delete docs/_build/html deployer@190.210.28.37:/var/www/ftsender/docs/"
 echo ""
 

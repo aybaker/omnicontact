@@ -21,5 +21,6 @@ echo ""
 echo "Para rsync:"
 echo ""
 echo "   rsync -av --delete /tmp/fts-coverity/ deployer@192.168.99.224:/var/www/html/ftsender/coverity"
+echo "        o"
+echo "   rsync -e 'ssh -p 24922' -acv --delete /tmp/fts-coverity/ deployer@190.210.28.37:/var/www/ftsender/coverity"
 echo ""
-
