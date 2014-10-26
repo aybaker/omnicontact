@@ -1,43 +1,33 @@
 ---
 
-- name: Check - RPM de EPEL 6 
+- name: Check - Repositorio EPEL 
   command: test -f /etc/yum.repos.d/epel.repo
   register: epel_installed
   ignore_errors: True
-  when: (
-    fts_distribution == "centos6" or
-    fts_distribution == "elastix3"
-    )
   tags:
     - yum
 
-- name: Check - RPM de PostgreSql 9.3 
+- name: Check - Repositorio PostgreSql 9.3 
   command: test -f /etc/yum.repos.d/pgdg-93-centos.repo
   register: repo_pg_installed
   ignore_errors: True
-  when: (
-    fts_distribution == "centos6" or
-    fts_distribution == "elastix3"
-    )
   tags:
     - yum
 
-- name: Instala RPM de EPEL 6
-  when: epel_installed|failed
+- name: Instala Repositorio EPEL
   sudo: yes
   yum: name={{ RPM_REPO_EPEL }} state=present
-  when: (
+  when: epel_installed|failed and (
     fts_distribution == "centos6" or
     fts_distribution == "elastix3"
     )
   tags:
     - yum
 
-- name: Instala RPM de PostgreSql 9.3
-  when: repo_pg_installed|failed
+- name: Instala Repositorio PostgreSql 9.3
   sudo: yes
   yum: name={{ RPM_REPO_POSTGRESQL }} state=present
-  when: (
+  when: repo_pg_installed|failed and (
     fts_distribution == "centos6" or
     fts_distribution == "elastix3"
     )
