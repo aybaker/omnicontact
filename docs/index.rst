@@ -112,6 +112,7 @@ Contents
    :glob:
 
    deploy
+   deploy_elastix2
    deploy_elastix3
    release_notes
    release_notes_old
