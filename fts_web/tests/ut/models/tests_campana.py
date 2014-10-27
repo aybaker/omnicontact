@@ -497,7 +497,7 @@ class ValidarCampanaTest(FTSenderBaseTest):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
         with self.assertRaises(ValidarCampanaError):
-            activacion_campana_service._validar_campana(campana)
+            activacion_campana_service._validar_bd_contacto_campana(campana)
 
     def test_validar_campana_falla_audio_invalido(self):
         campana = self.crear_campana_activa()
@@ -561,7 +561,7 @@ class ValidarCampanaTest(FTSenderBaseTest):
         activacion_campana_service = ActivacionCampanaTemplateService()
 
         with self.assertRaises(ValidarCampanaError):
-            activacion_campana_service._validar_campana(campana)
+            activacion_campana_service._validar_bd_contacto_campana(campana)
 
 
 class ValidarActuacionCampanaTest(FTSenderBaseTest):
