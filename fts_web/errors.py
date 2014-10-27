@@ -62,11 +62,11 @@ class FtsParserCsvImportacionError(FtsError):
         self._numero_columna = numero_columna
 
         # Transformamos en unicode, ignorando errores ('replace')
-        fila_unicode = [unicode(item) for item in fila]
+        fila_unicode = [unicode(item, errors='replace') for item in fila]
         self._fila = u', '.join(fila_unicode)
 
         # Transformamos en unicode, ignorando errores ('replace')
-        self._valor_celda = unicode(valor_celda)
+        self._valor_celda = unicode(valor_celda, errors='replace')
 
     @property
     def numero_fila(self):
