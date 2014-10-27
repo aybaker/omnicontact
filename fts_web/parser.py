@@ -57,10 +57,7 @@ class ParserCsv(object):
         #                            )
 
         file_obj = base_datos_contactos.archivo_importacion.file
-        return self._read_file(file_obj,
-                               self._get_dialect(file_obj),
-                               base_datos_contactos.get_metadata()
-                               )
+        return self._read_file(file_obj, base_datos_contactos.get_metadata())
 
     def _transformar_en_unicode(self, row, numero_fila):
         """Recibe lista con datos de una linea del CSV, y transforma
@@ -91,11 +88,11 @@ class ParserCsv(object):
                 fila=row,
                 valor_celda=celda_problematica or '?')
 
-    def _read_file(self, file_obj, dialect, metadata):
+    def _read_file(self, file_obj, metadata):
 
         assert isinstance(metadata, MetadataBaseDatosContactoDTO)
 
-        workbook = csv.reader(file_obj, dialect)
+        workbook = csv.reader(file_obj, self._get_dialect(file_obj))
 
         cantidad_importados = 0
         for i, curr_row in enumerate(workbook):
@@ -188,6 +185,7 @@ class ParserCsv(object):
 
     def _get_dialect(self, file_obj):
         try:
+            file_obj.seek(0, 0)
             dialect = csv.Sniffer().sniff(file_obj.read(1024),
                                           [',', ';', '\t'])
             file_obj.seek(0, 0)
@@ -199,7 +197,6 @@ class ParserCsv(object):
             workbook = csv.reader(file_obj)
             single_column = []
 
-            i = 0
             for i, row in enumerate(workbook):
                 value = row[0].strip()
                 try:
@@ -223,12 +220,13 @@ class ParserCsv(object):
                                            "3 filas")
 
             if single_column and all(single_column):
+                file_obj.seek(0, 0)
                 return None
 
-            logger.warn("No se pudo determinar el delimitador del archivo CSV")
+            logger.warn("No se pudo determinar el delimitador del archivo"
+                        " CSV")
             raise FtsParserCsvDelimiterError("No se pudo determinar el "
                                              "delimitador del archivo CSV")
-
         finally:
             file_obj.seek(0, 0)
 
