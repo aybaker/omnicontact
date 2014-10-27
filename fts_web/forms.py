@@ -189,6 +189,7 @@ class TemplateForm(forms.ModelForm):
         #              "pickSeconds": True, "useSeconds": True},
         #     icon_attrs={'class': 'glyphicon glyphicon-time'})
         self.fields['duracion_de_audio'].help_text = 'Ejemplo: 00:04:30'
+        self.fields['duracion_de_audio'].required = True
 
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -234,10 +235,12 @@ class CampanaForm(forms.ModelForm):
         self.fields['fecha_inicio'].widget = DateTimePicker(
             options={"format": "DD/MM/YYYY", "pickTime": False})
         self.fields['fecha_inicio'].help_text = 'Ejemplo: 10/04/2014'
+        self.fields['fecha_inicio'].required = True
 
         self.fields['fecha_fin'].widget = DateTimePicker(
             options={"format": "DD/MM/YYYY", "pickTime": False})
         self.fields['fecha_fin'].help_text = 'Ejemplo: 20/04/2014'
+        self.fields['fecha_fin'].required = True
 
         # FIXME: Al ser el campo un TimeField, da un error al visualizar un
         # dato cargado.
@@ -246,6 +249,8 @@ class CampanaForm(forms.ModelForm):
         #              "pickSeconds": True, "useSeconds": True},
         #     icon_attrs={'class': 'glyphicon glyphicon-time'})
         self.fields['duracion_de_audio'].help_text = 'Ejemplo: 00:04:30'
+        self.fields['duracion_de_audio'].required = True
+
 
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -263,6 +268,8 @@ class CampanaForm(forms.ModelForm):
                 Field('fecha_fin'),
             )
         else:
+            self.fields['bd_contacto'].required = True
+
             layout = Layout(
                 Field('nombre'),
                 Field('cantidad_canales'),
