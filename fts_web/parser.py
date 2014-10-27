@@ -197,6 +197,7 @@ class ParserCsv(object):
             workbook = csv.reader(file_obj)
             single_column = []
 
+            i = 0
             for i, row in enumerate(workbook):
                 value = row[0].strip()
                 try:
