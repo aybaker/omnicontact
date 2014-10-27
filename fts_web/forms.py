@@ -251,7 +251,6 @@ class CampanaForm(forms.ModelForm):
         self.fields['duracion_de_audio'].help_text = 'Ejemplo: 00:04:30'
         self.fields['duracion_de_audio'].required = True
 
-
         self.helper = FormHelper()
         self.helper.form_tag = False
 
