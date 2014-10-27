@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Sprint 13 - 29 de septiembre de 2014 - 14 de octubre de 2014
+---------------------------------------------------------------
+
+RELEASE NOTES PENDIENTES
+
 Sprint 12 - 16 de septiembre de 2014 - 29 de septiembre de 2014
 ---------------------------------------------------------------
 

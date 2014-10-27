@@ -65,3 +65,8 @@ Para testear generacion de llamada con Asterisk
 
     $ FTS_RUN_ASTERISK_TEST=1 python manage.py test fts_tests.tests.tests_asterisk_ami_http.TestAsteriskHttpClient.login_y_originate_local_channel_async
 
+
+Tunel SSH a Deployer/Git
+------------------------
+
+    $ ssh -vC -p 24922 -N -L 7777:127.0.0.1:80 deployer@190.210.28.37

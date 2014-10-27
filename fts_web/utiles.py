@@ -151,3 +151,13 @@ def log_timing(logger, template_message):
     start = time.time()
     yield
     logger.info(template_message, (time.time() - start))
+
+
+REGEX_NOMBRE_DE_COLUMNA_VALIDO = re.compile(r'^[A-Z0-9_]+$')
+
+
+class ValidadorDeNombreDeCampoExtra(object):
+
+    def validar_nombre_de_columna(self, nombre):
+        """Devuelve True si el nombre de columna es valido"""
+        return REGEX_NOMBRE_DE_COLUMNA_VALIDO.match(nombre)

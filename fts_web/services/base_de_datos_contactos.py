@@ -131,8 +131,6 @@ class NoSePuedeInferirMetadataError(FtsError):
 
 DOUBLE_SPACES = re.compile(r' +')
 
-REGEX_NOMBRE_DE_COLUMNA_VALIDO = re.compile(r'^[A-Z0-9_]+$')
-
 
 class PredictorMetadataService(object):
     """
@@ -173,10 +171,6 @@ class PredictorMetadataService(object):
         nombre = nombre.strip().upper()
         nombre = DOUBLE_SPACES.sub("_", nombre)
         return nombre
-
-    def validar_nombre_de_columna(self, nombre):
-        """Devuelve True si el nombre de columna es valido"""
-        return REGEX_NOMBRE_DE_COLUMNA_VALIDO.match(nombre)
 
     def inferir_metadata_desde_lineas(self, lineas):
         """Infiere los metadatos desde las lineas pasadas por parametros.

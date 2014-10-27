@@ -24,5 +24,9 @@
 - name: Enable ntpdate
   sudo: yes
   service: name=ntpdate enabled=yes
+  when: (
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
+    )
   tags:
     - ntp

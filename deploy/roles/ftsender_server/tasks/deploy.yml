@@ -66,8 +66,9 @@
     requirements=/home/ftsender/deploy/app/requirements.txt
     virtualenv=/home/ftsender/deploy/virtualenv
     virtualenv_site_packages=no
+    virtualenv_command=/usr/bin/virtualenv-2.6
   environment:
-    PATH: /usr/pgsql-9.3/bin:{{ lookup('env', 'PATH') }}
+    PATH: /usr/pgsql-{{pgsql_version}}/bin:{{ lookup('env', 'PATH') }}
   tags:
     - virtualenv
     - docker

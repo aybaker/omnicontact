@@ -5,6 +5,22 @@ Deploy
 ======
 
 
+.. caution::
+
+    A fines de octubre/2014 se creo un nuevo deployer, repositorio git y servidor de doc. Estos
+    cambios todavia no estan reflejados en la documentación.
+
+.. note::
+
+    Los scripts de deploy estan probados extensivamente en arquitectura i386.
+
+    Para usarlos en amd64, al menos hará falta definir `BUILD_ASTERISK_CFLAGS` en el archivo
+    de inventario (en los casos en que el script de deploy debe compilar e instalar Asterisk),
+    por ejemplo:
+
+        `BUILD_ASTERISK_CFLAGS=''`
+
+
 IP de servidores
 ----------------
 
@@ -221,6 +237,7 @@ Para crear el servidor de deploy se instalaron algunos paquetes, y se creó el u
 
 .. code::
 
+    root@ftsender-deployer $ yum groupinstall "Development tools"
     root@ftsender-deployer $ rpm -vih http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm
     root@ftsender-deployer $ yum install python-virtualenv git
     root@ftsender-deployer $ adduser deployer

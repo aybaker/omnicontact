@@ -25,6 +25,8 @@ de inventario las siguientes variables:
 
 .. code::
 
+    fts_distribution=elastix3
+
     dj_sett_ASTERISK_USERNAME=admin
     dj_sett_ASTERISK_PASSWORD=**********
 
@@ -34,32 +36,11 @@ El valor de ``dj_sett_ASTERISK_PASSWORD`` debe ser obtenido de
 
 
 **********************
-Deploy
-**********************
-
-El script de deploy debe incluir el parametro ``--skip-tags=asterisk``:
-
-.. code::
-
-    $ ./deploy.sh sprint12-fixes --skip-tags=asterisk <INVENTARIO>
-
-
-Si se utilizara directamente el script de build:
-
-.. code::
-
-    $ ./build.sh -i INVENTARIO --skip-tags=asterisk
-
-
-Esto es necesario porque Elastix ya posee Asterisk instalado.
-
-
-**********************
 Nginx
 **********************
 
-Luego de que se instale Nginx, hace falta modificar el puerto 80
-por alguno que no esté en uso (ej: 81)
+Luego de que se instale Nginx, el deploy fallará, porque hace falta
+modificar manualmente el puerto 80 por alguno que no esté en uso (ej: 81)
 
 
 .. code::
@@ -76,6 +57,9 @@ para que quede, por ejemplo:
     	server_name  _;
 
 Esto hace falta porque porque el puerto 80 es utilizado por Apache.
+
+Una vez que se haya editado dicho archivo, se debe reiniciar el script
+de deploy, y esta segunda vez (y los futuros deploys) se realizará correctamente.
 
 
 *************************
@@ -244,34 +228,4 @@ Archivo de inventario de referencia
 El archivo de inventario utilizado para hacer el deploy fue
 el siguiente:
 
-.. code::
-    
-	[ftsender]
-	
-	192.168.122.198
-	
-	[ftsender:vars]
-	
-	OPEN_BR='{'
-	CLOSE_BR='}'
-	
-	os_timezone=/usr/share/zoneinfo/America/Argentina/Cordoba
-	
-	db_password=**********
-	
-	dj_sett_SECRET_KEY='**************************************************'
-	dj_sett_ASTERISK_USERNAME=admin
-	dj_sett_ASTERISK_PASSWORD=**********
-	
-	dj_sett_ASTERISK_HTTP_AMI_URL=http://127.0.0.1:7088
-	dj_sett_ASTERISK_DIAL_URL=IAX2/127.0.0.1/${NumberToCall}
-	
-	dj_sett_FTS_FAST_AGI_DAEMON_PROXY_URL='http://127.0.0.1:{{ NGINX_HTTP_PORT }}'
-	dj_sett_FTS_DIALPLAN_FILENAME='/etc/ftsender/asterisk/extensions.conf'
-	dj_sett_FTS_QUEUE_FILENAME='/etc/ftsender/asterisk/queues_fts.conf'
-	dj_sett_FTS_RELOAD_CMD='["sudo", "-u", "asterisk", "/usr/sbin/asterisk", "-x", "dialplan reload"]'
-	
-	dj_sett_TMPL_FTS_AUDIO_CONVERSOR='["sox", "-t", "wav", "<INPUT_FILE>", "-r", "8k", "-c", "1", "-e", "signed-integer", "-t", "wav", "<OUTPUT_FILE>"]'
-	dj_sett_TMPL_FTS_AUDIO_CONVERSOR_EXTENSION='.wav'
-	
-	dj_sett_FTS_BASE_DATO_CONTACTO_DUMP_PATH='/home/ftsender/deploy/dumps_bd_contacto/'
+.. literalinclude:: ../deploy/hosts-virtual-pruebas-elastix3
