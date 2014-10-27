@@ -129,17 +129,16 @@ class CampanaUpdateView(CheckEstadoCampanaMixin, CampanaEnDefinicionMixin,
 
         from_valid = form.is_valid()
 
-        # Validamos que los tts  sean válidos, si no lo son, seteamos
-        # el error y llamamos a form_invalid. Si los tts son válidos,
-        # el método sigue su curso  normal.
-        if not self.object.valida_tts():
-            form.errors.update({'bd_contacto':
-                               ['La base de datos seleccionada no tiene '
-                                'las columnas que tienen los tts de la '
-                                'campana.']})
-            return self.form_invalid(form)
-
         if from_valid:
+            # Validamos que los tts  sean válidos, si no lo son, seteamos
+            # el error y llamamos a form_invalid. Si los tts son válidos,
+            # el método sigue su curso  normal.
+            if not self.object.valida_tts():
+                form.errors.update({'bd_contacto':
+                                   ['La base de datos seleccionada no tiene '
+                                    'las columnas que tienen los tts de la '
+                                    'campana.']})
+                return self.form_invalid(form)
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
