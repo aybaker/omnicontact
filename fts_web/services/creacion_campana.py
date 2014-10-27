@@ -39,13 +39,13 @@ class ActivacionCampanaTemplateService(object):
         para poder ser procesada.
         """
 
-        if campana.bd_contacto.verifica_depurada():
+        if campana.bd_contacto and campana.bd_contacto.verifica_depurada():
             raise(ValidarCampanaError(
                 "La Base de Datos de Contacto fue depurada en el proceso de "
                 "creacion de la campana. No se pudo confirmar la creacion de "
                 "de la campana."))
 
-        if not campana.valida_tts():
+        if campana.bd_contacto and not campana.valida_tts():
             raise(ValidarCampanaError(
                 "Las columnas de la base de datos seleccionado en el "
                 "proceso de creacion de la campana no coinciden con los "
