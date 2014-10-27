@@ -39,19 +39,6 @@ class ActivacionCampanaTemplateService(object):
         para poder ser procesada.
         """
 
-        if campana.bd_contacto and campana.bd_contacto.verifica_depurada():
-            raise(ValidarCampanaError(
-                "La Base de Datos de Contacto fue depurada en el proceso de "
-                "creacion de la campana. No se pudo confirmar la creacion de "
-                "de la campana."))
-
-        if campana.bd_contacto and not campana.valida_tts():
-            raise(ValidarCampanaError(
-                "Las columnas de la base de datos seleccionado en el "
-                "proceso de creacion de la campana no coinciden con los "
-                "tts creado en audios de campana. Debe seleccionar una "
-                "una base de datos valida."))
-
         if not campana.valida_grupo_atencion():
             raise(ValidarCampanaError(
                 "EL Grupo Atención seleccionado en el proceso de creacion "
@@ -68,6 +55,34 @@ class ActivacionCampanaTemplateService(object):
             raise(ValidarCampanaError(
                 "Los Audios de la campana no son validos. Debe seleccionar "
                 "audios o tts validos."))
+
+    def _validar_bd_contacto_campana(self, campana):
+        if campana.bd_contacto.verifica_depurada():
+            raise(ValidarCampanaError(
+                "La Base de Datos de Contacto fue depurada en el proceso de "
+                "creacion de la campana. No se pudo confirmar la creacion de "
+                "de la campana."))
+
+        if not campana.valida_tts():
+            raise(ValidarCampanaError(
+                "Las columnas de la base de datos seleccionado en el "
+                "proceso de creacion de la campana no coinciden con los "
+                "tts creado en audios de campana. Debe seleccionar una "
+                "una base de datos valida."))
+
+    def _validar_bd_contacto_template(self, campana):
+        if campana.bd_contacto and campana.bd_contacto.verifica_depurada():
+            raise(ValidarCampanaError(
+                "La Base de Datos de Contacto fue depurada en el proceso de "
+                "creacion de la campana. No se pudo confirmar la creacion de "
+                "de la campana."))
+
+        if campana.bd_contacto and not campana.valida_tts():
+            raise(ValidarCampanaError(
+                "Las columnas de la base de datos seleccionado en el "
+                "proceso de creacion de la campana no coinciden con los "
+                "tts creado en audios de campana. Debe seleccionar una "
+                "una base de datos valida."))
 
     def _validar_actuacion_campana(self, campana):
         if not campana.valida_actuaciones():
@@ -118,8 +133,10 @@ class ActivacionCampanaTemplateService(object):
     def activar(self, campana):
         self._validar_campana(campana)
         if campana.es_template:
+            self._validar_bd_contacto_template(campana)
             campana.activar_template()
         else:
+            self._validar_bd_contacto_campana(campana)
             self._validar_actuacion_campana(campana)
             campana.activar()
             self._generar_y_recargar_configuracion_asterisk()
