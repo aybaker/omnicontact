@@ -21,6 +21,7 @@ from fts_web.parser import ParserCsv
 from fts_web.services.base_de_datos_contactos import (
     CreacionBaseDatosService, PredictorMetadataService,
     NoSePuedeInferirMetadataError)
+from fts_web.utiles import ValidadorDeNombreDeCampoExtra
 import logging as logging_
 
 
@@ -228,10 +229,10 @@ class DefineBaseDatosContactoView(UpdateView):
 
     def form_invalid(self, estructura_archivo, form_columna_telefono,
                      form_datos_extras, form_nombre_columnas,
-                     form_primer_linea_encabezado):
+                     form_primer_linea_encabezado, error=None):
 
         message = '<strong>Operación Errónea!</strong> \
-                  Verifique los datos seleccionados.'
+                  Verifique los datos seleccionados. {0}'.format(error)
 
         messages.add_message(
             self.request,
@@ -265,8 +266,22 @@ class DefineBaseDatosContactoView(UpdateView):
             elif dato_extra == BaseDatosContacto.DATO_EXTRA_HORA:
                 lista_columnas_horas.append(numero_columna)
 
-            lista_nombre_columnas.append(form_nombre_columnas.cleaned_data.get(
-                'nombre-columna-{0}'.format(numero_columna), None))
+            nombre_columna = form_nombre_columnas.cleaned_data.get(
+                'nombre-columna-{0}'.format(numero_columna), None)
+
+            validador_nombre = ValidadorDeNombreDeCampoExtra()
+            if not validador_nombre.validar_nombre_de_columna(nombre_columna):
+                error = 'El nombre de la Columna{0} no es válido.'.format(
+                    numero_columna)
+
+                return self.form_invalid(estructura_archivo,
+                                         form_columna_telefono,
+                                         form_datos_extras,
+                                         form_nombre_columnas,
+                                         form_primer_linea_encabezado,
+                                         error=error)
+
+            lista_nombre_columnas.append(nombre_columna)
 
         metadata = self.object.get_metadata()
         metadata.cantidad_de_columnas = cantidad_columnas
