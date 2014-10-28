@@ -95,10 +95,19 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function() {
-            $(".telefono").change(function (){
-                $(".datos-extras").removeAttr('disabled');
-                $("#id_datos-extras-" + $(this).val()).attr('disabled', true);
+            $(".telefono").each(function (){
+                if($(this).is(':checked')) {
+                    deshabilitar_datos_extras($(this));
+                }
             });
+            $(".telefono").change(function (){
+                deshabilitar_datos_extras($(this));
+            });
+
+            function deshabilitar_datos_extras(objeto) {
+                $(".datos-extras").removeAttr('disabled');
+                $("#id_datos-extras-" + objeto.val()).attr('disabled', true);
+            }
         });
     </script>
 {% endblock %}
