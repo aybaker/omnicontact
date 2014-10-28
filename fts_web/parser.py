@@ -82,6 +82,9 @@ class ParserCsv(object):
             except UnicodeDecodeError:
                 pass
 
+            # Lanza excepcion, pasa por parametro la fila problemática
+            # OJO! La fila será pasada así como fue leida por Python del CSV,
+            #  y por lo tanto serán strigs/bytes, NO unicodes.
             raise FtsParserCsvImportacionError(
                 numero_fila=numero_fila,
                 numero_columna='',
@@ -106,6 +109,10 @@ class ParserCsv(object):
                                            "posee mas registros de los "
                                            "permitidos.")
 
+            # La libreria CSV de Python 2 devuelve strings (o sea, bytes)
+            # ignorando completamente el tipo de codificacion.
+            # Por eso, antes de procesar la línea, la convertimos
+            # en unicode
             curr_row = self._transformar_en_unicode(curr_row, i)
 
             telefono = sanitize_number(
