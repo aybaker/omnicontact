@@ -5,6 +5,7 @@ Excepciones base del sistema.
 """
 
 from __future__ import unicode_literals
+from django.utils.encoding import force_text
 
 
 class FtsError(Exception):
@@ -54,6 +55,10 @@ class FtsParserCsvImportacionError(FtsError):
     """
     Error en la importación de los datos del archivo csv.
     No valida alguno de los datos.
+
+    :param fila: la fila del CSV que ha generado el problema. Esta fila puede
+                 ser una fila ya convertida en unicode, o puede ser una fila
+                 donde cada elemento es un string/byte sin convertir.
     """
     def __init__(self, numero_fila, numero_columna, fila, valor_celda, *args,
                  **kwargs):
@@ -62,11 +67,11 @@ class FtsParserCsvImportacionError(FtsError):
         self._numero_columna = numero_columna
 
         # Transformamos en unicode, ignorando errores ('replace')
-        fila_unicode = [unicode(item, errors='replace') for item in fila]
+        fila_unicode = [force_text(item, errors='ignore') for item in fila]
         self._fila = u', '.join(fila_unicode)
 
         # Transformamos en unicode, ignorando errores ('replace')
-        self._valor_celda = unicode(valor_celda, errors='replace')
+        self._valor_celda = force_text(valor_celda, errors='ignore')
 
     @property
     def numero_fila(self):
