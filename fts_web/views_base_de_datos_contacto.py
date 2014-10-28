@@ -11,7 +11,8 @@ from django.views.generic.list import ListView
 from fts_web.errors import (FtsParserCsvDelimiterError, FtsParserMinRowError,
                             FtsParserOpenFileError, FtsParserMaxRowError,
                             FtsDepuraBaseDatoContactoError,
-                            FtsParserCsvImportacionError)
+                            FtsParserCsvImportacionError,
+                            FtsArchivoImportacionInvalidoError)
 from fts_web.forms import (BaseDatosContactoForm, DefineNombreColumnaForm,
                            DefineColumnaTelefonoForm, DefineDatosExtrasForm,
                            PrimerLineaEncabezadoForm)
@@ -64,8 +65,20 @@ class BaseDatosContactoCreateView(CreateView):
         self.object = form.save(commit=False)
         self.object.nombre_archivo_importacion = nombre_archivo_importacion
 
-        creacion_base_datos = CreacionBaseDatosService()
-        creacion_base_datos.genera_base_dato_contacto(self.object)
+        try:
+            creacion_base_datos = CreacionBaseDatosService()
+            creacion_base_datos.genera_base_dato_contacto(self.object)
+        except FtsArchivoImportacionInvalidoError:
+            message = '<strong>Operación Errónea!</strong> \
+            El archivo especificado para realizar la importación de contactos \
+            no es válido.'
+
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return self.form_invalid(form)
 
         return redirect(self.get_success_url())
 
