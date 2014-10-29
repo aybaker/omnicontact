@@ -62,9 +62,15 @@ class ReporteCampanaService(object):
                 except KeyError:
                     encabezado.append(u"#{0} - N/A".format(opcion))
 
-            # Creamos csvwriter y guardamos encabezado y luego datos
+            # Creamos csvwriter
             csvwiter = csv.writer(csvfile)
-            csvwiter.writerow(encabezado)
+
+            # guardamos encabezado
+            lista_encabezados_utf8 = [force_text(item).encode('utf-8')
+                                      for item in encabezado]
+            csvwiter.writerow(lista_encabezados_utf8)
+
+            # guardamos datos
             for contacto, lista_eventos in contacto_opciones:
                 lista_opciones = []
                 for dato in json.loads(contacto):
