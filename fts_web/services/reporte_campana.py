@@ -34,7 +34,8 @@ class ReporteCampanaService(object):
         file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
 
         if os.path.exists(file_path):
-            # Esto no debería suceder.
+            # Esto puede suceder si en un intento previo de depuracion, el
+            # proceso es abortado, y por lo tanto, el archivo puede existir.
             logger.warn("crea_reporte_csv(): Ya existe archivo CSV de "
                         "reporte para la campana %s. Archivo: %s. "
                         "El archivo sera sobreescrito", campana.pk, file_path)
