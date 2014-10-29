@@ -14,6 +14,7 @@ import json
 from django.conf import settings
 from fts_web.models import Campana
 from fts_web.utiles import crear_archivo_en_media_root
+from django.utils.encoding import force_text
 
 
 logger = logging.getLogger(__name__)
@@ -75,7 +76,11 @@ class ReporteCampanaService(object):
                         lista_opciones.append(1)
                     else:
                         lista_opciones.append(None)
-                csvwiter.writerow(lista_opciones)
+
+                lista_opciones_utf8 = [force_text(item).encode('utf-8')
+                                       for item in lista_opciones]
+                csvwiter.writerow(lista_opciones_utf8)
+
         return file_url
 
     def obtener_url_reporte_csv_descargar(self, campana):
