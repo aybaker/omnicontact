@@ -63,6 +63,10 @@ class GeneradorDePedazoDeDialplanFactory(object):
     def crear_generador_para_start(self, parametros):
         return GeneradorParaStart(parametros)
 
+    def crear_generador_para_tts(self, audio_de_campana, parametros):
+        # TODO: implementar IF que chequee setting
+        return GeneradorParaTts(audio_de_campana, parametros)
+
     def crear_generador_para_audio(self, audio_de_campana, parametros,
                                    campana):
 
@@ -80,7 +84,7 @@ class GeneradorDePedazoDeDialplanFactory(object):
             elif metadata.dato_extra_es_fecha(audio_de_campana.tts):
                 return GeneradorParaTtsFecha(audio_de_campana, parametros)
             else:
-                return GeneradorParaTts(audio_de_campana, parametros)
+                return self.crear_generador_para_tts(audio_de_campana, parametros)
 
         else:
             raise(Exception("Tipo de audio de campana desconocido: {0}".format(
