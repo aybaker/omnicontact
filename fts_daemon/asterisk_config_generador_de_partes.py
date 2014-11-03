@@ -89,6 +89,8 @@ class GeneradorDePedazoDeDialplanFactory(object):
     def _crear_generador_para_tts(self, audio_de_campana, parametros):
         if settings.FTS_TTS_UTILIZADO == settings.FTS_TTS_GOOGLE:
             return GeneradorParaTtsUsandoGoogle(audio_de_campana, parametros)
+        elif settings.FTS_TTS_UTILIZADO == settings.FTS_TTS_SWIFT:
+            return GeneradorParaTtsUsandoSwift(audio_de_campana, parametros)
 
     def crear_generador_para_hangup(self, parametros):
         return GeneradorParaHangup(parametros)
@@ -355,6 +357,26 @@ class GeneradorParaTtsUsandoGoogle(GeneradorDePedazoDeDialplanParaAudio):
         ; TEMPLATE_DIALPLAN_TTS-{fts_audio_de_campana_id}
         exten => _ftsX.,n,NoOp(TTS,{fts_tts},${{{fts_tts}}})
         exten => _ftsX.,n,AGI(googletts.agi,${{{fts_tts}}},es)
+
+        """
+
+    def get_parametros(self):
+        params_tts = {
+            'fts_audio_de_campana_id': self._audio_de_campana.id,
+            'fts_tts': self._audio_de_campana.tts,
+        }
+        return params_tts
+
+
+class GeneradorParaTtsUsandoSwift(GeneradorDePedazoDeDialplanParaAudio):
+
+    def get_template(self):
+        # TODO: Revisar que este bien implementado el template con Swift.
+        return """
+
+        ; TEMPLATE_DIALPLAN_TTS-{fts_audio_de_campana_id}
+        exten => _ftsX.,n,NoOp(TTS,{fts_tts},${{{fts_tts}}})
+        exten => _ftsX.,n,Swift(${{{fts_tts}}})
 
         """
 
