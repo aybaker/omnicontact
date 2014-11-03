@@ -114,7 +114,8 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
                             audio_de_campana, Mock(), campana),
                         GeneradorParaArchivoDeAudio))
 
-    def test_crear_generador_para_audio_con_tts(self):
+    @override_settings(FTS_TTS='google')
+    def test_crear_generador_para_audio_con_tts_de_google(self):
         generador = GeneradorDePedazoDeDialplanFactory()
 
         campana = Campana(pk=1, nombre="C",
@@ -140,7 +141,7 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
         self.assertTrue(isinstance(
                         generador.crear_generador_para_audio(
                             audio_de_campana, Mock(), campana),
-                        GeneradorParaTts))
+                        GeneradorParaTtsUsandoGoogle))
 
     def test_crear_generador_para_audio_con_tts_fecha(self):
         generador = GeneradorDePedazoDeDialplanFactory()
@@ -594,10 +595,10 @@ class GeneradorParaTtsFechaTest(FTSenderBaseTest):
             audio_de_campana.id)))
 
 
-class GeneradorParaTtsTest(FTSenderBaseTest):
+class GeneradorParaTtsUsandoGoogleTest(FTSenderBaseTest):
     """
-    Testea que el método GeneradorParaTts.generar_pedazo devuelva el
-    template correcto.
+    Testea que el método GeneradorParaTtsUsandoGoogle.generar_pedazo devuelva
+    el template correcto.
     """
 
     def test_generar_pedazo_devuelve_template_correcto(self):
@@ -629,11 +630,13 @@ class GeneradorParaTtsTest(FTSenderBaseTest):
             'date': str(datetime.datetime.now())
         }
 
-        generador = GeneradorParaTts(audio_de_campana, param_generales)
+        generador = GeneradorParaTtsUsandoGoogle(audio_de_campana,
+                                                 param_generales)
 
         config = generador.generar_pedazo()
         self.assertTrue(config.find("TEMPLATE_DIALPLAN_TTS-{0}".format(
             audio_de_campana.id)))
+        self.assertTrue(config.find("googletts"))
 
 
 class GeneradorParaHangupTest(FTSenderBaseTest):
