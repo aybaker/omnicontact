@@ -87,7 +87,7 @@ class GeneradorDePedazoDeDialplanFactory(object):
                 audio_de_campana)))
 
     def _crear_generador_para_tts(self, audio_de_campana, parametros):
-        if settings.FTS_TTS == 'google':
+        if settings.FTS_TTS_UTILIZADO == settings.FTS_TTS_GOOGLE:
             return GeneradorParaTtsUsandoGoogle(audio_de_campana, parametros)
 
     def crear_generador_para_hangup(self, parametros):
