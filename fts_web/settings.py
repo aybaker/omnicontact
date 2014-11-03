@@ -71,7 +71,15 @@ FTS_MARGEN_DIFERENCIA_DURACION_LLAMADAS = 0.05
 """Margen en porcentaje que diferencia que el mensaje de una campana fue
    escuchado completo o no. Se aplica sobre la duración de las llamadas."""
 
-FTS_TTS = 'google'
+FTS_TTS_GOOGLE = 'google'
+FTS_TTS_SWIFT = 'swift'
+FTS_TTS_DISPONIBLES = [
+    FTS_TTS_GOOGLE,
+    FTS_TTS_SWIFT,
+]
+
+FTS_TTS_UTILIZADO = FTS_TTS_GOOGLE
+"""Sistema de tts utilizado por asterisk. Por defecto el de google."""
 
 #Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -395,6 +403,14 @@ except ImportError as e:
     print("# WARN: no se pudo importar el modulo "
         "'fts_web_settings_local_customizations'")
 
+# ~~~~~ Check FTS_TTS_UTILIZADO
+
+assert FTS_TTS_UTILIZADO is not None, \
+    "Falta definir setting para FTS_TTS_UTILIZADO"
+
+assert FTS_TTS_UTILIZADO in FTS_TTS_DISPONIBLES, \
+    "El TTS: {0} definido en setting no es uno disponible.".format(
+        FTS_TTS_UTILIZADO)
 
 # ~~~~~ Check FTS_DIALPLAN_FILENAME
 
