@@ -114,7 +114,7 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
                             audio_de_campana, Mock(), campana),
                         GeneradorParaArchivoDeAudio))
 
-    @override_settings(FTS_TTS='google')
+    @override_settings(FTS_TTS_UTILIZADO='google')
     def test_crear_generador_para_audio_con_tts_de_google(self):
         generador = GeneradorDePedazoDeDialplanFactory()
 
@@ -636,7 +636,53 @@ class GeneradorParaTtsUsandoGoogleTest(FTSenderBaseTest):
         config = generador.generar_pedazo()
         self.assertTrue(config.find("TEMPLATE_DIALPLAN_TTS-{0}".format(
             audio_de_campana.id)))
-        self.assertTrue(config.find("googletts"))
+        self.assertTrue(config.find("googletts") > 0)
+        self.assertTrue(config.find("Swift") == -1)
+
+
+class GeneradorParaTtsUsandoSwiftTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaTtsUsandoSwift.generar_pedazo devuelva
+    el template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 1
+        metadata.columna_con_telefono = 0
+        metadata.nombres_de_columnas = ["TELEFONO"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
+                                          tts="TELEFONO")
+        campana.audios_de_campana = [audio_de_campana]
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now())
+        }
+
+        generador = GeneradorParaTtsUsandoSwift(audio_de_campana,
+                                                param_generales)
+
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_DIALPLAN_TTS-{0}".format(
+            audio_de_campana.id)))
+        self.assertTrue(config.find("Swift") > 0)
+        self.assertTrue(config.find("googletts") == -1)
 
 
 class GeneradorParaHangupTest(FTSenderBaseTest):
