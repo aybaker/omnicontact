@@ -38,3 +38,20 @@ class TestForceText(FTSenderBaseTest):
         text = force_text(u'holá', errors='replace')
         self.assertTrue(type(text) == unicode)
         self.assertEqual(text, u'holá')
+
+    def test_int(self):
+        text = force_text(123, errors='replace')
+        self.assertTrue(type(text) == unicode)
+        self.assertEqual(text, u'123')
+
+    def test_none(self):
+        text = force_text(None, errors='replace')
+        self.assertTrue(type(text) == unicode)
+        self.assertEqual(text, u'None')
+
+    def test_clazz(self):
+        text = force_text(TestForceText, errors='replace')
+        self.assertTrue(type(text) == unicode)
+        class_str = (u"<class "
+                     "'fts_web.tests.boundary.tests_django.TestForceText'>")
+        self.assertEqual(text, class_str)

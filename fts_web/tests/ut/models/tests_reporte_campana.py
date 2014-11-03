@@ -36,7 +36,7 @@ def _crea_campana_con_eventos():
 
     for ic, _ in enumerate(range(10)):
         contacto = Contacto(pk=ic)
-        contacto.datos = '["3513368309", "Carlos", "Ilcobich"]'
+        contacto.datos = u'["3513368309", "Carlós", "Ilcobich"]'
         contacto.bd_contacto = base_dato_contacto
         contacto.save()
 

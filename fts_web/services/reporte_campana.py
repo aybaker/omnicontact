@@ -14,6 +14,7 @@ import json
 from django.conf import settings
 from fts_web.models import Campana
 from fts_web.utiles import crear_archivo_en_media_root
+from django.utils.encoding import force_text
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,8 @@ class ReporteCampanaService(object):
         file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
 
         if os.path.exists(file_path):
-            # Esto no debería suceder.
+            # Esto puede suceder si en un intento previo de depuracion, el
+            # proceso es abortado, y por lo tanto, el archivo puede existir.
             logger.warn("crea_reporte_csv(): Ya existe archivo CSV de "
                         "reporte para la campana %s. Archivo: %s. "
                         "El archivo sera sobreescrito", campana.pk, file_path)
@@ -61,9 +63,15 @@ class ReporteCampanaService(object):
                 except KeyError:
                     encabezado.append(u"#{0} - N/A".format(opcion))
 
-            # Creamos csvwriter y guardamos encabezado y luego datos
+            # Creamos csvwriter
             csvwiter = csv.writer(csvfile)
-            csvwiter.writerow(encabezado)
+
+            # guardamos encabezado
+            lista_encabezados_utf8 = [force_text(item).encode('utf-8')
+                                      for item in encabezado]
+            csvwiter.writerow(lista_encabezados_utf8)
+
+            # guardamos datos
             for contacto, lista_eventos in contacto_opciones:
                 lista_opciones = []
                 for dato in json.loads(contacto):
@@ -75,7 +83,11 @@ class ReporteCampanaService(object):
                         lista_opciones.append(1)
                     else:
                         lista_opciones.append(None)
-                csvwiter.writerow(lista_opciones)
+
+                lista_opciones_utf8 = [force_text(item).encode('utf-8')
+                                       for item in lista_opciones]
+                csvwiter.writerow(lista_opciones_utf8)
+
         return file_url
 
     def obtener_url_reporte_csv_descargar(self, campana):
