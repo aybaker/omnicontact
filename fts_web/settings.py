@@ -71,6 +71,7 @@ FTS_MARGEN_DIFERENCIA_DURACION_LLAMADAS = 0.05
 """Margen en porcentaje que diferencia que el mensaje de una campana fue
    escuchado completo o no. Se aplica sobre la duración de las llamadas."""
 
+FTS_TTS = 'google'
 
 #Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
