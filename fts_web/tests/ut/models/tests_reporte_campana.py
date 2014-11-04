@@ -67,16 +67,15 @@ class TestCreaReporteCsv(FTSenderBaseTest):
         campana.estado = Campana.ESTADO_FINALIZADA
 
         dirname = 'reporte_campana'
-        files_path = "{0}/{1}".format(settings.MEDIA_ROOT, dirname)
         filename = "{0}-reporte.csv".format(campana.id)
         file_path = os.path.join(settings.MEDIA_ROOT, dirname, filename)
-        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
+
+        self.assertFalse(os.path.exists(file_path))
 
         service = ReporteCampanaService()
-        url_reporte = service.crea_reporte_csv(campana)
+        service.crea_reporte_csv(campana)
 
         self.assertTrue(os.path.exists(file_path))
-        self.assertEqual(url_reporte, file_url)
 
         # Abrimos el archivo y contamos que tenga 10 lineas.
         with open(file_path, 'rb') as csvfile:
@@ -91,12 +90,6 @@ class TestCreaReporteCsv(FTSenderBaseTest):
         campana = _crea_campana_con_eventos()
         campana.estado = Campana.ESTADO_ACTIVA
 
-        dirname = 'reporte_campana'
-        files_path = "{0}/{1}".format(settings.MEDIA_ROOT, dirname)
-        filename = "{0}-reporte.csv".format(campana.id)
-        file_path = os.path.join(settings.MEDIA_ROOT, dirname, filename)
-        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
-
         service = ReporteCampanaService()
         with self.assertRaises(AssertionError):
             service.crea_reporte_csv(campana)
@@ -110,10 +103,7 @@ class TestObtenerUrlReporte(FTSenderBaseTest):
         campana.estado = Campana.ESTADO_FINALIZADA
 
         dirname = 'reporte_campana'
-        files_path = "{0}/{1}".format(settings.MEDIA_ROOT, dirname)
         filename = "{0}-reporte.csv".format(campana.id)
-        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
-                                         filename)
         file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
 
         service = ReporteCampanaService()
@@ -128,13 +118,6 @@ class TestObtenerUrlReporte(FTSenderBaseTest):
         campana = _crea_campana_con_eventos()
         campana.estado = Campana.ESTADO_FINALIZADA
 
-        dirname = 'reporte_campana'
-        files_path = "{0}/{1}".format(settings.MEDIA_ROOT, dirname)
-        filename = "{0}-reporte.csv".format(campana.id)
-        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
-                                         filename)
-        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
-
         service = ReporteCampanaService()
         service.crea_reporte_csv(campana)
 
@@ -145,13 +128,6 @@ class TestObtenerUrlReporte(FTSenderBaseTest):
     def test_obtener_url_reporte_falla_reporte_no_generado(self):
         campana = _crea_campana_con_eventos()
         campana.estado = Campana.ESTADO_FINALIZADA
-
-        dirname = 'reporte_campana'
-        files_path = "{0}/{1}".format(settings.MEDIA_ROOT, dirname)
-        filename = "{0}-reporte.csv".format(campana.id)
-        file_path = "{0}/{1}/{2}".format(settings.MEDIA_ROOT, dirname,
-                                         filename)
-        file_url = "{0}{1}/{2}".format(settings.MEDIA_URL, dirname, filename)
 
         service = ReporteCampanaService()
 
