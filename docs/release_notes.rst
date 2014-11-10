@@ -4,23 +4,56 @@ Release Notes
 Sprint 13 - 29 de septiembre de 2014 - 14 de octubre de 2014
 ---------------------------------------------------------------
 
-RELEASE NOTES PENDIENTES
+Ver Sprint 14 (las notas de release estan unificadas)
 
-Sprint 12 - 16 de septiembre de 2014 - 29 de septiembre de 2014
+Sprint 14 - 15 de octubre de 2014 - 28 de octubre de 2014
 ---------------------------------------------------------------
+
+
+Cambios en archivo de inventario
+................................
+
+Para soportar CentOS, Elastix 2 y Elastix 3 fue necesario agregar una variable
+al archivo de inventario.
+
+A los archivos de inventarios existentes, usados para deployar en CentOS 6, hay
+que agregarle:
+
+.. code::
+
+    fts_distribution: centos6
+
+
+Para hacer deploy en Elastix 2:
+
+.. code::
+
+    fts_distribution: elastix2
+
+
+Para hacer deploy en Elastix 3:
+
+.. code::
+
+    fts_distribution: elastix3
+
+También se crearon 2 documentos: *Deploy en Elastix 2* y *Deploy en Elastix 3* con
+instrucciones detalladas.
+
 
 
 Instrucciones de deploy
 .......................
 
-ATENCION: en el presente Sprint se implementaron cambios en la BD. Antes de realizar el deploy del sistema,
-confirme que no haya campañas pausadas o en ejecución. El proceso de migración de la BD dejará las campañas y
-templates en un estado inconsistente y no deberian ser utilizadas ni recicladas.
+En este sprint se produjeron varios cambios incompatibles en la BD. Luego de
+realizar el deploy, los datos existentes de BD y campañas no será utilizables. 
+
+Para realizar el deploy:
 
 .. code::
 
     $ ssh deployer@192.168.99.224
-    $ ./deploy.sh sprint12-fixes <INVENTARIO>
+    $ ./deploy.sh sprint14-fixes <INVENTARIO>
 
 Para crear usuarios, es necesario loguearse en el servidor con el usuario `ftsender`
 y ejecutar `/home/ftsender/deploy/bin/manage.sh create_ftsender_user`:
@@ -36,36 +69,32 @@ Migraciones de datos
 
 .. code::
 
-	* commit 2bd71d0b3bc2bfe20cf5412286f1e6250994a067
-	  A     fts_web/migrations/0025_auto__add_audiodecampana.py
-
-	* commit c930e22320a35f0cd6ee62b35bf9400d1091b531
-	  A     fts_web/migrations/0026_auto__del_field_campana_audio_asterisk__del_field_campana_audio_origin.py
-
-	* commit cdbcc8dcc90e30b322e1968279eef639e1e37bfe
-	  A     fts_web/migrations/0027_auto__chg_field_audiodecampana_tts.py
-
-	* commit edfdfa32cc2532cb44b678ad82e305a102faf03d
-	  A     fts_web/migrations/0028_auto__add_unique_audiodecampana_orden_campana.py
-
-	* commit 1bda83dd61b86dc71bec31c372247626c4b87c71
-	  A     fts_web/migrations/0029_auto__add_field_audiodecampana_audio_descripcion.py
+	00eb06a Agrega migración para el cambio de nombre del atributo estadistica.
+	d31dc82 Agrega migración para el nuevo atributo Campana.Campana.metadata_estadisticas.
+	114c074 Aplica migracion solo cuando la BD es PostgreSql
+	cdcdbc7 Agrega migración para el atributo DuracionDeLlamada.eventos_del_contacto.
+	ec49420 Agrega migración que crea la tabla CDR.
+	c4bff60 Agrega migración para la modificación de modelos DuracionDeLlamada.
+	348a131 Agrega migración para el modelo DuracionDeLlamada.
+	f22fc47 Agrega migración para el nuevo atributo duracion_de_audio.
 
 
-TTS / Multiples TTS
+Issues resueltos
 ..............................................
 
-* FTS-310 - UI: Alta de campaña (funcionalidad avanzada)
-* FTS-311 - UI: Alta de campaña: volver a permitir modificación de BD
-* FTS-306 - Campos fecha/hora: Daemon: obtener metadatos de BD
-* FTS-307 - Campos fecha/hora: Generador de dialplan
-* FTS-325 - Template de Campaña: agregar BDC de referencia
-* FTS-326 - Multiples TTS: mejoras en generador de Dialplan
+* FTS-328 - Generar datos en tabla CDR para desarrollar y probar la funcionalidad
+* FTS-333 - Investigar datos de tabla CDR: cómo hacer JOIN con tablas de FTS
+* FTS-336 - Leer CSV usando utf-8
+* FTS-334 - Estadísticas de contactos que escucharon todo el mensaje
+* FTS-335 - Campaña: agregar campo "duracion de audio", o "duracion media de audio", etc. (para usar de referencia en reportes)
+* FTS-337 - Búsque de llamadas por número de telefono
+* FTS-344 - Realizar test manual completo al sistema
 
-Diferidos para próximo Sprint
-.............................
+Soporte para Elastix
+..............................................
 
-* FTS-297 - Soporte para multiples sistemas de TTS (requiere FTS-326)
+* FTS-329 - Soportar deploy en Elastix 2 y Elastix 3
+* FTS-339 - Soportar ejecución en Elastix 2 y Elastix 3
 
 
 Known BUGs
