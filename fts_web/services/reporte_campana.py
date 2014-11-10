@@ -38,11 +38,6 @@ class ArchivoDeReporteCsv(object):
                                  self.nombre_del_directorio,
                                  self.nombre_de_archivo)
 
-    def ya_existe(self):
-        if os.path.exists(self.ruta):
-            return True
-        return False
-
     def crear_archivo_en_directorio(self):
         if self.ya_existe():
             # Esto puede suceder si en un intento previo de depuracion, el
@@ -99,6 +94,9 @@ class ArchivoDeReporteCsv(object):
                 lista_opciones_utf8 = [force_text(item).encode('utf-8')
                                        for item in lista_opciones]
                 csvwiter.writerow(lista_opciones_utf8)
+
+    def ya_existe(self):
+        return os.path.exists(self.ruta)
 
 
 class ReporteCampanaService(object):
