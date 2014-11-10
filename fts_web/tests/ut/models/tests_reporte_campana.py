@@ -18,7 +18,8 @@ from mock import Mock
 from fts_daemon.models import EventoDeContacto
 
 from fts_web.models import BaseDatosContacto, Campana, Contacto
-from fts_web.services.reporte_campana import ReporteCampanaService
+from fts_web.services.reporte_campana import (ArchivoDeReporteCsv,
+                                              ReporteCampanaService)
 from fts_web.tests.utiles import FTSenderBaseTest
 
 
@@ -133,3 +134,42 @@ class TestObtenerUrlReporte(FTSenderBaseTest):
 
         with self.assertRaises(AssertionError):
             service.obtener_url_reporte_csv_descargar(campana)
+
+
+class TestArchivoDeReporteCsv(FTSenderBaseTest):
+
+    @override_settings(MEDIA_ROOT=_tmpdir())
+    def test_crear_archivo_en_directorio_y_ya_existe(self):
+        campana = _crea_campana_con_eventos()
+
+        archivo_de_reporte = ArchivoDeReporteCsv(campana)
+
+        # -----
+
+        self.assertFalse(archivo_de_reporte.ya_existe())
+
+        archivo_de_reporte.crear_archivo_en_directorio()
+        opciones_por_contacto = [('["3513368309", "Carl\xf3s", "Ilcobich"]',
+                                 [1])]
+        archivo_de_reporte.escribir_archivo_csv(opciones_por_contacto)
+
+        self.assertTrue(archivo_de_reporte.ya_existe())
+
+    @override_settings(MEDIA_ROOT=_tmpdir())
+    def test_escribir_archivo_csv(self):
+        campana = _crea_campana_con_eventos()
+
+        archivo_de_reporte = ArchivoDeReporteCsv(campana)
+        archivo_de_reporte.crear_archivo_en_directorio()
+
+        opciones_por_contacto = [('["3513368309", "Carl\xf3s", "Ilcobich"]',
+                                 [1])]
+        archivo_de_reporte.escribir_archivo_csv(opciones_por_contacto)
+
+        # -----
+
+        with open(archivo_de_reporte.ruta, 'rb') as csvfile:
+            reader = csv.reader(csvfile)
+            for c, row in enumerate(reader):
+                self.assertTrue(len(row), 11)
+        self.assertEqual(c, 1)
