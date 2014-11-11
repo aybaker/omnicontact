@@ -292,4 +292,5 @@ class TestImportarDesdeCsvNoAscii(FTSenderBaseTest):
             service.importa_contactos(bd)
             self.fail("Importacion de datos deberia haber fallado")
         except FtsParserCsvImportacionError as parse_exception:
-            self.assertEquals(parse_exception.valor_celda, u"Tel\ufffdfono")
+            # self.assertEquals(parse_exception.valor_celda, u"Tel\ufffdfono")
+            self.assertEquals(parse_exception.valor_celda, u"Telfono")
