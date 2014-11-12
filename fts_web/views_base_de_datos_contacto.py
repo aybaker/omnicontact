@@ -271,8 +271,9 @@ class DefineBaseDatosContactoView(UpdateView):
 
             validador_nombre = ValidadorDeNombreDeCampoExtra()
             if not validador_nombre.validar_nombre_de_columna(nombre_columna):
-                error = 'El nombre de la Columna{0} no es válido.'.format(
-                    numero_columna)
+                error = 'El nombre de la Columna{0} no es válido. Debe estar \
+                         en mayúscula y sin espacios. Por ejemplo: \
+                         TELEFONO_FIJO'.format(numero_columna)
 
                 return self.form_invalid(estructura_archivo,
                                          form_columna_telefono,
