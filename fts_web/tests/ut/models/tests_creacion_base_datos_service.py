@@ -54,9 +54,9 @@ class TestGeneraBaseDatosContacto(FTSenderBaseTest):
         metadata = bd.get_metadata()
         metadata.cantidad_de_columnas = 3
         metadata.columna_con_telefono = 0
-        metadata.nombres_de_columnas = ["telefono_fijo",
-                                        "nombre",
-                                        "celular"]
+        metadata.nombres_de_columnas = ["TELEFONO_FIJO",
+                                        "NOMBRE",
+                                        "CELULAR"]
         metadata.primer_fila_es_encabezado = False
         metadata.save()
 

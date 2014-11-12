@@ -48,10 +48,10 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
         metadata.columna_con_telefono = 0
         metadata.columnas_con_fecha = [2]
         metadata.columnas_con_hora = [3]
-        metadata.nombres_de_columnas = ["telefono_fijo",
-                                        "nombre",
-                                        "fecha",
-                                        "hora"
+        metadata.nombres_de_columnas = ["TELEFONO_FIJO",
+                                        "NOMBRE",
+                                        "FECHA",
+                                        "HORA"
                                         ]
         metadata.primer_fila_es_encabezado = True
         metadata.save()
@@ -73,9 +73,9 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
         assert isinstance(metadata, MetadataBaseDatosContacto)
         metadata.cantidad_de_columnas = 3
         metadata.columna_con_telefono = 0
-        metadata.nombres_de_columnas = ["telefono_fijo",
-                                        "nombre",
-                                        "celular"]
+        metadata.nombres_de_columnas = ["TELEFONO_FIJO",
+                                        "NOMBRE",
+                                        "CELULAR"]
         metadata.primer_fila_es_encabezado = False
         metadata.save()
         bdc.save()
@@ -100,9 +100,9 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
         # Usamos columna '2', que es la que tiene numeros de telefonos
         #  invalidos en la 5ta fila
         metadata.columna_con_telefono = 2
-        metadata.nombres_de_columnas = ["telefono_fijo",
-                                        "nombre",
-                                        "celular"]
+        metadata.nombres_de_columnas = ["TELEFONO_FIJO",
+                                        "NOMBRE",
+                                        "CELULAR"]
         metadata.primer_fila_es_encabezado = False
         metadata.save()
         bdc.save()
@@ -123,7 +123,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
         assert isinstance(metadata, MetadataBaseDatosContacto)
         metadata.cantidad_de_columnas = 1
         metadata.columna_con_telefono = 0  # o 2?
-        metadata.nombres_de_columnas = ["telefono_fijo"]
+        metadata.nombres_de_columnas = ["TELEFONO_FIJO"]
         metadata.primer_fila_es_encabezado = False
         metadata.save()
         bdc.save()
@@ -239,7 +239,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
             for datos_contacto in parser.read_file(bdc):
                 datos_parseados.append(datos_contacto)
 
-        self.assertEquals(cm.exception.valor_celda, ["fecha"])
+        self.assertEquals(cm.exception.valor_celda, u"[u'fecha']")
 
         # Debio devolver los primeros 3 ANTES de generar la excepcion
         self.assertEquals(len(datos_parseados), 3)
@@ -272,7 +272,7 @@ class ParserCsvReadFileTests(FTSenderBaseTest):
             for datos_contacto in parser.read_file(bdc):
                 datos_parseados.append(datos_contacto)
 
-        self.assertEquals(cm.exception.valor_celda, ["hora"])
+        self.assertEquals(cm.exception.valor_celda, u"[u'hora']")
 
         # Debio devolver los primeros 3 ANTES de generar la excepcion
         self.assertEquals(len(datos_parseados), 3)
