@@ -993,6 +993,20 @@ class ReporteTest(FTSenderBaseTest):
 
     @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir(),
                        MEDIA_ROOT=_tmpdir())
+    def test_procesa_agregacion_supervision(self):
+        # Crea y emula procesamiento de campaña.
+        campana = self._crea_campana_emula_procesamiento()
+        DepuradorDeCampanaWorkflow().depurar(campana.id)
+        campana = Campana.objects.get(id=campana.id)
+
+        # Emulamos agregacion como supervision
+        tipo_agregacion = AgregacionDeEventoDeContacto.\
+            TIPO_AGREGACION_SUPERVISION
+        AgregacionDeEventoDeContacto.objects.procesa_agregacion(
+            campana.pk, campana.cantidad_intentos, tipo_agregacion)
+
+    @override_settings(FTS_BASE_DATO_CONTACTO_DUMP_PATH=_tmpdir(),
+                       MEDIA_ROOT=_tmpdir())
     def test_procesa_agregacion(self):
         # Crea y emula procesamiento de campaña.
         campana = self._crea_campana_emula_procesamiento()
