@@ -14,15 +14,15 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
 
     if DEBUG:
         def dump_result(result, query_name):
-            plpy.info("> ----- RESULT FOR QUERY: {0}".format(query_name))
+            plpy.info("> ----- RESULT FOR QUERY: " + str(query_name))
             if len(result) > 0:
                 line = ",".join([
                     str(col_name) for col_name in result[0]
                 ])
-                plpy.info("> {0}".format(line))
+                plpy.info("> " + str(line))
             for row in result:
                 line = ",".join([str(row[col_name]) for col_name in row])
-                plpy.info("> {0}".format(line))
+                plpy.info("> " + str(line))
             plpy.info("> ----- ")
     else:
         def dump_result(result, query_name):
@@ -50,7 +50,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         records_lock = plpy.execute(plan_lock, [campana_id])
     except spiexceptions.LockNotAvailable:
         plpy.warning("update_agregacion_edc_py(): No se pudo obtener lock "
-            "para campana {0}".format(campana_id))
+            "para campana " + str(campana_id))
         return -1
 
     plpy.info("update_agregacion_edc_py(): LOCK obtenido - continuamos")
@@ -91,7 +91,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
     dump_result(records_aedc, "Current aggregates")
 
     if DEBUG:
-        plpy.info("update_agregacion_edc_py(): AEDC: {0} records".format(len(records_aedc)))
+        plpy.info("update_agregacion_edc_py(): AEDC: " + str(len(records_aedc)) + " records")
 
     # ----- Guardamos resultado en dicts
 
@@ -101,16 +101,16 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         "cantidad_opcion_8", "cantidad_opcion_9", "timestamp_ultima_actualizacion",
         "timestamp_ultimo_evento", "tipo_agregacion"]
 
-    aedc_x_nro_intento = collections.defaultdict(lambda: dict())
+    # aedc_x_nro_intento = collections.defaultdict(lambda: dict())
+    aedc_x_nro_intento = {}
     for row in records_aedc:
         numero_intento = row["numero_intento"]
-        dict_intento = aedc_x_nro_intento[numero_intento]
+        dict_intento = aedc_x_nro_intento.setdefault(numero_intento, {})
         for col_name in COLS:
             dict_intento[col_name] = row[col_name]
 
     if DEBUG:
-        plpy.info("update_agregacion_edc_py(): aedc_x_nro_intento: {0}".format(
-            pprint.pformat(dict(aedc_x_nro_intento))))
+        plpy.info("update_agregacion_edc_py(): aedc_x_nro_intento: " + pprint.pformat(dict(aedc_x_nro_intento)))
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # PREPARE: select para obtener nuevos datos
@@ -262,7 +262,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
 
         if len(records_nuevos_datos) != 1:
             plpy.notice("update_agregacion_edc_py(): NO se devolvieron datos para "
-                "campana {0}, intento {1}".format(campana_id, nro_intento))
+                "campana " + str(campana_id) + ", intento " + str(nro_intento))
             continue
 
         dump_result(records_nuevos_datos, "Current aggregates")
@@ -279,8 +279,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
             datos_de_edc[col_name] = records_nuevos_datos[0][col_name]
 
         if DEBUG:
-            plpy.info("update_agregacion_edc_py(): datos_de_edc[{0}]: {1}".format(
-                nro_intento, pprint.pformat(dict(datos_de_edc))))
+            plpy.info("update_agregacion_edc_py(): datos_de_edc[" + str(nro_intento) + "]: " + pprint.pformat(dict(datos_de_edc)))
 
         #
         # UPDATE AEDC
@@ -304,12 +303,10 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         if suma_eventos == 0:
             # evitamos 1 update!
             plpy.notice("update_agregacion_edc_py(): *NO* se hara UPDATE AEDC porque no hay "
-                "nuevos eventos - campana: {0} - intento: {1}".format(
-                    campana_id, nro_intento))
+                "nuevos eventos - campana: " + str(campana_id) + " - intento: " + str(nro_intento))
             continue
 
-        plpy.notice("update_agregacion_edc_py(): UPDATE AEDC - campana: {0} - nro_intento: {1}".format(
-            campana_id, nro_intento))
+        plpy.notice("update_agregacion_edc_py(): UPDATE AEDC - campana: " + str(campana_id) + " - nro_intento: " + str(nro_intento))
 
         aedc_actualizados += 1
 
@@ -332,8 +329,7 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         ])
 
         if res_update.nrows() != 1:
-            plpy.error("update_agregacion_edc_py({0}): UDPATE AEDC: valor erroneo de res_update.nrows(): {1}".format(
-                campana_id, res_update.nrows()))
+            plpy.error("update_agregacion_edc_py(" + str(campana_id) + "): UDPATE AEDC: valor erroneo de res_update.nrows(): " + str(res_update.nrows()))
 
         # fin de proceso de 1 intento
 

@@ -13,15 +13,15 @@ CREATE OR REPLACE FUNCTION recalculate_agregacion_edc_py_v1(campana_id int, cant
 
     if DEBUG:
         def dump_result(result, query_name):
-            plpy.info("> ----- RESULT FOR QUERY: {0}".format(query_name))
+            plpy.info("> ----- RESULT FOR QUERY: " + str(query_name))
             if len(result) > 0:
                 line = ",".join([
                     str(col_name) for col_name in result[0]
                 ])
-                plpy.info("> {0}".format(line))
+                plpy.info("> " + str(line))
             for row in result:
                 line = ",".join([str(row[col_name]) for col_name in row])
-                plpy.info("> {0}".format(line))
+                plpy.info("> " + str(line))
             plpy.info("> ----- ")
     else:
         def dump_result(result, query_name):
@@ -49,7 +49,7 @@ CREATE OR REPLACE FUNCTION recalculate_agregacion_edc_py_v1(campana_id int, cant
         records_lock = plpy.execute(plan_lock, [campana_id])
     except spiexceptions.LockNotAvailable:
         plpy.warning("recalculate_agregacion_edc_py_v1(): No se pudo obtener lock "
-            "para campana {0}".format(campana_id))
+            "para campana " + str(campana_id))
         return -1
 
     plpy.info("recalculate_agregacion_edc_py_v1(): LOCK obtenido - continuamos")
@@ -201,7 +201,7 @@ CREATE OR REPLACE FUNCTION recalculate_agregacion_edc_py_v1(campana_id int, cant
 
         if len(records_nuevos_datos) != 1:
             plpy.notice("recalculate_agregacion_edc_py_v1(): NO se devolvieron datos para "
-                "campana {0}, intento {1}".format(campana_id, nro_intento))
+                "campana " + str(campana_id) + ", intento " + str(nro_intento))
             continue
 
         dump_result(records_nuevos_datos, "Current aggregates")
@@ -217,15 +217,13 @@ CREATE OR REPLACE FUNCTION recalculate_agregacion_edc_py_v1(campana_id int, cant
             datos_de_edc[col_name] = records_nuevos_datos[0][col_name]
 
         if DEBUG:
-            plpy.info("recalculate_agregacion_edc_py_v1(): datos_de_edc[{0}]: {1}".format(
-                nro_intento, pprint.pformat(dict(datos_de_edc))))
+            plpy.info("recalculate_agregacion_edc_py_v1(): datos_de_edc[" + str(nro_intento) + "]: " + pprint.pformat(dict(datos_de_edc)))
 
         #
         # UPDATE AEDC
         #
 
-        plpy.notice("recalculate_agregacion_edc_py_v1(): UPDATE AEDC - campana: {0} - nro_intento: {1}".format(
-            campana_id, nro_intento))
+        plpy.notice("recalculate_agregacion_edc_py_v1(): UPDATE AEDC - campana: " + str(campana_id) + " - nro_intento: " + str(nro_intento))
 
         res_update = plpy.execute(plan_update, [
             int(datos_de_edc["cantidad_intentos"]),
@@ -246,8 +244,7 @@ CREATE OR REPLACE FUNCTION recalculate_agregacion_edc_py_v1(campana_id int, cant
         ])
         
         if res_update.nrows() != 1:
-            plpy.error("recalculate_agregacion_edc_py_v1({0}): UDPATE AEDC: valor erroneo de res_update.nrows(): {1}".format(
-                campana_id, res_update.nrows()))
+            plpy.error("recalculate_agregacion_edc_py_v1(" + str(campana_id) + "): UDPATE AEDC: valor erroneo de res_update.nrows(): " + str(res_update.nrows()))
 
         # fin de proceso de 1 intento
 
