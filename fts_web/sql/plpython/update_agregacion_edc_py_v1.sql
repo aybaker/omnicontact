@@ -101,10 +101,11 @@ CREATE OR REPLACE FUNCTION update_agregacion_edc_py_v1(campana_id int) RETURNS I
         "cantidad_opcion_8", "cantidad_opcion_9", "timestamp_ultima_actualizacion",
         "timestamp_ultimo_evento", "tipo_agregacion"]
 
-    aedc_x_nro_intento = collections.defaultdict(lambda: dict())
+    # aedc_x_nro_intento = collections.defaultdict(lambda: dict())
+    aedc_x_nro_intento = {}
     for row in records_aedc:
         numero_intento = row["numero_intento"]
-        dict_intento = aedc_x_nro_intento[numero_intento]
+        dict_intento = aedc_x_nro_intento.setdefault(numero_intento, {})
         for col_name in COLS:
             dict_intento[col_name] = row[col_name]
 
