@@ -78,7 +78,7 @@ class GeneradorDeDuracionDeLlamandasService(object):
         FROM fts_custom_cdr_temporal
         INNER JOIN
             (SELECT
-            campana_id, contacto_id, json_agg(evento) AS eventos_del_contacto
+            campana_id, contacto_id, array_agg(evento) AS eventos_del_contacto
             FROM fts_daemon_eventodecontacto
             WHERE campana_id = %(campana_id)s
             AND evento IN (%(opcion_0)s, %(opcion_1)s, %(opcion_2)s,

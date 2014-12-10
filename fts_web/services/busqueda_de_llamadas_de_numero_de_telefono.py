@@ -86,15 +86,29 @@ class DetalleDeLlamadaDTO(object):
         self.duracion_de_llamada = duracion_de_llamada
         self.opciones_seleccionadas = self._obtener_opciones_seleccionadas()
 
+    def _obtener_eventos_del_contacto(self):
+        """
+        La función de postgres array_agg, a diferencia de json_agg, devuele
+        un formato "{val1, val2, val3, ...}"  el cúal no es compatible con
+        json.loads(). Por lo que  en este método se obtiene los evento del
+        contacto que surgieron de la función de agregación de postgres
+        (array_agg) y se modifica para que sea un string válido para json.
+
+        Devuelve un json con los eventos del contacto.
+        """
+        eventos_del_contacto = self.duracion_de_llamada.eventos_del_contacto
+        json_string_valido = \
+            eventos_del_contacto.replace("{", "[").replace("}", "]")
+
+        return json.loads(json_string_valido)
+
     def _obtener_opciones_seleccionadas(self):
         """
         Para cada evento de contacto de las instancias DuracionDeLlamada
         obtiene el objeto opción que corresponde en cada caso y las almacena
         en una lista que setea en el atributo opciones_seleccionadas.
         """
-
-        eventos_del_contacto = json.loads(
-            self.duracion_de_llamada.eventos_del_contacto)
+        eventos_del_contacto = self._obtener_eventos_del_contacto()
 
         opciones_seleccionas = []
         for evento in eventos_del_contacto:
