@@ -869,7 +869,7 @@ class AbstractCampana(models.Model):
     bd_contacto = models.ForeignKey(
         'BaseDatosContacto',
         null=True, blank=True,
-        related_name='campanas'
+        related_name="%(class)ss"
     )
 
     class Meta:
@@ -1728,15 +1728,15 @@ class CampanaSms(AbstractCampana):
     """
     Representa una campana de envíos de SMS.
     """
-
+ 
     cantidad_chips = models.PositiveIntegerField()
     template_mensaje = models.TextField()
     tiene_respuesta = models.BooleanField()
     identificador_campana_sms = models.PositiveIntegerField()
-
+ 
     class Meta:
         ordering = ['pk']
-
+ 
     def __unicode__(self):
         return self.nombre
 
