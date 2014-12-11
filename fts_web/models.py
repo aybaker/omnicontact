@@ -858,6 +858,97 @@ class TemplateManager(models.Manager):
                                       "estado ESTADO_TEMPLATE_ACTIVO"))
 
 
+class AbstractCampana(models.Model):
+    """
+    Modelo abstracto para las campana de audio y de sms.
+    """
+
+    nombre = models.CharField(max_length=128)
+    fecha_inicio = models.DateField(null=True, blank=True)
+    fecha_fin = models.DateField(null=True, blank=True)
+    bd_contacto = models.ForeignKey(
+        'BaseDatosContacto',
+        null=True, blank=True,
+        related_name='campanas'
+    )
+
+    class Meta:
+        abstract = True
+
+    def obtener_actuacion_actual(self):
+        """
+        Este método devuelve la actuación correspondiente al
+        momento de hacer la llamada al método.
+        Si no hay ninguna devuelve None.
+        """
+        hoy_ahora = datetime.datetime.today()
+        assert hoy_ahora.tzinfo is None
+        dia_semanal = hoy_ahora.weekday()
+        hora_actual = hoy_ahora.time()
+
+        # FIXME: PERFORMANCE: ver si el resultado de 'filter()' se cachea,
+        # sino, usar algo que se cachee, ya que este metodo es ejecutado
+        # muchas veces desde el daemon
+        actuaciones_hoy = self.actuaciones.filter(dia_semanal=dia_semanal)
+        if not actuaciones_hoy:
+            return None
+
+        for actuacion in actuaciones_hoy:
+            if actuacion.hora_desde <= hora_actual <= actuacion.hora_hasta:
+                return actuacion
+        return None
+
+    def verifica_fecha(self, hoy_ahora):
+        """
+        Este método se encarga de verificar si la fecha pasada como
+        parametro en hoy_ahora es válida para la campaña actual.
+        Devuelve True o False.
+        """
+        assert isinstance(hoy_ahora, datetime.datetime)
+
+        fecha_actual = hoy_ahora.date()
+
+        if self.fecha_inicio <= fecha_actual <= self.fecha_fin:
+            return True
+        return False
+
+    def valida_actuaciones(self):
+        """
+        Este método verifica que la actuaciones de una campana, sean válidas.
+        Corrobora que al menos uno de los días semanales del rango de fechas
+        de la campana concuerde con algún dia de la actuación que tenga la
+        campana al momento de ser consultado este método.
+        Si la campaña tiene un solo día de ejecución o si tiene un solo día
+        de actuación, y los días semanales coinciden y es hoy, valida que
+        hora actual sea menor que la hora_hasta de la actuación.
+        """
+        valida = False
+        hoy_ahora = datetime.datetime.today()
+        hoy = hoy_ahora.date()
+        ahora = hoy_ahora.time()
+
+        fecha_inicio = self.fecha_inicio
+        fecha_fin = self.fecha_fin
+
+        lista_actuaciones = [actuacion.dia_semanal for actuacion in
+                             self.actuaciones.all()]
+
+        dias_totales = (self.fecha_fin - self.fecha_inicio).days + 1
+        for numero_dia in range(dias_totales):
+            dia_actual = (self.fecha_inicio + datetime.timedelta(
+                days=numero_dia))
+            dia_semanal_actual = dia_actual.weekday()
+
+            if dia_semanal_actual in lista_actuaciones:
+                valida = True
+                actuaciones_diaria = self.actuaciones.filter(
+                    dia_semanal=dia_semanal_actual)
+                for actuacion in actuaciones_diaria:
+                    if dia_actual == hoy and ahora > actuacion.hora_hasta:
+                        valida = False
+        return valida
+
+
 class CampanaManager(models.Manager):
     """Manager para Campanas"""
 
@@ -1170,7 +1261,7 @@ upload_to_audios_asterisk = upload_to("audios_asterisk", 95)
 upload_to_audios_originales = upload_to("audios_reproduccion", 95)
 
 
-class Campana(models.Model):
+class Campana(AbstractCampana):
     """Una campaña del call center"""
 
     objects_default = models.Manager()
@@ -1250,9 +1341,6 @@ class Campana(models.Model):
         (ESTADO_TEMPLATE_BORRADO, 'Template Borrado'),
     )
 
-    nombre = models.CharField(
-        max_length=128,
-    )
     estado = models.PositiveIntegerField(
         choices=ESTADOS,
         default=ESTADO_EN_DEFINICION,
@@ -1260,15 +1348,8 @@ class Campana(models.Model):
     cantidad_canales = models.PositiveIntegerField()
     cantidad_intentos = models.PositiveIntegerField()
     segundos_ring = models.PositiveIntegerField()
-    fecha_inicio = models.DateField(null=True, blank=True)
-    fecha_fin = models.DateField(null=True, blank=True)
     duracion_de_audio = models.TimeField(null=True, blank=True)
     estadisticas = models.TextField(null=True, blank=True)
-    bd_contacto = models.ForeignKey(
-        'BaseDatosContacto',
-        null=True, blank=True,
-        related_name='campanas'
-    )
     es_template = models.BooleanField(default=False)
 
     def obtener_id_archivo_audio(self):
@@ -1435,43 +1516,6 @@ class Campana(models.Model):
         self.estado = Campana.ESTADO_ACTIVA
         self.save()
 
-    def obtener_actuacion_actual(self):
-        """
-        Este método devuelve la actuación correspondiente al
-        momento de hacer la llamada al método.
-        Si no hay ninguna devuelve None.
-        """
-        hoy_ahora = datetime.datetime.today()
-        assert hoy_ahora.tzinfo is None
-        dia_semanal = hoy_ahora.weekday()
-        hora_actual = hoy_ahora.time()
-
-        # FIXME: PERFORMANCE: ver si el resultado de 'filter()' se cachea,
-        # sino, usar algo que se cachee, ya que este metodo es ejecutado
-        # muchas veces desde el daemon
-        actuaciones_hoy = self.actuaciones.filter(dia_semanal=dia_semanal)
-        if not actuaciones_hoy:
-            return None
-
-        for actuacion in actuaciones_hoy:
-            if actuacion.hora_desde <= hora_actual <= actuacion.hora_hasta:
-                return actuacion
-        return None
-
-    def verifica_fecha(self, hoy_ahora):
-        """
-        Este método se encarga de verificar si la fecha pasada como
-        parametro en hoy_ahora es válida para la campaña actual.
-        Devuelve True o False.
-        """
-        assert isinstance(hoy_ahora, datetime.datetime)
-
-        fecha_actual = hoy_ahora.date()
-
-        if self.fecha_inicio <= fecha_actual <= self.fecha_fin:
-            return True
-        return False
-
     def obtener_detalle_opciones_seleccionadas(self):
         """
         Este método se encarga de invocar al método de EDC que filtra los
@@ -1537,42 +1581,6 @@ class Campana(models.Model):
                 opcion.derivacion_externa.borrado is True):
                 return False
         return True
-
-    def valida_actuaciones(self):
-        """
-        Este método verifica que la actuaciones de una campana, sean válidas.
-        Corrobora que al menos uno de los días semanales del rango de fechas
-        de la campana concuerde con algún dia de la actuación que tenga la
-        campana al momento de ser consultado este método.
-        Si la campaña tiene un solo día de ejecución o si tiene un solo día
-        de actuación, y los días semanales coinciden y es hoy, valida que
-        hora actual sea menor que la hora_hasta de la actuación.
-        """
-        valida = False
-        hoy_ahora = datetime.datetime.today()
-        hoy = hoy_ahora.date()
-        ahora = hoy_ahora.time()
-
-        fecha_inicio = self.fecha_inicio
-        fecha_fin = self.fecha_fin
-
-        lista_actuaciones = [actuacion.dia_semanal for actuacion in
-                             self.actuaciones.all()]
-
-        dias_totales = (self.fecha_fin - self.fecha_inicio).days + 1
-        for numero_dia in range(dias_totales):
-            dia_actual = (self.fecha_inicio + datetime.timedelta(
-                days=numero_dia))
-            dia_semanal_actual = dia_actual.weekday()
-
-            if dia_semanal_actual in lista_actuaciones:
-                valida = True
-                actuaciones_diaria = self.actuaciones.filter(
-                    dia_semanal=dia_semanal_actual)
-                for actuacion in actuaciones_diaria:
-                    if dia_actual == hoy and ahora > actuacion.hora_hasta:
-                        valida = False
-        return valida
 
     def valida_audio(self):
         """
@@ -2074,8 +2082,8 @@ class Opcion(models.Model):
 
 class AbstractActuacion(models.Model):
     """
-    Representa los días de la semana y los
-    horarios en que una campaña se ejecuta.
+    Modelo abstracto para las actuaciones de las campanas
+    de audio y sms.
     """
 
     """Dias de la semana, compatibles con datetime.date.weekday()"""
@@ -2194,6 +2202,10 @@ class AbstractActuacion(models.Model):
 
 
 class Actuacion(AbstractActuacion):
+    """
+    Representa los días de la semana y los
+    horarios en que una campaña se ejecuta.
+    """
 
     campana = models.ForeignKey(
         'Campana',
