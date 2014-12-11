@@ -1724,6 +1724,23 @@ class Campana(AbstractCampana):
         return self.nombre
 
 
+class CampanaSms(AbstractCampana):
+    """
+    Representa una campana de envíos de SMS.
+    """
+
+    cantidad_chips = models.PositiveIntegerField()
+    template_mensaje = models.TextField()
+    tiene_respuesta = models.BooleanField()
+    identificador_campana_sms = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['pk']
+
+    def __unicode__(self):
+        return self.nombre
+
+
 class AudioDeCampanaManager(models.Manager):
 
     def obtener_siguiente_orden(self, campana_id):
@@ -2217,7 +2234,6 @@ class Actuacion(AbstractActuacion):
             self.campana,
             self.get_dia_semanal_display(),
         )
-
 
 #==============================================================================
 # Calificacion
