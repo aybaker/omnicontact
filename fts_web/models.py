@@ -1728,15 +1728,15 @@ class CampanaSms(AbstractCampana):
     """
     Representa una campana de envíos de SMS.
     """
- 
+
     cantidad_chips = models.PositiveIntegerField()
     template_mensaje = models.TextField()
     tiene_respuesta = models.BooleanField()
     identificador_campana_sms = models.PositiveIntegerField()
- 
+
     class Meta:
         ordering = ['pk']
- 
+
     def __unicode__(self):
         return self.nombre
 
@@ -2232,6 +2232,24 @@ class Actuacion(AbstractActuacion):
     def __unicode__(self):
         return "Campaña {0} - Actuación: {1}".format(
             self.campana,
+            self.get_dia_semanal_display(),
+        )
+
+
+class ActuacionSms(AbstractActuacion):
+    """
+    Representa los días de la semana y los
+    horarios en que una campaña sms se ejecuta.
+    """
+
+    campana_sms = models.ForeignKey(
+        'CampanaSms',
+        related_name='actuaciones'
+    )
+
+    def __unicode__(self):
+        return "CampañaSms {0} - Actuación: {1}".format(
+            self.campana_sms,
             self.get_dia_semanal_display(),
         )
 
