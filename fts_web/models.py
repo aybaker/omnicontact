@@ -2071,7 +2071,8 @@ class Opcion(models.Model):
 # Actuaciones
 #==============================================================================
 
-class Actuacion(models.Model):
+
+class AbstractActuacion(models.Model):
     """
     Representa los días de la semana y los
     horarios en que una campaña se ejecuta.
@@ -2102,16 +2103,8 @@ class Actuacion(models.Model):
     hora_desde = models.TimeField()
     hora_hasta = models.TimeField()
 
-    campana = models.ForeignKey(
-        'Campana',
-        related_name='actuaciones'
-    )
-
-    def __unicode__(self):
-        return "Campaña {0} - Actuación: {1}".format(
-            self.campana,
-            self.get_dia_semanal_display(),
-        )
+    class Meta:
+        abstract = True
 
     def verifica_actuacion(self, hoy_ahora):
         """
@@ -2198,6 +2191,20 @@ class Actuacion(models.Model):
                     'hora_hasta': ["Ya esta cubierto el rango horario\
                         en ese día semanal."],
                 })
+
+
+class Actuacion(AbstractActuacion):
+
+    campana = models.ForeignKey(
+        'Campana',
+        related_name='actuaciones'
+    )
+
+    def __unicode__(self):
+        return "Campaña {0} - Actuación: {1}".format(
+            self.campana,
+            self.get_dia_semanal_display(),
+        )
 
 
 #==============================================================================
@@ -2309,4 +2316,3 @@ class DuracionDeLlamada(models.Model):
     fecha_hora_llamada = models.DateTimeField()
     duracion_en_segundos = models.PositiveIntegerField()
     eventos_del_contacto = models.TextField()
-
