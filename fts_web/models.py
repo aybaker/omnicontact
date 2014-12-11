@@ -2362,3 +2362,25 @@ class DuracionDeLlamada(models.Model):
     fecha_hora_llamada = models.DateTimeField()
     duracion_en_segundos = models.PositiveIntegerField()
     eventos_del_contacto = models.TextField()
+
+
+#==============================================================================
+# SMSs
+#==============================================================================
+
+class OpcionSms(models.Model):
+    """
+    Representa las posibles respuesta que puede tener una CampanaSma.
+    """
+
+    respuesta = models.CharField(max_length=64)
+    campana_sms = models.ForeignKey(
+        'CampanaSms',
+        related_name='opcionsmss'
+    )
+
+    def __unicode__(self):
+        return "CampañaSms {0} - Respuesta: {1}".format(
+            self.campana_sms,
+            self.respuesta,
+        )
