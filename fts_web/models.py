@@ -1730,9 +1730,9 @@ class CampanaSms(AbstractCampana):
     """
 
     cantidad_chips = models.PositiveIntegerField()
-    template_mensaje = models.TextField()
+    template_mensaje = models.TextField(null=True, blank=True)
     tiene_respuesta = models.BooleanField()
-    identificador_campana_sms = models.PositiveIntegerField()
+    identificador_campana_sms = models.PositiveIntegerField(unique=True)
 
     class Meta:
         ordering = ['pk']
