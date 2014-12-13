@@ -152,6 +152,57 @@ urlpatterns = patterns('',
         name='crea_campana_template',
     ),
 
+
+    #==========================================================================
+    # CampañaSMS
+    #==========================================================================
+#     url(r'^campanas/$',
+#         login_required(views.CampanaListView.as_view()),
+#         name='lista_campana',
+#     ),
+#     url(r'^campana/(?P<pk_campana>\d+)/$',
+#         login_required(views.DetalleCampanView.as_view()),
+#         name='detalle_campana',
+#     ),
+    url(r'^campana_sms/nueva_campana_sms/$',
+        login_required(views.CampanaSmsCreateView.as_view()),
+        name='nueva_campana_sms',
+    ),
+#     url(r'^campana/(?P<pk_campana>\d+)/elimina/$',
+#         login_required(views.CampanaDeleteView.as_view()),
+#         name='campana_elimina',
+#     ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/datos_basicos/$',
+        login_required(views.CampanaSmsUpdateView.as_view()),
+        name='datos_basicos_campana_sms',
+    ),
+
+
+#     url(r'^campana/(?P<pk_campana>\d+)/opciones/$',
+#         login_required(views.OpcionCampanaCreateView.as_view()),
+#         name='opcion_campana',
+#     ),
+#     url(r'^campana/(?P<pk_campana>\d+)/opcion/(?P<pk>\d+)/elimina/$',
+#         login_required(views.OpcionCampanaDeleteView.as_view()),
+#         name='opcion_campana_elimina',
+#     ),
+#     url(r'^campana/(?P<pk_campana>\d+)/actuacion/$',
+#         login_required(views.ActuacionCampanaCreateView.as_view()),
+#         name='actuacion_campana',
+#     ),
+#     url(r'^campana/(?P<pk_campana>\d+)/actuacion/(?P<pk>\d+)/elimina/$',
+#         login_required(views.ActuacionCampanaDeleteView.as_view()),
+#         name='actuacion_campana_elimina',
+#     ),
+#     url(r'^campana/(?P<pk_campana>\d+)/confirma/$',
+#         login_required(views.ConfirmaCampanaView.as_view()),
+#         name='confirma_campana',
+#     ),
+
+
+
+
+
     #==========================================================================
     # Campaña
     #==========================================================================

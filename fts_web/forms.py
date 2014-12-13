@@ -17,7 +17,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 
 from fts_web.models import (Actuacion, AgenteGrupoAtencion, ArchivoDeAudio,
                             AudioDeCampana, BaseDatosContacto, Campana,
-                            Calificacion, GrupoAtencion, Opcion,
+                            CampanaSms, Calificacion, GrupoAtencion, Opcion,
                             DerivacionExterna)
 
 
@@ -287,6 +287,47 @@ class CampanaForm(forms.ModelForm):
         labels = {
             'bd_contacto': 'Base de Datos de Contactos',
             'duracion_de_audio': 'Duración de los audios (HH:MM:SS)'
+        }
+
+
+class CampanaSmsForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(CampanaSmsForm, self).__init__(*args, **kwargs)
+
+        self.fields['bd_contacto'].queryset =\
+            BaseDatosContacto.objects.obtener_definidas()
+
+        self.fields['fecha_inicio'].widget = DateTimePicker(
+            options={"format": "DD/MM/YYYY", "pickTime": False})
+        self.fields['fecha_inicio'].help_text = 'Ejemplo: 10/04/2014'
+        self.fields['fecha_inicio'].required = True
+
+        self.fields['fecha_fin'].widget = DateTimePicker(
+            options={"format": "DD/MM/YYYY", "pickTime": False})
+        self.fields['fecha_fin'].help_text = 'Ejemplo: 20/04/2014'
+        self.fields['fecha_fin'].required = True
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+        self.fields['bd_contacto'].required = True
+
+        layout = Layout(
+            Field('nombre'),
+            Field('cantidad_chips'),
+            Field('cantidad_intentos'),
+            Field('fecha_inicio'),
+            Field('fecha_fin'),
+            Field('bd_contacto'),
+            Field('tiene_respuesta'),
+        )
+        self.helper.layout = layout
+
+    class Meta:
+        model = CampanaSms
+        exclude = ('identificador_campana_sms',)
+        labels = {
+            'bd_contacto': 'Base de Datos de Contactos',
         }
 
 

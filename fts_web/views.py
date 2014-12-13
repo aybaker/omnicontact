@@ -9,6 +9,8 @@ from fts_web.views_archivo_de_audio import *  # @UnusedWildImport
 from fts_web.views_base_de_datos_contacto import *  # @UnusedWildImport
 from fts_web.views_campana import *  # @UnusedWildImport
 from fts_web.views_campana_creacion import *  # @UnusedWildImport
+from fts_web.views_campana_sms_creacion import *  # @UnusedWildImport
+from fts_web.views_grupo_atencion import *  # @UnusedWildImport
 from fts_web.views_campana_reciclado import *  # @UnusedWildImport
 from fts_web.views_campana_template import *  # @UnusedWildImport
 from fts_web.views_campana_reportes import *  # @UnusedWildImport
