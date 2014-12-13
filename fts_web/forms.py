@@ -325,9 +325,44 @@ class CampanaSmsForm(forms.ModelForm):
 
     class Meta:
         model = CampanaSms
-        exclude = ('identificador_campana_sms',)
+        exclude = ('identificador_campana_sms', 'template_mensaje')
         labels = {
             'bd_contacto': 'Base de Datos de Contactos',
+        }
+
+
+class TemplateMensajeCampanaSmsForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TemplateMensajeCampanaSmsForm, self).__init__(*args, **kwargs)
+
+        bd_contacto_metadada = self.instance.bd_contacto.get_metadata()
+
+        variables_de_cuerpo_mensaje = ((variable, variable)
+            for variable in bd_contacto_metadada.nombres_de_columnas)
+
+        self.fields['variables'] = forms.MultipleChoiceField(
+            choices=variables_de_cuerpo_mensaje)
+        self.fields['variables'].required = False
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        layout = Layout(
+            Div(
+                'variables',
+                css_class='col-lg-5'
+            ),
+            Div(
+                'template_mensaje',
+                css_class='col-lg-5'
+            ),
+        )
+        self.helper.layout = layout
+
+    class Meta:
+        model = CampanaSms
+        fields = ('template_mensaje',)
+        labels = {
+            'template_mensaje': 'Cuerpo del Mensaje',
         }
 
 

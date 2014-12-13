@@ -13,7 +13,7 @@ from django.views.generic.edit import (CreateView, UpdateView, DeleteView,
                                        BaseUpdateView)
 
 from fts_web.forms import (CampanaForm, CampanaSmsForm,
-    ActuacionForm) 
+    ActuacionForm, TemplateMensajeCampanaSmsForm)
 from fts_web.models import (Campana, CampanaSms, OpcionSms,
     Actuacion)
 
@@ -70,10 +70,28 @@ class CampanaSmsUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse(
-            'datos_basicos_campana_sms',
+            'template_mensaje_campana_sms',
             kwargs={"pk_campana_sms": self.object.pk})
 
-# 
+
+class TemplateMensajeCampanaSmsUpdateView(UpdateView):
+    """
+    Esta vista actualiza un objeto CampanaSms, agregando
+    el cuerpo del mensaje.
+    """
+
+    template_name = 'campana_sms/template_mensaje_campana_sms.html'
+    model = CampanaSms
+    context_object_name = 'campana_sms'
+    pk_url_kwarg = 'pk_campana_sms'
+    form_class = TemplateMensajeCampanaSmsForm
+
+    def get_success_url(self):
+        return reverse(
+            'template_mensaje_campana_sms',
+            kwargs={"pk_campana_sms": self.object.pk})
+
+
 # class CalificacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
 #     """
 #     Esta vista crea uno o varios objetos Calificación

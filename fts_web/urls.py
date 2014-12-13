@@ -176,6 +176,10 @@ urlpatterns = patterns('',
         login_required(views.CampanaSmsUpdateView.as_view()),
         name='datos_basicos_campana_sms',
     ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/cuerpo_mensaje/$',
+        login_required(views.TemplateMensajeCampanaSmsUpdateView.as_view()),
+        name='template_mensaje_campana_sms',
+    ),
 
 
 #     url(r'^campana/(?P<pk_campana>\d+)/opciones/$',
