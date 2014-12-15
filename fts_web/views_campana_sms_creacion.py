@@ -13,9 +13,10 @@ from django.views.generic.edit import (CreateView, UpdateView, DeleteView,
                                        BaseUpdateView)
 
 from fts_web.forms import (CampanaForm, CampanaSmsForm,
-    ActuacionForm, OpcionSmsForm, TemplateMensajeCampanaSmsForm)
+    ActuacionForm, ActuacionSmsForm, OpcionSmsForm,
+    TemplateMensajeCampanaSmsForm)
 from fts_web.models import (Campana, CampanaSms, OpcionSms,
-    Actuacion)
+    Actuacion, ActuacionSms)
 
 from fts_web.services.creacion_campana import (
     ActivacionCampanaTemplateService, ValidarCampanaError,
@@ -149,109 +150,108 @@ class OpcionSmsCampanaSmsDeleteView(DeleteView):
         return reverse(
             'opcion_sms_campana_sms',
             kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
-#
-#
-# class ActuacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
-#     """
-#     Esta vista crea uno o varios objetos Actuacion
-#     para la Campana que se este creando.
-#     Inicializa el form con campo campana (hidden)
-#     con el id de campana que viene en la url.
-#     """
-# 
-#     template_name = 'campana/actuacion_campana.html'
-#     model = Actuacion
-#     context_object_name = 'actuacion'
-#     form_class = ActuacionForm
-# 
-#     # @@@@@@@@@@@@@@@@@@@@
-# 
-#     def get_initial(self):
-#         initial = super(ActuacionCampanaCreateView, self).get_initial()
-#         initial.update({'campana': self.campana.id})
-#         return initial
-# 
-#     def get_context_data(self, **kwargs):
-#         context = super(
-#             ActuacionCampanaCreateView, self).get_context_data(**kwargs)
-#         context['campana'] = self.campana
-#         context['actuaciones_validas'] = \
-#             self.campana.obtener_actuaciones_validas()
-#         return context
-# 
-#     def form_valid(self, form):
-#         form_valid = super(ActuacionCampanaCreateView, self).form_valid(form)
-# 
-#         if not self.campana.valida_actuaciones():
-#             message = """<strong>¡Cuidado!</strong>
-#             Los días del rango de fechas seteados en la campaña NO coinciden
-#             con ningún día de las actuaciones programadas. Por consiguiente
-#             la campaña NO se ejecutará."""
-#             messages.add_message(
-#                 self.request,
-#                 messages.WARNING,
-#                 message,
-#             )
-# 
-#         return form_valid
-# 
-#     def get_success_url(self):
-#         return reverse(
-#             'actuacion_campana',
-#             kwargs={"pk_campana": self.kwargs['pk_campana']}
-#         )
-# 
-# 
-# class ActuacionCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
-#     """
-#     Esta vista se encarga de la eliminación del
-#     objeto Actuación seleccionado.
-#     """
-# 
-#     model = Actuacion
-#     template_name = 'campana/elimina_actuacion_campana.html'
-# 
-#     # @@@@@@@@@@@@@@@@@@@@
-# 
-#     def get_object(self, queryset=None):
-#         # FIXME: Esté método no hace nada, se podría remover.
-#         actuacion = super(ActuacionCampanaDeleteView, self).get_object(
-#             queryset=None)
-#         return actuacion
-# 
-#     def delete(self, request, *args, **kwargs):
-#         self.object = self.get_object()
-#         success_url = self.get_success_url()
-#         self.object.delete()
-# 
-#         if not self.campana.valida_actuaciones():
-#             message = """<strong>¡Cuidado!</strong>
-#             Los días del rango de fechas seteados en la campaña NO coinciden
-#             con ningún día de las actuaciones programadas. Por consiguiente
-#             la campaña NO se ejecutará."""
-#             messages.add_message(
-#                 self.request,
-#                 messages.WARNING,
-#                 message,
-#             )
-# 
-#         message = '<strong>Operación Exitosa!</strong>\
-#         Se llevó a cabo con éxito la eliminación de la Actuación.'
-# 
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             message,
-#         )
-#         return HttpResponseRedirect(success_url)
-# 
-#     def get_success_url(self):
-#         return reverse(
-#             'actuacion_campana',
-#             kwargs={"pk_campana": self.campana.pk}
-#         )
-# 
-# 
+
+
+class ActuacionSmsCampanaSmsCreateView(CreateView):
+    """
+    """
+
+    template_name = 'campana_sms/actuacion_sms_campana_sms.html'
+    model = ActuacionSms
+    context_object_name = 'actuacion_sms'
+    form_class = ActuacionSmsForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana_sms = CampanaSms.objects.get(
+                pk=self.kwargs['pk_campana_sms'])
+
+        return super(ActuacionSmsCampanaSmsCreateView, self).dispatch(
+            request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = super(ActuacionSmsCampanaSmsCreateView, self).get_initial()
+        initial.update({'campana_sms': self.campana_sms.id})
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            ActuacionSmsCampanaSmsCreateView, self).get_context_data(**kwargs)
+        context['campana_sms'] = self.campana_sms
+        context['actuaciones_validas'] = \
+            self.campana_sms.obtener_actuaciones_validas()
+        return context
+
+    def form_valid(self, form):
+        form_valid = super(ActuacionSmsCampanaSmsCreateView, self).form_valid(
+            form)
+
+        if not self.campana_sms.valida_actuaciones():
+            message = """<strong>¡Cuidado!</strong>
+            Los días del rango de fechas seteados en la campaña NO coinciden
+            con ningún día de las actuaciones programadas. Por consiguiente
+            la campaña NO se ejecutará."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+
+        return form_valid
+
+    def get_success_url(self):
+        return reverse(
+            'actuacion_sms_campana_sms',
+            kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
+
+
+class ActuacionSmsCampanaSmsDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto ActuacionSms seleccionado.
+    """
+
+    model = ActuacionSms
+    template_name = 'campana_sms/elimina_actuacion_sms_campana_sms.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana_sms = CampanaSms.objects.get(
+                pk=self.kwargs['pk_campana_sms'])
+
+        return super(ActuacionSmsCampanaSmsDeleteView, self).dispatch(
+            request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.delete()
+
+        if not self.campana_sms.valida_actuaciones():
+            message = """<strong>¡Cuidado!</strong>
+            Los días del rango de fechas seteados en la campaña NO coinciden
+            con ningún día de las actuaciones programadas. Por consiguiente
+            la campaña NO se ejecutará."""
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                message,
+            )
+
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Actuación.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse(
+            'actuacion_sms_campana_sms',
+            kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
+
+
 # class ConfirmaCampanaMixin(object):
 # 
 #     def post(self, request, *args, **kwargs):

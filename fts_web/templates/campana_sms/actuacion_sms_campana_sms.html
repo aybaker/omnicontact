@@ -7,28 +7,16 @@
     <div class="panel fts-border-verde">
         <!-- Default panel contents -->
         <div class="panel-heading fts-bg-verde-gradiente">  
-            {% if es_template %}
-                <h4 class="inline">Nuevo Template de Campaña: Actuación</h4>
-            {% else %}
-                <h4 class="inline">Nueva Campaña: Actuación</h4>
-            {% endif %}              
+            <h4 class="inline">Nueva Campaña Sms: Actuación</h4>           
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
             <ul class="nav nav-tabs">
-                {% if es_template %}
-                    <li ><a href="{% url 'datos_basicos_template' campana.pk %}">1- Datos Básicos</a></li>
-                    <li><a href="{% url 'audio_template' campana.pk %}">2- Audio</a></li>
-                    <li><a href="{% url 'calificacion_template' campana.pk %}">3- Calificaciones</a></li>
-                    <li><a href="{% url 'opcion_template' campana.pk %}">4- Opciones</a></li>
-                {% else %}
-                    <li><a href="{% url 'datos_basicos_campana' campana.pk %}">1- Datos Básicos</a></li>
-                    <li><a href="{% url 'audio_campana' campana.pk %}">2- Audio</a></li>
-                    <li><a href="{% url 'calificacion_campana' campana.pk %}">3- Calificaciones</a></li>
-                    <li><a href="{% url 'opcion_campana' campana.pk %}">4- Opciones</a></li>
-                {% endif %}                
-                <li class="active"><a>5- Actuación</a></li>
-                <li class="disabled"><a>6- Confirmar Campaña</a></li>
+                <li><a href="{% url 'datos_basicos_campana_sms'  campana_sms.pk %}">1- Datos Básicos</a></li>
+                <li><a href="{% url 'template_mensaje_campana_sms'  campana_sms.pk %}">2- Cuepro del Mensaje</a></li>
+                <li><a href="{% url 'opcion_sms_campana_sms'  campana_sms.pk %}">3- Respuestas</a></li>
+                <li class="active"><a>4- Actuación</a></li>
+                <li class="disabled"><a>5- Confirmar</a></li>
             </ul>
             <br>
             <form role="form" method="post">
@@ -39,7 +27,7 @@
                 {% crispy form %} 
             </div>
             <div class="col-lg-6">
-                {% if campana %}
+                {% if campana_sms %}
                     <h4>Actuaciones</h4>
                     <table class="table table-bordered table-hover">
                         <thead>
@@ -51,7 +39,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                            {% for actuacion in campana.actuaciones.all %}
+                            {% for actuacion in campana_sms.actuaciones.all %}
                                 <tr>
                                     <td>
                                         {% if actuacion in actuaciones_validas %}
@@ -66,12 +54,8 @@
                                     </td>
                                     <td>{{ actuacion.hora_desde }} Hs.</td>
                                     <td>{{ actuacion.hora_hasta }} Hs.</td>
-                                    <td>
-                                        {% if es_template %}
-                                            <a href="{% url 'actuacion_template_elimina' campana.pk actuacion.pk %}"> Eliminar</a>
-                                        {% else %}
-                                            <a href="{% url 'actuacion_campana_elimina' campana.pk actuacion.pk %}"> Eliminar</a>
-                                        {% endif %}                        
+                                    <td>                                      
+                                        <a href="{% url 'actuacion_sms_campana_sms_elimina' campana_sms.pk actuacion.pk %}"> Eliminar</a>                      
                                     </td>       
                                 </tr>
                              {% empty %}
@@ -92,19 +76,12 @@
                 <button type="submit" id="id_guardar" class="btn btn-success btn-lg">
                     <span class="glyphicon glyphicon-plus"></span>
                     Agregar Actuación
-                </button>
-                
-                {% if es_template %}
-                    <a href="{% url 'confirma_template' campana.pk %}" class="btn btn-default pull-right" role="button">
+                </button>            
+                {% if actuaciones_validas %}
+                    <a href="{# url 'confirma_campana_sms' campana_sms.pk #}" class="btn btn-default pull-right" role="button">
                         Continuar <span class="glyphicon glyphicon-chevron-right"></span>
-                    </a> 
-                {% else %}
-                    {% if actuaciones_validas %}
-                        <a href="{% url 'confirma_campana' campana.pk %}" class="btn btn-default pull-right" role="button">
-                            Continuar <span class="glyphicon glyphicon-chevron-right"></span>
-                        </a>
-                    {% endif %} 
-                {% endif %}
+                    </a>
+                {% endif %} 
             </div>
             </form>        
         </div>

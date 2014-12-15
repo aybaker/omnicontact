@@ -15,7 +15,7 @@ from crispy_forms.layout import Field, Layout, Submit, Div, MultiField, HTML
 
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from fts_web.models import (Actuacion, AgenteGrupoAtencion, ArchivoDeAudio,
+from fts_web.models import (Actuacion, ActuacionSms, AgenteGrupoAtencion, ArchivoDeAudio,
                             AudioDeCampana, BaseDatosContacto, Campana,
                             CampanaSms, Calificacion, GrupoAtencion, Opcion,
                             OpcionSms, DerivacionExterna)
@@ -567,6 +567,35 @@ class ActuacionForm(forms.ModelForm):
 
     class Meta:
         model = Actuacion
+
+
+class ActuacionSmsForm(forms.ModelForm):
+    hora_desde = forms.TimeField(
+        help_text='Ejemplo: 09:10',
+        widget=DateTimePicker(options={"format": "HH:mm",
+                                       "pickDate": False},
+                              icon_attrs={'class': 'glyphicon glyphicon-time'})
+    )
+    hora_hasta = forms.TimeField(
+        help_text='Ejemplo: 20:30',
+        widget=DateTimePicker(options={"format": "HH:mm",
+                                       "pickDate": False},
+                              icon_attrs={'class': 'glyphicon glyphicon-time'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('dia_semanal'),
+            Field('hora_desde'),
+            Field('hora_hasta'),
+            Field('campana_sms', type="hidden"),
+        )
+        super(ActuacionSmsForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = ActuacionSms
 
 
 # =============================================================================

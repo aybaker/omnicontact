@@ -875,6 +875,41 @@ class AbstractCampana(models.Model):
     class Meta:
         abstract = True
 
+    def obtener_actuaciones_validas(self):
+        """
+        Este método devuelve un lista con las actuaciones válidas de una
+        campaña. Teniendo como válidas aquellas que se van a ser procesadas
+        teniendo en cuenta las fechas y horas que se le setearon.
+
+        En caso de que las fecha_iniio y fecha_fin sean nulas, como ser en un
+        template, devuelve una lista vacia.
+        """
+        hoy_ahora = datetime.datetime.today()
+        hoy = hoy_ahora.date()
+        ahora = hoy_ahora.time()
+
+        lista_actuaciones = [actuacion.dia_semanal for actuacion in
+                             self.actuaciones.all()]
+        lista_actuaciones_validas = []
+
+        dias_totales = (self.fecha_fin - self.fecha_inicio).days + 1
+        for numero_dia in range(dias_totales):
+            dia_actual = (self.fecha_inicio + datetime.timedelta(
+                days=numero_dia))
+            dia_semanal_actual = dia_actual.weekday()
+
+            if dia_semanal_actual in lista_actuaciones:
+                actuaciones_diaria = self.actuaciones.filter(
+                    dia_semanal=dia_semanal_actual)
+                for actuacion in actuaciones_diaria:
+                    actuacion_valida = True
+                    if dia_actual == hoy and ahora > actuacion.hora_hasta:
+                        actuacion_valida = False
+
+                    if actuacion_valida:
+                        lista_actuaciones_validas.append(actuacion)
+        return lista_actuaciones_validas
+
     def obtener_actuacion_actual(self):
         """
         Este método devuelve la actuación correspondiente al
@@ -1616,45 +1651,9 @@ class Campana(AbstractCampana):
         return True
 
     def obtener_actuaciones_validas(self):
-        """
-        Este método devuelve un lista con las actuaciones válidas de una
-        campaña. Teniendo como válidas aquellas que se van a ser procesadas
-        teniendo en cuenta las fechas y horas que se le setearon.
-
-        En caso de que las fecha_iniio y fecha_fin sean nulas, como ser en un
-        template, devuelve una lista vacia.
-        """
-        hoy_ahora = datetime.datetime.today()
-        hoy = hoy_ahora.date()
-        ahora = hoy_ahora.time()
-
-        fecha_inicio = self.fecha_inicio
-        fecha_fin = self.fecha_fin
-
         if self.es_template:
             return []
-
-        lista_actuaciones = [actuacion.dia_semanal for actuacion in
-                             self.actuaciones.all()]
-        lista_actuaciones_validas = []
-
-        dias_totales = (self.fecha_fin - self.fecha_inicio).days + 1
-        for numero_dia in range(dias_totales):
-            dia_actual = (self.fecha_inicio + datetime.timedelta(
-                days=numero_dia))
-            dia_semanal_actual = dia_actual.weekday()
-
-            if dia_semanal_actual in lista_actuaciones:
-                actuaciones_diaria = self.actuaciones.filter(
-                    dia_semanal=dia_semanal_actual)
-                for actuacion in actuaciones_diaria:
-                    actuacion_valida = True
-                    if dia_actual == hoy and ahora > actuacion.hora_hasta:
-                        actuacion_valida = False
-
-                    if actuacion_valida:
-                        lista_actuaciones_validas.append(actuacion)
-        return lista_actuaciones_validas
+        return super(Campana, self).obtener_actuaciones_validas()
 
     def get_nombre_contexto_para_asterisk(self):
         """Devuelve un texto para ser usado en Asterisk,
@@ -2189,6 +2188,24 @@ class AbstractActuacion(models.Model):
         return self.hora_desde < time_a_chequear and \
             self.hora_hasta < time_a_chequear
 
+
+class Actuacion(AbstractActuacion):
+    """
+    Representa los días de la semana y los
+    horarios en que una campaña se ejecuta.
+    """
+
+    campana = models.ForeignKey(
+        'Campana',
+        related_name='actuaciones'
+    )
+
+    def __unicode__(self):
+        return "Campaña {0} - Actuación: {1}".format(
+            self.campana,
+            self.get_dia_semanal_display(),
+        )
+
     def clean(self):
         """
         Valida que al crear una actuación a una campaña
@@ -2218,24 +2235,6 @@ class AbstractActuacion(models.Model):
                 })
 
 
-class Actuacion(AbstractActuacion):
-    """
-    Representa los días de la semana y los
-    horarios en que una campaña se ejecuta.
-    """
-
-    campana = models.ForeignKey(
-        'Campana',
-        related_name='actuaciones'
-    )
-
-    def __unicode__(self):
-        return "Campaña {0} - Actuación: {1}".format(
-            self.campana,
-            self.get_dia_semanal_display(),
-        )
-
-
 class ActuacionSms(AbstractActuacion):
     """
     Representa los días de la semana y los
@@ -2252,6 +2251,34 @@ class ActuacionSms(AbstractActuacion):
             self.campana_sms,
             self.get_dia_semanal_display(),
         )
+
+    def clean(self):
+        """
+        Valida que al crear una actuación a una campaña
+        no exista ya una actuación en el rango horario
+        especificado y en el día semanal seleccionado.
+        """
+        if self.hora_desde and self.hora_hasta:
+            if self.hora_desde >= self.hora_hasta:
+                raise ValidationError({
+                    'hora_desde': ["La hora desde debe ser\
+                        menor o igual a la hora hasta."],
+                    'hora_hasta': ["La hora hasta debe ser\
+                        mayor a la hora desde."],
+                })
+
+            conflicto = self.campana_sms.actuaciones.filter(
+                dia_semanal=self.dia_semanal,
+                hora_desde__lte=self.hora_hasta,
+                hora_hasta__gte=self.hora_desde,
+            )
+            if any(conflicto):
+                raise ValidationError({
+                    'hora_desde': ["Ya esta cubierto el rango horario\
+                        en ese día semanal."],
+                    'hora_hasta': ["Ya esta cubierto el rango horario\
+                        en ese día semanal."],
+                })
 
 #==============================================================================
 # Calificacion
