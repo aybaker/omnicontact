@@ -13,7 +13,7 @@ from django.views.generic.edit import (CreateView, UpdateView, DeleteView,
                                        BaseUpdateView)
 
 from fts_web.forms import (CampanaForm, CampanaSmsForm,
-    ActuacionForm, TemplateMensajeCampanaSmsForm)
+    ActuacionForm, OpcionSmsForm, TemplateMensajeCampanaSmsForm)
 from fts_web.models import (Campana, CampanaSms, OpcionSms,
     Actuacion)
 
@@ -92,144 +92,65 @@ class TemplateMensajeCampanaSmsUpdateView(UpdateView):
             kwargs={"pk_campana_sms": self.object.pk})
 
 
-# class CalificacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
-#     """
-#     Esta vista crea uno o varios objetos Calificación
-#     para la Campana que se este creando.
-#     Inicializa el form con campo campana (hidden)
-#     con el id de campana que viene en la url.
-#     """
-# 
-#     # @@@@@@@@@@@@@@@@@@@@
-# 
-#     template_name = 'campana/calificacion_campana.html'
-#     model = Calificacion
-#     context_object_name = 'calificacion'
-#     form_class = CalificacionForm
-# 
-#     def get_initial(self):
-#         initial = super(CalificacionCampanaCreateView, self).get_initial()
-#         initial.update({'campana': self.campana.id})
-#         return initial
-# 
-#     def get_context_data(self, **kwargs):
-#         context = super(CalificacionCampanaCreateView,
-#                         self).get_context_data(**kwargs)
-#         context['campana'] = self.campana
-# 
-#         return context
-# 
-#     def get_success_url(self):
-#         return reverse(
-#             'calificacion_campana',
-#             kwargs={"pk_campana": self.kwargs['pk_campana']}
-#         )
-# 
-# 
-# class CalificacionCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
-#     """
-#     Esta vista se encarga de la eliminación del
-#     objeto Calificación seleccionado.
-#     """
-# 
-#     model = Calificacion
-#     template_name = 'campana/elimina_calificacion_campana.html'
-# 
-#     # @@@@@@@@@@@@@@@@@@@@
-# 
-#     def get_object(self, queryset=None):
-#         # FIXME: Esté método no hace nada, se podría remover.
-#         calificacion = super(CalificacionCampanaDeleteView, self).get_object(
-#             queryset=None)
-#         return calificacion
-# 
-#     def delete(self, request, *args, **kwargs):
-#         message = '<strong>Operación Exitosa!</strong>\
-#             Se llevó a cabo con éxito la eliminación de la Calificación.'
-# 
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             message,
-#         )
-#         return super(CalificacionCampanaDeleteView, self).delete(request,
-#                                                                  *args,
-#                                                                  **kwargs)
-# 
-#     def get_success_url(self):
-#         return reverse('calificacion_campana',
-#                        kwargs={"pk_campana": self.campana.pk})
-# 
-# 
-# class OpcionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
-#     """
-#     Esta vista crea uno o varios objetos Opcion
-#     para la Campana que se este creando.
-#     Inicializa el form con campo campana (hidden)
-#     con el id de campana que viene en la url.
-#     """
-# 
-#     template_name = 'campana/opciones_campana.html'
-#     model = Opcion
-#     context_object_name = 'opcion'
-#     form_class = OpcionForm
-# 
-#     # @@@@@@@@@@@@@@@@@@@@
-# 
-#     def get_initial(self):
-#         initial = super(OpcionCampanaCreateView, self).get_initial()
-#         initial.update({'campana': self.campana.id})
-#         return initial
-# 
-#     def get_context_data(self, **kwargs):
-#         context = super(
-#             OpcionCampanaCreateView, self).get_context_data(**kwargs)
-#         context['campana'] = self.campana
-#         return context
-# 
-#     def get_success_url(self):
-#         return reverse(
-#             'opcion_campana',
-#             kwargs={"pk_campana": self.kwargs['pk_campana']}
-#         )
-# 
-# 
-# class OpcionCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
-#     """
-#     Esta vista se encarga de la eliminación del
-#     objeto Opciión seleccionado.
-#     """
-# 
-#     model = Opcion
-#     template_name = 'campana/elimina_opcion_campana.html'
-# 
-#     # @@@@@@@@@@@@@@@@@@@@
-# 
-#     def get_object(self, queryset=None):
-#         # FIXME: Esté método no hace nada, se podría remover.
-#         opcion = super(OpcionCampanaDeleteView, self).get_object(
-#             queryset=None)
-#         return opcion
-# 
-#     def delete(self, request, *args, **kwargs):
-#         message = '<strong>Operación Exitosa!</strong>\
-#             Se llevó a cabo con éxito la eliminación de la Opción.'
-# 
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             message,
-#         )
-#         return super(OpcionCampanaDeleteView, self).delete(request,
-#                                                            *args, **kwargs)
-# 
-#     def get_success_url(self):
-#         return reverse(
-#             'opcion_campana',
-#             kwargs={"pk_campana": self.campana.pk}
-#         )
-# 
-# 
+class OpcionSmsCampanaSmsCreateView(CreateView):
+    """
+    """
+
+    template_name = 'campana_sms/opciones_campana_sms.html'
+    model = OpcionSms
+    form_class = OpcionSmsForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana_sms = CampanaSms.objects.get(
+                pk=self.kwargs['pk_campana_sms'])
+
+        return super(OpcionSmsCampanaSmsCreateView, self).dispatch(
+            request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = super(OpcionSmsCampanaSmsCreateView, self).get_initial()
+        initial.update({'campana_sms': self.campana_sms.id})
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            OpcionSmsCampanaSmsCreateView, self).get_context_data(**kwargs)
+        context['campana_sms'] = self.campana_sms
+        return context
+
+    def get_success_url(self):
+        return reverse(
+            'opcion_sms_campana_sms',
+            kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
+
+
+class OpcionSmsCampanaSmsDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto OpcionSms seleccionado.
+    """
+
+    model = OpcionSms
+    template_name = 'campana_sms/elimina_opcion_sms_campana_sms.html'
+
+    def delete(self, request, *args, **kwargs):
+        message = '<strong>Operación Exitosa!</strong>\
+            Se llevó a cabo con éxito la eliminación de la Respuesta.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return super(OpcionSmsCampanaSmsDeleteView, self).delete(request,
+                                                           *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse(
+            'opcion_sms_campana_sms',
+            kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
+#
+#
 # class ActuacionCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
 #     """
 #     Esta vista crea uno o varios objetos Actuacion

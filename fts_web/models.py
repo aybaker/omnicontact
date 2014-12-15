@@ -2368,6 +2368,7 @@ class DuracionDeLlamada(models.Model):
 # SMSs
 #==============================================================================
 
+
 class OpcionSms(models.Model):
     """
     Representa las posibles respuesta que puede tener una CampanaSma.

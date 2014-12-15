@@ -18,7 +18,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from fts_web.models import (Actuacion, AgenteGrupoAtencion, ArchivoDeAudio,
                             AudioDeCampana, BaseDatosContacto, Campana,
                             CampanaSms, Calificacion, GrupoAtencion, Opcion,
-                            DerivacionExterna)
+                            OpcionSms, DerivacionExterna)
 
 
 # =============================================================================
@@ -519,6 +519,21 @@ class OpcionForm(forms.ModelForm):
         elif accion == Opcion.CALIFICAR and not calificacion:
             self._errors["calificacion"] = self.error_class([msg])
         return cleaned_data
+
+
+class OpcionSmsForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('respuesta'),
+            Field('campana_sms', type="hidden"),
+        )
+        super(OpcionSmsForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = OpcionSms
 
 
 # =============================================================================
