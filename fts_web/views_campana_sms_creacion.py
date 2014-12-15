@@ -252,59 +252,19 @@ class ActuacionSmsCampanaSmsDeleteView(DeleteView):
             kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
 
 
-# class ConfirmaCampanaMixin(object):
-# 
-#     def post(self, request, *args, **kwargs):
-#         self.object = self.get_object()
-# 
-#         activacion_campana_service = ActivacionCampanaTemplateService()
-#         try:
-#             activacion_campana_service.activar(self.object)
-#         except ValidarCampanaError, e:
-#             message = ("<strong>Operación Errónea!</strong> "
-#                        "No se pudo confirmar la creación de la campaña debido "
-#                        "al siguiente error: {0}".format(e))
-#             messages.add_message(
-#                 self.request,
-#                 messages.ERROR,
-#                 message,
-#             )
-#             return self.render_to_response(self.get_context_data())
-#         except RestablecerDialplanError, e:
-#             self.object.pausar()
-# 
-#             message = ("<strong>¡Cuidado!</strong> "
-#                        "{0} La campaña será pausada.".format(e))
-#             messages.add_message(
-#                 self.request,
-#                 messages.WARNING,
-#                 message,
-#             )
-#             return redirect(self.get_success_url())
-#         else:
-#             message = ("<strong>Operación Exitosa!</strong> "
-#                        "Se llevó a cabo con éxito la creación de la Campaña.")
-#             messages.add_message(
-#                 self.request,
-#                 messages.SUCCESS,
-#                 message,
-#             )
-#             return redirect(self.get_success_url())
-# 
-#     def get_success_url(self):
-#         return reverse('lista_campana')
-# 
-# 
-# class ConfirmaCampanaView(ConfirmaCampanaMixin, CheckEstadoCampanaMixin,
-#                           CampanaEnDefinicionMixin, UpdateView):
-#     """
-#     Esta vista confirma la creación de un objeto
-#     Campana. Imprime el resumen del objeto y si
-#     es aceptado, cambia el estado del objeto a ACTIVA.
-#     Si el objeto ya esta ACTIVA, redirecciona
-#     al listado.
-#     """
-# 
-#     template_name = 'campana/confirma_campana.html'
-#     model = Campana
-#     context_object_name = 'campana'
+class ConfirmaCampanaSmsView(UpdateView):
+    """
+    Esta vista confirma la creación de un objeto
+    CampanaSms. Imprime el resumen del objeto y si
+    es aceptado.
+    """
+
+    template_name = 'campana_sms/confirma_campana_sms.html'
+    model = CampanaSms
+    pk_url_kwarg = 'pk_campana_sms'
+    context_object_name = 'campana_sms'
+
+    def get_success_url(self):
+        return reverse(
+            'confirma_campana_sms',
+            kwargs={"pk_campana_sms": self.object.pk})

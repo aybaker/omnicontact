@@ -78,7 +78,7 @@
                     Agregar Actuación
                 </button>            
                 {% if actuaciones_validas %}
-                    <a href="{# url 'confirma_campana_sms' campana_sms.pk #}" class="btn btn-default pull-right" role="button">
+                    <a href="{% url 'confirma_campana_sms' campana_sms.pk %}" class="btn btn-default pull-right" role="button">
                         Continuar <span class="glyphicon glyphicon-chevron-right"></span>
                     </a>
                 {% endif %} 

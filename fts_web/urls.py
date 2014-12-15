@@ -196,10 +196,10 @@ urlpatterns = patterns('',
         login_required(views.ActuacionSmsCampanaSmsDeleteView.as_view()),
         name='actuacion_sms_campana_sms_elimina',
     ),
-#     url(r'^campana/(?P<pk_campana>\d+)/confirma/$',
-#         login_required(views.ConfirmaCampanaView.as_view()),
-#         name='confirma_campana',
-#     ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/confirma/$',
+        login_required(views.ConfirmaCampanaSmsView.as_view()),
+        name='confirma_campana_sms',
+    ),
 
 
 
