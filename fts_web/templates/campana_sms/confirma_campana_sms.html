@@ -34,6 +34,14 @@
                         <dd>{{ campana_sms.fecha_fin|date:"d/m/Y"}}</dd>
                         <dt>Cantidad Chips</dt>
                         <dd><span class="badge">{{ campana_sms.cantidad_chips }}</span></dd>
+                        <dt>Con Respuesta</dt>
+                        <dd>
+                        	{% if campana_sms.tiene_respuesta %}
+                        		No
+                        	{% else %}
+                        		Sí
+                        	{% endif %}
+                        </dd>
                     </dl>
 
                     <hr>              
