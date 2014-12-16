@@ -292,7 +292,7 @@ class AudioCampanaOrdenView(CheckEstadoCampanaMixin, BaseUpdateView):
             orden_audios_campana_service.sube_audio_una_posicion(
                 self.get_object())
         else:
-            return form_invalid(form_orden_audios)
+            return self.form_invalid(form_orden_audios)
 
         message = '<strong>Operación Exitosa!</strong> \
                    Se llevó a cabo con éxito el reordenamiento de los audios.'
