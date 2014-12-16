@@ -156,10 +156,10 @@ urlpatterns = patterns('',
     #==========================================================================
     # CampañaSMS
     #==========================================================================
-#     url(r'^campanas/$',
-#         login_required(views.CampanaListView.as_view()),
-#         name='lista_campana',
-#     ),
+    url(r'^campanas_sms/$',
+        login_required(views.CampanaSmsListView.as_view()),
+        name='lista_campana_sms',
+    ),
 #     url(r'^campana/(?P<pk_campana>\d+)/$',
 #         login_required(views.DetalleCampanView.as_view()),
 #         name='detalle_campana',
