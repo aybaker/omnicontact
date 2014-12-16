@@ -28,6 +28,23 @@ import logging as logging_
 logger = logging_.getLogger(__name__)
 
 
+class CheckEstadoCampanaSmsMixin(object):
+    """Mixin para utilizar en las vistas de creación de campañas.
+    Utiliza `Campana.objects.obtener_en_definicion_para_editar()`
+    para obtener la campaña pasada por url.
+    Este metodo falla si la campaña no deberia ser editada.
+    ('editada' en el contexto del proceso de creacion de la campaña)
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana_sms = \
+            CampanaSms.objects.obtener_en_definicion_para_editar(
+                self.kwargs['pk_campana_sms'])
+
+        return super(CheckEstadoCampanaSmsMixin, self).dispatch(request, *args,
+                                                             **kwargs)
+
+
 class CampanaSmsCreateView(CreateView):
     """
     Esta vista crea un objeto CampanaSms.
@@ -58,7 +75,7 @@ class CampanaSmsCreateView(CreateView):
                        kwargs={"pk_campana_sms": self.object.pk})
 
 
-class CampanaSmsUpdateView(UpdateView):
+class CampanaSmsUpdateView(CheckEstadoCampanaSmsMixin, UpdateView):
     """
     Esta vista actualiza un objeto CampanaSms.
     """
@@ -75,7 +92,8 @@ class CampanaSmsUpdateView(UpdateView):
             kwargs={"pk_campana_sms": self.object.pk})
 
 
-class TemplateMensajeCampanaSmsUpdateView(UpdateView):
+class TemplateMensajeCampanaSmsUpdateView(CheckEstadoCampanaSmsMixin,
+                                          UpdateView):
     """
     Esta vista actualiza un objeto CampanaSms, agregando
     el cuerpo del mensaje.
@@ -93,20 +111,13 @@ class TemplateMensajeCampanaSmsUpdateView(UpdateView):
             kwargs={"pk_campana_sms": self.object.pk})
 
 
-class OpcionSmsCampanaSmsCreateView(CreateView):
+class OpcionSmsCampanaSmsCreateView(CheckEstadoCampanaSmsMixin, CreateView):
     """
     """
 
     template_name = 'campana_sms/opciones_campana_sms.html'
     model = OpcionSms
     form_class = OpcionSmsForm
-
-    def dispatch(self, request, *args, **kwargs):
-        self.campana_sms = CampanaSms.objects.get(
-                pk=self.kwargs['pk_campana_sms'])
-
-        return super(OpcionSmsCampanaSmsCreateView, self).dispatch(
-            request, *args, **kwargs)
 
     def get_initial(self):
         initial = super(OpcionSmsCampanaSmsCreateView, self).get_initial()
@@ -125,7 +136,7 @@ class OpcionSmsCampanaSmsCreateView(CreateView):
             kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
 
 
-class OpcionSmsCampanaSmsDeleteView(DeleteView):
+class OpcionSmsCampanaSmsDeleteView(CheckEstadoCampanaSmsMixin, DeleteView):
     """
     Esta vista se encarga de la eliminación del
     objeto OpcionSms seleccionado.
@@ -152,7 +163,7 @@ class OpcionSmsCampanaSmsDeleteView(DeleteView):
             kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
 
 
-class ActuacionSmsCampanaSmsCreateView(CreateView):
+class ActuacionSmsCampanaSmsCreateView(CheckEstadoCampanaSmsMixin, CreateView):
     """
     """
 
@@ -160,13 +171,6 @@ class ActuacionSmsCampanaSmsCreateView(CreateView):
     model = ActuacionSms
     context_object_name = 'actuacion_sms'
     form_class = ActuacionSmsForm
-
-    def dispatch(self, request, *args, **kwargs):
-        self.campana_sms = CampanaSms.objects.get(
-                pk=self.kwargs['pk_campana_sms'])
-
-        return super(ActuacionSmsCampanaSmsCreateView, self).dispatch(
-            request, *args, **kwargs)
 
     def get_initial(self):
         initial = super(ActuacionSmsCampanaSmsCreateView, self).get_initial()
@@ -204,7 +208,7 @@ class ActuacionSmsCampanaSmsCreateView(CreateView):
             kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
 
 
-class ActuacionSmsCampanaSmsDeleteView(DeleteView):
+class ActuacionSmsCampanaSmsDeleteView(CheckEstadoCampanaSmsMixin, DeleteView):
     """
     Esta vista se encarga de la eliminación del
     objeto ActuacionSms seleccionado.
@@ -212,13 +216,6 @@ class ActuacionSmsCampanaSmsDeleteView(DeleteView):
 
     model = ActuacionSms
     template_name = 'campana_sms/elimina_actuacion_sms_campana_sms.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        self.campana_sms = CampanaSms.objects.get(
-                pk=self.kwargs['pk_campana_sms'])
-
-        return super(ActuacionSmsCampanaSmsDeleteView, self).dispatch(
-            request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -252,7 +249,7 @@ class ActuacionSmsCampanaSmsDeleteView(DeleteView):
             kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
 
 
-class ConfirmaCampanaSmsView(UpdateView):
+class ConfirmaCampanaSmsView(CheckEstadoCampanaSmsMixin, UpdateView):
     """
     Esta vista confirma la creación de un objeto
     CampanaSms. Imprime el resumen del objeto y si
