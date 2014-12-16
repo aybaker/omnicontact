@@ -325,7 +325,7 @@ class CampanaSmsForm(forms.ModelForm):
 
     class Meta:
         model = CampanaSms
-        exclude = ('identificador_campana_sms', 'template_mensaje')
+        exclude = ('estado', 'identificador_campana_sms', 'template_mensaje')
         labels = {
             'bd_contacto': 'Base de Datos de Contactos',
         }
