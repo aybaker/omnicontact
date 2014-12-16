@@ -984,7 +984,25 @@ class AbstractCampana(models.Model):
         return valida
 
 
-class CampanaManager(models.Manager):
+class BaseCampanaYCampanaSmsManager(models.Manager):
+    def obtener_en_definicion_para_editar(self, campana_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser editar (editada en el proceso de
+        definirla, o sea, en el proceso de "creacion" de la
+        campaña).
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=self.model.ESTADO_EN_DEFINICION).get(
+                pk=campana_id)
+        except self.model.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana %s en "
+                                      "estado ESTADO_EN_DEFINICION"))
+
+
+class CampanaManager(BaseCampanaYCampanaSmsManager):
     """Manager para Campanas"""
 
     def get_queryset(self):
@@ -1027,21 +1045,6 @@ class CampanaManager(models.Manager):
         except Campana.DoesNotExist:
             raise(SuspiciousOperation("No se encontro campana %s en "
                                       "estado ESTADO_ACTIVA"))
-
-    def obtener_en_definicion_para_editar(self, campana_id):
-        """Devuelve la campaña pasada por ID, siempre que dicha
-        campaña pueda ser editar (editada en el proceso de
-        definirla, o sea, en el proceso de "creacion" de la
-        campaña).
-
-        En caso de no encontarse, lanza SuspiciousOperation
-        """
-        try:
-            return self.filter(estado=Campana.ESTADO_EN_DEFINICION).get(
-                pk=campana_id)
-        except Campana.DoesNotExist:
-            raise(SuspiciousOperation("No se encontro campana %s en "
-                                      "estado ESTADO_EN_DEFINICION"))
 
     def obtener_depurada_para_eliminar(self, campana_id):
         """Devuelve la campaña pasada por ID, siempre que dicha
@@ -1327,6 +1330,9 @@ class Campana(AbstractCampana):
         (TIPO_RECICLADO_LLAMADA_ERRONEA, 'LLAMADA ERRONEA'),
     )
 
+    # FIXME: El atributo estado podría ir en la clase base,
+    # pero las constantes que definen las choices no se
+    # sobreescriben. Revisar.
     ESTADO_EN_DEFINICION = 1
     """La campaña esta siendo definida en el wizard"""
 
@@ -1723,10 +1729,38 @@ class Campana(AbstractCampana):
         return self.nombre
 
 
+class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
+    pass
+
+
 class CampanaSms(AbstractCampana):
     """
     Representa una campana de envíos de SMS.
     """
+
+    objects_default = models.Manager()
+    # Por defecto django utiliza el primer manager instanciado. Se aplica al
+    # admin de django, y no aplica las customizaciones del resto de los
+    # managers que se creen.
+
+    objects = CampanaSmsManager()
+
+    # FIXME: El atributo estado podría ir en la clase base,
+    # pero las constantes que definen las choices no se
+    # sobreescriben. Revisar.
+    ESTADO_EN_DEFINICION = 1
+    """La campaña esta siendo definida en el wizard"""
+
+    ESTADO_CONFIRMADA = 2
+    """Se completó la definición de la campaña en el wizard"""
+
+    ESTADOS = (
+        (ESTADO_EN_DEFINICION, '(en definicion)'),
+        (ESTADO_CONFIRMADA, '(confirmada)'),
+    )
+
+    estado = models.PositiveIntegerField(
+        choices=ESTADOS, default=ESTADO_EN_DEFINICION)
 
     cantidad_chips = models.PositiveIntegerField()
     template_mensaje = models.TextField(null=True, blank=True)
