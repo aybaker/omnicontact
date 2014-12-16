@@ -18,9 +18,8 @@ from fts_web.forms import (CampanaForm, CampanaSmsForm,
 from fts_web.models import (Campana, CampanaSms, OpcionSms,
     Actuacion, ActuacionSms)
 
-from fts_web.services.creacion_campana import (
-    ActivacionCampanaTemplateService, ValidarCampanaError,
-    RestablecerDialplanError)
+from fts_web.services.creacion_campana_sms import (
+    ConfirmacionCampanaSmsService, ValidarCampanaSmsError)
 
 import logging as logging_
 
@@ -249,7 +248,42 @@ class ActuacionSmsCampanaSmsDeleteView(CheckEstadoCampanaSmsMixin, DeleteView):
             kwargs={"pk_campana_sms": self.kwargs['pk_campana_sms']})
 
 
-class ConfirmaCampanaSmsView(CheckEstadoCampanaSmsMixin, UpdateView):
+class ConfirmaCampanaSmsMixin(object):
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        confirmacion_campana_sms_service = ConfirmacionCampanaSmsService()
+
+        try:
+            confirmacion_campana_sms_service.confirmar(self.object)
+        except ValidarCampanaSmsError, e:
+            message = ("<strong>Operación Errónea!</strong> "
+                       "No se pudo confirmar la creación de la campaña debido "
+                       "al siguiente error: {0}".format(e))
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                message,
+            )
+            return self.render_to_response(self.get_context_data())
+        else:
+            message = ("<strong>Operación Exitosa!</strong> "
+                       "Se llevó a cabo con éxito la creación de la "
+                       "Campaña Sms.")
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                message,
+            )
+            return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('nueva_campana_sms')
+
+
+class ConfirmaCampanaSmsView(ConfirmaCampanaSmsMixin,
+                             CheckEstadoCampanaSmsMixin, UpdateView):
     """
     Esta vista confirma la creación de un objeto
     CampanaSms. Imprime el resumen del objeto y si
@@ -260,8 +294,3 @@ class ConfirmaCampanaSmsView(CheckEstadoCampanaSmsMixin, UpdateView):
     model = CampanaSms
     pk_url_kwarg = 'pk_campana_sms'
     context_object_name = 'campana_sms'
-
-    def get_success_url(self):
-        return reverse(
-            'confirma_campana_sms',
-            kwargs={"pk_campana_sms": self.object.pk})
