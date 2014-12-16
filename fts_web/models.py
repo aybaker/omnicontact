@@ -1730,7 +1730,11 @@ class Campana(AbstractCampana):
 
 
 class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
-    pass
+
+    def obtener_confirmadas(self):
+        """Devuelve campañas en estado confirmadas.
+        """
+        return self.filter(estado=CampanaSms.ESTADO_CONFIRMADA)
 
 
 class CampanaSms(AbstractCampana):
@@ -1756,7 +1760,7 @@ class CampanaSms(AbstractCampana):
 
     ESTADOS = (
         (ESTADO_EN_DEFINICION, '(en definicion)'),
-        (ESTADO_CONFIRMADA, '(confirmada)'),
+        (ESTADO_CONFIRMADA, 'Confirmada'),
     )
 
     estado = models.PositiveIntegerField(
