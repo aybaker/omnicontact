@@ -2188,6 +2188,34 @@ class AbstractActuacion(models.Model):
         return self.hora_desde < time_a_chequear and \
             self.hora_hasta < time_a_chequear
 
+    def clean(self):
+        """
+        Valida que al crear una actuación a una campaña
+        no exista ya una actuación en el rango horario
+        especificado y en el día semanal seleccionado.
+        """
+        if self.hora_desde and self.hora_hasta:
+            if self.hora_desde >= self.hora_hasta:
+                raise ValidationError({
+                    'hora_desde': ["La hora desde debe ser\
+                        menor o igual a la hora hasta."],
+                    'hora_hasta': ["La hora hasta debe ser\
+                        mayor a la hora desde."],
+                })
+
+            conflicto = self.get_campana().actuaciones.filter(
+                dia_semanal=self.dia_semanal,
+                hora_desde__lte=self.hora_hasta,
+                hora_hasta__gte=self.hora_desde,
+            )
+            if any(conflicto):
+                raise ValidationError({
+                    'hora_desde': ["Ya esta cubierto el rango horario\
+                        en ese día semanal."],
+                    'hora_hasta': ["Ya esta cubierto el rango horario\
+                        en ese día semanal."],
+                })
+
 
 class Actuacion(AbstractActuacion):
     """
@@ -2206,33 +2234,8 @@ class Actuacion(AbstractActuacion):
             self.get_dia_semanal_display(),
         )
 
-    def clean(self):
-        """
-        Valida que al crear una actuación a una campaña
-        no exista ya una actuación en el rango horario
-        especificado y en el día semanal seleccionado.
-        """
-        if self.hora_desde and self.hora_hasta:
-            if self.hora_desde >= self.hora_hasta:
-                raise ValidationError({
-                    'hora_desde': ["La hora desde debe ser\
-                        menor o igual a la hora hasta."],
-                    'hora_hasta': ["La hora hasta debe ser\
-                        mayor a la hora desde."],
-                })
-
-            conflicto = self.campana.actuaciones.filter(
-                dia_semanal=self.dia_semanal,
-                hora_desde__lte=self.hora_hasta,
-                hora_hasta__gte=self.hora_desde,
-            )
-            if any(conflicto):
-                raise ValidationError({
-                    'hora_desde': ["Ya esta cubierto el rango horario\
-                        en ese día semanal."],
-                    'hora_hasta': ["Ya esta cubierto el rango horario\
-                        en ese día semanal."],
-                })
+    def get_campana(self):
+        return self.campana
 
 
 class ActuacionSms(AbstractActuacion):
@@ -2252,33 +2255,9 @@ class ActuacionSms(AbstractActuacion):
             self.get_dia_semanal_display(),
         )
 
-    def clean(self):
-        """
-        Valida que al crear una actuación a una campaña
-        no exista ya una actuación en el rango horario
-        especificado y en el día semanal seleccionado.
-        """
-        if self.hora_desde and self.hora_hasta:
-            if self.hora_desde >= self.hora_hasta:
-                raise ValidationError({
-                    'hora_desde': ["La hora desde debe ser\
-                        menor o igual a la hora hasta."],
-                    'hora_hasta': ["La hora hasta debe ser\
-                        mayor a la hora desde."],
-                })
+    def get_campana(self):
+        return self.campana_sms
 
-            conflicto = self.campana_sms.actuaciones.filter(
-                dia_semanal=self.dia_semanal,
-                hora_desde__lte=self.hora_hasta,
-                hora_hasta__gte=self.hora_desde,
-            )
-            if any(conflicto):
-                raise ValidationError({
-                    'hora_desde': ["Ya esta cubierto el rango horario\
-                        en ese día semanal."],
-                    'hora_hasta': ["Ya esta cubierto el rango horario\
-                        en ese día semanal."],
-                })
 
 #==============================================================================
 # Calificacion
