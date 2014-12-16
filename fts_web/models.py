@@ -1773,6 +1773,16 @@ class CampanaSms(AbstractCampana):
     def __unicode__(self):
         return self.nombre
 
+    def confirmar(self):
+        """
+        Setea la campana sms como confirmada, lista para ser utilizada.
+        """
+
+        logger.info("Seteando campana sms %s como CONFIRMADA", self.id)
+        assert self.estado == CampanaSms.ESTADO_EN_DEFINICION
+        self.estado = self.ESTADO_CONFIRMADA
+        self.save()
+
 
 class AudioDeCampanaManager(models.Manager):
 
