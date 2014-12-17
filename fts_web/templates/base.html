@@ -60,12 +60,23 @@
                         <li>
                             <a href="{% url 'lista_base_datos_contacto' %}">Base Datos Contactos</a>
                         </li>
-                        <li>
-                            <a href="{% url 'lista_campana' %}">Campañas</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'lista_template' %}">Templates</a>
-                        </li>
+                        <li role="presentation" class="dropdown">
+						    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+						      Campañas <span class="caret"></span>
+						    </a>
+						    <ul class="dropdown-menu" role="menu">
+						    	<li>
+                            		<a href="{% url 'lista_campana' %}">Campañas Telefónicas</a>
+                        		</li>
+                        		<li>
+                            		<a href="{% url 'lista_template' %}">Templates de Campañas Telefónicas</a>
+                        		</li>
+                        		<li class="divider"></li>
+                        		<li>
+                            		<a href="{% url 'lista_campana_sms' %}">Campañas SMS</a>
+                        		</li>
+						    </ul>
+						</li>
                         <li>
                             <a href="{% url 'lista_derivacion' %}">Derivación</a>
                         </li>
