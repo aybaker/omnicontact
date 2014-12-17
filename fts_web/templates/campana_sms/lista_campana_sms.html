@@ -33,7 +33,7 @@
                             {% for campana in confirmadas %}
                                 <tr >
                                     <td width="45%">                          
-                                        <a href="{% url 'detalle_campana' campana.id %}">{{ campana.nombre }}</a>
+                                        <a href="{% url 'detalle_campana_sms' campana.id %}">{{ campana.nombre }}</a>
                                     </td>
                                     <td>
                                         {{ campana.get_estado_display }}

@@ -985,6 +985,7 @@ class AbstractCampana(models.Model):
 
 
 class BaseCampanaYCampanaSmsManager(models.Manager):
+
     def obtener_en_definicion_para_editar(self, campana_id):
         """Devuelve la campaña pasada por ID, siempre que dicha
         campaña pueda ser editar (editada en el proceso de
@@ -1735,6 +1736,21 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
         """Devuelve campañas en estado confirmadas.
         """
         return self.filter(estado=CampanaSms.ESTADO_CONFIRMADA)
+
+    def obtener_para_detalle(self, campana_sms_id):
+        """Devuelve la campaña pasada por ID, siempre que a dicha
+        campaña se le pueda ver el detalle, debe estar en estado activa,
+        pausada, finalifada o depurada.
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            ESTADOS_VER_DETALLE = [CampanaSms.ESTADO_CONFIRMADA]
+            return self.filter(estado__in=ESTADOS_VER_DETALLE).get(
+                pk=campana_sms_id)
+        except CampanaSms.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana en "
+                                      "estado ESTADO_CONFIRMADA."))
 
 
 class CampanaSms(AbstractCampana):

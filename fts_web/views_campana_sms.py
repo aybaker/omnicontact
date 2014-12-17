@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 
+from django.views.generic import DetailView
 from django.views.generic.list import ListView
 
 from fts_web.models import CampanaSms
@@ -34,6 +35,26 @@ class CampanaSmsListView(ListView):
            **kwargs)
         context['confirmadas'] = CampanaSms.objects.obtener_confirmadas()
         return context
+
+
+class DetalleCampanSmsView(DetailView):
+    """
+    Muestra el detalle de la campaña sms.
+    """
+    template_name = 'campana_sms/detalle_campana_sms.html'
+    context_object_name = 'campana_sms'
+    pk_url_kwarg = 'pk_campana_sms'
+    model = CampanaSms
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana_sms = \
+            CampanaSms.objects.obtener_para_detalle(kwargs['pk_campana_sms'])
+        return super(DetalleCampanSmsView, self).dispatch(request, *args,
+                                                       **kwargs)
+
+    def get_object(self, queryset=None):
+        return CampanaSms.objects.obtener_para_detalle(
+            self.kwargs['pk_campana_sms'])
 
 
 # class CampanaDeleteView(DeleteView):
@@ -83,32 +104,3 @@ class CampanaSmsListView(ListView):
 # 
 #     def get_success_url(self):
 #         return reverse('lista_campana')
-# 
-# 
-# class DetalleCampanView(DetailView):
-#     """
-#     Muestra el detalle de la campaña.
-#     """
-#     template_name = 'campana/detalle_campana.html'
-#     context_object_name = 'campana'
-#     pk_url_kwarg = 'pk_campana'
-#     model = Campana
-# 
-#     def dispatch(self, request, *args, **kwargs):
-#         self.campana = \
-#             Campana.objects.obtener_para_detalle(kwargs['pk_campana'])
-#         return super(DetalleCampanView, self).dispatch(request, *args,
-#                                                        **kwargs)
-# 
-#     def get_object(self, queryset=None):
-#         return Campana.objects.obtener_para_detalle(self.kwargs['pk_campana'])
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-
-
