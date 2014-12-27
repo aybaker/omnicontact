@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Campañas SMS</h4>
+            <div class="inline pull-right">
+                <a href="{% url 'nueva_campana_sms' %}">
+                    <button type="button" class="btn btn-info btn-sm fts-bg-gris-osc-gradiente">
+                        <span class="glyphicon glyphicon-plus"></span> Nueva Campaña SMS
+                    </button>
+                </a>
+            </div>
+
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <form id="form_estados_campanas" role="form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="campana_id" name="campana_id">
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr class="fts-table-bg">                                
+                            <th width="45%">Campañas Confirmadas</th>                    
+                            <th width="15%">Estado</th>
+                            <!-- <th></th> -->
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for campana in confirmadas %}
+                                <tr >
+                                    <td width="45%">                          
+                                        <a href="{% url 'detalle_campana_sms' campana.id %}">{{ campana.nombre }}</a>
+                                    </td>
+                                    <td>
+                                        {{ campana.get_estado_display }}
+                                    </td>
+                                    <!-- <td>
+                                        <button type="button" id="{{ campana.id }}" name="{# url 'estado_pausa_campana' #}" class="btn btn-warning btn-sm btn-submit">
+                                            <span class="glyphicon glyphicon-pause"></span>
+                                            Pausar
+                                        </button>
+                                    </td>    -->                     
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Campañas SMS.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </form>                               
+            </div>
+        </div>
+    </div>
+{% endblock %}

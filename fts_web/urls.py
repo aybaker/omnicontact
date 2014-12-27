@@ -152,6 +152,59 @@ urlpatterns = patterns('',
         name='crea_campana_template',
     ),
 
+
+    #==========================================================================
+    # CampañaSMS
+    #==========================================================================
+    url(r'^campanas_sms/$',
+        login_required(views.CampanaSmsListView.as_view()),
+        name='lista_campana_sms',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/$',
+        login_required(views.DetalleCampanSmsView.as_view()),
+        name='detalle_campana_sms',
+    ),
+    url(r'^campana_sms/nueva_campana_sms/$',
+        login_required(views.CampanaSmsCreateView.as_view()),
+        name='nueva_campana_sms',
+    ),
+#     url(r'^campana/(?P<pk_campana>\d+)/elimina/$',
+#         login_required(views.CampanaDeleteView.as_view()),
+#         name='campana_elimina',
+#     ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/datos_basicos/$',
+        login_required(views.CampanaSmsUpdateView.as_view()),
+        name='datos_basicos_campana_sms',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/cuerpo_mensaje/$',
+        login_required(views.TemplateMensajeCampanaSmsUpdateView.as_view()),
+        name='template_mensaje_campana_sms',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/respuestas/$',
+        login_required(views.OpcionSmsCampanaSmsCreateView.as_view()),
+        name='opcion_sms_campana_sms',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/respuesta/(?P<pk>\d+)/elimina/$',
+        login_required(views.OpcionSmsCampanaSmsDeleteView.as_view()),
+        name='opcion_sms_campana_sms_elimina',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/actuacion/$',
+        login_required(views.ActuacionSmsCampanaSmsCreateView.as_view()),
+        name='actuacion_sms_campana_sms',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/actuacion/(?P<pk>\d+)/elimina/$',
+        login_required(views.ActuacionSmsCampanaSmsDeleteView.as_view()),
+        name='actuacion_sms_campana_sms_elimina',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/confirma/$',
+        login_required(views.ConfirmaCampanaSmsView.as_view()),
+        name='confirma_campana_sms',
+    ),
+
+
+
+
+
     #==========================================================================
     # Campaña
     #==========================================================================

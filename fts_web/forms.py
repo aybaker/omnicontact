@@ -15,10 +15,10 @@ from crispy_forms.layout import Field, Layout, Submit, Div, MultiField, HTML
 
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from fts_web.models import (Actuacion, AgenteGrupoAtencion, ArchivoDeAudio,
+from fts_web.models import (Actuacion, ActuacionSms, AgenteGrupoAtencion, ArchivoDeAudio,
                             AudioDeCampana, BaseDatosContacto, Campana,
-                            Calificacion, GrupoAtencion, Opcion,
-                            DerivacionExterna)
+                            CampanaSms, Calificacion, GrupoAtencion, Opcion,
+                            OpcionSms, DerivacionExterna)
 
 
 # =============================================================================
@@ -290,6 +290,82 @@ class CampanaForm(forms.ModelForm):
         }
 
 
+class CampanaSmsForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(CampanaSmsForm, self).__init__(*args, **kwargs)
+
+        self.fields['bd_contacto'].queryset =\
+            BaseDatosContacto.objects.obtener_definidas()
+
+        self.fields['fecha_inicio'].widget = DateTimePicker(
+            options={"format": "DD/MM/YYYY", "pickTime": False})
+        self.fields['fecha_inicio'].help_text = 'Ejemplo: 10/04/2014'
+        self.fields['fecha_inicio'].required = True
+
+        self.fields['fecha_fin'].widget = DateTimePicker(
+            options={"format": "DD/MM/YYYY", "pickTime": False})
+        self.fields['fecha_fin'].help_text = 'Ejemplo: 20/04/2014'
+        self.fields['fecha_fin'].required = True
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+        self.fields['bd_contacto'].required = True
+
+        layout = Layout(
+            Field('nombre'),
+            Field('cantidad_chips'),
+            Field('cantidad_intentos'),
+            Field('fecha_inicio'),
+            Field('fecha_fin'),
+            Field('bd_contacto'),
+            Field('tiene_respuesta'),
+        )
+        self.helper.layout = layout
+
+    class Meta:
+        model = CampanaSms
+        exclude = ('estado', 'identificador_campana_sms', 'template_mensaje')
+        labels = {
+            'bd_contacto': 'Base de Datos de Contactos',
+        }
+
+
+class TemplateMensajeCampanaSmsForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TemplateMensajeCampanaSmsForm, self).__init__(*args, **kwargs)
+
+        bd_contacto_metadada = self.instance.bd_contacto.get_metadata()
+
+        variables_de_cuerpo_mensaje = ((variable, variable)
+            for variable in bd_contacto_metadada.nombres_de_columnas)
+
+        self.fields['variables'] = forms.MultipleChoiceField(
+            choices=variables_de_cuerpo_mensaje)
+        self.fields['variables'].required = False
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        layout = Layout(
+            Div(
+                'variables',
+                css_class='col-lg-5'
+            ),
+            Div(
+                'template_mensaje',
+                css_class='col-lg-5'
+            ),
+        )
+        self.helper.layout = layout
+
+    class Meta:
+        model = CampanaSms
+        fields = ('template_mensaje',)
+        labels = {
+            'template_mensaje': 'Cuerpo del Mensaje',
+        }
+
+
 class AudioForm(forms.ModelForm):
     check_audio_original = forms.BooleanField(
         label="Seleccionar y subir audio", required=False,
@@ -445,6 +521,21 @@ class OpcionForm(forms.ModelForm):
         return cleaned_data
 
 
+class OpcionSmsForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('respuesta'),
+            Field('campana_sms', type="hidden"),
+        )
+        super(OpcionSmsForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = OpcionSms
+
+
 # =============================================================================
 # Actuación
 # =============================================================================
@@ -476,6 +567,35 @@ class ActuacionForm(forms.ModelForm):
 
     class Meta:
         model = Actuacion
+
+
+class ActuacionSmsForm(forms.ModelForm):
+    hora_desde = forms.TimeField(
+        help_text='Ejemplo: 09:10',
+        widget=DateTimePicker(options={"format": "HH:mm",
+                                       "pickDate": False},
+                              icon_attrs={'class': 'glyphicon glyphicon-time'})
+    )
+    hora_hasta = forms.TimeField(
+        help_text='Ejemplo: 20:30',
+        widget=DateTimePicker(options={"format": "HH:mm",
+                                       "pickDate": False},
+                              icon_attrs={'class': 'glyphicon glyphicon-time'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('dia_semanal'),
+            Field('hora_desde'),
+            Field('hora_hasta'),
+            Field('campana_sms', type="hidden"),
+        )
+        super(ActuacionSmsForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = ActuacionSms
 
 
 # =============================================================================
