@@ -47,11 +47,36 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
     def test_crear_generador_para_start(self):
         generador = GeneradorDePedazoDeDialplanFactory()
+        campana = Mock()
+        campana.accion_contestador = Campana.ACCION_NINGUNA
 
         # -----
 
         self.assertTrue(isinstance(generador.crear_generador_para_start(
-                                   Mock()), GeneradorParaStart))
+                                   campana, Mock()), GeneradorParaStart))
+
+    def test_crear_generador_para_start_detectar_contestador(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+        campana = Mock()
+        campana.accion_contestador = Campana.ACCION_DETECTAR_CONTESTADOR
+
+        # -----
+
+        self.assertTrue(isinstance(generador.crear_generador_para_start(
+                                   campana, Mock()),
+                                   GeneradorParaStartDetectarContestador))
+
+    def test_crear_generador_para_start_detectar_evitar_contestador(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+        campana = Mock()
+        campana.accion_contestador = Campana.ACCION_DETECTAR_EVITAR_CONTESTADOR
+
+        # -----
+
+        self.assertTrue(isinstance(
+                        generador.crear_generador_para_start(
+                        campana, Mock()),
+                        GeneradorParaStartDetectarYEvitarContestador))
 
     def test_crear_generador_para_audio_con_audio_asterisk(self):
         generador = GeneradorDePedazoDeDialplanFactory()
