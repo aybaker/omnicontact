@@ -265,6 +265,7 @@ class CampanaForm(forms.ModelForm):
                 Field('duracion_de_audio'),
                 Field('fecha_inicio'),
                 Field('fecha_fin'),
+                Field('accion_contestador'),
             )
         else:
             self.fields['bd_contacto'].required = True
@@ -277,6 +278,7 @@ class CampanaForm(forms.ModelForm):
                 Field('duracion_de_audio'),
                 Field('fecha_inicio'),
                 Field('fecha_fin'),
+                Field('accion_contestador'),
                 Field('bd_contacto')
             )
         self.helper.layout = layout
