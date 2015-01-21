@@ -10,7 +10,7 @@ import os
 
 from django.conf import settings
 from fts_web.errors import FtsError
-from fts_web.models import Opcion, AudioDeCampana
+from fts_web.models import Campana, Opcion, AudioDeCampana
 import logging as _logging
 import pprint
 import textwrap
@@ -60,8 +60,24 @@ class GeneradorDePedazoDeDialplanFactory(object):
     def crear_generador_para_failed(self, parametros):
         return GeneradorParaFailed(parametros)
 
-    def crear_generador_para_start(self, parametros):
-        return GeneradorParaStart(parametros)
+    def crear_generador_para_start(self, campana, parametros):
+        # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        # FIXME: Reemplazar las instaciaciones de los generadores
+        # correspondientes cuando estpe implementado.
+        # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        if campana.accion_contestador == Campana.ACCION_NINGUNA:
+            return GeneradorParaStart(parametros)
+        elif (campana.accion_contestador ==
+              Campana.ACCION_DETECTAR_CONTESTADOR):
+            return GeneradorParaStart(parametros)
+            # return GeneradorParaStartDetectarContestador(parametros)
+        elif (campana.accion_contestador ==
+              Campana.ACCION_DETECTAR_EVITAR_CONTESTADOR):
+            return GeneradorParaStart(parametros)
+            # return GeneradorParaStartDetectarYEvitarContestador(parametros)
+        else:
+            raise(Exception("Tipo de accion para contestador desconocida: {0}"
+                            .format(campana.accion_contestador)))
 
     def crear_generador_para_audio(self, audio_de_campana, parametros,
                                    campana):
@@ -212,6 +228,128 @@ class GeneradorParaStart(GeneradorDePedazoDeDialplanParaStart):
         exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
         exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
         exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
+        exten => _ftsX.,n,Wait(1)
+        exten => _ftsX.,n,Answer()
+        exten => _ftsX.,n(audio),NoOp()
+
+        """
+
+    def get_parametros(self):
+        return self._parametros
+
+
+class GeneradorParaStartDetectarContestador(
+    GeneradorDePedazoDeDialplanParaStart):
+
+    def get_template(self):
+
+        # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        # FIXME: El template esta pegado del mail que envió Fabián. Hay que
+        # reemplazar los valores del ejemplo del mail por las variables
+        # correspondientes.
+        # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+        return """
+
+        ;----------------------------------------------------------------------
+        ; TEMPLATE_DIALPLAN_START-{fts_campana_id}
+        ;   Autogenerado {date}
+        ;----------------------------------------------------------------------
+
+        ;----------------------------------------------------------------------
+        ; Para usar local channels
+        ;----------------------------------------------------------------------
+
+        [FTS_local_campana_{fts_campana_id}]
+
+        exten => _X.,1,NoOp(FTS,INICIO,llamada=${{EXTEN}},campana={fts_campana_id})
+        exten => _X.,n,Set(ContactoId=${{CUT(EXTEN,,1)}})
+        exten => _X.,n,Set(NumberToCall=${{CUT(EXTEN,,2)}})
+        exten => _X.,n,Set(Intento=${{CUT(EXTEN,,3)}})
+        exten => _X.,n,NoOp(FTS,ContactoId=${{ContactoId}},NumberToCall=${{NumberToCall}},Intento=${{Intento}})
+        exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-pre-dial/)
+        exten => _X.,n,Dial({fts_dial_url},{fts_campana_dial_timeout})
+        ; # TODO: *** WARN: el siguiente 'AGI()' a veces no es llamado
+        exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-post-dial/dial-status/${{DIALSTATUS}}/)
+        exten => _X.,n,Hangup()
+
+        ;----------------------------------------------------------------------
+        ; Dialplan de campana (audio, opciones, etc)
+        ;----------------------------------------------------------------------
+
+        [campania_{fts_campana_id}]
+
+        exten => _ftsX.,1,NoOp(FTS,INICIO,EXTEN=${EXTEN},campana=27)
+        exten => _ftsX.,n,Set(OriginalExten=${EXTEN})
+        exten => _ftsX.,n,Set(ContactoId=${CUT(EXTEN,,2)})
+        exten => _ftsX.,n,Set(NumberToCall=${CUT(EXTEN,,3)})
+        exten => _ftsX.,n,Set(Intento=${CUT(EXTEN,,4)})
+        exten => _ftsX.,n,AMD(2500,1500,800,5000,100,50,3,256)
+        exten => _ftsX.,n,GotoIf($[“${AMDSTATUS}” == “MACHINE”]?:humano)
+        exten => _ftsX.,n,AGI(agi://127.0.0.1/27/${ContactoId}/${Intento}/inicio/INDICAR_QUE_FUE_MAQUINA)
+        exten => _ftsX.,n,Wait(10)
+        exten => _ftsX.,n,Goto(wait)
+        exten => _ftsX.,n(humano),AGI(agi://127.0.0.1/27/${ContactoId}/${Intento}/inicio/)
+        exten => _ftsX.,n(wait),Wait(1)
+        exten => _ftsX.,n,Answer()
+        exten => _ftsX.,n(audio),NoOp()
+
+        """
+
+    def get_parametros(self):
+        return self._parametros
+
+
+class GeneradorParaStartDetectarYEvitarContestador(
+    GeneradorDePedazoDeDialplanParaStart):
+
+    def get_template(self):
+
+        # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        # FIXME: El template esta pegado del mail que envió Fabián. Hay que
+        # reemplazar los valores del ejemplo del mail por las variables
+        # correspondientes.
+        # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+        return """
+
+        ;----------------------------------------------------------------------
+        ; TEMPLATE_DIALPLAN_START-{fts_campana_id}
+        ;   Autogenerado {date}
+        ;----------------------------------------------------------------------
+
+        ;----------------------------------------------------------------------
+        ; Para usar local channels
+        ;----------------------------------------------------------------------
+
+        [FTS_local_campana_{fts_campana_id}]
+
+        exten => _X.,1,NoOp(FTS,INICIO,llamada=${{EXTEN}},campana={fts_campana_id})
+        exten => _X.,n,Set(ContactoId=${{CUT(EXTEN,,1)}})
+        exten => _X.,n,Set(NumberToCall=${{CUT(EXTEN,,2)}})
+        exten => _X.,n,Set(Intento=${{CUT(EXTEN,,3)}})
+        exten => _X.,n,NoOp(FTS,ContactoId=${{ContactoId}},NumberToCall=${{NumberToCall}},Intento=${{Intento}})
+        exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-pre-dial/)
+        exten => _X.,n,Dial({fts_dial_url},{fts_campana_dial_timeout})
+        ; # TODO: *** WARN: el siguiente 'AGI()' a veces no es llamado
+        exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-post-dial/dial-status/${{DIALSTATUS}}/)
+        exten => _X.,n,Hangup()
+
+        ;----------------------------------------------------------------------
+        ; Dialplan de campana (audio, opciones, etc)
+        ;----------------------------------------------------------------------
+
+        [campania_{fts_campana_id}]
+
+        exten => _ftsX.,1,NoOp(FTS,INICIO,EXTEN=${EXTEN},campana=27)
+        exten => _ftsX.,n,Set(OriginalExten=${EXTEN})
+        exten => _ftsX.,n,Set(ContactoId=${CUT(EXTEN,,2)})
+        exten => _ftsX.,n,Set(NumberToCall=${CUT(EXTEN,,3)})
+        exten => _ftsX.,n,Set(Intento=${CUT(EXTEN,,4)})
+        exten => _ftsX.,n,AMD(2500,1500,800,5000,100,50,3,256)
+        exten => _ftsX.,n,GotoIf($[“${AMDSTATUS}” == “MACHINE”]?:humano)
+        exten => _ftsX.,n,Hangup()
+        exten => _ftsX.,n(humano),AGI(agi://127.0.0.1/27/${ContactoId}/${Intento}/inicio/)
         exten => _ftsX.,n,Wait(1)
         exten => _ftsX.,n,Answer()
         exten => _ftsX.,n(audio),NoOp()
