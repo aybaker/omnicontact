@@ -52,8 +52,9 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
         # -----
 
-        self.assertTrue(isinstance(generador.crear_generador_para_start(
-                                   campana, Mock()), GeneradorParaStart))
+        generador_para_start = generador.crear_generador_para_start(campana,
+                                                                    Mock())
+        self.assertTrue(isinstance(generador_para_start, GeneradorParaStart))
 
     def test_crear_generador_para_start_detectar_contestador(self):
         generador = GeneradorDePedazoDeDialplanFactory()

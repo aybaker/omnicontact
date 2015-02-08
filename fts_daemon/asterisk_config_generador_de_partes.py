@@ -57,9 +57,12 @@ class GeneradorDePedazo(object):
 def get_map():
     # FIXME: @@@@@ ACOMODAR ESTE METODO
     MAP_GENERADOR_PARA_START = {
-        Campana.ACCION_NINGUNA: GeneradorDePedazoDeDialplanParaStart,
-        Campana.ACCION_DETECTAR_CONTESTADOR: GeneradorParaStart,
-        Campana.ACCION_DETECTAR_EVITAR_CONTESTADOR: GeneradorParaStart,
+        Campana.ACCION_NINGUNA:
+            GeneradorParaStart,
+        Campana.ACCION_DETECTAR_CONTESTADOR:
+            GeneradorParaStartDetectarContestador,
+        Campana.ACCION_DETECTAR_EVITAR_CONTESTADOR:
+            GeneradorParaStartDetectarYEvitarContestador,
     }
     return MAP_GENERADOR_PARA_START
 
