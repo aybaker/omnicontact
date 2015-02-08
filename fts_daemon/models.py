@@ -1369,6 +1369,15 @@ class EventoDeContacto(models.Model):
     el teclado numerico.
     """
 
+    EVENTO_ASTERISK_AMD_HUMAN_DETECTED = 60
+    """AMD detecto que un humano ha respondido"""
+
+    EVENTO_ASTERISK_AMD_MACHINE_DETECTED = 61
+    """AMD detecto que un contestador automatico ha respondido"""
+
+    EVENTO_ASTERISK_AMD_FAILED = 62
+    """La llamada a la funcion AMD ha fallado"""
+
     NUMERO_OPCION_MAP = {
         0: EVENTO_ASTERISK_OPCION_0,
         1: EVENTO_ASTERISK_OPCION_1,
