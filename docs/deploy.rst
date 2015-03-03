@@ -74,6 +74,11 @@ Ejemplos:
     # Para generar el archivo de QUEUEs de Asterisk en una ubicacion diferente a la por defalut
     FTS_QUEUE_FILENAME = '/opt/asterisk/etc/queues.conf'
 
+    # Para permitir numeros telefonicos de entre 5 y 30 cifras
+    FTS_NRO_TELEFONO_LARGO_MIN = 5
+    FTS_NRO_TELEFONO_LARGO_MAX = 30
+
+
 Acceso al servidor de deploy
 ----------------------------
 
