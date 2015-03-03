@@ -100,7 +100,7 @@ class DialplanConfigCreator(object):
 
         # START: Creamos la porción inicial del Dialplan.
         generador_start = self._generador_factory.crear_generador_para_start(
-            param_generales)
+            campana, param_generales)
         partes.append(generador_start.generar_pedazo())
 
         # AUDIOS: Creamos las porciones de los audios del Dialplan.

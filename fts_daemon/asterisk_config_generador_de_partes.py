@@ -7,13 +7,12 @@ Genera archivos de configuración para Asterisk: dialplan y queues.
 from __future__ import unicode_literals
 
 import os
+import pprint
 
 from django.conf import settings
 from fts_web.errors import FtsError
-from fts_web.models import Opcion, AudioDeCampana
+from fts_web.models import Campana, Opcion, AudioDeCampana
 import logging as _logging
-import pprint
-import textwrap
 
 
 logger = _logging.getLogger(__name__)
@@ -55,13 +54,33 @@ class GeneradorDePedazo(object):
 # Factory para el Dialplan.
 
 
+def get_map():
+    # FIXME: @@@@@ ACOMODAR ESTE METODO
+    MAP_GENERADOR_PARA_START = {
+        Campana.ACCION_NINGUNA:
+            GeneradorParaStart,
+        Campana.ACCION_DETECTAR_CONTESTADOR:
+            GeneradorParaStartDetectarContestador,
+        Campana.ACCION_DETECTAR_EVITAR_CONTESTADOR:
+            GeneradorParaStartDetectarYEvitarContestador,
+    }
+    return MAP_GENERADOR_PARA_START
+
+
 class GeneradorDePedazoDeDialplanFactory(object):
 
     def crear_generador_para_failed(self, parametros):
         return GeneradorParaFailed(parametros)
 
-    def crear_generador_para_start(self, parametros):
-        return GeneradorParaStart(parametros)
+    def crear_generador_para_start(self, campana, parametros):
+        try:
+            class_de_generador = get_map()[campana.accion_contestador]
+        except KeyError:
+            raise(Exception("Tipo de accion para contestador desconocida: {0}"
+                            .format(campana.accion_contestador)))
+
+        generador = class_de_generador(parametros)
+        return generador
 
     def crear_generador_para_audio(self, audio_de_campana, parametros,
                                    campana):
@@ -128,7 +147,7 @@ class GeneradorDePedazoDeDialplanFactory(object):
 
 
 class GeneradorDePedazoDeDialplanParaFailed(GeneradorDePedazo):
-    """Interfaz / Clase abstracta para generar el pedazo de dialplan 
+    """Interfaz / Clase abstracta para generar el pedazo de dialplan
     fallido para una campana.
     """
 
@@ -214,6 +233,136 @@ class GeneradorParaStart(GeneradorDePedazoDeDialplanParaStart):
         exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
         exten => _ftsX.,n,Wait(1)
         exten => _ftsX.,n,Answer()
+        exten => _ftsX.,n(audio),NoOp()
+
+        """
+
+    def get_parametros(self):
+        return self._parametros
+
+
+class GeneradorParaStartDetectarContestador(
+        GeneradorDePedazoDeDialplanParaStart):
+
+    def get_template(self):
+        return """
+
+        ;----------------------------------------------------------------------
+        ; TEMPLATE_DIALPLAN_START-{fts_campana_id}
+        ;   Autogenerado {date}
+        ;----------------------------------------------------------------------
+
+        ;----------------------------------------------------------------------
+        ; Para usar local channels
+        ;----------------------------------------------------------------------
+
+        [FTS_local_campana_{fts_campana_id}]
+
+        exten => _X.,1,NoOp(FTS,INICIO,llamada=${{EXTEN}},campana={fts_campana_id})
+        exten => _X.,n,Set(ContactoId=${{CUT(EXTEN,,1)}})
+        exten => _X.,n,Set(NumberToCall=${{CUT(EXTEN,,2)}})
+        exten => _X.,n,Set(Intento=${{CUT(EXTEN,,3)}})
+        exten => _X.,n,NoOp(FTS,ContactoId=${{ContactoId}},NumberToCall=${{NumberToCall}},Intento=${{Intento}})
+        exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-pre-dial/)
+        exten => _X.,n,Dial({fts_dial_url},{fts_campana_dial_timeout})
+        ; # TODO: *** WARN: el siguiente 'AGI()' a veces no es llamado
+        exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-post-dial/dial-status/${{DIALSTATUS}}/)
+        exten => _X.,n,Hangup()
+
+        ;----------------------------------------------------------------------
+        ; Dialplan de campana (audio, opciones, etc)
+        ;----------------------------------------------------------------------
+
+        [campania_{fts_campana_id}]
+
+        exten => _ftsX.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
+        exten => _ftsX.,n,Set(OriginalExten=${{EXTEN}})
+        exten => _ftsX.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
+        exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
+        exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
+        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
+        exten => _ftsX.,n,Wait(1)
+        exten => _ftsX.,n,Answer()
+
+        ; http://www.voip-info.org/wiki/view/Asterisk+cmd+AMD
+        ; AMDSTATUS -> MACHINE | HUMAN | NOTSURE | HANGUP
+        exten => _ftsX.,n,AMD(2500,1500,800,5000,100,50,3,256)
+        exten => _ftsX.,n,GotoIf($[“${AMDSTATUS}” == “MACHINE”]?amd_machine:amd_human)
+        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-detection-failed/)
+        exten => _ftsX.,n,Goto(amd_finished)
+
+        exten => _ftsX.,n(amd_machine),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-machine-detected/)
+        exten => _ftsX.,n,Goto(amd_finished)
+
+        exten => _ftsX.,n(amd_human),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-human-detected/)
+        exten => _ftsX.,n,Goto(amd_finished)
+
+        exten => _ftsX.,n(amd_finished),NoOp()
+        exten => _ftsX.,n(audio),NoOp()
+
+        """
+
+    def get_parametros(self):
+        return self._parametros
+
+
+class GeneradorParaStartDetectarYEvitarContestador(
+        GeneradorDePedazoDeDialplanParaStart):
+
+    def get_template(self):
+        return """
+
+        ;----------------------------------------------------------------------
+        ; TEMPLATE_DIALPLAN_START-{fts_campana_id}
+        ;   Autogenerado {date}
+        ;----------------------------------------------------------------------
+
+        ;----------------------------------------------------------------------
+        ; Para usar local channels
+        ;----------------------------------------------------------------------
+
+        [FTS_local_campana_{fts_campana_id}]
+
+        exten => _X.,1,NoOp(FTS,INICIO,llamada=${{EXTEN}},campana={fts_campana_id})
+        exten => _X.,n,Set(ContactoId=${{CUT(EXTEN,,1)}})
+        exten => _X.,n,Set(NumberToCall=${{CUT(EXTEN,,2)}})
+        exten => _X.,n,Set(Intento=${{CUT(EXTEN,,3)}})
+        exten => _X.,n,NoOp(FTS,ContactoId=${{ContactoId}},NumberToCall=${{NumberToCall}},Intento=${{Intento}})
+        exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-pre-dial/)
+        exten => _X.,n,Dial({fts_dial_url},{fts_campana_dial_timeout})
+        ; # TODO: *** WARN: el siguiente 'AGI()' a veces no es llamado
+        exten => _X.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/local-channel-post-dial/dial-status/${{DIALSTATUS}}/)
+        exten => _X.,n,Hangup()
+
+        ;----------------------------------------------------------------------
+        ; Dialplan de campana (audio, opciones, etc)
+        ;----------------------------------------------------------------------
+
+        [campania_{fts_campana_id}]
+
+        exten => _ftsX.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
+        exten => _ftsX.,n,Set(OriginalExten=${{EXTEN}})
+        exten => _ftsX.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
+        exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
+        exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
+        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
+        exten => _ftsX.,n,Wait(1)
+        exten => _ftsX.,n,Answer()
+
+        ; http://www.voip-info.org/wiki/view/Asterisk+cmd+AMD
+        ; AMDSTATUS -> MACHINE | HUMAN | NOTSURE | HANGUP
+        exten => _ftsX.,n,AMD(2500,1500,800,5000,100,50,3,256)
+        exten => _ftsX.,n,GotoIf($[“${AMDSTATUS}” == “MACHINE”]?amd_machine:amd_human)
+        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-detection-failed/)
+        exten => _ftsX.,n,Goto(amd_finished)
+
+        exten => _ftsX.,n(amd_machine),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-machine-detected/)
+        exten => _ftsX.,n,Hangup()
+
+        exten => _ftsX.,n(amd_human),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-human-detected/)
+        exten => _ftsX.,n,Goto(amd_finished)
+
+        exten => _ftsX.,n(amd_finished),NoOp()
         exten => _ftsX.,n(audio),NoOp()
 
         """

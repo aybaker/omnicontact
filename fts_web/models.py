@@ -1383,6 +1383,15 @@ class Campana(AbstractCampana):
         (ESTADO_TEMPLATE_BORRADO, 'Template Borrado'),
     )
 
+    ACCION_NINGUNA = 0
+    ACCION_DETECTAR_CONTESTADOR = 1
+    ACCION_DETECTAR_EVITAR_CONTESTADOR = 2
+    ACCIONES_CONTESTADOR = (
+        (ACCION_NINGUNA, 'No hacer nada'),
+        (ACCION_DETECTAR_CONTESTADOR, 'Detectar contestador'),
+        (ACCION_DETECTAR_EVITAR_CONTESTADOR, 'Detectar y evitar contestador'),
+    )
+
     estado = models.PositiveIntegerField(
         choices=ESTADOS,
         default=ESTADO_EN_DEFINICION,
@@ -1393,6 +1402,10 @@ class Campana(AbstractCampana):
     duracion_de_audio = models.TimeField(null=True, blank=True)
     estadisticas = models.TextField(null=True, blank=True)
     es_template = models.BooleanField(default=False)
+    accion_contestador = models.PositiveIntegerField(
+        choices=ACCIONES_CONTESTADOR,
+        default=ACCION_NINGUNA,
+    )
 
     def obtener_id_archivo_audio(self):
         """

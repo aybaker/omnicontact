@@ -139,6 +139,33 @@ def local_channel_post_dial(CONN_POOL, campana_id, contacto_id, intento,
     #return "{0},{1}".format(response_status, 0)
 
 
+def amd_human_detected(CONN_POOL, campana_id, contacto_id, intento):
+    campana_id = int(campana_id)
+    contacto_id = int(contacto_id)
+    intento = int(intento)
+
+    ev = EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED
+    insert_evento_de_contacto(CONN_POOL, campana_id, contacto_id, ev, intento)
+
+
+def amd_machine_detected(CONN_POOL, campana_id, contacto_id, intento):
+    campana_id = int(campana_id)
+    contacto_id = int(contacto_id)
+    intento = int(intento)
+
+    ev = EventoDeContacto.EVENTO_ASTERISK_AMD_MACHINE_DETECTED
+    insert_evento_de_contacto(CONN_POOL, campana_id, contacto_id, ev, intento)
+
+
+def amd_failed(CONN_POOL, campana_id, contacto_id, intento):
+    campana_id = int(campana_id)
+    contacto_id = int(contacto_id)
+    intento = int(intento)
+
+    ev = EventoDeContacto.EVENTO_ASTERISK_AMD_FAILED
+    insert_evento_de_contacto(CONN_POOL, campana_id, contacto_id, ev, intento)
+
+
 #==============================================================================
 # Metodos utilitarios
 #==============================================================================
@@ -183,6 +210,24 @@ def create_urls():
         '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
             '/local-channel-post-dial/dial-status/(?P<dial_status>.+)/$',
         local_channel_post_dial))
+
+    # amd-human
+    urls.append((
+        '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
+        '/amd-human-detected/$',
+        amd_human_detected))
+
+    # amd-machine
+    urls.append((
+        '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
+        '/amd-machine-detected/$',
+        amd_machine_detected))
+
+    # amd-failed
+    urls.append((
+        '^(?P<campana_id>\d+)/(?P<contacto_id>\d+)/(?P<intento>\d+)'
+        '/amd-detection-failed/$',
+        amd_failed))
 
     return urls
 
