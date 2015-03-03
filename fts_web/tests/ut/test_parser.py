@@ -295,6 +295,23 @@ class ValidateTelefonoTest(FTSenderBaseTest):
         for dato in datos:
             self.assertFalse(validate_telefono(dato))
 
+    def test_validate_validacion_muy_relajada(self):
+
+        datos = ['12345',
+                 '12345678901234567890',
+                 '(12) 34-5678-9012-3456-789-0',
+                 ]
+
+        # With defaults values FAILS
+        for dato in datos:
+            self.assertFalse(validate_telefono(dato))
+
+        # With RELAXED values PASS
+        with override_settings(FTS_NRO_TELEFONO_LARGO_MIN=5,
+                               FTS_NRO_TELEFONO_LARGO_MAX=25):
+            for dato in datos:
+                self.assertTrue(validate_telefono(dato))
+
 
 class SanitizeNumberTest(FTSenderBaseTest):
     def test_sanitize_number(self):

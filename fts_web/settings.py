@@ -222,7 +222,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 
-
 #==============================================================================
 # Settings de DEPLOY (para ser customizados en distintos deploys)
 #     Nota: Los settings que siguen, pueden (y algunos DEBEN) ser modificados
@@ -342,6 +341,12 @@ FTS_DAEMON_STATS_VALIDEZ = 5
 obtenidas del cache. Si la estadistica obtenida desde el cache
 fue creada hace mas de `FTS_DAEMON_STATS_VALIDEZ` segundos,
 se muestra un WARN, avisando que las estadisticas son viejas."""
+
+FTS_NRO_TELEFONO_LARGO_MIN = 10
+"""Largo minimo permitido de nros telefonicos"""
+
+FTS_NRO_TELEFONO_LARGO_MAX = 13
+"""Largo maximo permitido de nros telefonicos"""
 
 #FTS_MARGEN_FINALIZACION_CAMPANA = 600
 #"""Cuanto tiempo debe pasar (despues del ultimo evento) para

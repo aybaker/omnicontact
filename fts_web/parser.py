@@ -282,13 +282,18 @@ def validate_horas(horas):
     return all(validate)
 
 
+REGEX_NON_DIGITS = re.compile(r'[^0-9]')
+
+
 def validate_telefono(number):
     """
     Esta función valida el numero telefónico tenga  entre 10 y 13 dígitos.
     """
-    number = re.sub("[^0-9]", "", str(number))
-    if re.match("^[0-9]{10,13}$", number):
+    number = REGEX_NON_DIGITS.sub("", str(number))
+    if settings.FTS_NRO_TELEFONO_LARGO_MIN <= len(number) <= \
+            settings.FTS_NRO_TELEFONO_LARGO_MAX:
         return True
+
     return False
 
 
