@@ -70,6 +70,10 @@ class ArchivoDeReporteCsv(object):
                 except KeyError:
                     encabezado.append(u"#{0} - N/A".format(opcion))
 
+            encabezado.append("Contesto: Humano")
+            encabezado.append("Contesto: Maquina")
+            encabezado.append("Contesto: Indefinido")
+
             # Creamos csvwriter
             csvwiter = csv.writer(csvfile)
 
@@ -90,6 +94,21 @@ class ArchivoDeReporteCsv(object):
                         lista_opciones.append(1)
                     else:
                         lista_opciones.append(None)
+
+                if EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED in lista_eventos:
+                    lista_opciones.append(1)
+                else:
+                    lista_opciones.append(None)
+
+                if EventoDeContacto.EVENTO_ASTERISK_AMD_MACHINE_DETECTED in lista_eventos:
+                    lista_opciones.append(1)
+                else:
+                    lista_opciones.append(None)
+
+                if EventoDeContacto.EVENTO_ASTERISK_AMD_FAILED in lista_eventos:
+                    lista_opciones.append(1)
+                else:
+                    lista_opciones.append(None)
 
                 lista_opciones_utf8 = [force_text(item).encode('utf-8')
                                        for item in lista_opciones]
