@@ -31,7 +31,11 @@ assert "FTS_SYSTEM_TEST" not in os.environ, (
     "ERROR! Se ha importado settings de 'dev' mientras se ejecutan "
     "los system tests")
 
-from fts_tests.models import customize_INSTALLED_APPS
+try:
+    from fts_tests.models import customize_INSTALLED_APPS
+except ImportError:
+    print "IGNORANDO fts_tests.models.customize_INSTALLED_APPS"
+    customize_INSTALLED_APPS = None
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -198,7 +202,10 @@ if 'FTS_DISABLE_LOGGING' in os.environ:
 
 FTS_DUMP_HTTP_AMI_RESPONSES = 'FTS_DUMP_HTTP_AMI_RESPONSES' in os.environ
 
-FTS_SETTING_CUSTOMIZERS = [customize_INSTALLED_APPS]
+if customize_INSTALLED_APPS:
+    FTS_SETTING_CUSTOMIZERS = [customize_INSTALLED_APPS]
+else:
+    FTS_SETTING_CUSTOMIZERS = []
 
 if 'FTS_SIMULADOR_DAEMON' in os.environ:
     def customize_simulador(local_vars):
