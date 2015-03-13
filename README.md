@@ -56,14 +56,31 @@ Sync de BD:
     $ ./manage.py syncdb
     $ ./manage.py migrate
 
+Ejecucion del sistema por separado
+----------------------------------
+
 El sistema puede lanzarse usando el servidor de desarrollo de Django:
 
     $ ./manage.py runserver
 
-En otras dos consolas, se pueden lanzar los procesos de Celery:
+En distintas consolas, se pueden lanzar los workers de Celery y los daemons:
 
     $ env DJANGO_SETTINGS_MODULE=fts_web.settings ./dev/celery_worker_finalizar_campana.sh
     $ env DJANGO_SETTINGS_MODULE=fts_web.settings ./dev/celery_worker_esperar_y_finalizar_campana.sh
+    $ env DJANGO_SETTINGS_MODULE=fts_web.settings PYTHONPATH=. python ./fts_daemon/poll_daemon/main.py
+    $ env DJANGO_SETTINGS_MODULE=fts_web.settings PYTHONPATH=. python ./fts_daemon/fastagi_daemon.py
+    $ env DJANGO_SETTINGS_MODULE=fts_web.settings PYTHONPATH=. python ./fts_daemon/services/finalizador_vencidas_daemon.py
+
+Ejecucion del sistema desde uWSGI
+---------------------------------
+
+El ejecutarse con uWSGI no hace falta lanzar manualmente los daemons y los workers de Celery,
+pero como NO se usa 'runserver' de Django, las modificaciones en las clases no serán vistas
+automáticamente.
+
+Para lanzar uWSGI para desarrollo:
+
+    $ ./run_uwsgi.sh
 
 
 Otras notas
