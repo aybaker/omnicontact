@@ -9,7 +9,9 @@ Para la instalación de algunos paquetes en virtualenv, puede ser necesario
 instalar paquetes en el sistema operativo.
 
 El sistema requiere que los siguientes sistemas estén funcionando:
- - PostgreSql 8 o superior
+ - PostgreSql 8 o superior, con 'plpythonu'
+    > ANTES de crear la BD, ejecutar (con un usuario con permisos de administrador de Postgresql):
+    $ createlang plpythonu template1
  - Redis
  - Asterisk 11
 
@@ -56,12 +58,14 @@ Editar fts_web_settings_local.py para que contenga:
         'DIAL_URL': "IAX2/10.1.5.1/${NumberToCall}",
     }
 
-	# 'FTS_DIALPLAN_FILENAME': donde se genera el dialplan
+	# 'FTS_DIALPLAN_FILENAME': donde se genera el dialplan. Asterisk debe estar configurado
+	#  para hacer un include de este archivo
 	# **** RECORDAR: revisar permisos y que existan los directorios ****
     FTS_DIALPLAN_FILENAME = "/opt/data-tsunami/asterisk-11-d/etc/" + \
         "asterisk/fts/extensions.conf"
 
-	# 'FTS_QUEUE_FILENAME': donde se genera la config de queues
+	# 'FTS_QUEUE_FILENAME': donde se genera la config de queues. Asterisk debe estar configurado
+	#  para hacer un include de este archivo
 	# **** RECORDAR: revisar permisos y que existan los directorios ****
     FTS_QUEUE_FILENAME = "/opt/data-tsunami/asterisk-11-d/etc/" + \
         "asterisk/fts/queues_fts.conf"
@@ -75,7 +79,7 @@ Editar fts_web_settings_local.py para que contenga:
 
 Crear usuario y BD de Postgresql:
 
-    $ createuser -P USUARIO_DE_LA_BASE_DE_DATOS
+    $ createuser -P --superuser USUARIO_DE_LA_BASE_DE_DATOS
     Enter password for new role:
     Enter it again:
 
@@ -111,6 +115,42 @@ automáticamente.
 Para lanzar uWSGI para desarrollo:
 
     $ ./run_uwsgi.sh
+
+
+Settings
+--------
+
+Todos los settings posibles, con la correspondiente documentación, se encuentra
+en 'fts_web.settings'.
+
+Los settings definidos en 'fts_web_settings_local.py' *SOBREESCRIBEN* los valores de 'fts_web.settings'.
+El archivo 'fts_web_settings_local.py' esta EXCLUIDO de git, para permitir que cada desarrollador configure allí
+su entorno, sus IPs, etc.
+
+
+Directorios & Paquetes
+----------------------
+
+ - fts_web: paquete con app Django
+ - fts_daemon: paquete con daemon enviador (se comunica con Asterisk para generar llamadas)
+ - fts_tests: paquete con tests pendientes de migrar
+
+ - deploy: directorio con todo lo necesario para deploys automatizados
+ - docs: fuentes de documentacion para generar con Sphinx (run_sphinx.sh)
+ - dev: scripts y archivos y directorios temporales del ambiente de desarrollo
+ - test: recursos estáticos requeridos para ejecución de tests automatizados
+
+Scripts
+-------
+
+ - manage.py: manage de Django
+ - build.sh: script de build automático, para hacer deploy de la app en servidores
+ - run_uwsgi.sh: lanza uWSGI para desarrollo
+ - run_sphinx.sh: genera documentación del sistema
+ - run_coverage_daemon.sh: ejecuta tests & calcula coverage de funcionalidad del Daemon
+
+
+# ----------------------------------------------------------------------------------------------------
 
 
 Otras notas
