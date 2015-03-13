@@ -8,9 +8,10 @@ El sistema debe ser desarrollado usando Python 2.6 y virtualenv.
 Para la instalación de algunos paquetes en virtualenv, puede ser necesario
 instalar paquetes en el sistema operativo.
 
-El sistema requiere:
-- PostgreSql 8 o superior
-- Redis
+El sistema requiere que los siguientes sistemas estén funcionando:
+ - PostgreSql 8 o superior
+ - Redis
+ - Asterisk 11
 
 Armado inicial del entorno
 --------------------------
@@ -25,6 +26,8 @@ Armado inicial del entorno
     $ pip install git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba
 
 Editar fts_web_settings_local.py para que contenga:
+
+    ##### [INICIO] #####
 
 	from fts_web_settings_local_dev import *
 
@@ -42,6 +45,33 @@ Editar fts_web_settings_local.py para que contenga:
 	        'ATOMIC_REQUESTS': True,
 	    }
 	}
+
+    # 'USERNAME' y 'PASSWORD': para acceder a la management console de Asterisk
+    # 'HTTP_AMI_URL': URL para acceder a la management console
+    # 'DIAL_URL': URL a usar para generar la llamada, debe contener '${NumberToCall}'
+    ASTERISK = {
+        'USERNAME': 'asterix-user',
+        'PASSWORD': 'asterix-password',
+        'HTTP_AMI_URL': 'http://127.0.0.1:7088',
+        'DIAL_URL': "IAX2/10.1.5.1/${NumberToCall}",
+    }
+
+	# 'FTS_DIALPLAN_FILENAME': donde se genera el dialplan
+	# **** RECORDAR: revisar permisos y que existan los directorios ****
+    FTS_DIALPLAN_FILENAME = "/opt/data-tsunami/asterisk-11-d/etc/" + \
+        "asterisk/fts/extensions.conf"
+
+	# 'FTS_QUEUE_FILENAME': donde se genera la config de queues
+	# **** RECORDAR: revisar permisos y que existan los directorios ****
+    FTS_QUEUE_FILENAME = "/opt/data-tsunami/asterisk-11-d/etc/" + \
+        "asterisk/fts/queues_fts.conf"
+
+	# 'FTS_RELOAD_CMD': comando a ejecutar para realizar el reload de la configuracion de Asterisk
+	# **** RECORDAR: revisar permisos, usuario, etc.
+    FTS_RELOAD_CMD = ["/opt/data-tsunami/asterisk-11-d/sbin/asterisk",
+        "-x", "reload"]
+
+    ##### [FIN] #####
 
 Crear usuario y BD de Postgresql:
 
