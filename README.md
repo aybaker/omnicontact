@@ -97,7 +97,8 @@ El sistema puede lanzarse usando el servidor de desarrollo de Django:
 
     $ ./manage.py runserver
 
-En distintas consolas, se pueden lanzar los workers de Celery y los daemons:
+Para tener toda la funcionalidad del sistema disponible, hace falta lanzar todos los demas
+componentes:
 
     $ env DJANGO_SETTINGS_MODULE=fts_web.settings ./dev/celery_worker_finalizar_campana.sh
     $ env DJANGO_SETTINGS_MODULE=fts_web.settings ./dev/celery_worker_esperar_y_finalizar_campana.sh
@@ -105,14 +106,16 @@ En distintas consolas, se pueden lanzar los workers de Celery y los daemons:
     $ env DJANGO_SETTINGS_MODULE=fts_web.settings PYTHONPATH=. python ./fts_daemon/fastagi_daemon.py
     $ env DJANGO_SETTINGS_MODULE=fts_web.settings PYTHONPATH=. python ./fts_daemon/services/finalizador_vencidas_daemon.py
 
+Para trabajar sobre la UI, si no se quieren ejecutar realmente las campañas, no hace falta
+lanzar todos estos procesos, sólo 'runserver'.
+
 Ejecucion del sistema desde uWSGI
 ---------------------------------
 
-El ejecutarse con uWSGI no hace falta lanzar manualmente los daemons y los workers de Celery,
-pero como NO se usa 'runserver' de Django, las modificaciones en las clases no serán vistas
-automáticamente.
+Existe un script que lanza la aplicación usando uWSGI, y junto a uWSGI, los daemons y workers de Celery.
+La desventaja es que las clases no son recargadas automáticamente.
 
-Para lanzar uWSGI para desarrollo:
+Para utilizar el sistema con uWSGI:
 
     $ ./run_uwsgi.sh
 
