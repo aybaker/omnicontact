@@ -9,9 +9,10 @@ Para la instalación de algunos paquetes en virtualenv, puede ser necesario
 instalar paquetes en el sistema operativo.
 
 El sistema requiere que los siguientes sistemas estén funcionando:
+
  - PostgreSql 8 o superior, con 'plpythonu'
-    > ANTES de crear la BD, ejecutar (con un usuario con permisos de administrador de Postgresql):
-    $ createlang plpythonu template1
+    - ANTES de crear la BD, ejecutar (con un usuario con permisos de administrador de Postgresql):
+    - $ `createlang plpythonu template1`
  - Redis
  - Asterisk 11
 
