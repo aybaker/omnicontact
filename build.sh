@@ -11,6 +11,7 @@
 #   ./build.sh -i deploy/hosts-virtual-pruebas
 #
 # Otros comandos interesantes:
+#
 #  $ ansible -m setup hostname
 #      Para visualizar facts
 #
@@ -61,7 +62,7 @@ cat > $TMP/app/fts_web/version.py <<EOF
 
 FTSENDER_BRANCH="${branch_name}"
 FTSENDER_COMMIT="${commit}"
-FTSENDER_BUILD_DATE="$(date)"
+FTSENDER_BUILD_DATE="$(env LC_ALL=C LC_TIME=C date)"
 FTSENDER_AUTHOR="${author}"
 
 if __name__ == '__main__':
@@ -69,6 +70,10 @@ if __name__ == '__main__':
 
 
 EOF
+
+echo "Validando version.py - Commit:"
+python $TMP/app/fts_web/version.py
+echo ""
 
 export DO_CHECKS="${DO_CHECKS:-no}"
 
