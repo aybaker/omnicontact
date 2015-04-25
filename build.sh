@@ -11,6 +11,7 @@
 #   ./build.sh -i deploy/hosts-virtual-pruebas
 #
 # Otros comandos interesantes:
+#
 #  $ ansible -m setup hostname
 #      Para visualizar facts
 #
@@ -31,9 +32,9 @@ if [ -e $TMP ] ; then
 fi
 
 mkdir -p $TMP/app
-echo "Directorio temporal: $TMP/app"
+echo "Usando directorio temporal: $TMP/app..."
 
-echo "Creando bundle..."
+echo "Creando bundle usando git-archive..."
 git archive --format=tar $(git rev-parse HEAD) | tar x -f - -C $TMP/app
 
 echo "Eliminando archivos innecesarios..."
@@ -44,12 +45,14 @@ rm -rf $TMP/app/build
 rm -rf $TMP/app/run_coverage*
 rm -rf $TMP/app/run_sphinx.sh
 
+# ----------
+
+echo "Obteniendo datos de version..."
 branch_name=$(git symbolic-ref -q HEAD)
 branch_name=${branch_name##refs/heads/}
 branch_name=${branch_name:-HEAD}
 
 commit="$(git rev-parse HEAD)"
-
 author="$(id -un)@$(hostname -f)"
 
 echo "Creando archivo de version | Branch: $branch_name | Commit: $commit | Autor: $author"
@@ -61,7 +64,7 @@ cat > $TMP/app/fts_web/version.py <<EOF
 
 FTSENDER_BRANCH="${branch_name}"
 FTSENDER_COMMIT="${commit}"
-FTSENDER_BUILD_DATE="$(date)"
+FTSENDER_BUILD_DATE="$(env LC_ALL=C LC_TIME=C date)"
 FTSENDER_AUTHOR="${author}"
 
 if __name__ == '__main__':
@@ -69,6 +72,11 @@ if __name__ == '__main__':
 
 
 EOF
+
+echo "Validando version.py - Commit:"
+python $TMP/app/fts_web/version.py
+
+# ----------
 
 export DO_CHECKS="${DO_CHECKS:-no}"
 
