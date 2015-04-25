@@ -395,7 +395,7 @@ class SimuladorEventoDeContactoManager():
                     nextval('fts_web_contacto_id_seq') as "id",
                     '["' ||
                     (random()*1000000000000)::bigint::text || '",' ||
-                    '"nombre",' ||
+                    '"ñombré",' ||
                     '"01/01/2001",' ||
                     '"15:16"' ||
                     ']'
