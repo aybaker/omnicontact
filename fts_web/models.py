@@ -1584,11 +1584,11 @@ class Campana(AbstractCampana):
         opciones = Opcion.objects.filter(campana=self)
 
         lista_final = []
-        for detalle_opcion in EDC.obtener_contactos_por_opciones(self.pk):
+        for numero_opcion, contactos in EDC.obtener_contactos_por_opciones(self.pk):
             lista_item = []
 
             digito = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
-                detalle_opcion[0]]
+                numero_opcion]
 
             try:
                 opcion = opciones.get(digito=digito)
@@ -1597,7 +1597,7 @@ class Campana(AbstractCampana):
                 lista_item.append(digito)
 
             lista_item.append([map(str, json.loads(contacto))
-                               for contacto in detalle_opcion[1]])
+                               for contacto in contactos])
 
             lista_final.append(lista_item)
         return lista_final
