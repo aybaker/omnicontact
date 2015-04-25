@@ -238,7 +238,7 @@ class FTSenderTestUtilsMixin(object):
         luego de haber sido parseados desde string json.
         """
         nro_telefonico = nro_telefonico or rtel()
-        return [nro_telefonico, 'nombre', '15/01/1988', '19:41']
+        return [nro_telefonico, u'nombre extraño', '15/01/1988', '19:41']
 
     def crear_dict_datos_extras(self, nro_telefonico=None):
         """Devuelve dict con datos extras.

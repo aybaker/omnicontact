@@ -29,7 +29,7 @@ class Tmp(FTSenderBaseTest):
 
 def setear_audio(options, campana):
     if not options['audio']:
-        return
+        return campana
 
     fd, tmp = tempfile.mkstemp(dir=settings.MEDIA_ROOT, suffix=".wav")
     # Preparamos datos

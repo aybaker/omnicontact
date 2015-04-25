@@ -395,7 +395,7 @@ class SimuladorEventoDeContactoManager():
                     nextval('fts_web_contacto_id_seq') as "id",
                     '["' ||
                     (random()*1000000000000)::bigint::text || '",' ||
-                    '"nombre",' ||
+                    '"ñombré",' ||
                     '"01/01/2001",' ||
                     '"15:16"' ||
                     ']'
@@ -643,8 +643,8 @@ class EventoDeContactoEstadisticasManager():
 
     def obtener_contactos_por_opciones(self, campana_id):
         """
-        Devuelve un diccionario con el número de opcioón como clave y
-        una lista de los contactos que la seleccionaron.
+        Devuelve una lista de listas. El primer elemento es el número de
+        opción, el segundo, una lista de los contactos que la seleccionaron.
         """
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()

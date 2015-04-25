@@ -1576,7 +1576,15 @@ class Campana(AbstractCampana):
         Este método se encarga de invocar al método de EDC que filtra los
         contactos por cada opción seleccionada. Devuelve un lista de
         listas por ejemplo:
-        [[Opcion, [3513368309, 3513368308]], [9, [3513368309, 3513368308]]].
+        [
+           [Opcion, [3513368309, 3513368308]],
+           [9, [3513368309, 3513368308]]
+        ].
+        El primer elemento (en el ejemplo de arriba: 'Opcion', y '9')
+        corresponde a la opción seleccionada. Para los casos en que
+        se ha presionado un número que no corresponde a ninguna opción,
+        en vez de una instancia de Opcion, se devuelve un entero,
+        representando el número (del 0 al 9) presionado.
         """
         from fts_daemon.models import EventoDeContacto
         EDC = EventoDeContacto.objects_estadisticas
@@ -1584,11 +1592,11 @@ class Campana(AbstractCampana):
         opciones = Opcion.objects.filter(campana=self)
 
         lista_final = []
-        for detalle_opcion in EDC.obtener_contactos_por_opciones(self.pk):
+        for numero_opcion, contactos in EDC.obtener_contactos_por_opciones(self.pk):
             lista_item = []
 
             digito = EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[
-                detalle_opcion[0]]
+                numero_opcion]
 
             try:
                 opcion = opciones.get(digito=digito)
@@ -1596,8 +1604,8 @@ class Campana(AbstractCampana):
             except Opcion.DoesNotExist:
                 lista_item.append(digito)
 
-            lista_item.append([map(str, json.loads(contacto))
-                               for contacto in detalle_opcion[1]])
+            lista_item.append([map(unicode, json.loads(contacto))
+                               for contacto in contactos])
 
             lista_final.append(lista_item)
         return lista_final
