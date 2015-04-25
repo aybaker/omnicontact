@@ -290,10 +290,12 @@ class ValidateTelefonoTest(FTSenderBaseTest):
 
     def test_validate_number_invalidos(self):
 
-        datos = ['35445', '(11)1534509gt', '5', 'test']
+        datos = ['355', '(11)blablabla', '5', 'test']
 
         for dato in datos:
-            self.assertFalse(validate_telefono(dato))
+            self.assertFalse(validate_telefono(dato),
+                             "ERROR: el nro telefonico INVALIDO '{0}' ha sido "
+                             "detectado como VALIDO.".format(dato))
 
     def test_validate_validacion_muy_relajada(self):
 
@@ -302,9 +304,13 @@ class ValidateTelefonoTest(FTSenderBaseTest):
                  '(12) 34-5678-9012-3456-789-0',
                  ]
 
-        # With defaults values FAILS
-        for dato in datos:
-            self.assertFalse(validate_telefono(dato))
+        # With STRICT values FAILS
+        with override_settings(FTS_NRO_TELEFONO_LARGO_MIN=11,
+                               FTS_NRO_TELEFONO_LARGO_MAX=13):
+            for dato in datos:
+                self.assertFalse(validate_telefono(dato),
+                                 "ERROR: el nro telefonico INVALIDO '{0}' ha "
+                                 "sido detectado como VALIDO.".format(dato))
 
         # With RELAXED values PASS
         with override_settings(FTS_NRO_TELEFONO_LARGO_MIN=5,
