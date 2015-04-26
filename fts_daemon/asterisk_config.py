@@ -18,7 +18,7 @@ from django.conf import settings
 from fts_web.models import Campana, GrupoAtencion
 import logging as _logging
 from fts_daemon.asterisk_config_generador_de_partes import (
-    NoSePuedeCrearDialplanError, GeneradorDePedazoDeDialplanFactory,
+    GeneradorDePedazoDeDialplanFactory,
     GeneradorDePedazoDeQueueFactory)
 
 

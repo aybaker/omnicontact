@@ -4,23 +4,18 @@
 
 from __future__ import unicode_literals
 
-import logging
-import tempfile
 import re
-import os
-from django.conf import settings
-from django.test.utils import override_settings
-from fts_daemon.asterisk_config import generar_dialplan, \
-    create_dialplan_config_file, generar_queue, create_queue_config_file, \
-    reload_config
-from fts_daemon.asterisk_config import (
-    NoSePuedeCrearDialplanError, DialplanConfigCreator, QueueConfigCreator,
-    AsteriskConfigReloader, DialplanConfigFile, QueueConfigFile, ConfigFile)
-from fts_web.models import (Opcion, Campana, GrupoAtencion, AudioDeCampana,
-                            BaseDatosContacto, ArchivoDeAudio, Calificacion)
-from fts_web.tests.utiles import FTSenderBaseTest
+import tempfile
 
+from django.test.utils import override_settings
 from mock import Mock
+
+from fts_daemon.asterisk_config import (
+    DialplanConfigCreator, QueueConfigCreator,
+    AsteriskConfigReloader, ConfigFile)
+from fts_web.models import (Opcion, Campana, GrupoAtencion, AudioDeCampana,
+                            BaseDatosContacto, Calificacion)
+from fts_web.tests.utiles import FTSenderBaseTest
 
 
 class ConfigFileMock(object):
@@ -290,7 +285,7 @@ class CreateDialplanTest(FTSenderBaseTest):
                 self.assertTrue(config.find("TEMPLATE_OPCION_REPETIR-{0}"
                                             "".format(opcion.id)) > 0)
         self.assertTrue(campana.opciones.count,
-                        len(re.findall('\TEMPLATE_OPCION_*', config)))
+                        len(re.findall('TEMPLATE_OPCION_*', config)))
 
     def test_create_dialplan_genera_configuracion_con_opcion_calificar(self):
 
