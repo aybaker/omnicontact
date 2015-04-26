@@ -18,14 +18,17 @@ from fts_web.models import (Opcion, Campana, GrupoAtencion, AudioDeCampana,
 from fts_web.tests.utiles import FTSenderBaseTest
 
 
-class ConfigFileMock(object):
+class ConfigFileMock(ConfigFile):
 
     def __init__(self):
+        _, tmp_filename = tempfile.mkstemp()
+        super(ConfigFileMock, self).__init__(tmp_filename)
         self.contenidos = None
 
     def write(self, contenidos):
         assert self.contenidos is None
         self.contenidos = contenidos
+        super(ConfigFileMock, self).write(contenidos)
 
 
 class CreateDialplanTest(FTSenderBaseTest):

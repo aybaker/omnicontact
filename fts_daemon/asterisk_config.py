@@ -292,7 +292,9 @@ class ConfigFile(object):
         try:
             tmp_file_obj = os.fdopen(tmp_fd, 'w')
             for contenido in contenidos:
-                tmp_file_obj.write(contenido)
+                assert isinstance(contenido, unicode), \
+                    "Objeto NO es unicode: {0}".format(type(contenido))
+                tmp_file_obj.write(contenido.encode('utf-8'))
 
             tmp_file_obj.close()
 
