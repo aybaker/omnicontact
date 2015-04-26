@@ -5,12 +5,7 @@
 from __future__ import unicode_literals
 
 import datetime
-import logging
-import tempfile
-import re
-import os
 
-from django.conf import settings
 from django.test.utils import override_settings
 
 from fts_daemon.asterisk_config import generar_dialplan, \
@@ -18,7 +13,7 @@ from fts_daemon.asterisk_config import generar_dialplan, \
     reload_config
 
 from fts_daemon.asterisk_config import (
-    NoSePuedeCrearDialplanError, DialplanConfigCreator, QueueConfigCreator,
+    DialplanConfigCreator, QueueConfigCreator,
     AsteriskConfigReloader, DialplanConfigFile, QueueConfigFile, ConfigFile)
 
 from fts_daemon.asterisk_config_generador_de_partes import *
