@@ -2,11 +2,8 @@
 
 from __future__ import unicode_literals
 
-import json
-
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.edit import (CreateView, UpdateView, DeleteView,
