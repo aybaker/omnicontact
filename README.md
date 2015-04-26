@@ -91,6 +91,11 @@ Sync de BD:
     $ ./manage.py syncdb
     $ ./manage.py migrate
 
+Además, deberá ejecutar los archivos \*.sql del directorio /fts\_web/sql/plpython/,
+ya que dichos scripts SQL *NO* son aplicados por las migraciones.
+
+
+
 Ejecucion del sistema por separado
 ----------------------------------
 
