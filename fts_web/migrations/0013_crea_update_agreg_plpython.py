@@ -12,6 +12,14 @@ import os
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        """
+        Aplica migracion. SOLO la aplica cuando la variable FTS_TESTING_MODE
+        esta seteada en True.
+
+        Con respecto al DEPLOY en PRODUCCION (y otros ambientes), esta
+        bien que no se aplique esta migracion, ya que el script de deploy
+        ejecuta directamente los archivos .SQL
+        """
         if not settings.FTS_TESTING_MODE:
             print("Ignorando migracion: no en FTS_TESTING_MODE")
             return
