@@ -38,7 +38,7 @@ class CreateDialplanTest(FTSenderBaseTest):
 
         campanas = []
         for i in range(1, 4):
-            campana = Campana(pk=i, nombre="C", estado=Campana.ESTADO_ACTIVA,
+            campana = Campana(pk=i, nombre="Campaña", estado=Campana.ESTADO_ACTIVA,
                               cantidad_canales=1, cantidad_intentos=1,
                               segundos_ring=10)
 
@@ -83,7 +83,7 @@ class CreateDialplanTest(FTSenderBaseTest):
 
         campanas = []
         for i in range(1, 4):
-            campana = Campana(pk=i, nombre="C",
+            campana = Campana(pk=i, nombre="Campaña",
                               estado=Campana.ESTADO_EN_DEFINICION,
                               cantidad_canales=1, cantidad_intentos=1,
                               segundos_ring=10)
@@ -129,7 +129,7 @@ class CreateDialplanTest(FTSenderBaseTest):
 
         campanas = []
         for i in range(1, 4):
-            campana = Campana(pk=i, nombre="C",
+            campana = Campana(pk=i, nombre="Campaña",
                               estado=Campana.ESTADO_FINALIZADA,
                               cantidad_canales=1, cantidad_intentos=1,
                               segundos_ring=10)
@@ -179,7 +179,7 @@ class CreateDialplanTest(FTSenderBaseTest):
 
         campanas = []
         for i in range(1, 4):
-            campana = Campana(pk=i, nombre="C", estado=Campana.ESTADO_ACTIVA,
+            campana = Campana(pk=i, nombre="Campaña", estado=Campana.ESTADO_ACTIVA,
                               cantidad_canales=1, cantidad_intentos=1,
                               segundos_ring=10)
             if campana.pk == 1:
@@ -238,7 +238,7 @@ class CreateDialplanTest(FTSenderBaseTest):
 
         campanas = []
         for i in range(1, 4):
-            campana = Campana(pk=i, nombre="C", estado=Campana.ESTADO_ACTIVA,
+            campana = Campana(pk=i, nombre="Campaña", estado=Campana.ESTADO_ACTIVA,
                               cantidad_canales=1, cantidad_intentos=1,
                               segundos_ring=10)
 
@@ -293,7 +293,7 @@ class CreateDialplanTest(FTSenderBaseTest):
 
         campanas = []
         for i in range(1, 4):
-            campana = Campana(pk=i, nombre="C", estado=Campana.ESTADO_ACTIVA,
+            campana = Campana(pk=i, nombre="Campaña", estado=Campana.ESTADO_ACTIVA,
                               cantidad_canales=1, cantidad_intentos=1,
                               segundos_ring=10)
 
@@ -351,7 +351,7 @@ class CreateDialplanTest(FTSenderBaseTest):
 
         campanas = []
         for i in range(1, 4):
-            campana = Campana(pk=i, nombre="C", estado=Campana.ESTADO_ACTIVA,
+            campana = Campana(pk=i, nombre="Campaña", estado=Campana.ESTADO_ACTIVA,
                               cantidad_canales=1, cantidad_intentos=1,
                               segundos_ring=10)
 
@@ -405,10 +405,10 @@ class CreateQueueTest(FTSenderBaseTest):
         config_file_mock = ConfigFileMock()
 
         grupos_de_atencion = [GrupoAtencion(id=1,
-                                            nombre="GA1",
+                                            nombre="GA1Ñ",
                                             timeout=1),
                               GrupoAtencion(id=2,
-                                            nombre="GA2",
+                                            nombre="GA2Ñ",
                                             timeout=2)
                               ]
 
