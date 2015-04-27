@@ -62,12 +62,10 @@ class TestWorkflowCreacionBdContactoDesdeCsv(FTSenderBaseTest):
     def test_con_demas_planillas_de_ejemplo(self):
 
         PLANILLAS = (
-            # "planilla-ejemplo-0.csv",
             "planilla-ejemplo-1.csv",
-            # "planilla-ejemplo-2.csv",
-            # "planilla-ejemplo-3.csv",
             "planilla-ejemplo-4.csv",
-            # "planilla-ejemplo-5.csv",
+            "planilla-ejemplo-7-celdas-vacias.csv",
+            "planilla-ejemplo-8-ultima-celda-vacia.csv",
         )
 
         for planilla in PLANILLAS:
