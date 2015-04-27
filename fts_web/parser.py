@@ -169,10 +169,6 @@ class ParserCsv(object):
         """
 
         file_obj = base_datos_contactos.archivo_importacion.file
-        return self._previsualiza_archivo(file_obj)
-
-    def _previsualiza_archivo(self, file_obj):
-
         workbook = csv.reader(file_obj, self._get_dialect(file_obj))
 
         structure_dic = []
