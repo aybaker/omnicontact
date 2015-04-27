@@ -61,10 +61,10 @@ class GeneradorDeDuracionDeLlamadasTest(FTSenderBaseTest):
              lastdata, duration, billsec, disposition, amaflags, accountcode,
              uniqueid, userfield, peeraccount, linkedid, sequence)
             VALUES
-            ('2014-09-26 20:18:26', 1, 1, '{1}-01100000000{1}-1',
+            ('2014-09-26 20:18:26', 1, 1, '{1}-0110000000000000000{1}-1',
              'FTS_local_campana_{2}',
-             'Local/120224-01100000000{1}-1@FTS_local_campana_1-00000001',
-             'IAX2/asterisk-a-1727', 'Dial', 'IAX2/172.19.1.101/011000000001',
+             'Local/120224-0110000000000000000{1}-1@FTS_local_campana_1-00000001',
+             'IAX2/asterisk-a-1727', 'Dial', 'IAX2/172.19.1.101/0110000000000000000{1}',
              1, 1, 'ANSWERED', 3, 1411762706.4, 1, 1, 1411762706.3, 1, 5)
             """.format(settings.FTS_NOMBRE_TABLA_CDR, i, campana.id)
 
@@ -82,4 +82,4 @@ class GeneradorDeDuracionDeLlamadasTest(FTSenderBaseTest):
         for i in range(1, 6):
             self.assertEqual(
                 DuracionDeLlamada.objects.get(pk=i).numero_telefono,
-                '01100000000{0}'.format(i))
+                '0110000000000000000{0}'.format(i))

@@ -152,7 +152,8 @@ def ru():
 
 def rtel():
     """Devuelve nro telefonico aleatorio"""
-    return unicode(random.randint(1140000000, 1149999999))
+    return unicode(random.randint(1140000000000000,
+                                  1149999999999999))
 
 
 def get_test_resource_directory():

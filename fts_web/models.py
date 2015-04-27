@@ -2449,7 +2449,7 @@ class DuracionDeLlamada(models.Model):
     objects = DuracionDeLlamadaManager()
 
     campana = models.ForeignKey('Campana')
-    numero_telefono = models.CharField(max_length=13)
+    numero_telefono = models.CharField(max_length=20)
     fecha_hora_llamada = models.DateTimeField()
     duracion_en_segundos = models.PositiveIntegerField()
     eventos_del_contacto = models.TextField()
