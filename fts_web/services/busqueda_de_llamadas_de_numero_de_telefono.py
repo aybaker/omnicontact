@@ -58,22 +58,26 @@ class BusquedaDeLlamadasService(object):
             self._obtener_duracion_de_llamadas_de_numero_telefono(
                 numero_telefono)
 
-        resultado_de_busqueda = ResultadoDeBusquedaDeLlamadas()
-        return resultado_de_busqueda.listado_de_llamadas(duracion_de_llamadas)
-
-
-class ResultadoDeBusquedaDeLlamadas(object):
-    """
-    Se encarga de instanciar los objeto de transferencia de datos y generar
-    una lista con los mismos.
-    """
-
-    def listado_de_llamadas(self, duracion_de_llamadas):
         listado_de_llamadas = []
         for duracion_de_llamada in duracion_de_llamadas:
             listado_de_llamadas.append(DetalleDeLlamadaDTO(
                                        duracion_de_llamada))
+
         return listado_de_llamadas
+
+
+class OpcionFalsaParaRepresentarAtencionDeLlamada(object):
+    """Implementa la api de models.Opcion, para representar que
+    la persona atendio la llamada.
+
+    Esto es un workaround. La solucion final deberia eliminar
+    esta clase.
+    """
+    def get_descripcion_de_opcion(self):
+        return "Llamada atendida"
+
+
+ATENCION_DE_LLAMADA_SINGLETON = OpcionFalsaParaRepresentarAtencionDeLlamada()
 
 
 class DetalleDeLlamadaDTO(object):
@@ -94,12 +98,12 @@ class DetalleDeLlamadaDTO(object):
         contacto que surgieron de la función de agregación de postgres
         (array_agg) y se modifica para que sea un string válido para json.
 
-        Devuelve un json con los eventos del contacto.
+        Devuelve listas con NUMERO de evento de contacto,
+        por ejemplo: [51, 59] si la persona presiono el digito 1
+        y el dígito 9.
         """
-        eventos_del_contacto = self.duracion_de_llamada.eventos_del_contacto
-        json_string_valido = \
-            eventos_del_contacto.replace("{", "[").replace("}", "]")
-
+        json_string_valido = self.duracion_de_llamada.eventos_del_contacto.replace(
+            "{", "[").replace("}", "]")
         return json.loads(json_string_valido)
 
     def _obtener_opciones_seleccionadas(self):
@@ -108,17 +112,17 @@ class DetalleDeLlamadaDTO(object):
         obtiene el objeto opción que corresponde en cada caso y las almacena
         en una lista que setea en el atributo opciones_seleccionadas.
         """
-        eventos_del_contacto = self._obtener_eventos_del_contacto()
-
         opciones_seleccionas = []
-        for evento in eventos_del_contacto:
+        for evento in self._obtener_eventos_del_contacto():
             digito_seleccionado = \
-                EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP[evento]
+                EventoDeContacto.EVENTO_A_NUMERO_OPCION_MAP.get(evento, None)
 
-            opcion_selectionada =\
-                self.duracion_de_llamada.campana.opciones.get(
+            if digito_seleccionado is None:
+                # No es una opción seleccionada, se debe tratar de la llamada atendida
+                opciones_seleccionas.append(ATENCION_DE_LLAMADA_SINGLETON)
+            else:
+                opcion_selectionada = self.duracion_de_llamada.campana.opciones.get(
                     digito=digito_seleccionado)
-
-            opciones_seleccionas.append(opcion_selectionada)
+                opciones_seleccionas.append(opcion_selectionada)
 
         return opciones_seleccionas

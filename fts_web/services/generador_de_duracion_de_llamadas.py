@@ -84,7 +84,7 @@ class GeneradorDeDuracionDeLlamandasService(object):
             AND evento IN (%(opcion_0)s, %(opcion_1)s, %(opcion_2)s,
                            %(opcion_3)s, %(opcion_4)s, %(opcion_5)s,
                            %(opcion_6)s, %(opcion_7)s, %(opcion_8)s,
-                           %(opcion_9)s)
+                           %(opcion_9)s, %(atencion_de_llamada)s)
             GROUP BY campana_id, contacto_id) AS sub_query
         ON fts_custom_cdr_temporal.contacto_id = sub_query.contacto_id
         WHERE fts_custom_cdr_temporal.campana_id = %(campana_id)s
@@ -99,7 +99,9 @@ class GeneradorDeDuracionDeLlamandasService(object):
                   'opcion_6': EventoDeContacto.EVENTO_ASTERISK_OPCION_6,
                   'opcion_7': EventoDeContacto.EVENTO_ASTERISK_OPCION_7,
                   'opcion_8': EventoDeContacto.EVENTO_ASTERISK_OPCION_8,
-                  'opcion_9': EventoDeContacto.EVENTO_ASTERISK_OPCION_9}
+                  'opcion_9': EventoDeContacto.EVENTO_ASTERISK_OPCION_9,
+                  'atencion_de_llamada': EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO,
+                  }
 
         with log_timing(logger,
                         "_insertar_duracion_de_llamdas() tardo %s seg"):
