@@ -9,8 +9,10 @@ from __future__ import unicode_literals
 from __builtin__ import callable, enumerate
 import json
 import logging
+import pprint
 import os
 import re
+from django.utils.encoding import smart_text
 
 from fts_web.errors import FtsArchivoImportacionInvalidoError, FtsError, \
     FtsParserMaxRowError, FtsParserCsvImportacionError
@@ -168,16 +170,24 @@ class PredictorMetadataService(object):
 
         Los caracteres invalidos NO son borrados.
         """
+        nombre = smart_text(nombre)
         nombre = nombre.strip().upper()
         nombre = DOUBLE_SPACES.sub("_", nombre)
         return nombre
 
-    def inferir_metadata_desde_lineas(self, lineas):
+    def inferir_metadata_desde_lineas(self, lineas_unsafe):
         """Infiere los metadatos desde las lineas pasadas por parametros.
 
         Devuelve instancias de MetadataBaseDatosContactoDTO.
         """
-        assert isinstance(lineas, (list, tuple))
+        assert isinstance(lineas_unsafe, (list, tuple))
+
+        lineas = []
+        for linea in lineas_unsafe:
+            lineas.append(
+                [smart_text(col) for col in linea]
+            )
+        del lineas_unsafe
 
         logger.debug("inferir_metadata_desde_lineas(): %s", lineas)
 

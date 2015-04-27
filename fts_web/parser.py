@@ -11,6 +11,7 @@ import logging
 import re
 
 from django.conf import settings
+from django.utils.encoding import smart_text
 from fts_web.errors import (FtsParserCsvDelimiterError,
                             FtsParserMinRowError, FtsParserMaxRowError,
                             FtsParserCsvImportacionError)
@@ -285,7 +286,7 @@ def validate_telefono(number):
     """
     Esta función valida el numero telefónico tenga  entre 10 y 13 dígitos.
     """
-    number = REGEX_NON_DIGITS.sub("", str(number))
+    number = REGEX_NON_DIGITS.sub("", smart_text(number))
     if settings.FTS_NRO_TELEFONO_LARGO_MIN <= len(number) <= \
             settings.FTS_NRO_TELEFONO_LARGO_MAX:
         return True
