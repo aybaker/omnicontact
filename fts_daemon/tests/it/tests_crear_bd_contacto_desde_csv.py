@@ -25,8 +25,8 @@ class TestWorkflowCreacionBdContactoDesdeCsv(FTSenderBaseTest):
     def test_con_planilla_ejemplo_6(self):
         bd_contacto = BaseDatosContacto.objects.create(
             nombre="base-datos-contactos",
-            archivo_importacion=self.get_test_resource("planilla-ejemplo-6.csv"),
-            nombre_archivo_importacion='planilla-ejemplo-6.csv')
+            archivo_importacion=self.get_test_resource("planilla-ejemplo-6-headers-con-no-ascii-y-espacios.csv"),
+            nombre_archivo_importacion='planilla-ejemplo-6-headers-con-no-ascii-y-espacios.csv')
 
         parser = ParserCsv()
         estructura_archivo = parser.previsualiza_archivo(bd_contacto)
