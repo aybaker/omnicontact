@@ -598,7 +598,7 @@ class BaseDatosContacto(models.Model):
     )
     archivo_importacion = models.FileField(
         upload_to=upload_to_archivos_importacion,
-        max_length=100,
+        max_length=256,
     )
     nombre_archivo_importacion = models.CharField(
         max_length=256,
