@@ -4,8 +4,11 @@
 
 from __future__ import unicode_literals
 
+from mock import Mock
+
 from django.core.files import File
 from django.test.utils import override_settings
+
 from fts_web.errors import FtsArchivoImportacionInvalidoError, \
     FtsParserCsvImportacionError
 from fts_web.models import BaseDatosContacto, Contacto
@@ -13,7 +16,6 @@ from fts_web.services.base_de_datos_contactos import \
     CreacionBaseDatosService, PredictorMetadataService, \
     NoSePuedeInferirMetadataError
 from fts_web.tests.utiles import FTSenderBaseTest, get_test_resource_directory
-from mock import Mock
 from fts_web.utiles import ValidadorDeNombreDeCampoExtra
 
 

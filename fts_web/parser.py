@@ -157,6 +157,17 @@ class ParserCsv(object):
                         fila=curr_row,
                         valor_celda=horas)
 
+            if len(curr_row) != metadata.cantidad_de_columnas:
+                mensaje = ("N/A - la BD esta definida con {0} columnas, "
+                           "pero el archivo posee esta fila con {1} columnas"
+                           "".format(metadata.cantidad_de_columnas,
+                                     len(curr_row)))
+                raise FtsParserCsvImportacionError(
+                    numero_fila=i,
+                    numero_columna=0,
+                    fila=curr_row,
+                    valor_celda=mensaje)
+
             cantidad_importados += 1
             yield curr_row
 

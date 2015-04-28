@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 import logging as _logging
 
 from django.test.utils import override_settings
+from fts_web.errors import FtsParserCsvImportacionError
 
 from fts_web.models import BaseDatosContacto, Contacto
 from fts_web.parser import ParserCsv
@@ -100,3 +101,33 @@ class TestWorkflowCreacionBdContactoDesdeCsv(FTSenderBaseTest):
 
             self.assertTrue(Contacto.objects.filter(bd_contacto=bd_contacto.id).count() > 0,
                             "La BD generada desde '{0}' NO posee contactos".format(planilla))
+
+    @override_settings(MEDIA_ROOT=get_test_resource_directory())
+    def test_falla_con_fila_con_cant_columnas_invalidas(self):
+
+        planilla = "planilla-ejemplo-9-cantidad-de-columnas-invalidas.csv"
+        logger.debug("Procesando planilla %s", planilla)
+        bd_contacto = BaseDatosContacto.objects.create(
+            nombre="base-datos-contactos-{0}".format(planilla),
+            archivo_importacion=self.get_test_resource(planilla),
+            nombre_archivo_importacion=planilla)
+
+        parser = ParserCsv()
+        estructura_archivo = parser.previsualiza_archivo(bd_contacto)
+        predictor_metadata = PredictorMetadataService()
+        metadata_inferida = predictor_metadata.inferir_metadata_desde_lineas(
+            estructura_archivo)
+
+        metadata = bd_contacto.get_metadata()
+        metadata._metadata = metadata_inferida._metadata
+        metadata.nombres_de_columnas = ["COL{0}".format(num)
+                                        for num in range(metadata.cantidad_de_columnas)]
+        metadata.save()
+
+        creacion_base_datos_service = CreacionBaseDatosService()
+        try:
+            creacion_base_datos_service.importa_contactos(bd_contacto)
+            self.fail("No se ha detectado FtsParserCsvImportacionError al importar "
+                      "BD desde CSV invalido")
+        except FtsParserCsvImportacionError as err:
+            self.assertEquals(err.numero_fila, 27)
