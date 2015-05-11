@@ -198,6 +198,7 @@ class TemplateForm(forms.ModelForm):
             Field('cantidad_intentos'),
             Field('segundos_ring'),
             Field('duracion_de_audio'),
+            Field('accion_contestador'),
             Field('bd_contacto')
         )
         self.helper.layout = layout
