@@ -11,9 +11,13 @@ instalar paquetes en el sistema operativo.
 El sistema requiere que los siguientes sistemas estén funcionando:
 
  - PostgreSql 8 o superior, con 'plpythonu'
+    - sudo apt-get install postgresql-plpython-9.3
     - ANTES de crear la BD, ejecutar (con un usuario con permisos de administrador de Postgresql):
     - $ `createlang plpythonu template1`
+ - Sox (Sound eXchange)
+    - sudo apt-get install sox
  - Redis
+    -sudo apt-get install redis-server
  - Asterisk 11
 
 Armado inicial del entorno
@@ -93,6 +97,8 @@ Sync de BD:
 
 Además, deberá ejecutar los archivos \*.sql del directorio /fts\_web/sql/plpython/,
 ya que dichos scripts SQL *NO* son aplicados por las migraciones.
+    - fts_web/sql/plpython/recalculate_agregacion_edc_py_v1.sql
+    - fts_web/sql/plpython/update_agregacion_edc_py_v1.sql 
 
 
 
