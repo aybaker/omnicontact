@@ -100,8 +100,7 @@ class BaseDatosContactoForm(forms.ModelForm):
 
     class Meta:
         model = BaseDatosContacto
-        exclude = ('sin_definir', 'nombre_archivo_importacion', 'estado',
-                   'cantidad_contactos')
+        fields = ('nombre', 'archivo_importacion')
 
 
 class DefineColumnaTelefonoForm(forms.Form):
@@ -204,7 +203,8 @@ class TemplateForm(forms.ModelForm):
 
     class Meta:
         model = Campana
-        exclude = ('estado', 'fecha_inicio', 'fecha_fin', 'es_template')
+        fields = ('nombre', 'cantidad_canales', 'cantidad_intentos',
+                  'segundos_ring', 'duracion_de_audio', 'bd_contacto')
 
         labels = {
             'duracion_de_audio': 'Duración de los audios (HH:MM:SS)',
@@ -283,7 +283,9 @@ class CampanaForm(forms.ModelForm):
 
     class Meta:
         model = Campana
-        exclude = ('estado',)
+        fields = ('nombre', 'cantidad_canales', 'cantidad_intentos',
+                  'segundos_ring', 'duracion_de_audio', 'fecha_inicio',
+                  'fecha_fin', 'accion_contestador', 'bd_contacto')
         labels = {
             'bd_contacto': 'Base de Datos de Contactos',
             'duracion_de_audio': 'Duración de los audios (HH:MM:SS)'
@@ -315,7 +317,6 @@ class CampanaSmsForm(forms.ModelForm):
         layout = Layout(
             Field('nombre'),
             Field('cantidad_chips'),
-            Field('cantidad_intentos'),
             Field('fecha_inicio'),
             Field('fecha_fin'),
             Field('bd_contacto'),
@@ -325,7 +326,8 @@ class CampanaSmsForm(forms.ModelForm):
 
     class Meta:
         model = CampanaSms
-        exclude = ('estado', 'identificador_campana_sms', 'template_mensaje')
+        fields = ('nombre', 'cantidad_chips','fecha_inicio', 'fecha_fin',
+                   'bd_contacto', 'tiene_respuesta')
         labels = {
             'bd_contacto': 'Base de Datos de Contactos',
         }
@@ -393,7 +395,6 @@ class AudioForm(forms.ModelForm):
     class Meta:
         model = AudioDeCampana
         fields = ('audio_original', 'archivo_de_audio', 'tts', 'campana')
-        exclude = ('orden',)
         widgets = {
             'audio_original': forms.FileInput(),
         }
