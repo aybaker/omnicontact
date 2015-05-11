@@ -1,3 +1,0 @@
-[submodule "fts_tests"]
-	path = fts_tests
-	url = git@bitbucket.org:hgdeoro/ftsenderwebtests.git
