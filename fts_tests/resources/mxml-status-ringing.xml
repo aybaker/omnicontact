@@ -1,0 +1,6 @@
+<ajax-response>
+<response type='object' id='unknown'><generic response='Success' message='Channel status will follow' /></response>
+<response type='object' id='unknown'><generic event='Status' privilege='Call' channel='SIP/test_user1-00000003' calleridnum='319751355727335' calleridname='&lt;unknown&gt;' connectedlinenum='&lt;unknown&gt;' connectedlinename='&lt;unknown&gt;' account='' state='Up' bridgedchannel='IAX2/asterisk-d-838' bridgeduniqueid='1398537981.6' uniqueid='1398537981.7' /></response>
+<response type='object' id='unknown'><generic event='Status' privilege='Call' channel='IAX2/asterisk-d-838' calleridnum='&lt;unknown&gt;' calleridname='&lt;unknown&gt;' connectedlinenum='&lt;unknown&gt;' connectedlinename='&lt;unknown&gt;' accountcode='' channelstate='6' channelstatedesc='Up' context='from_test_server' extension='319751355727335' priority='2' seconds='170' bridgedchannel='SIP/test_user1-00000003' bridgeduniqueid='1398537981.7' uniqueid='1398537981.6' /></response>
+<response type='object' id='unknown'><generic event='StatusComplete' items='2' /></response>
+</ajax-response>

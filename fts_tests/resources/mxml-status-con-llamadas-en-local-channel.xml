@@ -1,0 +1,74 @@
+<ajax-response>
+    <response type='object' id='unknown'>
+        <generic response='Success' message='Channel status will follow' />
+    </response>
+    <response type='object' id='unknown'>
+        <generic event='Status' privilege='Call' channel='IAX2/asterisk-a-1714'
+            calleridnum='2922816-6500' calleridname='&lt;unknown&gt;'
+            connectedlinenum='&lt;unknown&gt;'
+            connectedlinename='&lt;unknown&gt;'
+            account='' state='Up'
+            bridgedchannel='Local/2922816-6500-1@FTS_local_campana_78-00000004;2'
+            bridgeduniqueid='1399427016.13' uniqueid='1399427016.14' />
+    </response>
+    <response type='object' id='unknown'>
+        <generic event='Status' privilege='Call' channel='IAX2/asterisk-a-3450'
+            calleridnum='2922816-6500' calleridname='&lt;unknown&gt;'
+            connectedlinenum='&lt;unknown&gt;'
+            connectedlinename='&lt;unknown&gt;'
+            account='' state='Up'
+            bridgedchannel='Local/2922816-6500-1@FTS_local_campana_78-00000005;2'
+            bridgeduniqueid='1399427017.16' uniqueid='1399427017.17' />
+    </response>
+    <response type='object' id='unknown'>
+        <generic event='Status' privilege='Call'
+            channel='Local/2922816-6500-1@FTS_local_campana_78-00000004;1'
+            calleridnum='&lt;unknown&gt;' calleridname='&lt;unknown&gt;'
+            connectedlinenum='&lt;unknown&gt;'
+            connectedlinename='&lt;unknown&gt;'
+            accountcode='' channelstate='6' channelstatedesc='Up'
+            context='campania_78'
+            extension='fts2922816' priority='7' seconds='4'
+            uniqueid='1399427016.12' />
+    </response>
+    <response type='object' id='unknown'>
+        <generic event='Status' privilege='Call'
+            channel='Local/2922816-6500-1@FTS_local_campana_78-00000004;2'
+            calleridnum='&lt;unknown&gt;' calleridname='&lt;unknown&gt;'
+            connectedlinenum='&lt;unknown&gt;'
+            connectedlinename='&lt;unknown&gt;'
+            accountcode='' channelstate='6' channelstatedesc='Up'
+            context='FTS_local_campana_78' extension='2922816-6500'
+            priority='6'
+            seconds='4' bridgedchannel='IAX2/asterisk-a-1714'
+            bridgeduniqueid='1399427016.14'
+            uniqueid='1399427016.13' />
+    </response>
+    <response type='object' id='unknown'>
+        <generic event='Status' privilege='Call'
+            channel='Local/2922816-6500-1@FTS_local_campana_78-00000005;1'
+            calleridnum='&lt;unknown&gt;' calleridname='&lt;unknown&gt;'
+            connectedlinenum='&lt;unknown&gt;'
+            connectedlinename='&lt;unknown&gt;'
+            accountcode='' channelstate='6' channelstatedesc='Up'
+            context='campania_78'
+            extension='fts2922816' priority='7' seconds='3'
+            uniqueid='1399427017.15' />
+    </response>
+    <response type='object' id='unknown'>
+        <generic event='Status' privilege='Call'
+            channel='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+            calleridnum='&lt;unknown&gt;' calleridname='&lt;unknown&gt;'
+            connectedlinenum='&lt;unknown&gt;'
+            connectedlinename='&lt;unknown&gt;'
+            accountcode='' channelstate='6' channelstatedesc='Up'
+            context='FTS_local_campana_78' extension='2922816-6500'
+            priority='6'
+            seconds='3' bridgedchannel='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+            bridgeduniqueid='1399427017.17'
+            uniqueid='1399427017.16' />
+    </response>
+    <response type='object' id='unknown'>
+        <generic event='StatusComplete' items='6' />
+    </response>
+</ajax-response>

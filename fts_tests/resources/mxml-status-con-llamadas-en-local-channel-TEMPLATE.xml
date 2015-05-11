@@ -1,0 +1,23 @@
+<ajax-response>
+    <response type='object' id='unknown'>
+        <generic response='Success' message='Channel status will follow' />
+    </response>
+    
+{% for campana_id, contacto_id, telefono, intento in custom_status_values %}
+    
+    <response type='object' id='unknown'>
+        <generic event='Status' privilege='Call' channel='IAX2/asterisk-a-1714'
+            calleridnum='2922816-6500' calleridname='&lt;unknown&gt;'
+            connectedlinenum='&lt;unknown&gt;'
+            connectedlinename='&lt;unknown&gt;'
+            account='' state='Up'
+            bridgedchannel='Local/{{contacto_id}}-{{telefono}}-{{intento}}@FTS_local_campana_{{campana_id}}-00000004;2'
+            bridgeduniqueid='1399427016.13' uniqueid='1399427016.14' />
+    </response>
+
+{% endfor %}
+
+    <response type='object' id='unknown'>
+        <generic event='StatusComplete' items='{{custom_status_values|length}}' />
+    </response>
+</ajax-response>

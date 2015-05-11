@@ -1,0 +1,4 @@
+<ajax-response>
+<response type='object' id='unknown'><generic response='Success' message='Channel status will follow' /></response>
+<response type='object' id='unknown'><generic event='StatusComplete' items='0' /></response>
+</ajax-response>
