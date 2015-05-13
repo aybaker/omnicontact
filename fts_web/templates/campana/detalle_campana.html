@@ -142,7 +142,9 @@
                                     {% endif %}
 
                                     {% if opcion.calificacion %}
-                                        <td>Calificación: <strong>{{ opcion.calificacion }}</strong></td>
+                                        <td>Calificación: <strong>{{ opcion.calificacion }}</strong></td>                                    
+                                    {% elif opcion.derivacion_externa %}
+                                        <td>Derivación Externa: <strong>{{ opcion.derivacion_externa }}</strong></td>
                                     {% endif %}
                                     
                                 </tr>
