@@ -20,6 +20,7 @@ from fts_web.models import BaseDatosContacto, Contacto, \
     MetadataBaseDatosContactoDTO
 from fts_web.parser import ParserCsv, validate_telefono, validate_fechas, \
     validate_horas
+from fts_web.utiles import elimina_tildes
 
 
 logger = logging.getLogger(__name__)
@@ -167,12 +168,14 @@ class PredictorMetadataService(object):
         - eliminar trailing spaces
         - pasar a mayusculas
         - reemplazar espacios por '_'
+        - eliminar tildes
 
         Los caracteres invalidos NO son borrados.
         """
         nombre = smart_text(nombre)
         nombre = nombre.strip().upper()
         nombre = DOUBLE_SPACES.sub("_", nombre)
+        nombre = elimina_tildes(nombre)
         return nombre
 
     def inferir_metadata_desde_lineas(self, lineas_unsafe):

@@ -14,6 +14,7 @@ import re
 import tempfile
 import time
 import uuid
+import unicodedata
 
 from django.conf import settings
 from fts_web.errors import FtsError
@@ -44,6 +45,11 @@ def upload_to(prefix, max_length):
 def resolve_strftime(text):
     """Ejecuta strftime() en texto pasado por parametro"""
     return time.strftime(text)  # time.gmtime()
+
+
+def elimina_tildes(s):
+    return ''.join((c for c in unicodedata.normalize('NFD', s)
+                    if unicodedata.category(c) != 'Mn'))
 
 
 def crear_archivo_en_media_root(dirname_template, prefix, suffix=""):
