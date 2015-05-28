@@ -235,7 +235,56 @@
                             </tr>
                         </tbody>
                     </table>
-                    
+
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <td colspan="2">
+                                    <h4>Totales no atendidos.</h4>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td  width="50%">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <td><h5>Cantidad Total Ocupados</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_ocupados }}</span></h5></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><h5>Cantidad Total No Constestados</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_no_constestados }}</span></h5></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h5>Cantidad Total canal no disponible</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_canal_no_disponible }}</span></h5></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h5>Cantidad Total congestion</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_congestion }}</span></h5></td>
+                                            </tr>
+                                             <!--<tr>
+                                                <td><h5>Cantidad Total Sin Llamar</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_no_llamados }}</span></h5></td>
+                                            </tr>-->
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td width="50%" align="center">
+                                    <div class="graficos-avances">
+                                        <figure>
+                                            {{ graficos_estadisticas.torta_no_atendidos.render|safe }}
+                                        </figure> 
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
         {% endwith %}
