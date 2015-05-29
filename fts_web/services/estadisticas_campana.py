@@ -212,7 +212,7 @@ class EstadisticasCampanaService(object):
         porcentaje_no_constestados = 0
         porcentaje_canal_no_disponible = 0
         porcentaje_congestion = 0
-        if total_atentidos > 0:
+        if total_no_atendidos > 0:
             porcentaje_ocupados = (100.0 * float(total_ocupados) /
                                    float(total_no_atendidos))
             porcentaje_no_constestados = (100.0 * float(total_no_constestados) /
