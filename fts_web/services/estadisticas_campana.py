@@ -111,24 +111,6 @@ class EstadisticasCampanaService(object):
 
         return counter_congestion
 
-    def _obtener_total_no_atendidos(self, listado):
-        """
-        Este metodo te devuelvo el total de congestionados
-        """
-        counter_no_atendidos = 0
-
-        # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
-        for _, array_eventos in listado:
-
-            for evento in array_eventos:
-                if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION or\
-                evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY or\
-                evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER or\
-                evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
-                    counter_no_atendidos += 1
-
-        return counter_no_atendidos
-
     def _calcular_estadisticas(self, campana, tipo_agregacion):
         """
         Este método devuelve las estadísticas de
@@ -152,9 +134,9 @@ class EstadisticasCampanaService(object):
         porcentaje_atendidos = (100.0 * float(total_atentidos) /
             float(total_contactos))
 
-        #total_no_atendidos = dic_totales['total_no_atendidos']
-#         porcentaje_no_atendidos = (100.0 * float(total_no_atendidos) /
-#             float(total_contactos))
+        total_no_atendidos = dic_totales['total_no_atendidos']
+        porcentaje_no_atendidos = (100.0 * float(total_no_atendidos) /
+             float(total_contactos))
 
         total_no_llamados = dic_totales['total_no_llamados']
         porcentaje_no_llamados = (100.0 * float(total_no_llamados) /
@@ -193,7 +175,6 @@ class EstadisticasCampanaService(object):
         # obtenemos el listado de los eventos
         listado = EventoDeContacto.objects_estadisticas.\
             obtener_eventos_por_contacto(campana)
-
         # obtenemos el total de ocupado
         total_ocupados = self._obtener_total_ocupados(listado)
         # obtenemos el total no constestado
@@ -203,10 +184,6 @@ class EstadisticasCampanaService(object):
             _obtener_total_canal_no_disponible(listado)
         # obtenemos el total de congestion
         total_congestion = self._obtener_total_congestion(listado)
-        # obtenemos el total de no atendidos
-        total_no_atendidos = self._obtener_total_no_atendidos(listado)
-        porcentaje_no_atendidos = (100.0 * float(total_no_atendidos) /
-             float(total_contactos))
         # porcentaje para no atendidos
         porcentaje_ocupados = 0
         porcentaje_no_constestados = 0
