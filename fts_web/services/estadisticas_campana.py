@@ -111,6 +111,44 @@ class EstadisticasCampanaService(object):
 
         return counter_congestion
 
+    def _obtener_total_no_atendidos_por_evento(self, listado):
+        """
+        Este metodo te devuelvo el total de congestionados
+        """
+        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
+
+        counter_por_evento = {
+            EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY: 0,
+            EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER: 0,
+            EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL: 0,
+            EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION: 0,
+        }
+
+
+        # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
+        for _, array_eventos in listado:
+            eventos = set(array_eventos)
+            ## Chequea finalizados y no finalizados
+            no_finalizado = True
+            for finalizador in finalizadores:
+                if finalizador in eventos:
+                    no_finalizado = False
+                    break
+            for evento in array_eventos:
+                # FIXME: aqui es un buen lugar donde ignorar eventos
+                # Ej: si elige más de 1 opcion, y hace falta que solo
+                #  se tenga en cuenta la 1era elegida
+                # (suponiendo que 'array_eventos' esta ordenado)
+                if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION or\
+-                evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY or\
+-                evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER or\
+-                evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
+                    counter_por_evento[evento] += 1
+                    break
+
+        return counter_por_evento
+
+
     def _calcular_estadisticas(self, campana, tipo_agregacion):
         """
         Este método devuelve las estadísticas de
@@ -198,7 +236,7 @@ class EstadisticasCampanaService(object):
                                           float(total_no_atendidos))
             porcentaje_congestion = (100.0 * float(total_congestion) /
                                           float(total_no_atendidos))
-
+        print self._obtener_total_no_atendidos_por_evento(listado)
         dic_estadisticas = {
             # Estadísticas Generales.
             'total_contactos': total_contactos,
