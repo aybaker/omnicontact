@@ -55,14 +55,21 @@ class EstadisticasCampanaService(object):
         """
         Este metodo te devuelvo el total de ocupados
         """
+        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
         counter_ocupados = 0
 
         # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
         for _, array_eventos in listado:
-
-            for evento in array_eventos:
-                if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
-                    counter_ocupados += 1
+            eventos = set(array_eventos)
+            finalizado = False
+            for finalizador in finalizadores:
+                if finalizador in eventos:
+                    finalizado = True
+                    break
+            if finalizado == False:
+                for evento in array_eventos:
+                    if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
+                        counter_ocupados += 1
 
         return counter_ocupados
 
@@ -70,14 +77,21 @@ class EstadisticasCampanaService(object):
         """
         Este metodo te devuelvo el total de no constestado
         """
+        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
         counter_no_constestado = 0
 
         # item[0] -> contact_id / item[1] -> ARRAY / item[2] 
         for _, array_eventos in listado:
-
-            for evento in array_eventos:
-                if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-                    counter_no_constestado += 1
+            eventos = set(array_eventos)
+            finalizado = False
+            for finalizador in finalizadores:
+                if finalizador in eventos:
+                    finalizado = True
+                    break
+            if finalizado == False:
+                for evento in array_eventos:
+                    if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
+                        counter_no_constestado += 1
 
         return counter_no_constestado
 
@@ -85,14 +99,21 @@ class EstadisticasCampanaService(object):
         """
         Este metodo te devuelvo el total de canal no disponible
         """
+        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
         counter_canal__no_disponible = 0
 
         # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
         for _, array_eventos in listado:
-
-            for evento in array_eventos:
-                if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
-                    counter_canal__no_disponible += 1
+            eventos = set(array_eventos)
+            finalizado = False
+            for finalizador in finalizadores:
+                if finalizador in eventos:
+                    finalizado = True
+                    break
+            if finalizado == False:
+                for evento in array_eventos:
+                    if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
+                        counter_canal__no_disponible += 1
 
         return counter_canal__no_disponible
 
@@ -100,14 +121,21 @@ class EstadisticasCampanaService(object):
         """
         Este metodo te devuelvo el total de congestionados
         """
+        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
         counter_congestion = 0
 
         # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
         for _, array_eventos in listado:
-
-            for evento in array_eventos:
-                if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
-                    counter_congestion += 1
+            eventos = set(array_eventos)
+            finalizado = False
+            for finalizador in finalizadores:
+                if finalizador in eventos:
+                    finalizado = True
+                    break
+            if finalizado == False:
+                for evento in array_eventos:
+                    if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
+                        counter_congestion += 1
 
         return counter_congestion
 
@@ -123,10 +151,14 @@ class EstadisticasCampanaService(object):
             EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL: 0,
             EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION: 0,
         }
+        lista_eventos_no_atendidos = [EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
+                                      EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
+                                      EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
+                                      EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION]
 
-
+        counter_no_finalizados_por_eventos_tipicos = 0
         # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
-        for _, array_eventos in listado:
+        for __, array_eventos in listado:
             eventos = set(array_eventos)
             ## Chequea finalizados y no finalizados
             no_finalizado = True
@@ -134,17 +166,17 @@ class EstadisticasCampanaService(object):
                 if finalizador in eventos:
                     no_finalizado = False
                     break
-            for evento in array_eventos:
-                # FIXME: aqui es un buen lugar donde ignorar eventos
-                # Ej: si elige más de 1 opcion, y hace falta que solo
-                #  se tenga en cuenta la 1era elegida
-                # (suponiendo que 'array_eventos' esta ordenado)
-                if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION or\
--                evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY or\
--                evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER or\
--                evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
-                    counter_por_evento[evento] += 1
-                    break
+            if no_finalizado:
+                if not any(item in eventos for item in lista_eventos_no_atendidos):
+                    counter_no_finalizados_por_eventos_tipicos += 1
+                for evento in array_eventos:
+
+                    if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION or\
+-                   evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY or\
+-                   evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER or\
+-                   evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
+                        counter_por_evento[evento] += 1
+                        break
 
         return counter_por_evento
 
@@ -236,7 +268,7 @@ class EstadisticasCampanaService(object):
                                           float(total_no_atendidos))
             porcentaje_congestion = (100.0 * float(total_congestion) /
                                           float(total_no_atendidos))
-        print self._obtener_total_no_atendidos_por_evento(listado)
+#        print self._obtener_total_no_atendidos_por_evento(listado)
         dic_estadisticas = {
             # Estadísticas Generales.
             'total_contactos': total_contactos,
