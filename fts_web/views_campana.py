@@ -17,7 +17,6 @@ from fts_web.models import Campana
 from fts_web.services.estadisticas_campana import EstadisticasCampanaService
 from fts_web.services.reporte_campana import ReporteCampanaService
 
-import logging
 import logging as logging_
 from fts_web.views_daemon_status import _update_context_with_statistics
 
@@ -274,7 +273,7 @@ class CampanaEstadoOpcionesDetailView(DetailView):
                 Campana.objects.obtener_activa_para_detalle_estado(
                 kwargs['pk'])
         except SuspiciousOperation, e:
-            logging.warn("SuspiciusOperation, cuando campana está inactiva")
+            logger.warn("SuspiciusOperation, cuando campana está inactiva")
             return redirect(self.get_success_url())
         return super(CampanaEstadoOpcionesDetailView, self).dispatch(request,
                                                                      *args,
