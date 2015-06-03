@@ -165,9 +165,7 @@
                                         <td> Grupo Atención: <strong>{{ opcion.grupo_atencion }}</strong></td>
                                     {% elif opcion.derivacion_externa %}
                                         <td>Derivación Externa: <strong>{{ opcion.derivacion_externa }}</strong></td>
-                                    {% endif %}
-
-                                    {% if opcion.calificacion %}
+                                    {% elif opcion.calificacion %}
                                         <td>Calificación: <strong>{{ opcion.calificacion }}</strong></td>
                                     {% endif %}
                                     

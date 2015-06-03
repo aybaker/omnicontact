@@ -139,10 +139,10 @@
                                     <td>{{ opcion.get_accion_display }}</td>
                                     {% if opcion.grupo_atencion %}
                                         <td> Grupo Atención: <strong>{{ opcion.grupo_atencion }}</strong></td>
-                                    {% endif %}
-
-                                    {% if opcion.calificacion %}
-                                        <td>Calificación: <strong>{{ opcion.calificacion }}</strong></td>
+                                    {% elif opcion.calificacion %}
+                                        <td>Calificación: <strong>{{ opcion.calificacion }}</strong></td>                                    
+                                    {% elif opcion.derivacion_externa %}
+                                        <td>Derivación Externa: <strong>{{ opcion.derivacion_externa }}</strong></td>
                                     {% endif %}
                                     
                                 </tr>

@@ -106,10 +106,10 @@
                                                     <td>
                                                     {% if opcion_campana.grupo_atencion %}
                                                          Grupo Atención: <strong>{{ opcion_campana.grupo_atencion }}</strong>
-                                                    {% endif %}
-
-                                                    {% if opcion_campana.calificacion %}
+                                                    {% elif opcion_campana.calificacion %}
                                                         Calificación: <strong>{{ opcion_campana.calificacion }}</strong>
+                                                    {% elif opcion_campana.derivacion_externa %}
+                                        				Derivación Externa: <strong>{{ opcion_campana.derivacion_externa }}</strong>
                                                     {% endif %}
                                                     </td>
                                                     <td width="10%" align="right">
