@@ -48,8 +48,7 @@ def resolve_strftime(text):
 
 
 def elimina_tildes(s):
-    return ''.join((c for c in unicodedata.normalize('NFD', s)
-                    if unicodedata.category(c) != 'Mn'))
+    return ''.join(unicodedata.normalize('NFD', s).encode('ASCII', 'ignore'))
 
 
 def crear_archivo_en_media_root(dirname_template, prefix, suffix=""):
