@@ -106,12 +106,9 @@
                                                     <td>
                                                     {% if opcion_campana.grupo_atencion %}
                                                          Grupo Atención: <strong>{{ opcion_campana.grupo_atencion }}</strong>
-                                                    {% endif %}
-
-                                                    {% if opcion_campana.calificacion %}
+                                                    {% elif opcion_campana.calificacion %}
                                                         Calificación: <strong>{{ opcion_campana.calificacion }}</strong>
-                                                    {% endif %}
-                                                    {% if opcion_campana.derivacion_externa %}
+                                                    {% elif opcion_campana.derivacion_externa %}
                                         				Derivación Externa: <strong>{{ opcion_campana.derivacion_externa }}</strong>
                                                     {% endif %}
                                                     </td>
