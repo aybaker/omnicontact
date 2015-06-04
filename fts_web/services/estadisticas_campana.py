@@ -156,25 +156,21 @@ class EstadisticasCampanaService(object):
                                       EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
                                       EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION]
 
-        counter_no_finalizados_por_eventos_tipicos = 0
         # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
         for __, array_eventos in listado:
             eventos = set(array_eventos)
             ## Chequea finalizados y no finalizados
-            no_finalizado = True
+
+            finalizado = False
             for finalizador in finalizadores:
                 if finalizador in eventos:
-                    no_finalizado = False
+                    finalizado = True
                     break
-            if no_finalizado:
-                if not any(item in eventos for item in lista_eventos_no_atendidos):
-                    counter_no_finalizados_por_eventos_tipicos += 1
+            if finalizado == False:
+
                 for evento in array_eventos:
 
-                    if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION or\
--                   evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY or\
--                   evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER or\
--                   evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
+                    if evento in lista_eventos_no_atendidos:
                         counter_por_evento[evento] += 1
                         break
 
