@@ -273,7 +273,7 @@ class CampanaEstadoOpcionesDetailView(DetailView):
                 Campana.objects.obtener_activa_para_detalle_estado(
                 kwargs['pk'])
         except SuspiciousOperation, e:
-            logger.warn("SuspiciusOperation, cuando campana está inactiva")
+            logger.warn("SuspiciusOperation, cuando campana esta inactiva")
             return redirect(self.get_success_url())
         return super(CampanaEstadoOpcionesDetailView, self).dispatch(request,
                                                                      *args,
