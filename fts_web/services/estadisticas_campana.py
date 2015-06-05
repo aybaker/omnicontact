@@ -151,12 +151,8 @@ class EstadisticasCampanaService(object):
             EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL: 0,
             EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION: 0,
         }
-        lista_eventos_no_atendidos = [EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
-                                      EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
-                                      EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
-                                      EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION]
 
-        # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
+        # item[0] -> contact_id / item[1] -> ARRAY / item[2]
         for __, array_eventos in listado:
             eventos = set(array_eventos)
             ## Chequea finalizados y no finalizados
@@ -168,11 +164,23 @@ class EstadisticasCampanaService(object):
                     break
             if finalizado == False:
 
-                for evento in array_eventos:
+                # aca se guarda el evento priorida priorizando siempre a busy
+                # Este es el orden de prioridad busy, no answer,failed
+                # (congestion, canal no disponible)
+                evento_prioridad = 0
+                for ev in array_eventos:
 
-                    if evento in lista_eventos_no_atendidos:
-                        counter_por_evento[evento] += 1
+                    if ev == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
+                        evento_prioridad = ev
                         break
+                    elif ev == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
+                        evento_prioridad = ev
+                    elif ev == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL or\
+                    ev == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
+                        if not evento_prioridad == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
+                            evento_prioridad = ev
+                if evento_prioridad != 0:
+                    counter_por_evento[evento_prioridad] += 1
 
         return counter_por_evento
 
@@ -250,21 +258,23 @@ class EstadisticasCampanaService(object):
             _obtener_total_canal_no_disponible(listado)
         # obtenemos el total de congestion
         total_congestion = self._obtener_total_congestion(listado)
+        # total por cada evento
+        counter_por_evento = self._obtener_total_no_atendidos_por_evento(listado)
         # porcentaje para no atendidos
         porcentaje_ocupados = 0
         porcentaje_no_constestados = 0
         porcentaje_canal_no_disponible = 0
         porcentaje_congestion = 0
         if total_no_atendidos > 0:
-            porcentaje_ocupados = (100.0 * float(total_ocupados) /
+            porcentaje_ocupados = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY]) /
                                    float(total_no_atendidos))
-            porcentaje_no_constestados = (100.0 * float(total_no_constestados) /
+            porcentaje_no_constestados = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER]) /
                                           float(total_no_atendidos))
-            porcentaje_canal_no_disponible = (100.0 * float(total_canal_no_disponible) /
+            porcentaje_canal_no_disponible = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL]) /
                                           float(total_no_atendidos))
-            porcentaje_congestion = (100.0 * float(total_congestion) /
+            porcentaje_congestion = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION]) /
                                           float(total_no_atendidos))
-#        print self._obtener_total_no_atendidos_por_evento(listado)
+
         dic_estadisticas = {
             # Estadísticas Generales.
             'total_contactos': total_contactos,
