@@ -749,6 +749,35 @@ class EventoDeContactoEstadisticasManager():
         return dic_contadores
 
 
+    def obtener_eventos_por_contacto(self, campana):
+        """Devuelve una lista de listas con array de eventos para
+        cada contacto.
+
+        Ejemplo: _((783474, {1,22,13}), (8754278, {1,17,}))_
+        implica que hay eventos de 2 contactos (783474 y 8754278), y los
+        tipos de eventos son los indicados en los arrays..
+        """
+
+        nombre_tabla = "EDC_depurados_{0}".format(int(campana.pk))
+        
+        cursor = connection.cursor()
+        sql = """SELECT contacto_id AS "contacto_id", array_agg(evento)
+            FROM {0}
+            WHERE campana_id = %s
+            GROUP BY contacto_id;
+        """.format(nombre_tabla)
+
+        params = [
+            campana.pk
+        ]
+
+        with log_timing(logger,
+            "obtener_eventos_por_contacto() tardo %s seg"):
+            cursor.execute(sql, params)
+            values = cursor.fetchall()
+        return values
+
+
 class GestionDeLlamadasManager(models.Manager):
     """Manager para EventoDeContacto, con la funcionalidad
     que es utilizada para la gestión más basica de las llamadas.

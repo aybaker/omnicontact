@@ -17,6 +17,7 @@ from django.conf import settings
 
 from fts_web.models import (AgregacionDeEventoDeContacto, Campana,
                             DuracionDeLlamada)
+from fts_daemon.models import EventoDeContacto
 from fts_web.utiles import log_timing
 import logging as _logging
 
@@ -49,6 +50,59 @@ ESTILO_MULTICOLOR = Style(
 
 
 class EstadisticasCampanaService(object):
+
+
+    def _obtener_total_no_atendidos_por_evento(self, listado):
+        """
+        Se encarga de obtener los contadores de ciertos eventos(ocupados,
+        no answer, canal no disponible, congestion)
+
+        :param listado: por cada contacto de la campana me trae un array 
+        con los eventos.
+        :return me retorna un diccionario con los 4 contadores de los 
+        eventos mencionados 
+        """
+        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
+
+        counter_por_evento = {
+            EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY: 0,
+            EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER: 0,
+            EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL: 0,
+            EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION: 0,
+        }
+
+        # item[0] -> contact_id / item[1] -> ARRAY / item[2]
+        for __, array_eventos in listado:
+            eventos = set(array_eventos)
+            ## Chequea finalizados y no finalizados
+
+            finalizado = False
+            for finalizador in finalizadores:
+                if finalizador in eventos:
+                    finalizado = True
+                    break
+            if finalizado == False:
+
+                # aca se guarda el evento priorida priorizando siempre a busy
+                # Este es el orden de prioridad busy, no answer,failed
+                # (congestion, canal no disponible)
+                evento_prioridad = 0
+                for ev in array_eventos:
+
+                    if ev == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
+                        evento_prioridad = ev
+                        break
+                    elif ev == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
+                        evento_prioridad = ev
+                    elif ev == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL or\
+                    ev == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
+                        if not evento_prioridad == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
+                            evento_prioridad = ev
+                if evento_prioridad != 0:
+                    counter_por_evento[evento_prioridad] += 1
+
+        return counter_por_evento
+
 
     def _calcular_estadisticas(self, campana, tipo_agregacion):
         """
@@ -111,6 +165,35 @@ class EstadisticasCampanaService(object):
                         float(cantidad_opcion) /
                         float(dic_totales['total_opciones']))
 
+        # obtenemos el listado de los eventos
+        listado = EventoDeContacto.objects_estadisticas.\
+            obtener_eventos_por_contacto(campana)
+        # obtenemos el total de ocupado
+        total_ocupados = self._obtener_total_ocupados(listado)
+        # obtenemos el total no constestado
+        total_no_constestados = self._obtener_total_no_constestado(listado)
+        # obtenemos el total de canal no disponible
+        total_canal_no_disponible = self.\
+            _obtener_total_canal_no_disponible(listado)
+        # obtenemos el total de congestion
+        total_congestion = self._obtener_total_congestion(listado)
+        # total por cada evento
+        counter_por_evento = self._obtener_total_no_atendidos_por_evento(listado)
+        # porcentaje para no atendidos
+        porcentaje_ocupados = 0
+        porcentaje_no_constestados = 0
+        porcentaje_canal_no_disponible = 0
+        porcentaje_congestion = 0
+        if total_no_atendidos > 0:
+            porcentaje_ocupados = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY]) /
+                                   float(total_no_atendidos))
+            porcentaje_no_constestados = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER]) /
+                                          float(total_no_atendidos))
+            porcentaje_canal_no_disponible = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL]) /
+                                          float(total_no_atendidos))
+            porcentaje_congestion = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION]) /
+                                          float(total_no_atendidos))
+
         dic_estadisticas = {
             # Estadísticas Generales.
             'total_contactos': total_contactos,
@@ -123,6 +206,14 @@ class EstadisticasCampanaService(object):
             'porcentaje_no_llamados': porcentaje_no_llamados,
             'porcentaje_avance': dic_totales['porcentaje_avance'],
             'total_atendidos_intentos': total_atendidos_intentos,
+            'total_ocupados': total_ocupados,
+            'porcentaje_ocupados': porcentaje_ocupados,
+            'total_no_constestados': total_no_constestados,
+            'porcentaje_no_constestados': porcentaje_no_constestados,
+            'total_canal_no_disponible': total_canal_no_disponible,
+            'total_congestion': total_congestion,
+            'porcentaje_canal_no_disponible': porcentaje_canal_no_disponible,
+            'porcentaje_congestion': porcentaje_congestion,
 
             # Estadisticas de las llamadas Contestadas.
             'opcion_x_cantidad': dict(opcion_x_cantidad),
@@ -256,11 +347,27 @@ class EstadisticasCampanaService(object):
                 })
             # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+            # Torta: porcentajes de contestados, no contestados y no llamados.
+            torta_no_atendidos = pygal.Pie(  # @UndefinedVariable
+                                             style=ESTILO_MULTICOLOR)
+
+            torta_no_atendidos.title = "Resultado de no atendidos"
+            torta_no_atendidos.add('Ocupados', estadisticas[
+                'porcentaje_ocupados'])
+            torta_no_atendidos.add('No constestados', estadisticas[
+                'porcentaje_no_constestados'])
+            torta_no_atendidos.add('Canal no disponible', estadisticas[
+                'porcentaje_canal_no_disponible'])
+            torta_no_atendidos.add('Congestion', estadisticas[
+                'porcentaje_congestion'])
+
+
             return {
                 'estadisticas': estadisticas,
                 'torta_general': torta_general,
                 'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
                 'barra_atendidos_intentos': barra_atendidos_intentos,
+                'torta_no_atendidos': torta_no_atendidos,
             }
         else:
             logger.info("Campana %s NO obtuvo estadísticas.", campana.id)
