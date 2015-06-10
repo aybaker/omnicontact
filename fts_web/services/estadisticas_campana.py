@@ -51,97 +51,16 @@ ESTILO_MULTICOLOR = Style(
 
 class EstadisticasCampanaService(object):
 
-    def _obtener_total_ocupados(self, listado):
-        """
-        Este metodo te devuelvo el total de ocupados
-        """
-        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
-        counter_ocupados = 0
-
-        # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
-        for _, array_eventos in listado:
-            eventos = set(array_eventos)
-            finalizado = False
-            for finalizador in finalizadores:
-                if finalizador in eventos:
-                    finalizado = True
-                    break
-            if finalizado == False:
-                for evento in array_eventos:
-                    if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
-                        counter_ocupados += 1
-
-        return counter_ocupados
-
-    def _obtener_total_no_constestado(self, listado):
-        """
-        Este metodo te devuelvo el total de no constestado
-        """
-        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
-        counter_no_constestado = 0
-
-        # item[0] -> contact_id / item[1] -> ARRAY / item[2] 
-        for _, array_eventos in listado:
-            eventos = set(array_eventos)
-            finalizado = False
-            for finalizador in finalizadores:
-                if finalizador in eventos:
-                    finalizado = True
-                    break
-            if finalizado == False:
-                for evento in array_eventos:
-                    if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-                        counter_no_constestado += 1
-
-        return counter_no_constestado
-
-    def _obtener_total_canal_no_disponible(self, listado):
-        """
-        Este metodo te devuelvo el total de canal no disponible
-        """
-        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
-        counter_canal__no_disponible = 0
-
-        # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
-        for _, array_eventos in listado:
-            eventos = set(array_eventos)
-            finalizado = False
-            for finalizador in finalizadores:
-                if finalizador in eventos:
-                    finalizado = True
-                    break
-            if finalizado == False:
-                for evento in array_eventos:
-                    if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
-                        counter_canal__no_disponible += 1
-
-        return counter_canal__no_disponible
-
-    def _obtener_total_congestion(self, listado):
-        """
-        Este metodo te devuelvo el total de congestionados
-        """
-        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
-        counter_congestion = 0
-
-        # item[0] -> contact_id / item[1] -> ARRAY / item[2] -> timestamp
-        for _, array_eventos in listado:
-            eventos = set(array_eventos)
-            finalizado = False
-            for finalizador in finalizadores:
-                if finalizador in eventos:
-                    finalizado = True
-                    break
-            if finalizado == False:
-                for evento in array_eventos:
-                    if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
-                        counter_congestion += 1
-
-        return counter_congestion
 
     def _obtener_total_no_atendidos_por_evento(self, listado):
         """
-        Este metodo te devuelvo el total de congestionados
+        Se encarga de obtener los contadores de ciertos eventos(ocupados,
+        no answer, canal no disponible, congestion)
+
+        :param listado: por cada contacto de la campana me trae un array 
+        con los eventos.
+        :return me retorna un diccionario con los 4 contadores de los 
+        eventos mencionados 
         """
         finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
 
@@ -210,7 +129,7 @@ class EstadisticasCampanaService(object):
 
         total_no_atendidos = dic_totales['total_no_atendidos']
         porcentaje_no_atendidos = (100.0 * float(total_no_atendidos) /
-             float(total_contactos))
+            float(total_contactos))
 
         total_no_llamados = dic_totales['total_no_llamados']
         porcentaje_no_llamados = (100.0 * float(total_no_llamados) /

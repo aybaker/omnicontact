@@ -772,7 +772,7 @@ class EventoDeContactoEstadisticasManager():
         ]
 
         with log_timing(logger,
-            "obtener_array_eventos_por_contacto() tardo %s seg"):
+            "obtener_eventos_por_contacto() tardo %s seg"):
             cursor.execute(sql, params)
             values = cursor.fetchall()
         return values
