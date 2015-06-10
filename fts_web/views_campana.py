@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import TemplateView
@@ -267,9 +268,13 @@ class CampanaEstadoOpcionesDetailView(DetailView):
     model = Campana
 
     def dispatch(self, request, *args, **kwargs):
-        self.campana = \
-            Campana.objects.obtener_activa_para_detalle_estado(
+        try:
+            self.campana = \
+                Campana.objects.obtener_activa_para_detalle_estado(
                 kwargs['pk'])
+        except SuspiciousOperation, e:
+            logger.warn("SuspiciusOperation, cuando campana esta inactiva")
+            return redirect(self.get_success_url())
         return super(CampanaEstadoOpcionesDetailView, self).dispatch(request,
                                                                      *args,
                                                                      **kwargs)
@@ -287,6 +292,9 @@ class CampanaEstadoOpcionesDetailView(DetailView):
         context['detalle_opciones'] = self.object.\
             obtener_detalle_opciones_seleccionadas()
         return context
+
+    def get_success_url(self):
+        return reverse('lista_campana_por_estados')
 
 
 # =============================================================================
