@@ -168,15 +168,6 @@ class EstadisticasCampanaService(object):
         # obtenemos el listado de los eventos
         listado = EventoDeContacto.objects_estadisticas.\
             obtener_eventos_por_contacto(campana)
-        # obtenemos el total de ocupado
-        total_ocupados = self._obtener_total_ocupados(listado)
-        # obtenemos el total no constestado
-        total_no_constestados = self._obtener_total_no_constestado(listado)
-        # obtenemos el total de canal no disponible
-        total_canal_no_disponible = self.\
-            _obtener_total_canal_no_disponible(listado)
-        # obtenemos el total de congestion
-        total_congestion = self._obtener_total_congestion(listado)
         # total por cada evento
         counter_por_evento = self._obtener_total_no_atendidos_por_evento(listado)
         # porcentaje para no atendidos
@@ -206,12 +197,12 @@ class EstadisticasCampanaService(object):
             'porcentaje_no_llamados': porcentaje_no_llamados,
             'porcentaje_avance': dic_totales['porcentaje_avance'],
             'total_atendidos_intentos': total_atendidos_intentos,
-            'total_ocupados': total_ocupados,
+            'total_ocupados': counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY],
             'porcentaje_ocupados': porcentaje_ocupados,
-            'total_no_constestados': total_no_constestados,
+            'total_no_constestados': counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER],
             'porcentaje_no_constestados': porcentaje_no_constestados,
-            'total_canal_no_disponible': total_canal_no_disponible,
-            'total_congestion': total_congestion,
+            'total_canal_no_disponible': counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL],
+            'total_congestion': counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION],
             'porcentaje_canal_no_disponible': porcentaje_canal_no_disponible,
             'porcentaje_congestion': porcentaje_congestion,
 
