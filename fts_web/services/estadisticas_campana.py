@@ -165,25 +165,39 @@ class EstadisticasCampanaService(object):
                         float(cantidad_opcion) /
                         float(dic_totales['total_opciones']))
 
-        # obtenemos el listado de los eventos
-        listado = EventoDeContacto.objects_estadisticas.\
-            obtener_eventos_por_contacto(campana)
-        # total por cada evento
-        counter_por_evento = self._obtener_total_no_atendidos_por_evento(listado)
         # porcentaje para no atendidos
         porcentaje_ocupados = 0
         porcentaje_no_constestados = 0
         porcentaje_canal_no_disponible = 0
         porcentaje_congestion = 0
-        if total_no_atendidos > 0:
-            porcentaje_ocupados = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY]) /
-                                   float(total_no_atendidos))
-            porcentaje_no_constestados = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER]) /
-                                          float(total_no_atendidos))
-            porcentaje_canal_no_disponible = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL]) /
-                                          float(total_no_atendidos))
-            porcentaje_congestion = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION]) /
-                                          float(total_no_atendidos))
+        total_ocupados = 0
+        total_no_constestados= 0
+        total_canal_no_disponible = 0
+        total_congestion = 0
+        if tipo_agregacion is AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE:
+            # obtenemos el listado de los eventos
+            listado = EventoDeContacto.objects_estadisticas.\
+                obtener_eventos_por_contacto(campana)
+            # total por cada evento
+            counter_por_evento = self._obtener_total_no_atendidos_por_evento(listado)
+            # obtenemos el total de ocupado
+            total_ocupados = counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY]
+            # obtenemos el total no constestado
+            total_no_constestados = counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY]
+            # obtenemos el total de canal no disponible
+            total_canal_no_disponible = counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL]
+            # obtenemos el total de congestion
+            total_congestion = counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION]
+
+            if total_no_atendidos > 0:
+                porcentaje_ocupados = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY]) /
+                                       float(total_no_atendidos))
+                porcentaje_no_constestados = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER]) /
+                                              float(total_no_atendidos))
+                porcentaje_canal_no_disponible = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL]) /
+                                              float(total_no_atendidos))
+                porcentaje_congestion = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION]) /
+                                              float(total_no_atendidos))
 
         dic_estadisticas = {
             # Estadísticas Generales.
@@ -197,12 +211,12 @@ class EstadisticasCampanaService(object):
             'porcentaje_no_llamados': porcentaje_no_llamados,
             'porcentaje_avance': dic_totales['porcentaje_avance'],
             'total_atendidos_intentos': total_atendidos_intentos,
-            'total_ocupados': counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY],
+            'total_ocupados': total_ocupados,
             'porcentaje_ocupados': porcentaje_ocupados,
-            'total_no_constestados': counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER],
+            'total_no_constestados': total_no_constestados,
             'porcentaje_no_constestados': porcentaje_no_constestados,
-            'total_canal_no_disponible': counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL],
-            'total_congestion': counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION],
+            'total_canal_no_disponible': total_canal_no_disponible,
+            'total_congestion': total_congestion,
             'porcentaje_canal_no_disponible': porcentaje_canal_no_disponible,
             'porcentaje_congestion': porcentaje_congestion,
 
