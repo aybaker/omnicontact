@@ -16,6 +16,7 @@ import os
 import random
 import uuid
 
+from django.db import connection
 from django.conf import settings
 from django.test import TestCase
 from django.test.runner import DiscoverRunner
@@ -641,6 +642,23 @@ class FTSenderTestUtilsMixin(object):
         if finaliza:
             campana.finalizar()
         return campana
+
+    def _crea_tabla_eventos_depurados(self, campana):
+        """Crea base de datos de eventos depurados para campana depurada"""
+
+        assert campana.estado == Campana.ESTADO_DEPURADA
+
+        nombre_tabla = "EDC_depurados_{0}".format(self.campana.pk)
+
+        cursor = connection.cursor()
+        sql = """CREATE TABLE {0} AS
+            SELECT * FROM fts_daemon_eventodecontacto
+            WHERE campana_id = %s
+            WITH DATA
+        """.format(nombre_tabla)
+
+        params = [self.campana.id]
+        cursor.execute(sql, params)
 
 class FTSenderBaseTransactionTestCase(TransactionTestCase,
     FTSenderTestUtilsMixin):

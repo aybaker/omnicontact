@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.urlresolvers import reverse
-from django.db import connection
+
 
 from fts_web.models import Campana, BaseDatosContacto
 from fts_web.tests.utiles import FTSenderBaseTest
@@ -511,19 +511,7 @@ class ReporteCampanaTest(FTSenderBaseTest):
         self.campana.estado = Campana.ESTADO_DEPURADA
         self.campana.save()
 
-        # FIXME VER DE HACER MEJOR
-        # CREA TABLA VACIA
-        nombre_tabla = "EDC_depurados_{0}".format(self.campana.pk)
-
-        cursor = connection.cursor()
-        sql = """CREATE TABLE {0} AS
-            SELECT * FROM fts_daemon_eventodecontacto
-            WHERE campana_id = %s
-            WITH DATA
-        """.format(nombre_tabla)
-
-        params = [self.campana.id]
-        cursor.execute(sql, params)
+        self._crea_tabla_eventos_depurados(self.campana)
 
         for url in VISTAS:
             url = reverse(vista, args=args)
