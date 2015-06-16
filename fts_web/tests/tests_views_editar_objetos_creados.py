@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.urlresolvers import reverse
 
+
 from fts_web.models import Campana, BaseDatosContacto
 from fts_web.tests.utiles import FTSenderBaseTest
 
@@ -509,6 +510,8 @@ class ReporteCampanaTest(FTSenderBaseTest):
 
         self.campana.estado = Campana.ESTADO_DEPURADA
         self.campana.save()
+
+        self._crea_tabla_eventos_depurados(self.campana)
 
         for url in VISTAS:
             url = reverse(vista, args=args)
