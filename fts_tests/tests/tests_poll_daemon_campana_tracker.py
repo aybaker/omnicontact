@@ -668,6 +668,31 @@ class TestDatosParaRealizarLlamada(FTSenderBaseTest,
             'HORA_min': '4',
         })
 
+    def test_generar_variables_de_canal_DNI(self):
+        campana = self.crear_campana()
+        datos_extras = {
+            'NOMBRE': 'Juan Perez',
+            'FECHA': '25/01/2000',
+            'HORA': '12:04',
+            'DNI': '32540137',
+        }
+        dprl = DatosParaRealizarLlamada(campana, 2, '549114444555', 1,
+                                        datos_extras)
+
+        variables = dprl.generar_variables_de_canal()
+
+        pprint.pprint(variables)
+
+        self.assertDictEqual(variables, {
+            'NOMBRE': 'Juan Perez',
+            'FECHA_dia': '25',
+            'FECHA_mes': 'enero',
+            'FECHA_anio': '2000',
+            'HORA_hora': '12',
+            'HORA_min': '4',
+            'DNI': '32540137',
+        })
+
 #
 # Estos tests controlan la reincidencia, pero no es algo que
 # se manejara en esta version

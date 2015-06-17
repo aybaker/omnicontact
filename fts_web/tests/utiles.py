@@ -276,11 +276,12 @@ class FTSenderTestUtilsMixin(object):
             nombre="base-datos-contactos-" + ru())
 
         metadata = bd_contacto.get_metadata()
-        metadata.cantidad_de_columnas = 4
+        metadata.cantidad_de_columnas = 5
         metadata.columna_con_telefono = 0
         metadata.columnas_con_hora = [3]
         metadata.columnas_con_fecha = [2]
-        metadata.nombres_de_columnas = ['TELEFONO', 'NOMBRE', 'FECHA', 'HORA']
+        metadata.nombres_de_columnas = ['TELEFONO', 'NOMBRE', 'FECHA', 'HORA',
+                                        'DNI']
         metadata.primer_fila_es_encabezado = False
         metadata.save()
         bd_contacto.save()
