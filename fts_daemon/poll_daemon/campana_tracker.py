@@ -188,8 +188,13 @@ class DatosParaRealizarLlamada(object):
                     "AudioDeCampana {0} no es de ninguno de "
                     "los tipos esperados".format(audio_de_campana.id)))
 
-        if metadata.dato_extra_es_generico('DNI'):
-            variables['DNI'] = self.datos_extras['DNI']
+        try:
+            if metadata.dato_extra_es_generico('DNI'):
+                variables['DNI'] = self.datos_extras['DNI']
+        except ValueError:
+            logger.exception("Error detectado en "
+                             "metadata.dato_extra_es_generico, no existe la "
+                             " columna DNI")
 
         return variables
 
