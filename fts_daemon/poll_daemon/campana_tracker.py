@@ -188,8 +188,7 @@ class DatosParaRealizarLlamada(object):
                     "AudioDeCampana {0} no es de ninguno de "
                     "los tipos esperados".format(audio_de_campana.id)))
 
-        if 'DNI' in self.datos_extras.keys():
-            if metadata.dato_extra_es_generico('DNI'):
+        if 'DNI' in self.datos_extras.keys() and metadata.dato_extra_es_generico('DNI'):
                 variables['DNI'] = self.datos_extras['DNI']
 
         return variables
