@@ -265,7 +265,7 @@ class FTSenderTestUtilsMixin(object):
         )
 
     def crear_base_datos_contacto(self, cant_contactos=None,
-        numeros_telefonicos=None):
+        numeros_telefonicos=None, columna_extra=None):
         """Crea base datos contacto
         - cant_contactos: cantidad de contactos a crear.
             Si no se especifica, se genera una cantidad
@@ -277,11 +277,19 @@ class FTSenderTestUtilsMixin(object):
             nombre="base-datos-contactos-" + ru())
 
         metadata = bd_contacto.get_metadata()
-        metadata.cantidad_de_columnas = 4
+
+        if columna_extra is None:
+            metadata.cantidad_de_columnas = 4
+            metadata.nombres_de_columnas = ['TELEFONO', 'NOMBRE', 'FECHA',
+                                            'HORA']
+        else:
+            metadata.cantidad_de_columnas = 5
+            metadata.nombres_de_columnas = ['TELEFONO', 'NOMBRE', 'FECHA',
+                                            'HORA', columna_extra]
+
         metadata.columna_con_telefono = 0
         metadata.columnas_con_hora = [3]
         metadata.columnas_con_fecha = [2]
-        metadata.nombres_de_columnas = ['TELEFONO', 'NOMBRE', 'FECHA', 'HORA']
         metadata.primer_fila_es_encabezado = False
         metadata.save()
         bd_contacto.save()
@@ -308,7 +316,7 @@ class FTSenderTestUtilsMixin(object):
         return bd_contacto
 
     def crear_campana(self, fecha_inicio=None, fecha_fin=None,
-        cant_contactos=None, bd_contactos=None, **kwargs):
+        cant_contactos=None, bd_contactos=None, columna_extra=None, **kwargs):
         """Crea una campana en su estado inicial
         - cant_contactos: cant. de contactos a crear para la campaña
             Si es None, se generara un nro. aleatorio de contactos
@@ -331,8 +339,9 @@ class FTSenderTestUtilsMixin(object):
             if cant_contactos is not None:
                 assert cant_contactos > cantidad_canales, \
                     "La cant. de contactos en BD debe ser mayor a los canales"
+
             bd_contactos = self.crear_base_datos_contacto(
-                cant_contactos=cant_contactos)
+                cant_contactos=cant_contactos, columna_extra=columna_extra)
 
         if not fecha_inicio or not fecha_fin:
             fecha_inicio = datetime.date.today()
