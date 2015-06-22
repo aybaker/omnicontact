@@ -183,7 +183,7 @@ class EstadisticasCampanaService(object):
             # obtenemos el total de ocupado
             total_ocupados = counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY]
             # obtenemos el total no constestado
-            total_no_constestados = counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY]
+            total_no_constestados = counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER]
             # obtenemos el total de canal no disponible
             total_canal_no_disponible = counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL]
             # obtenemos el total de congestion
