@@ -669,7 +669,8 @@ class TestDatosParaRealizarLlamada(FTSenderBaseTest,
         })
 
     def test_generar_variables_de_canal_DNI(self):
-        campana = self.crear_campana()
+        columna = 'DNI'
+        campana = self.crear_campana(columna_nueva=columna)
         datos_extras = {
             'NOMBRE': 'Juan Perez',
             'FECHA': '25/01/2000',
