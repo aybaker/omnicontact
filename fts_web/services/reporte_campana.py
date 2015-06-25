@@ -61,6 +61,8 @@ class ArchivoDeReporteCsv(object):
             for c in range(cantidad_datos):
                 encabezado.append("Extra{0}".format(c+1))
 
+            encabezado.append("Fecha de la llamada")
+
             opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
                                  for op in self._campana.opciones.all()])
 
@@ -73,7 +75,10 @@ class ArchivoDeReporteCsv(object):
             encabezado.append("Contesto: Humano")
             encabezado.append("Contesto: Maquina")
             encabezado.append("Contesto: Indefinido")
-
+            encabezado.append("No contesto")
+            encabezado.append("Ocupado")
+            encabezado.append("Canal no disponible")
+            encabezado.append("Congestion")
             # Creamos csvwriter
             csvwiter = csv.writer(csvfile)
 
@@ -82,12 +87,13 @@ class ArchivoDeReporteCsv(object):
                                       for item in encabezado]
             csvwiter.writerow(lista_encabezados_utf8)
 
+            logger.info(opciones_por_contacto)
             # guardamos datos
             for contacto, lista_eventos in opciones_por_contacto:
                 lista_opciones = []
                 for dato in json.loads(contacto):
                     lista_opciones.append(dato)
-
+                lista_opciones.append(None) # Fecha de la llamada
                 for opcion in range(10):
                     evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
                     if evento in lista_eventos:
@@ -109,6 +115,12 @@ class ArchivoDeReporteCsv(object):
                     lista_opciones.append(1)
                 else:
                     lista_opciones.append(None)
+
+                # opciones de no contestados
+                lista_opciones.append(None)
+                lista_opciones.append(None)
+                lista_opciones.append(None)
+                lista_opciones.append(None)
 
                 lista_opciones_utf8 = [force_text(item).encode('utf-8')
                                        for item in lista_opciones]
