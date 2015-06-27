@@ -12,7 +12,7 @@ import os
 import json
 
 from django.conf import settings
-from fts_web.models import Campana
+from fts_web.models import Campana, Contacto
 from fts_web.utiles import crear_archivo_en_media_root
 
 from fts_daemon.models import EventoDeContacto
@@ -91,14 +91,17 @@ class ArchivoDeReporteCsv(object):
 
             logger.info(opciones_por_contacto)
             # guardamos datos
-            for contacto_id, contacto, lista_eventos in opciones_por_contacto:
+            for contacto, lista_eventos in opciones_por_contacto:
                 lista_opciones = []
+
                 for dato in json.loads(contacto):
                     lista_opciones.append(dato)
 
-                for fecha_hora in fecha_hora_por_contacto:
-                    if contacto_id is fecha_hora.dst.split('-')[0]:
-                        lista_opciones.append(fecha_hora.calldate) # Fecha de la llamada
+#                 for fecha_hora in fecha_hora_por_contacto:
+#                     if contacto_id is fecha_hora.dst.split('-')[0]:
+#                         lista_opciones.append(fecha_hora.calldate) # Fecha de la llamada
+
+                lista_opciones.append(None)
 
                 for opcion in range(10):
                     evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]

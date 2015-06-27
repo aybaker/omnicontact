@@ -626,7 +626,7 @@ class EventoDeContactoEstadisticasManager():
         campana = Campana.objects.get(pk=campana_id)
         cursor = connection.cursor()
 
-        sql = """SELECT contacto_id, datos, array_agg(evento)
+        sql = """SELECT datos, array_agg(evento)
             FROM fts_web_contacto INNER JOIN fts_daemon_eventodecontacto
             ON fts_web_contacto.id = fts_daemon_eventodecontacto.contacto_id
             WHERE campana_id = %s
@@ -785,12 +785,10 @@ class EventoDeContactoEstadisticasManager():
         cursor = connection.cursor()
         sql = """SELECT calldate, dcontext, dst, disposition
             FROM cdr
-            WHERE dcontext = %s;
+            WHERE dcontext = 'FTS_local_campana_%(campana_id)s';
         """
 
-        params = [
-            campana.pk
-        ]
+        params = {'campana_id': campana.id}
 
         with log_timing(logger,
             "obtener_fecha_hora_por_evento tardo %s seg"):
