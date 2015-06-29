@@ -150,7 +150,7 @@ class TestArchivoDeReporteCsv(FTSenderBaseTest):
 
         archivo_de_reporte.crear_archivo_en_directorio()
         opciones_por_contacto = [('["3513368309", "Carl\xf3s", "Ilcobich"]',
-                                 [1])]
+                                 [1], [' 2015-06-29 14:39:46.392281-03'])]
         archivo_de_reporte.escribir_archivo_csv(opciones_por_contacto)
 
         self.assertTrue(archivo_de_reporte.ya_existe())
@@ -163,7 +163,7 @@ class TestArchivoDeReporteCsv(FTSenderBaseTest):
         archivo_de_reporte.crear_archivo_en_directorio()
 
         opciones_por_contacto = [('["3513368309", "Carl\xf3s", "Ilcobich"]',
-                                 [1])]
+                                 [1], [' 2015-06-29 14:39:46.392281-03'])]
         archivo_de_reporte.escribir_archivo_csv(opciones_por_contacto)
 
         # -----

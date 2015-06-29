@@ -52,8 +52,7 @@ class ArchivoDeReporteCsv(object):
             self.prefijo_nombre_de_archivo,
             self.sufijo_nombre_de_archivo)
 
-    def escribir_archivo_csv(self, opciones_por_contacto,
-                             fecha_hora_por_contacto):
+    def escribir_archivo_csv(self, opciones_por_contacto):
         finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
         with open(self.ruta, 'wb') as csvfile:
             # Creamos encabezado
@@ -89,19 +88,14 @@ class ArchivoDeReporteCsv(object):
                                       for item in encabezado]
             csvwiter.writerow(lista_encabezados_utf8)
 
-            logger.info(opciones_por_contacto)
             # guardamos datos
-            for contacto, lista_eventos in opciones_por_contacto:
+            for contacto, lista_eventos, lista_tiempo in opciones_por_contacto:
                 lista_opciones = []
 
                 for dato in json.loads(contacto):
                     lista_opciones.append(dato)
 
-#                 for fecha_hora in fecha_hora_por_contacto:
-#                     if contacto_id is fecha_hora.dst.split('-')[0]:
-#                         lista_opciones.append(fecha_hora.calldate) # Fecha de la llamada
-
-                lista_opciones.append(None)
+#                lista_opciones.append(None)
 
                 for opcion in range(10):
                     evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
@@ -125,12 +119,24 @@ class ArchivoDeReporteCsv(object):
                 else:
                     lista_opciones.append(None)
 
+                indice_evento = 0
                 finalizado = False
                 for finalizador in finalizadores:
                     if finalizador in lista_eventos:
                         finalizado = True
+                        indice_evento = lista_eventos.index(finalizador)
                         break
-                if finalizado == False:
+                if finalizado:
+
+                    tiempo_llamada = lista_tiempo[indice_evento]
+                    lista_opciones.insert(cantidad_datos, tiempo_llamada)
+                    # opciones de no contestados
+                    lista_opciones.append(None)
+                    lista_opciones.append(None)
+                    lista_opciones.append(None)
+                    lista_opciones.append(None)
+                
+                else:
 
                     # aca se guarda el evento priorida priorizando siempre a busy
                     # Este es el orden de prioridad busy, no answer,failed
@@ -140,13 +146,17 @@ class ArchivoDeReporteCsv(object):
 
                         if ev is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
                             evento_prioridad = ev
+                            indice_evento = lista_eventos.index(ev)
                             break
                         elif ev is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
                             evento_prioridad = ev
+                            indice_evento = lista_eventos.index(ev)
                         elif ev is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL or\
                         ev is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
                             if not evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
                                 evento_prioridad = ev
+                                indice_evento = lista_eventos.index(ev)
+
                         if evento_prioridad != 0:
 
                             if evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
@@ -155,16 +165,11 @@ class ArchivoDeReporteCsv(object):
                                 lista_opciones.append(1)
                             elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
                                 lista_opciones.append(1)
-                            elif lista_opciones.append(1) is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
+                            elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
                                 lista_opciones.append(1)
+                            tiempo_llamada = lista_tiempo[indice_evento]
+                            lista_opciones.insert(cantidad_datos, tiempo_llamada)
 
-
-                else:
-                    # opciones de no contestados
-                    lista_opciones.append(None)
-                    lista_opciones.append(None)
-                    lista_opciones.append(None)
-                    lista_opciones.append(None)
 
                 lista_opciones_utf8 = [force_text(item).encode('utf-8')
                                        for item in lista_opciones]
@@ -197,7 +202,7 @@ class ReporteCampanaService(object):
 
         fecha_hora_por_contacto = self._obtener_fecha_hora_llamada_por_contacto(campana)
 
-        archivo_de_reporte.escribir_archivo_csv(opciones_por_contacto, fecha_hora_por_contacto)
+        archivo_de_reporte.escribir_archivo_csv(opciones_por_contacto)
 
     def obtener_url_reporte_csv_descargar(self, campana):
         assert campana.estado == Campana.ESTADO_DEPURADA
