@@ -157,18 +157,19 @@ class ArchivoDeReporteCsv(object):
                                 evento_prioridad = ev
                                 indice_evento = lista_eventos.index(ev)
 
-                        if evento_prioridad != 0:
+                    if evento_prioridad != 0:
 
-                            if evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-                                lista_opciones.append(1)
-                            elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
-                                lista_opciones.append(1)
-                            elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
-                                lista_opciones.append(1)
-                            elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
-                                lista_opciones.append(1)
-                            tiempo_llamada = lista_tiempo[indice_evento]
-                            lista_opciones.insert(cantidad_datos, tiempo_llamada)
+                        if evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
+                            lista_opciones.append(1)
+                        elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
+                            lista_opciones.append(1)
+                        elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
+                            lista_opciones.append(1)
+                        elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
+                            lista_opciones.append(1)
+
+                        tiempo_llamada = lista_tiempo[indice_evento]
+                        lista_opciones.insert(cantidad_datos, tiempo_llamada)
 
 
                 lista_opciones_utf8 = [force_text(item).encode('utf-8')
