@@ -76,10 +76,8 @@ class ArchivoDeReporteCsv(object):
             encabezado.append("Contesto: Humano")
             encabezado.append("Contesto: Maquina")
             encabezado.append("Contesto: Indefinido")
-            encabezado.append("No contesto")
-            encabezado.append("Ocupado")
-            encabezado.append("Canal no disponible")
-            encabezado.append("Congestion")
+            encabezado.append("No atendidas: Estado")
+
             # Creamos csvwriter
             csvwiter = csv.writer(csvfile)
 
@@ -94,8 +92,6 @@ class ArchivoDeReporteCsv(object):
 
                 for dato in json.loads(contacto):
                     lista_opciones.append(dato)
-
-#                lista_opciones.append(None)
 
                 for opcion in range(10):
                     evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
@@ -130,12 +126,9 @@ class ArchivoDeReporteCsv(object):
 
                     tiempo_llamada = lista_tiempo[indice_evento]
                     lista_opciones.insert(cantidad_datos, tiempo_llamada)
-                    # opciones de no contestados
+                    # opciones de no atendida
                     lista_opciones.append(None)
-                    lista_opciones.append(None)
-                    lista_opciones.append(None)
-                    lista_opciones.append(None)
-                
+
                 else:
 
                     # aca se guarda el evento priorida priorizando siempre a busy
@@ -160,13 +153,13 @@ class ArchivoDeReporteCsv(object):
                     if evento_prioridad != 0:
 
                         if evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-                            lista_opciones.append(1)
+                            lista_opciones.append("No contesto")
                         elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
-                            lista_opciones.append(1)
+                            lista_opciones.append("Ocupado")
                         elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
-                            lista_opciones.append(1)
+                            lista_opciones.append("Canal no disponible")
                         elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
-                            lista_opciones.append(1)
+                            lista_opciones.append("Congestion")
 
                         tiempo_llamada = lista_tiempo[indice_evento]
                         lista_opciones.insert(cantidad_datos, tiempo_llamada)
