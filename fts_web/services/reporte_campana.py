@@ -12,11 +12,11 @@ import os
 import json
 
 from django.conf import settings
-from fts_web.models import Campana, Contacto
+from fts_web.models import Campana
 from fts_web.utiles import crear_archivo_en_media_root
 
 from fts_daemon.models import EventoDeContacto
-
+from fts_web.services.prioridad_evento import PrioridadEventoNoAtendidosService
 from django.utils.encoding import force_text
 
 
@@ -115,7 +115,7 @@ class ArchivoDeReporteCsv(object):
                 else:
                     lista_opciones.append(None)
 
-                indice_evento = 0
+                indice_evento = None
                 finalizado = False
                 for finalizador in finalizadores:
                     if finalizador in lista_eventos:
@@ -124,33 +124,20 @@ class ArchivoDeReporteCsv(object):
                         break
                 if finalizado:
 
-                    tiempo_llamada = lista_tiempo[indice_evento]
-                    lista_opciones.insert(cantidad_datos, tiempo_llamada)
+                    if indice_evento is not None:
+                        tiempo_llamada = lista_tiempo[indice_evento]
+                        lista_opciones.insert(cantidad_datos, tiempo_llamada)
+                    else:
+                        lista_opciones.insert(cantidad_datos, None)
                     # opciones de no atendida
                     lista_opciones.append(None)
 
                 else:
 
-                    # aca se guarda el evento priorida priorizando siempre a busy
-                    # Este es el orden de prioridad busy, no answer,failed
-                    # (congestion, canal no disponible)
-                    evento_prioridad = 0
-                    for ev in lista_eventos:
+                    prioridad_evento = PrioridadEventoNoAtendidosService()
+                    evento_prioridad, indice_evento = prioridad_evento.definir_prioridad_evento(lista_eventos)
 
-                        if ev is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
-                            evento_prioridad = ev
-                            indice_evento = lista_eventos.index(ev)
-                            break
-                        elif ev is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-                            evento_prioridad = ev
-                            indice_evento = lista_eventos.index(ev)
-                        elif ev is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL or\
-                        ev is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
-                            if not evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-                                evento_prioridad = ev
-                                indice_evento = lista_eventos.index(ev)
-
-                    if evento_prioridad != 0:
+                    if evento_prioridad is not None and indice_evento is not None:
 
                         if evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
                             lista_opciones.append("No contesto")
@@ -163,6 +150,10 @@ class ArchivoDeReporteCsv(object):
 
                         tiempo_llamada = lista_tiempo[indice_evento]
                         lista_opciones.insert(cantidad_datos, tiempo_llamada)
+
+                    else:
+                        lista_opciones.insert(cantidad_datos, None)
+                        lista_opciones.append(None)
 
 
                 lista_opciones_utf8 = [force_text(item).encode('utf-8')
