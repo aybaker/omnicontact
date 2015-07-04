@@ -104,7 +104,8 @@ class ArchivoDeReporteCsv(object):
                 # Ahora buscamos DIALSTATUS, SOLO si no existe evento finalizador
                 prioridad_evento = PrioridadEventoNoAtendidosService()
                 if evento_finalizador is None:
-                    # FIXME: RENOMBRAR a algo como dialstatus_prioridad, dialstatus_evento, etc.
+                    # FIXME: RENOMBRAR a dialstatus_evento y dialstatus_timestamp
+                    # cuando definir_prioridad_evento() devuelva timestamp!
                     evento_prioridad, indice_evento = prioridad_evento.definir_prioridad_evento(lista_eventos)
 
                 # --- Hacemos APPEND de los datos, en el orden que deben ir
