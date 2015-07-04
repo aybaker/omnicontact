@@ -86,13 +86,43 @@ class ArchivoDeReporteCsv(object):
                                       for item in encabezado]
             csvwiter.writerow(lista_encabezados_utf8)
 
-            # guardamos datos
+            # Iteramos cada uno de los contactos, con los eventos de TODOS los intentos
             for contacto, lista_eventos, lista_tiempo in opciones_por_contacto:
                 lista_opciones = []
+
+                # --- Buscamos datos
+
+                # Primero buscamos evento finalizador y su timestamp (puede no existir)
+                evento_finalizador, timestamp_evento_finalizador = None, None
+                evento_prioridad, indice_evento = None, None
+
+                for un_evento_finalizador, un_timestamp_evento_finalizador in zip(lista_eventos, lista_tiempo):
+                    if evento_finalizador in finalizadores:
+                        evento_finalizador, timestamp_evento_finalizador = un_evento_finalizador, un_timestamp_evento_finalizador
+                        break
+
+                # Ahora buscamos DIALSTATUS, SOLO si no existe evento finalizador
+                prioridad_evento = PrioridadEventoNoAtendidosService()
+                if evento_finalizador is None:
+                    # FIXME: RENOMBRAR a algo como dialstatus_prioridad, dialstatus_evento, etc.
+                    evento_prioridad, indice_evento = prioridad_evento.definir_prioridad_evento(lista_eventos)
+
+                # --- Hacemos APPEND de los datos, en el orden que deben ir
 
                 for dato in json.loads(contacto):
                     lista_opciones.append(dato)
 
+                # Agregamos timestamp de fecha
+                if evento_finalizador is None:
+                    if indice_evento is None:
+                        lista_opciones.append(None)
+                    else:
+                        tiempo_llamada = lista_tiempo[indice_evento]
+                        lista_opciones.append(tiempo_llamada)
+                else:
+                    lista_opciones.append(timestamp_evento_finalizador)
+
+                # Agregamos opciones digitadas por contacto
                 for opcion in range(10):
                     evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
                     if evento in lista_eventos:
@@ -100,6 +130,7 @@ class ArchivoDeReporteCsv(object):
                     else:
                         lista_opciones.append(None)
 
+                # Agregamos que ha devuelto funciones AMD
                 if EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED in lista_eventos:
                     lista_opciones.append(1)
                 else:
@@ -115,46 +146,24 @@ class ArchivoDeReporteCsv(object):
                 else:
                     lista_opciones.append(None)
 
-                indice_evento = None
-                finalizado = False
-                for finalizador in finalizadores:
-                    if finalizador in lista_eventos:
-                        finalizado = True
-                        indice_evento = lista_eventos.index(finalizador)
-                        break
-                if finalizado:
+                # Agregamos DIALSTATUS (si existe)
 
-                    if indice_evento is not None:
-                        tiempo_llamada = lista_tiempo[indice_evento]
-                        lista_opciones.insert(cantidad_datos, tiempo_llamada)
+                if evento_prioridad is not None and indice_evento is not None:
+                    if evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
+                        lista_opciones.append("No contesto")
+                    elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
+                        lista_opciones.append("Ocupado")
+                    elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
+                        lista_opciones.append("Canal no disponible")
+                    elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
+                        lista_opciones.append("Congestion")
                     else:
-                        lista_opciones.insert(cantidad_datos, None)
-                    # opciones de no atendida
+                        # FIXME: hacer algo aqui!
+                        lista_opciones.append(None) # Esta mal agregar None, pero peor es no agregar nada
+                else:
                     lista_opciones.append(None)
 
-                else:
-
-                    prioridad_evento = PrioridadEventoNoAtendidosService()
-                    evento_prioridad, indice_evento = prioridad_evento.definir_prioridad_evento(lista_eventos)
-
-                    if evento_prioridad is not None and indice_evento is not None:
-
-                        if evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-                            lista_opciones.append("No contesto")
-                        elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
-                            lista_opciones.append("Ocupado")
-                        elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
-                            lista_opciones.append("Canal no disponible")
-                        elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
-                            lista_opciones.append("Congestion")
-
-                        tiempo_llamada = lista_tiempo[indice_evento]
-                        lista_opciones.insert(cantidad_datos, tiempo_llamada)
-
-                    else:
-                        lista_opciones.insert(cantidad_datos, None)
-                        lista_opciones.append(None)
-
+                # --- Finalmente, escribimos la linea
 
                 lista_opciones_utf8 = [force_text(item).encode('utf-8')
                                        for item in lista_opciones]
