@@ -16,7 +16,7 @@ from fts_web.models import Campana
 from fts_web.utiles import crear_archivo_en_media_root
 
 from fts_daemon.models import EventoDeContacto
-from fts_web.services.prioridad_evento import PrioridadEventoNoAtendidosService
+from fts_web.services.DialStatusServicio import DialStatusService
 from django.utils.encoding import force_text
 
 
@@ -94,19 +94,18 @@ class ArchivoDeReporteCsv(object):
 
                 # Primero buscamos evento finalizador y su timestamp (puede no existir)
                 evento_finalizador, timestamp_evento_finalizador = None, None
-                evento_prioridad, indice_evento = None, None
+                dialstatus_evento_no_atendido = None 
 
                 for un_evento_finalizador, un_timestamp_evento_finalizador in zip(lista_eventos, lista_tiempo):
-                    if evento_finalizador in finalizadores:
+                    if un_evento_finalizador in finalizadores:
                         evento_finalizador, timestamp_evento_finalizador = un_evento_finalizador, un_timestamp_evento_finalizador
                         break
 
                 # Ahora buscamos DIALSTATUS, SOLO si no existe evento finalizador
-                prioridad_evento = PrioridadEventoNoAtendidosService()
+                service_dialstatus = DialStatusService()
                 if evento_finalizador is None:
-                    # FIXME: RENOMBRAR a dialstatus_evento y dialstatus_timestamp
-                    # cuando definir_prioridad_evento() devuelva timestamp!
-                    evento_prioridad, indice_evento = prioridad_evento.definir_prioridad_evento(lista_eventos)
+                    dialstatus_evento_no_atendido = service_dialstatus.\
+                        definir_prioridad_dialstatus(lista_eventos, lista_tiempo)
 
                 # --- Hacemos APPEND de los datos, en el orden que deben ir
 
@@ -115,11 +114,10 @@ class ArchivoDeReporteCsv(object):
 
                 # Agregamos timestamp de fecha
                 if evento_finalizador is None:
-                    if indice_evento is None:
+                    if dialstatus_evento_no_atendido is None:
                         lista_opciones.append(None)
                     else:
-                        tiempo_llamada = lista_tiempo[indice_evento]
-                        lista_opciones.append(tiempo_llamada)
+                        lista_opciones.append(dialstatus_evento_no_atendido.timestamp)
                 else:
                     lista_opciones.append(timestamp_evento_finalizador)
 
@@ -149,20 +147,11 @@ class ArchivoDeReporteCsv(object):
 
                 # Agregamos DIALSTATUS (si existe)
 
-                if evento_prioridad is not None and indice_evento is not None:
-                    if evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-                        lista_opciones.append("No contesto")
-                    elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
-                        lista_opciones.append("Ocupado")
-                    elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
-                        lista_opciones.append("Canal no disponible")
-                    elif evento_prioridad is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
-                        lista_opciones.append("Congestion")
-                    else:
-                        # FIXME: hacer algo aqui!
-                        lista_opciones.append(None) # Esta mal agregar None, pero peor es no agregar nada
-                else:
+                if dialstatus_evento_no_atendido is None:
                     lista_opciones.append(None)
+                else:
+                    lista_opciones.append(dialstatus_evento_no_atendido.nombre_dialstatus)
+                    
 
                 # --- Finalmente, escribimos la linea
 
