@@ -94,7 +94,7 @@ class ArchivoDeReporteCsv(object):
 
                 # Primero buscamos evento finalizador y su timestamp (puede no existir)
                 evento_finalizador, timestamp_evento_finalizador = None, None
-                dialstatus_evento_no_atendido = None 
+                dialstatus_evento_no_atendido = None
 
                 for un_evento_finalizador, un_timestamp_evento_finalizador in zip(lista_eventos, lista_tiempo):
                     if un_evento_finalizador in finalizadores:
@@ -151,7 +151,6 @@ class ArchivoDeReporteCsv(object):
                     lista_opciones.append(None)
                 else:
                     lista_opciones.append(dialstatus_evento_no_atendido.nombre_dialstatus)
-                    
 
                 # --- Finalmente, escribimos la linea
 
