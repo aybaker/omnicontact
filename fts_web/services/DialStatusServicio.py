@@ -55,7 +55,6 @@ class DialStatusService(object):
         else:
             return None
 
-
 class DatosDialStatus(object):
     """Encapsula los datos del dialstatus.
     """
@@ -75,5 +74,5 @@ class DatosDialStatus(object):
         return self._timestamp
 
     @property
-    def dialstatus(self):
+    def nombre_dialstatus(self):
         return self._nombre_dialstatus
