@@ -4,7 +4,8 @@
 
 from __future__ import unicode_literals
 
-from fts_web.services.DialStatusServicio import DialStatusService
+from fts_web.services.DialStatusServicio import (DialStatusService,
+                                                 DatosDialStatus)
 from fts_web.tests.utiles import FTSenderBaseTest
 from fts_daemon.models import EventoDeContacto
 
@@ -28,7 +29,7 @@ class TestDialStatusPrioridad(FTSenderBaseTest):
 
         # chequeamos que no devuelva none
         self.assertIsNotNone(dialstatus_evento_no_atendido)
-        self.assertIsInstance(dialstatus_evento_no_atendido, DialStatusService)
+        self.assertIsInstance(dialstatus_evento_no_atendido, DatosDialStatus)
 
         self.assertEquals(dialstatus_evento_no_atendido.evento,
                           EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY)
@@ -46,7 +47,7 @@ class TestDialStatusPrioridad(FTSenderBaseTest):
 
         # chequeamos que no devuelva none
         self.assertIsNotNone(dialstatus_evento_no_atendido)
-        self.assertIsInstance(dialstatus_evento_no_atendido, DialStatusService)
+        self.assertIsInstance(dialstatus_evento_no_atendido, DatosDialStatus)
 
         self.assertEquals(dialstatus_evento_no_atendido.evento,
                           EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER)
@@ -64,7 +65,7 @@ class TestDialStatusPrioridad(FTSenderBaseTest):
 
         # chequeamos que no devuelva none
         self.assertIsNotNone(dialstatus_evento_no_atendido)
-        self.assertIsInstance(dialstatus_evento_no_atendido, DialStatusService)
+        self.assertIsInstance(dialstatus_evento_no_atendido, DatosDialStatus)
 
         self.assertEquals(dialstatus_evento_no_atendido.evento,
                           EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION)
@@ -82,7 +83,7 @@ class TestDialStatusPrioridad(FTSenderBaseTest):
 
         # chequeamos que no devuelva none
         self.assertIsNotNone(dialstatus_evento_no_atendido)
-        self.assertIsInstance(dialstatus_evento_no_atendido, DialStatusService)
+        self.assertIsInstance(dialstatus_evento_no_atendido, DatosDialStatus)
 
         self.assertEquals(dialstatus_evento_no_atendido.evento,
                           EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL)
