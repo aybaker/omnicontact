@@ -11,18 +11,18 @@ from fts_daemon.models import EventoDeContacto
 class DialStatusService(object):
     """
     Servicio de dialstatus
-    http://www.voip-info.org/wiki/view/Asterisk+variable+DIALSTATUS 
+    http://www.voip-info.org/wiki/view/Asterisk+variable+DIALSTATUS
     """
 
     def definir_prioridad_dialstatus(self, lista_eventos, lista_tiempo):
         """
-        Define prioridad de dialstatus de los siguientes eventos en ese orden 
+        Define prioridad de dialstatus de los siguientes eventos en ese orden
         Busy, No answer, Failed(chanunavail, congestion)
         :param lista_eventos: Lista con todos los eventos del contacto
-        :param lista_tiempo: Lista con todos los tiempos de los eventos 
+        :param lista_tiempo: Lista con todos los tiempos de los eventos
         """
 
-        dialstatus_evento, dialstatus_timestamp =  None, None
+        dialstatus_evento, dialstatus_timestamp = None, None
         for un_dialstatus, un_timestamp in zip(lista_eventos, lista_tiempo):
             if un_dialstatus is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
                 dialstatus_evento = un_dialstatus
@@ -32,8 +32,8 @@ class DialStatusService(object):
                 dialstatus_evento = un_dialstatus
                 dialstatus_timestamp = un_timestamp
             elif un_dialstatus is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL or\
-            un_dialstatus is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
-                if not dialstatus_evento is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
+                    un_dialstatus is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
+                if dialstatus_evento is not EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
                     dialstatus_evento = un_dialstatus
                     dialstatus_timestamp = un_timestamp
 
@@ -54,6 +54,7 @@ class DialStatusService(object):
             return "Congestion"
         else:
             return None
+
 
 class DatosDialStatus(object):
     """Encapsula los datos del dialstatus.
