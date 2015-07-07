@@ -777,25 +777,6 @@ class EventoDeContactoEstadisticasManager():
             values = cursor.fetchall()
         return values
 
-    def obtener_fecha_hora_por_contacto(self, campana):
-        """Devuelve una lista de contactos con la fecha y hora de la llamada
-        de los eventos answer, no answer, busy y failed.
-        """
-
-        cursor = connection.cursor()
-        sql = """SELECT calldate, dcontext, dst, disposition
-            FROM cdr
-            WHERE dcontext = 'FTS_local_campana_%(campana_id)s';
-        """
-
-        params = {'campana_id': campana.id}
-
-        with log_timing(logger,
-            "obtener_fecha_hora_por_contacto tardo %s seg"):
-            cursor.execute(sql, params)
-            values = cursor.fetchall()
-        return values
-
 
 class GestionDeLlamadasManager(models.Manager):
     """Manager para EventoDeContacto, con la funcionalidad

@@ -169,11 +169,6 @@ class ReporteCampanaService(object):
             .obtener_opciones_por_contacto(campana.pk)
         return opciones_por_contacto
 
-    def _obtener_fecha_hora_llamada_por_contacto(self, campana):
-        fecha_hora_por_contacto = EventoDeContacto.objects_estadisticas.\
-            obtener_fecha_hora_por_contacto(campana)
-        return fecha_hora_por_contacto
-
     def crea_reporte_csv(self, campana):
         assert campana.estado == Campana.ESTADO_FINALIZADA
 
@@ -182,8 +177,6 @@ class ReporteCampanaService(object):
         archivo_de_reporte.crear_archivo_en_directorio()
 
         opciones_por_contacto = self._obtener_opciones_por_contacto(campana)
-
-        fecha_hora_por_contacto = self._obtener_fecha_hora_llamada_por_contacto(campana)
 
         archivo_de_reporte.escribir_archivo_csv(opciones_por_contacto)
 
