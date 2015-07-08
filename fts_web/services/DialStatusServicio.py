@@ -55,6 +55,7 @@ class DialStatusService(object):
         else:
             return None
 
+
 class DatosDialStatus(object):
     """Encapsula los datos del dialstatus.
     """
