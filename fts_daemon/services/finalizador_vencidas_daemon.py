@@ -85,7 +85,6 @@ class FinalizadorDeCampanasVencidasDaemon(object):
                         exc_info=True)
             return False
 
-        # ANTES: tasks.finalizar_campana_async(campana.id)
         tasks.esperar_y_depurar_campana_async(campana.id)
         return True
 
