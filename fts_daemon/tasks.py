@@ -58,11 +58,11 @@ def _internal_command(campana_id):
 def depurar_campana(campana_id):
     """Depura la campaña"""
 
+    locks.lock(LOCK_DEPURACION_DE_CAMPANA)
+
     if isinstance(campana_id, (str, unicode)):
         if _internal_command(campana_id):
             return
-
-    locks.lock(LOCK_DEPURACION_DE_CAMPANA)
 
     DepuradorDeCampanaWorkflow().depurar(campana_id)
 
