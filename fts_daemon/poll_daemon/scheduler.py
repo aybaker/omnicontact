@@ -283,7 +283,14 @@ class RoundRobinTracker(object):
 
         iter_num = 0
 
-        while self._running_status.should_continue_running:
+        while True:
+
+            # Chequeamos 'running_status.should_continue_running'.
+            # Esto deberia hacerse en todos los loops...
+            if not self._running_status.should_continue_running:
+                logger.info("Se ha detectado should_continue_running = False. "
+                            "Se detendra la ejecucion del loop.")
+                return
 
             if self.max_iterations is not None:
                 if iter_num >= self.max_iterations:
@@ -390,6 +397,13 @@ class RoundRobinTracker(object):
             # Trabajamos en copia, por si hace falta modificarse
             for tracker_campana in trackers_activos:
 
+                # Chequeamos 'running_status.should_continue_running'.
+                # Esto deberia hacerse en todos los loops...
+                if not self._running_status.should_continue_running:
+                    logger.info("Se ha detectado should_continue_running = False. "
+                                "Se detendra la ejecucion del loop.")
+                    return
+
                 # Publicamos estadisticas si corresponde
                 self.publish_statistics(sleeping=False)
 
@@ -421,6 +435,14 @@ class RoundRobinTracker(object):
                         #    con un break del loop, y continuamos el
                         #    procesamiento normal de la campaña
                         while True:
+
+                            # Chequeamos 'running_status.should_continue_running'.
+                            # Esto deberia hacerse en todos los loops...
+                            if not self._running_status.should_continue_running:
+                                logger.info("Se ha detectado should_continue_running = False. "
+                                            "Se detendra la ejecucion del loop.")
+                                return
+
                             loop__esperas_por_limite_global += 1
                             # Somos más agresivos, usamos 'si_es_posible'
                             self._asterisk_call_status.\
