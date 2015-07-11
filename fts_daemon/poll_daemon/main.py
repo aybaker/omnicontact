@@ -14,7 +14,8 @@ import logging as _logging
 
 from django.conf import settings
 
-from fts_daemon.poll_daemon.scheduler import Llamador, RunningStatus
+from fts_daemon import main_utils
+from fts_daemon.poll_daemon.scheduler import Llamador
 
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
@@ -40,26 +41,12 @@ def main(max_loop=0, initial_wait=0.0):
         logger.info("Espera inicial finalizada")
 
     # Acomodamos signal handler, justo antes de iniciar
-    signals_a_manejar = [signal.SIGTERM, signal.SIGINT, signal.SIGQUIT]
-    running_status = RunningStatus()
+    running_status = main_utils.RunningStatus()
+    main_utils.set_handlers(running_status,
+                            [signal.SIGTERM, signal.SIGINT, signal.SIGQUIT])
 
-    def signal_handler(signum, _):
-        logger.info("signal_handler() - signal: %s", signum)
-        if signum in signals_a_manejar:
-            logger.info("signal_handler(): seteando continue_running = False")
-            running_status.should_continue_running = False
-            if not running_status.working:
-                # No se estaba trabajando, asi que podemos salir directamente
-                sys.exit(0)
-        else:
-            logger.info("signal_handler(): se ha recibido signal que NO manejamos: %s", signum)
-
-    for a_signal in signals_a_manejar:
-        logger.info("Seteando signal_handler() para signal: %s", a_signal)
-        signal.signal(a_signal, signal_handler)
-
-    Llamador().run(max_loops=FTS_MAX_LOOPS,
-                   running_status=running_status)
+    llamador = Llamador(running_status=running_status)
+    llamador.run(max_loops=FTS_MAX_LOOPS,)
 
 
 if __name__ == '__main__':
