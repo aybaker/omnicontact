@@ -19,6 +19,9 @@ from fts_web.tests.utiles import FTSenderBaseTest
 MSG_EN_LOOP = 'en-loop'
 MSG_FINALIZADO_LIMPIAMENTE = 'finalizado-limpiamente'
 
+SIGNALS_A_MANEJAR = [signal.SIGTERM, signal.SIGINT]
+
+
 def main_sin_handler(conn):
     while True:
         conn.send(MSG_EN_LOOP)
@@ -30,11 +33,14 @@ def main_con_handler(conn, successful_exit_status):
 
     def signal_handler(signum, _):
         logging.info("CHILD: signal_handler() - signal: %s", signum)
-        if signum == signal.SIGTERM:
+        if signum in SIGNALS_A_MANEJAR:
             logging.info("CHILD: seteando continue_running = False")
             continue_running_holder[0] = False
+        else:
+            logging.info("CHILD: se ha recibido signal que NO manejamos: %s", signum)
 
-    signal.signal(signal.SIGTERM, signal_handler)
+    for a_signal in SIGNALS_A_MANEJAR:
+        signal.signal(a_signal, signal_handler)
 
     while continue_running_holder[0]:
         logging.info("CHILD: enviando: %s", MSG_EN_LOOP)
@@ -71,7 +77,13 @@ class MainConSignalHandlerTest(FTSenderBaseTest):
 
     SUCCESSFUL_EXIT_STATUS = random.randint(11, 99)
 
-    def test_finaliza_con_gracia(self):
+    def test_finaliza_con_gracia_ante_sigterm(self):
+        self._test_finaliza_con_gracia(signal.SIGTERM)
+
+    def test_finaliza_con_gracia_ante_sigint(self):
+        self._test_finaliza_con_gracia(signal.SIGINT)
+
+    def _test_finaliza_con_gracia(self, signal_to_send):
         parent_conn, child_conn = multiprocessing.Pipe()
         process = multiprocessing.Process(target=main_con_handler,
                                           args=(child_conn, self.SUCCESSFUL_EXIT_STATUS))
@@ -79,13 +91,16 @@ class MainConSignalHandlerTest(FTSenderBaseTest):
         response = parent_conn.recv()
         self.assertEqual(response, MSG_EN_LOOP)
 
-        logging.info("PARENT: enviando signal")
-        os.kill(process.pid, signal.SIGTERM)
+        logging.info("PARENT: enviando signal: %s", signal_to_send)
+        os.kill(process.pid, signal_to_send)
         logging.info("PARENT: se realizara join()")
         process.join(timeout=5)
         logging.info("PARENT: join() finalizado")
 
-        self.assertFalse(process.is_alive())
+        if process.is_alive():
+            process.terminate()
+            self.fail("El proceso seguia vivo despues del join()")
+
         logging.info("PARENT: exit code: %s", process.exitcode)
 
         while True:
