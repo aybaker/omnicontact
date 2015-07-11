@@ -63,7 +63,8 @@ def depurar_campana(campana_id):
 
 def depurar_campana_async(campana_id):
     """Depura la campaña.
-    Realiza llamada asyncrona.
+
+    Realiza la llamada asyncrona y devuelve el control inmediatamente.
     """
     logging.info("Lanzando servicio DepuradorDeCampanaWorkflow() "
                  "en background usando Celery para campana %s", campana_id)
@@ -87,7 +88,8 @@ def esperar_y_depurar_campana(campana_id):
 
 def esperar_y_depurar_campana_async(campana_id):
     """Espera a que no haya llamadas en curso, y depura la campaña.
-    Realiza llamada asyncrona.
+
+    Realiza la llamada asyncrona y devuelve el control inmediatamente.
     """
     logging.info("Lanzando servicio EsperadorParaDepuracionSegura() "
                  "en background usando Celery para campana %s", campana_id)
