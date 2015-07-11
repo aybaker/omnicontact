@@ -12,6 +12,7 @@ import logging
 import time
 
 from fts_daemon import fts_celery_daemon
+from fts_daemon import locks
 from fts_daemon.services.depurador_de_campana import (
     DepuradorDeCampanaWorkflow
 )
@@ -21,6 +22,9 @@ from fts_daemon.services.esperador_para_depuracion_segura import (
 
 
 logger = logging.getLogger(__name__)
+
+
+LOCK_DEPURACION_DE_CAMPANA = 'freetechsender.depurador.de.campana'
 
 
 def _internal_command(campana_id):
@@ -57,6 +61,8 @@ def depurar_campana(campana_id):
     if isinstance(campana_id, (str, unicode)):
         if _internal_command(campana_id):
             return
+
+    locks.lock(LOCK_DEPURACION_DE_CAMPANA)
 
     DepuradorDeCampanaWorkflow().depurar(campana_id)
 

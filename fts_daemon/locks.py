@@ -43,8 +43,10 @@ def lock(lock_name):
         raise LockingError(message="Nombre de lock invalido: '{0}'".format(lock_name))
 
     lock_socket = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    logger.info("Se intentara obtener el lock '%s'", lock_name)
     try:
         lock_socket.bind('\x00' + lock_name)
         LOCKS[lock_name] = lock_socket
+        logger.info("El lock '%s' se obtuvo con exito", lock_name)
     except socket.error:
         raise LockingError(message="No se pudo crear el lock '{0}'".format(lock_name))
