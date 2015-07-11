@@ -252,6 +252,7 @@ class RoundRobinTracker(object):
         no hace nada
         """
         if not self._running_status.should_continue_running:
+            logger.info("real_sleep(): no esperaremos porque 'should_continue_running' es False")
             return
 
         espera = float(espera)
