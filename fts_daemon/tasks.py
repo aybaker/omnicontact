@@ -24,7 +24,7 @@ from fts_daemon.services.esperador_para_depuracion_segura import (
 logger = logging.getLogger(__name__)
 
 
-LOCK_DEPURACION_DE_CAMPANA = 'freetechsender.depurador.de.campana'
+LOCK_DEPURACION_DE_CAMPANA = 'freetechsender/depurador-de-campana'
 
 
 def _internal_command(campana_id):
