@@ -501,6 +501,19 @@ class RoundRobinTracker(object):
                     self.onNoSeDevolvioContactoEnRoundActual()
 
 
+class RunningStatus(object):
+    """Mantiene estado de ejecucion de main().
+    Actualmente, 2 cosas deben ser tenidas en cuenta:
+    a) si se debe seguir ejecutando el main (por ejemplo, NO se debe
+       seguir ejecutando cuando se recibio la signal SIGTERM
+    b) si se esta realizando trabajo. Si no se esta realizando trabajo,
+       al recibir una signal, podemos salir directamente.
+    """
+    def __init__(self):
+        self.working = False
+        self.should_continue_running = True
+
+
 class Llamador(object):
     """Utiliza RoundRobinTracker para obtener números a contactar,
     y realiza los llamados.
@@ -512,27 +525,42 @@ class Llamador(object):
     def procesar_contacto(self, datos_para_realizar_llamada):
         return llamador_contacto.procesar_contacto(datos_para_realizar_llamada)
 
-    def run(self, max_loops=0):
+    def run(self, max_loops=0, running_status=None):
         """Inicia el llamador"""
         current_loop = 1
+        if not running_status:
+            logger.info("Creando instancia de RunningStatus")
+            running_status = RunningStatus()
 
         for datos_para_realizar_llamada in self.rr_tracker.generator():
+
+            if not running_status.should_continue_running:
+                logger.info("Llamador.run(): "
+                            "running_status.should_continue_running es False. Exit!")
+                return
 
             assert isinstance(datos_para_realizar_llamada,
                               DatosParaRealizarLlamada)
 
-            logger.debug("Llamador.run(): campana: %s - id_contacto: %s"
-                " - numero: %s - intento: %s",
-                datos_para_realizar_llamada.campana.id,
-                datos_para_realizar_llamada.id_contacto,
-                datos_para_realizar_llamada.telefono,
-                datos_para_realizar_llamada.intentos)
+            logger.debug("Llamador.run(): campana: %s - id_contacto: %s "
+                         "- numero: %s - intento: %s",
+                         datos_para_realizar_llamada.campana.id,
+                         datos_para_realizar_llamada.id_contacto,
+                         datos_para_realizar_llamada.telefono,
+                         datos_para_realizar_llamada.intentos)
 
+            running_status.working = True
             originate_ok = self.procesar_contacto(datos_para_realizar_llamada)
+            running_status.working = False
 
             self.rr_tracker.originate_throttler.set_originate(originate_ok)
 
             current_loop += 1
             if max_loops > 0 and current_loop > max_loops:
                 logger.info("Llamador.run(): max_loops alcanzado. Exit!")
+                return
+
+            if not running_status.should_continue_running:
+                logger.info("Llamador.run(): "
+                            "running_status.should_continue_running es False. Exit!")
                 return
