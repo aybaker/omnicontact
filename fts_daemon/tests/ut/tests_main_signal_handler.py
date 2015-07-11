@@ -19,7 +19,7 @@ from fts_web.tests.utiles import FTSenderBaseTest
 MSG_EN_LOOP = 'en-loop'
 MSG_FINALIZADO_LIMPIAMENTE = 'finalizado-limpiamente'
 
-SIGNALS_A_MANEJAR = [signal.SIGTERM, signal.SIGINT]
+SIGNALS_A_MANEJAR = [signal.SIGTERM, signal.SIGINT, signal.SIGQUIT]
 
 
 def main_sin_handler(conn):
@@ -82,6 +82,9 @@ class MainConSignalHandlerTest(FTSenderBaseTest):
 
     def test_finaliza_con_gracia_ante_sigint(self):
         self._test_finaliza_con_gracia(signal.SIGINT)
+
+    def test_finaliza_con_gracia_ante_sigquit(self):
+        self._test_finaliza_con_gracia(signal.SIGQUIT)
 
     def _test_finaliza_con_gracia(self, signal_to_send):
         parent_conn, child_conn = multiprocessing.Pipe()
