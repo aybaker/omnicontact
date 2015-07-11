@@ -8,7 +8,6 @@ from __future__ import unicode_literals
 import os
 import time
 import signal
-import sys
 
 import logging as _logging
 
