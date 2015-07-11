@@ -14,13 +14,16 @@ depurdas.
 
 from __future__ import unicode_literals
 
+import logging as _logging
 import time
+import signal
 
 from django.conf import settings
+
+from fts_daemon import locks
 from fts_daemon import tasks
 from fts_web.errors import FTSOptimisticLockingError
 from fts_web.models import Campana
-import logging as _logging
 
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
@@ -131,5 +134,9 @@ class FinalizadorDeCampanasVencidasDaemon(object):
             self._sleep()
 
 
+LOCK_DAEMON_FINALIZADOR_VENCIDAS= 'freetechsender/daemon-finalizador-vencidas'
+
 if __name__ == '__main__':
-    FinalizadorDeCampanasVencidasDaemon().run()
+    locks.lock(LOCK_DAEMON_FINALIZADOR_VENCIDAS)
+    finalizador_vencidas = FinalizadorDeCampanasVencidasDaemon()
+    finalizador_vencidas.run()
