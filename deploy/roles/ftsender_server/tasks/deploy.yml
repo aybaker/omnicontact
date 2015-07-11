@@ -36,6 +36,18 @@
     - deploy
     - docker
 
+- name: Upload scripts to deploy/bin
+  template: src={{item}} dest=/home/ftsender/deploy/bin mode=0755
+  with_items:
+    - bin/run_uwsgi.sh
+    - bin/manage.sh
+    - bin/db_update_plpython_stored_proc.sh
+    - bin/restart-ftsender.sh
+    - bin/stop-ftsender-daemons-for-deploy.sh
+  tags:
+    - deploy
+    - docker
+
 #----------------------------------------------------------------------
 # pip / virtualenv
 #----------------------------------------------------------------------
@@ -114,6 +126,16 @@
     - update_settings
     - docker
 
+- name: Stop FTSender services (except FastAGI daemon)
+  command: /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.sh
+  sudo: yes
+  ignore_errors: True
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
 - name: Run Django syncdb
   django_manage: >
       command=syncdb
@@ -171,17 +193,6 @@
 - name: Register FTSenser service
   service: name=ftsender-daemon enabled=yes
   sudo: yes
-  tags:
-    - deploy
-    - docker
-
-- name: Upload scripts to deploy/bin
-  template: src={{item}} dest=/home/ftsender/deploy/bin mode=0755
-  with_items:
-    - bin/run_uwsgi.sh
-    - bin/manage.sh
-    - bin/db_update_plpython_stored_proc.sh
-    - bin/restart-ftsender.sh
   tags:
     - deploy
     - docker
