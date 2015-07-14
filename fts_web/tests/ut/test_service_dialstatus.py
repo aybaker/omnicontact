@@ -4,7 +4,7 @@
 
 from __future__ import unicode_literals
 
-from fts_web.services.DialStatusServicio import (DialStatusService,
+from fts_web.services.dial_status_servicio import (DialStatusService,
                                                  DatosDialStatus)
 from fts_web.tests.utiles import FTSenderBaseTest
 from fts_daemon.models import EventoDeContacto
@@ -13,7 +13,7 @@ from fts_daemon.models import EventoDeContacto
 class TestDialStatusPrioridad(FTSenderBaseTest):
     """
     Este unit test testa todo los metodos y/o servicios, relacionado con la
-   prioriadad de los eventos no atendidos de un contacto
+    prioriadad de los eventos no atendidos de un contacto
     """
 
     def test_encuentra_dialstatus_prioridad_busy(self):

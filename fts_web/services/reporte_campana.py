@@ -16,7 +16,7 @@ from fts_web.models import Campana
 from fts_web.utiles import crear_archivo_en_media_root
 
 from fts_daemon.models import EventoDeContacto
-from fts_web.services.DialStatusServicio import DialStatusService
+from fts_web.services.dial_status_servicio import DialStatusService
 from django.utils.encoding import force_text
 
 
