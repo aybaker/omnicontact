@@ -287,7 +287,9 @@ class GeneradorParaStartDetectarContestador(
         ; http://www.voip-info.org/wiki/view/Asterisk+cmd+AMD
         ; AMDSTATUS -> MACHINE | HUMAN | NOTSURE | HANGUP
         exten => _ftsX.,n,AMD(2500,1500,800,5000,100,50,3,256)
-        exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine:amd_human)
+        exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine)
+        exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "HUMAN"]?amd_human)
+        ; Por las dudas, lo tratamos como si fuera un humano
         exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-detection-failed/)
         exten => _ftsX.,n,Goto(amd_finished)
 
@@ -352,7 +354,9 @@ class GeneradorParaStartDetectarYEvitarContestador(
         ; http://www.voip-info.org/wiki/view/Asterisk+cmd+AMD
         ; AMDSTATUS -> MACHINE | HUMAN | NOTSURE | HANGUP
         exten => _ftsX.,n,AMD(2500,1500,800,5000,100,50,3,256)
-        exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine:amd_human)
+        exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine)
+        exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "HUMAN"]?amd_human)
+        ; Por las dudas, lo tratamos como si fuera un humano
         exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-detection-failed/)
         exten => _ftsX.,n,Goto(amd_finished)
 
