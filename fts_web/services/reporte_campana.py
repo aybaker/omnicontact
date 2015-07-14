@@ -94,7 +94,7 @@ class ArchivoDeReporteCsv(object):
 
                 # Primero buscamos evento finalizador y su timestamp (puede no existir)
                 evento_finalizador, timestamp_evento_finalizador = None, None
-                dialstatus_evento_no_atendido = None
+                dialstatus_razon_de_llamada_no_atendida = None
 
                 for un_evento_finalizador, un_timestamp_evento_finalizador in zip(lista_eventos, lista_tiempo):
                     if un_evento_finalizador in finalizadores:
@@ -104,8 +104,8 @@ class ArchivoDeReporteCsv(object):
                 # Ahora buscamos DIALSTATUS, SOLO si no existe evento finalizador
                 service_dialstatus = DialStatusService()
                 if evento_finalizador is None:
-                    dialstatus_evento_no_atendido = service_dialstatus.\
-                        definir_prioridad_dialstatus(lista_eventos, lista_tiempo)
+                    dialstatus_razon_de_llamada_no_atendida = service_dialstatus.\
+                        obtener_razon_de_llamada_no_atendida(lista_eventos, lista_tiempo)
 
                 # --- Hacemos APPEND de los datos, en el orden que deben ir
 
@@ -114,10 +114,10 @@ class ArchivoDeReporteCsv(object):
 
                 # Agregamos timestamp de fecha
                 if evento_finalizador is None:
-                    if dialstatus_evento_no_atendido is None:
+                    if dialstatus_razon_de_llamada_no_atendida is None:
                         lista_opciones.append(None)
                     else:
-                        lista_opciones.append(dialstatus_evento_no_atendido.timestamp)
+                        lista_opciones.append(dialstatus_razon_de_llamada_no_atendida.timestamp)
                 else:
                     lista_opciones.append(timestamp_evento_finalizador)
 
@@ -147,10 +147,10 @@ class ArchivoDeReporteCsv(object):
 
                 # Agregamos DIALSTATUS (si existe)
 
-                if dialstatus_evento_no_atendido is None:
+                if dialstatus_razon_de_llamada_no_atendida is None:
                     lista_opciones.append(None)
                 else:
-                    lista_opciones.append(dialstatus_evento_no_atendido.nombre_dialstatus)
+                    lista_opciones.append(dialstatus_razon_de_llamada_no_atendida.nombre_dialstatus)
 
                 # --- Finalmente, escribimos la linea
 

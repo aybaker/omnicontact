@@ -25,7 +25,7 @@ class TestDialStatusPrioridad(FTSenderBaseTest):
 
         service_dialstatus = DialStatusService()
         dialstatus_evento_no_atendido = service_dialstatus.\
-            definir_prioridad_dialstatus(lista_eventos, lista_tiempo)
+            obtener_razon_de_llamada_no_atendida(lista_eventos, lista_tiempo)
 
         # chequeamos que no devuelva none
         self.assertIsNotNone(dialstatus_evento_no_atendido)
@@ -43,7 +43,7 @@ class TestDialStatusPrioridad(FTSenderBaseTest):
 
         service_dialstatus = DialStatusService()
         dialstatus_evento_no_atendido = service_dialstatus.\
-            definir_prioridad_dialstatus(lista_eventos, lista_tiempo)
+            obtener_razon_de_llamada_no_atendida(lista_eventos, lista_tiempo)
 
         # chequeamos que no devuelva none
         self.assertIsNotNone(dialstatus_evento_no_atendido)
@@ -61,7 +61,7 @@ class TestDialStatusPrioridad(FTSenderBaseTest):
 
         service_dialstatus = DialStatusService()
         dialstatus_evento_no_atendido = service_dialstatus.\
-            definir_prioridad_dialstatus(lista_eventos, lista_tiempo)
+            obtener_razon_de_llamada_no_atendida(lista_eventos, lista_tiempo)
 
         # chequeamos que no devuelva none
         self.assertIsNotNone(dialstatus_evento_no_atendido)
@@ -79,7 +79,7 @@ class TestDialStatusPrioridad(FTSenderBaseTest):
 
         service_dialstatus = DialStatusService()
         dialstatus_evento_no_atendido = service_dialstatus.\
-            definir_prioridad_dialstatus(lista_eventos, lista_tiempo)
+            obtener_razon_de_llamada_no_atendida(lista_eventos, lista_tiempo)
 
         # chequeamos que no devuelva none
         self.assertIsNotNone(dialstatus_evento_no_atendido)
@@ -96,7 +96,7 @@ class TestDialStatusPrioridad(FTSenderBaseTest):
 
         service_dialstatus = DialStatusService()
         dialstatus_evento_no_atendido = service_dialstatus.\
-            definir_prioridad_dialstatus(lista_eventos, lista_tiempo)
+            obtener_razon_de_llamada_no_atendida(lista_eventos, lista_tiempo)
 
         # chequeamos que devuelva none
         self.assertIsNone(dialstatus_evento_no_atendido)

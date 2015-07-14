@@ -23,7 +23,7 @@ class DialStatusService(object):
     http://www.voip-info.org/wiki/view/Asterisk+variable+DIALSTATUS
     """
 
-    def definir_prioridad_dialstatus(self, lista_eventos, lista_tiempo):
+    def obtener_razon_de_llamada_no_atendida(self, lista_eventos, lista_tiempo):
         """
         Define prioridad de dialstatus de los siguientes eventos en ese orden
         Busy, No answer, Failed(chanunavail, congestion)
