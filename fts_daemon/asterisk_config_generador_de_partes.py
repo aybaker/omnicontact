@@ -288,6 +288,7 @@ class GeneradorParaStartDetectarContestador(
         ; AMDSTATUS -> MACHINE | HUMAN | NOTSURE | HANGUP
         exten => _ftsX.,n,Background(silence/1)
         exten => _ftsX.,n,AMD()
+        exten => _ftsX.,n,NoOp(AMDSTATUS=${{AMDSTATUS}})
         exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine)
         exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "HUMAN"]?amd_human)
         ; Por las dudas, lo tratamos como si fuera un humano
