@@ -8,6 +8,15 @@ from __future__ import unicode_literals
 from fts_daemon.models import EventoDeContacto
 
 
+ETIQUETAS = {
+    EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY: "Ocupado",
+    EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER: "No contesto",
+    EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL: "Canal no disponible",
+    EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION: "Congestion",
+}
+"""Mapeo de evento a etiqueta a mostrar"""
+
+
 class DialStatusService(object):
     """
     Servicio de dialstatus
@@ -29,7 +38,7 @@ class DialStatusService(object):
 
         if lista_evento_timestamp:
             evento, timestamp = lista_evento_timestamp[-1]
-            return DatosDialStatus(evento, timestamp, self._mapear_dialstatu_nombre(evento))
+            return DatosDialStatus(evento, timestamp, ETIQUETAS[evento])
 
         # Segundo, vemos si existe EVENTO_ASTERISK_DIALSTATUS_NOANSWER
         lista_evento_timestamp = [(evento, timestamp)
@@ -38,7 +47,7 @@ class DialStatusService(object):
 
         if lista_evento_timestamp:
             evento, timestamp = lista_evento_timestamp[-1]
-            return DatosDialStatus(evento, timestamp, self._mapear_dialstatu_nombre(evento))
+            return DatosDialStatus(evento, timestamp, ETIQUETAS[evento])
 
         # Finalmente, vemos si existe EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL o EVENTO_ASTERISK_DIALSTATUS_CONGESTION
         lista_evento_timestamp = [(evento, timestamp)
@@ -48,22 +57,10 @@ class DialStatusService(object):
 
         if lista_evento_timestamp:
             evento, timestamp = lista_evento_timestamp[-1]
-            return DatosDialStatus(evento, timestamp, self._mapear_dialstatu_nombre(evento))
+            return DatosDialStatus(evento, timestamp, ETIQUETAS[evento])
 
         # Si no encontramos ninguno de los eventos que nos interesan, devolvemos None
         return None
-
-    def _mapear_dialstatu_nombre(self, dialstatus_evento):
-        if dialstatus_evento is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
-            return "Ocupado"
-        elif dialstatus_evento is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-            return "No contesto"
-        elif dialstatus_evento is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL:
-            return "Canal no disponible"
-        elif dialstatus_evento is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
-            return "Congestion"
-        else:
-            return None
 
 
 class DatosDialStatus(object):
