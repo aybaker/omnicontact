@@ -364,6 +364,7 @@ class GeneradorParaStartDetectarYEvitarContestador(
         exten => _ftsX.,n,Goto(amd_finished)
 
         exten => _ftsX.,n(amd_machine),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-machine-detected/)
+        exten => _ftsX.,n,Wait(1)
         exten => _ftsX.,n,Hangup()
 
         exten => _ftsX.,n(amd_human),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-human-detected/)
