@@ -16,7 +16,7 @@ from fts_web.models import Campana
 from fts_web.utiles import crear_archivo_en_media_root
 
 from fts_daemon.models import EventoDeContacto
-
+from fts_web.services.dial_status_servicio import DialStatusService
 from django.utils.encoding import force_text
 
 
@@ -53,6 +53,7 @@ class ArchivoDeReporteCsv(object):
             self.sufijo_nombre_de_archivo)
 
     def escribir_archivo_csv(self, opciones_por_contacto):
+        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
         with open(self.ruta, 'wb') as csvfile:
             # Creamos encabezado
             encabezado = []
@@ -60,6 +61,8 @@ class ArchivoDeReporteCsv(object):
             cantidad_datos = len(json.loads(opciones_por_contacto[0][0]))
             for c in range(cantidad_datos):
                 encabezado.append("Extra{0}".format(c+1))
+
+            encabezado.append("Fecha de la llamada")
 
             opciones_dict = dict([(op.digito, op.get_descripcion_de_opcion())
                                  for op in self._campana.opciones.all()])
@@ -73,6 +76,7 @@ class ArchivoDeReporteCsv(object):
             encabezado.append("Contesto: Humano")
             encabezado.append("Contesto: Maquina")
             encabezado.append("Contesto: Indefinido")
+            encabezado.append("No atendidas: Estado")
 
             # Creamos csvwriter
             csvwiter = csv.writer(csvfile)
@@ -82,12 +86,42 @@ class ArchivoDeReporteCsv(object):
                                       for item in encabezado]
             csvwiter.writerow(lista_encabezados_utf8)
 
-            # guardamos datos
-            for contacto, lista_eventos in opciones_por_contacto:
+            # Iteramos cada uno de los contactos, con los eventos de TODOS los intentos
+            for contacto, lista_eventos, lista_tiempo in opciones_por_contacto:
                 lista_opciones = []
+
+                # --- Buscamos datos
+
+                # Primero buscamos evento finalizador y su timestamp (puede no existir)
+                evento_finalizador, timestamp_evento_finalizador = None, None
+                dialstatus_razon_de_llamada_no_atendida = None
+
+                for un_evento_finalizador, un_timestamp_evento_finalizador in zip(lista_eventos, lista_tiempo):
+                    if un_evento_finalizador in finalizadores:
+                        evento_finalizador, timestamp_evento_finalizador = un_evento_finalizador, un_timestamp_evento_finalizador
+                        break
+
+                # Ahora buscamos DIALSTATUS, SOLO si no existe evento finalizador
+                service_dialstatus = DialStatusService()
+                if evento_finalizador is None:
+                    dialstatus_razon_de_llamada_no_atendida = service_dialstatus.\
+                        obtener_razon_de_llamada_no_atendida(lista_eventos, lista_tiempo)
+
+                # --- Hacemos APPEND de los datos, en el orden que deben ir
+
                 for dato in json.loads(contacto):
                     lista_opciones.append(dato)
 
+                # Agregamos timestamp de fecha
+                if evento_finalizador is None:
+                    if dialstatus_razon_de_llamada_no_atendida is None:
+                        lista_opciones.append(None)
+                    else:
+                        lista_opciones.append(dialstatus_razon_de_llamada_no_atendida.timestamp)
+                else:
+                    lista_opciones.append(timestamp_evento_finalizador)
+
+                # Agregamos opciones digitadas por contacto
                 for opcion in range(10):
                     evento = EventoDeContacto.NUMERO_OPCION_MAP[opcion]
                     if evento in lista_eventos:
@@ -95,6 +129,7 @@ class ArchivoDeReporteCsv(object):
                     else:
                         lista_opciones.append(None)
 
+                # Agregamos que ha devuelto funciones AMD
                 if EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED in lista_eventos:
                     lista_opciones.append(1)
                 else:
@@ -109,6 +144,15 @@ class ArchivoDeReporteCsv(object):
                     lista_opciones.append(1)
                 else:
                     lista_opciones.append(None)
+
+                # Agregamos DIALSTATUS (si existe)
+
+                if dialstatus_razon_de_llamada_no_atendida is None:
+                    lista_opciones.append(None)
+                else:
+                    lista_opciones.append(dialstatus_razon_de_llamada_no_atendida.nombre_dialstatus)
+
+                # --- Finalmente, escribimos la linea
 
                 lista_opciones_utf8 = [force_text(item).encode('utf-8')
                                        for item in lista_opciones]
