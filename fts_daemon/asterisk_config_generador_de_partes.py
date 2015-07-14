@@ -286,6 +286,7 @@ class GeneradorParaStartDetectarContestador(
 
         ; http://www.voip-info.org/wiki/view/Asterisk+cmd+AMD
         ; AMDSTATUS -> MACHINE | HUMAN | NOTSURE | HANGUP
+        exten => _ftsX.,n,Background(silence/1)
         exten => _ftsX.,n,AMD()
         exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine)
         exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "HUMAN"]?amd_human)
@@ -353,6 +354,7 @@ class GeneradorParaStartDetectarYEvitarContestador(
 
         ; http://www.voip-info.org/wiki/view/Asterisk+cmd+AMD
         ; AMDSTATUS -> MACHINE | HUMAN | NOTSURE | HANGUP
+        exten => _ftsX.,n,Background(silence/1)
         exten => _ftsX.,n,AMD()
         exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine)
         exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "HUMAN"]?amd_human)
