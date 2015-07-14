@@ -22,26 +22,36 @@ class DialStatusService(object):
         :param lista_tiempo: Lista con todos los tiempos de los eventos
         """
 
-        dialstatus_evento, dialstatus_timestamp = None, None
-        for un_dialstatus, un_timestamp in zip(lista_eventos, lista_tiempo):
-            if un_dialstatus is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
-                dialstatus_evento = un_dialstatus
-                dialstatus_timestamp = un_timestamp
-                break
-            elif un_dialstatus is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-                dialstatus_evento = un_dialstatus
-                dialstatus_timestamp = un_timestamp
-            elif un_dialstatus is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL or\
-                    un_dialstatus is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION:
-                if dialstatus_evento is not EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER:
-                    dialstatus_evento = un_dialstatus
-                    dialstatus_timestamp = un_timestamp
+        # Primero, vemos si existe EVENTO_ASTERISK_DIALSTATUS_BUSY
+        lista_evento_timestamp = [(evento, timestamp)
+                                  for evento, timestamp in zip(lista_eventos, lista_tiempo)
+                                  if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY]
 
-        if dialstatus_evento is None:
-            return None
-        else:
-            return DatosDialStatus(dialstatus_evento, dialstatus_timestamp,
-                                   self._mapear_dialstatu_nombre(dialstatus_evento))
+        if lista_evento_timestamp:
+            evento, timestamp = lista_evento_timestamp[-1]
+            return DatosDialStatus(evento, timestamp, self._mapear_dialstatu_nombre(evento))
+
+        # Segundo, vemos si existe EVENTO_ASTERISK_DIALSTATUS_NOANSWER
+        lista_evento_timestamp = [(evento, timestamp)
+                                  for evento, timestamp in zip(lista_eventos, lista_tiempo)
+                                  if evento == EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER]
+
+        if lista_evento_timestamp:
+            evento, timestamp = lista_evento_timestamp[-1]
+            return DatosDialStatus(evento, timestamp, self._mapear_dialstatu_nombre(evento))
+
+        # Finalmente, vemos si existe EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL o EVENTO_ASTERISK_DIALSTATUS_CONGESTION
+        lista_evento_timestamp = [(evento, timestamp)
+                                  for evento, timestamp in zip(lista_eventos, lista_tiempo)
+                                  if evento in (EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL,
+                                                EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION)]
+
+        if lista_evento_timestamp:
+            evento, timestamp = lista_evento_timestamp[-1]
+            return DatosDialStatus(evento, timestamp, self._mapear_dialstatu_nombre(evento))
+
+        # Si no encontramos ninguno de los eventos que nos interesan, devolvemos None
+        return None
 
     def _mapear_dialstatu_nombre(self, dialstatus_evento):
         if dialstatus_evento is EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY:
