@@ -296,6 +296,8 @@ class GeneradorParaStartDetectarContestador(
         exten => _ftsX.,n,Goto(amd_finished)
 
         exten => _ftsX.,n(amd_machine),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-machine-detected/)
+        exten => _ftsX.,n,Wait(10)
+        exten => _ftsX.,n,Set(RepetirAudiosDeCampana=1)
         exten => _ftsX.,n,Goto(amd_finished)
 
         exten => _ftsX.,n(amd_human),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-human-detected/)
@@ -567,7 +569,13 @@ class GeneradorParaHangup(GeneradorDePedazoDeDialplanParaHangup):
         ; TEMPLATE_DIALPLAN_HANGUP-{fts_campana_id}
         ; TODO: alcanza 'WaitExten(10)'?
         exten => _ftsX.,n,WaitExten(10)
-        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
+
+        ; A veces, AMD setea RepetirAudiosDeCampana=1 para repetir los audios
+        exten => _ftsX.,n,GotoIf("${{RepetirAudiosDeCampana}}" != "1"?fin)
+        exten => _ftsX.,n,Set(RepetirAudiosDeCampana=0)
+        exten => _ftsX.,n,Goto(audio)
+
+        exten => _ftsX.,n(fin),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
         exten => _ftsX.,n,Hangup()
 
         """
