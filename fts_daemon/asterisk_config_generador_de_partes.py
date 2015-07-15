@@ -231,7 +231,6 @@ class GeneradorParaStart(GeneradorDePedazoDeDialplanParaStart):
         exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
         exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
         exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
-        exten => _ftsX.,n,Wait(1)
         exten => _ftsX.,n,Answer()
         exten => _ftsX.,n(audio),NoOp()
 
@@ -281,7 +280,6 @@ class GeneradorParaStartDetectarContestador(
         exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
         exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
         exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
-        exten => _ftsX.,n,Wait(1)
         exten => _ftsX.,n,Answer()
 
         ; http://www.voip-info.org/wiki/view/Asterisk+cmd+AMD
@@ -352,7 +350,6 @@ class GeneradorParaStartDetectarYEvitarContestador(
         exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
         exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
         exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
-        exten => _ftsX.,n,Wait(1)
         exten => _ftsX.,n,Answer()
 
         ; http://www.voip-info.org/wiki/view/Asterisk+cmd+AMD
@@ -568,7 +565,7 @@ class GeneradorParaHangup(GeneradorDePedazoDeDialplanParaHangup):
 
         ; TEMPLATE_DIALPLAN_HANGUP-{fts_campana_id}
         ; TODO: alcanza 'WaitExten(10)'?
-        exten => _ftsX.,n,WaitExten(10)
+        exten => _ftsX.,n,WaitExten(6)
 
         ; A veces, AMD setea RepetirAudiosDeCampana=1 para repetir los audios
         exten => _ftsX.,n,GotoIf("${{RepetirAudiosDeCampana}}" != "1"?fin)
