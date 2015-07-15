@@ -285,6 +285,44 @@
                         </tbody>
                     </table>
 
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <td colspan="2">
+                                    <h4>Totales atendidos.</h4>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td  width="50%">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <td><h5>Cantidad Total Humanos</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_humanos }}</span></h5></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><h5>Cantidad Total Contestador</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_contestador }}</span></h5></td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td width="50%" align="center">
+                                    <div class="graficos-avances">
+                                        <figure>
+                                            {{ graficos_estadisticas.total_atendidos.render|safe }}
+                                        </figure> 
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
         {% endwith %}
