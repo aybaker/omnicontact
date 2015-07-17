@@ -669,6 +669,29 @@ class FTSenderTestUtilsMixin(object):
         params = [self.campana.id]
         cursor.execute(sql, params)
 
+    def _insertar_evento(self, campana, contacto_id, evento, intento=0):
+        """
+        Realiza las inserciones de los eventos en la tabla EDC_depurados_{0} 
+        de la campana pasada por parametro
+        """
+        nombre_tabla = "EDC_depurados_{0}".format(campana.pk)
+
+        cursor = connection.cursor()
+        sql = """INSERT INTO {0}
+        (campana_id, contacto_id, timestamp, evento, dato)
+        VALUES(%(campana_id)s, %(contacto_id)s, NOW(), %(evento)s,
+        %(intento)s)
+        """.format(nombre_tabla)
+
+        params = {
+            'campana_id': campana.id,
+            'contacto_id': contacto_id,
+            'evento': evento,
+            'intento': intento,
+        }
+        cursor.execute(sql, params)
+
+
 class FTSenderBaseTransactionTestCase(TransactionTestCase,
     FTSenderTestUtilsMixin):
     """Clase base para tests"""
