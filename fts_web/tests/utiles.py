@@ -652,7 +652,7 @@ class FTSenderTestUtilsMixin(object):
             campana.finalizar()
         return campana
 
-    def _crea_tabla_eventos_depurados(self, campana):
+    def _crear_tabla_y_depurar_eventos(self, campana):
         """Crea base de datos de eventos depurados para campana depurada"""
 
         assert campana.estado == Campana.ESTADO_DEPURADA
@@ -668,6 +668,46 @@ class FTSenderTestUtilsMixin(object):
 
         params = [self.campana.id]
         cursor.execute(sql, params)
+
+    def _crear_tabla_de_edc_depurados(self, campana):
+        """Crea base de datos de eventos depurados para campana depurada"""
+
+        assert campana.estado == Campana.ESTADO_DEPURADA
+
+        nombre_tabla = "EDC_depurados_{0}".format(self.campana.pk)
+
+        cursor = connection.cursor()
+        sql = """CREATE TABLE {0} AS
+            SELECT * FROM fts_daemon_eventodecontacto
+            WHERE 1=2
+        """.format(nombre_tabla)
+
+        cursor.execute(sql)
+
+
+    def _insertar_evento_en_tabla_de_depurados(self, campana, contacto_id,
+                                               evento, intento=0):
+        """
+        Realiza las inserciones de los eventos en la tabla EDC_depurados_{0} 
+        de la campana pasada por parametro
+        """
+        nombre_tabla = "EDC_depurados_{0}".format(campana.pk)
+
+        cursor = connection.cursor()
+        sql = """INSERT INTO {0}
+        (campana_id, contacto_id, timestamp, evento, dato)
+        VALUES(%(campana_id)s, %(contacto_id)s, NOW(), %(evento)s,
+        %(intento)s)
+        """.format(nombre_tabla)
+
+        params = {
+            'campana_id': campana.id,
+            'contacto_id': contacto_id,
+            'evento': evento,
+            'intento': intento,
+        }
+        cursor.execute(sql, params)
+
 
 class FTSenderBaseTransactionTestCase(TransactionTestCase,
     FTSenderTestUtilsMixin):

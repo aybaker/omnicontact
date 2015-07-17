@@ -103,6 +103,43 @@ class EstadisticasCampanaService(object):
 
         return counter_por_evento
 
+    def _obtener_totales_atendidos_por_evento_amd(self, listado):
+        """
+        Se encarga de obtener los contadores de ciertos eventos(humano,
+        contestador)
+        fabian decidió no tener en cuenta indefinido (
+        EVENTO_ASTERISK_AMD_FAILED)
+
+        :param listado: por cada contacto de la campana me trae un array 
+                        con los eventos.
+        :return: me retorna un diccionario con los contadores de los 
+                 eventos mencionados 
+        """
+        finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
+
+        counter_por_evento = {
+            EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED: 0,
+            EventoDeContacto.EVENTO_ASTERISK_AMD_MACHINE_DETECTED: 0,
+        }
+
+        # item[0] -> contact_id / item[1] -> ARRAY / item[2]
+        for _, array_eventos in listado:
+            eventos = set(array_eventos)
+            ## Chequea finalizados y no finalizados
+
+            finalizado = False
+            for finalizador in finalizadores:
+                if finalizador in eventos:
+                    finalizado = True
+                    break
+
+            if finalizado is True:
+                for ev in array_eventos:
+                    if ev in (EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED,
+                              EventoDeContacto.EVENTO_ASTERISK_AMD_MACHINE_DETECTED):
+                        counter_por_evento[ev] += 1
+
+        return counter_por_evento
 
     def _calcular_estadisticas(self, campana, tipo_agregacion):
         """
@@ -166,14 +203,19 @@ class EstadisticasCampanaService(object):
                         float(dic_totales['total_opciones']))
 
         # porcentaje para no atendidos
-        porcentaje_ocupados = 0
-        porcentaje_no_constestados = 0
-        porcentaje_canal_no_disponible = 0
-        porcentaje_congestion = 0
+        porcentaje_ocupados = 0.0
+        porcentaje_no_constestados = 0.0
+        porcentaje_canal_no_disponible = 0.0
+        porcentaje_congestion = 0.0
         total_ocupados = 0
         total_no_constestados= 0
         total_canal_no_disponible = 0
         total_congestion = 0
+        # porcentaje para atendidos
+        porcentaje_humanos = 0.0
+        porcentaje_contestador = 0.0
+        total_humanos = 0
+        total_contestador= 0
         if tipo_agregacion is AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE:
             # obtenemos el listado de los eventos
             listado = EventoDeContacto.objects_estadisticas.\
@@ -199,6 +241,18 @@ class EstadisticasCampanaService(object):
                 porcentaje_congestion = (100.0 * float(counter_por_evento[EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION]) /
                                               float(total_no_atendidos))
 
+            # obtener total por eventos atendidos
+            counter_por_evento_atendido = self._obtener_totales_atendidos_por_evento_amd(listado)
+            # obtenemos total de atendidos por humanos
+            total_humanos = counter_por_evento_atendido[EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED]
+            # obtenemos total de atendidos por contestador
+            total_contestador = counter_por_evento_atendido[EventoDeContacto.EVENTO_ASTERISK_AMD_MACHINE_DETECTED]
+            if total_atentidos > 0:
+                porcentaje_humanos = (100.0 * float(counter_por_evento_atendido[EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED]) /
+                                       float(total_atentidos))
+                porcentaje_contestador = (100.0 * float(counter_por_evento_atendido[EventoDeContacto.EVENTO_ASTERISK_AMD_MACHINE_DETECTED]) /
+                                              float(total_atentidos))
+
         dic_estadisticas = {
             # Estadísticas Generales.
             'total_contactos': total_contactos,
@@ -219,6 +273,10 @@ class EstadisticasCampanaService(object):
             'total_congestion': total_congestion,
             'porcentaje_canal_no_disponible': porcentaje_canal_no_disponible,
             'porcentaje_congestion': porcentaje_congestion,
+            'total_humanos': total_humanos,
+            'total_contestador': total_contestador,
+            'porcentaje_humanos': porcentaje_humanos,
+            'porcentaje_contestador': porcentaje_contestador,
 
             # Estadisticas de las llamadas Contestadas.
             'opcion_x_cantidad': dict(opcion_x_cantidad),
@@ -366,6 +424,16 @@ class EstadisticasCampanaService(object):
             torta_no_atendidos.add('Congestion', estadisticas[
                 'porcentaje_congestion'])
 
+            # Torta: porcentajes de atendidos por humanos y contestadores.
+            torta_atendidos = pygal.Pie(  # @UndefinedVariable
+                                             style=ESTILO_MULTICOLOR)
+
+            torta_atendidos.title = "Resultado de atendidos"
+            torta_atendidos.add('Humanos', estadisticas[
+                'porcentaje_humanos'])
+            torta_atendidos.add('Contestador', estadisticas[
+                'porcentaje_contestador'])
+
 
             return {
                 'estadisticas': estadisticas,
@@ -373,6 +441,7 @@ class EstadisticasCampanaService(object):
                 'torta_opcion_x_porcentaje': torta_opcion_x_porcentaje,
                 'barra_atendidos_intentos': barra_atendidos_intentos,
                 'torta_no_atendidos': torta_no_atendidos,
+                'torta_atendidos': torta_atendidos,
             }
         else:
             logger.info("Campana %s NO obtuvo estadísticas.", campana.id)
