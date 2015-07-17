@@ -16,7 +16,7 @@ class EstadisticasParaReporteNoAtendido(FTSenderBaseTest):
     def setUp(self):
         self.campana = self.crear_campana_finalizada()
         self.campana.depurar()
-        self._crear_tabla_y_depurar_eventos(self.campana)
+        self._crear_tabla_de_edc_depurados(self.campana)
 
     def test_obtener_total_no_atendido_por_evento_un_intento(self):
         """

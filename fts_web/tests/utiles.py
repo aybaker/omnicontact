@@ -669,6 +669,22 @@ class FTSenderTestUtilsMixin(object):
         params = [self.campana.id]
         cursor.execute(sql, params)
 
+    def _crear_tabla_de_edc_depurados(self, campana):
+        """Crea base de datos de eventos depurados para campana depurada"""
+
+        assert campana.estado == Campana.ESTADO_DEPURADA
+
+        nombre_tabla = "EDC_depurados_{0}".format(self.campana.pk)
+
+        cursor = connection.cursor()
+        sql = """CREATE TABLE {0} AS
+            SELECT * FROM fts_daemon_eventodecontacto
+            WHERE 1=2
+        """.format(nombre_tabla)
+
+        cursor.execute(sql)
+
+
     def _insertar_evento_en_tabla_de_depurados(self, campana, contacto_id,
                                                evento, intento=0):
         """
