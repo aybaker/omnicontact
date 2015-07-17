@@ -16,7 +16,7 @@ class EstadisticasParaReporteAtendido(FTSenderBaseTest):
     def setUp(self):
         self.campana = self.crear_campana_finalizada()
         self.campana.depurar()
-        self._crea_tabla_eventos_depurados(self.campana)
+        self._crear_tabla_y_depurar_eventos(self.campana)
 
     def test_obtener_total_atendido_por_evento_un_intento(self):
         """

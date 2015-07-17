@@ -511,7 +511,7 @@ class ReporteCampanaTest(FTSenderBaseTest):
         self.campana.estado = Campana.ESTADO_DEPURADA
         self.campana.save()
 
-        self._crea_tabla_eventos_depurados(self.campana)
+        self._crear_tabla_y_depurar_eventos(self.campana)
 
         for url in VISTAS:
             url = reverse(vista, args=args)

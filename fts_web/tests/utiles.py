@@ -652,7 +652,7 @@ class FTSenderTestUtilsMixin(object):
             campana.finalizar()
         return campana
 
-    def _crea_tabla_eventos_depurados(self, campana):
+    def _crear_tabla_y_depurar_eventos(self, campana):
         """Crea base de datos de eventos depurados para campana depurada"""
 
         assert campana.estado == Campana.ESTADO_DEPURADA
