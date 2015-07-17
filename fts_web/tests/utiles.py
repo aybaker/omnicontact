@@ -669,7 +669,8 @@ class FTSenderTestUtilsMixin(object):
         params = [self.campana.id]
         cursor.execute(sql, params)
 
-    def _insertar_evento(self, campana, contacto_id, evento, intento=0):
+    def _insertar_evento_en_tabla_de_depurados(self, campana, contacto_id,
+                                               evento, intento=0):
         """
         Realiza las inserciones de los eventos en la tabla EDC_depurados_{0} 
         de la campana pasada por parametro

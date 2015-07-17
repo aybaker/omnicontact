@@ -26,40 +26,40 @@ class EstadisticasParaReporteNoAtendido(FTSenderBaseTest):
         """
 
         # crear evento programado
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
 
         # inicia intento
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
 
         # originate exitoso
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
 
         # canal local iniciado
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
 
         # atendieron
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_OPCION_1, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_OPCION_2, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_OPCION_1, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_OPCION_2, 1)
 
         # no atendieron
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 1)
 
         lista_eventos = [EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
                          EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
@@ -89,60 +89,60 @@ class EstadisticasParaReporteNoAtendido(FTSenderBaseTest):
         """
 
         # crear evento programado
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
 
         # inicia intento 1
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
 
         # originate exitoso
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
 
         # canal local iniciado
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
 
         # atendieron
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_OPCION_1, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_OPCION_2, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_OPCION_1, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_OPCION_2, 1)
 
         # no atendieron
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 1)
 
         # inicia intento 2
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
 
         # originate exitoso
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
 
         # canal local iniciado
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
 
         # atendieron
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 2)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 2)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_OPCION_1, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_OPCION_1, 2)
 
         # no atendieron
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY, 2)
 
         lista_eventos = [EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
                          EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
@@ -173,62 +173,62 @@ class EstadisticasParaReporteNoAtendido(FTSenderBaseTest):
         """
 
         # crear evento programado
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
 
         # inicia intento 1
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
 
         # originate exitoso
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
 
         # canal local iniciado
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
 
         # atendieron
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_OPCION_1, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_OPCION_1, 1)
 
         # no atendieron
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 1)
 
         # inicia intento 2
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
 
         # originate exitoso
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
 
         # canal local iniciado
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
 
         # atendieron
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 2)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 2)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_OPCION_2, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_OPCION_2, 2)
 
         # no atendieron
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 2)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION, 2)
 
         lista_eventos = [EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
                          EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
@@ -259,62 +259,62 @@ class EstadisticasParaReporteNoAtendido(FTSenderBaseTest):
         """
 
         # crear evento programado
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_CONTACTO_PROGRAMADO)
 
         # inicia intento 1
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 1)
 
         # originate exitoso
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 1)
 
         # canal local iniciado
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 1)
 
         # atendieron
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
-        self._insertar_evento(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_OPCION_1, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 4, EventoDeContacto.EVENTO_ASTERISK_OPCION_1, 1)
 
         # no atendieron
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL, 1)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION, 1)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION, 1)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL, 1)
 
         # inicia intento 2
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_INICIA_INTENTO, 2)
 
         # originate exitoso
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_DAEMON_ORIGINATE_SUCCESSFUL, 2)
 
         # canal local iniciado
-        self._insertar_evento(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 1, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_LOCAL_CHANNEL_INICIADO, 2)
 
         # atendieron
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 2)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 2)
-        self._insertar_evento(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_OPCION_2, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_DIALPLAN_CAMPANA_INICIADO, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 3, EventoDeContacto.EVENTO_ASTERISK_OPCION_2, 2)
 
         # no atendieron
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL, 2)
-        self._insertar_evento(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CHANUNAVAIL, 2)
+        self._insertar_evento_en_tabla_de_depurados(self.campana, 2, EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_CONGESTION, 2)
 
         lista_eventos = [EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_BUSY,
                          EventoDeContacto.EVENTO_ASTERISK_DIALSTATUS_NOANSWER,
