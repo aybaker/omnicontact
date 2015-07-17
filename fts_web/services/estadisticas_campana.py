@@ -107,11 +107,13 @@ class EstadisticasCampanaService(object):
         """
         Se encarga de obtener los contadores de ciertos eventos(humano,
         contestador)
+        fabian decidió no tener en cuenta indefinido (
+        EVENTO_ASTERISK_AMD_FAILED)
 
         :param listado: por cada contacto de la campana me trae un array 
-        con los eventos.
-        :return me retorna un diccionario con los contadores de los 
-        eventos mencionados 
+                        con los eventos.
+        :return: me retorna un diccionario con los contadores de los 
+                 eventos mencionados 
         """
         finalizadores = EventoDeContacto.objects.get_eventos_finalizadores()
 
@@ -121,7 +123,7 @@ class EstadisticasCampanaService(object):
         }
 
         # item[0] -> contact_id / item[1] -> ARRAY / item[2]
-        for __, array_eventos in listado:
+        for _, array_eventos in listado:
             eventos = set(array_eventos)
             ## Chequea finalizados y no finalizados
 
@@ -130,8 +132,8 @@ class EstadisticasCampanaService(object):
                 if finalizador in eventos:
                     finalizado = True
                     break
-            if finalizado == True:
 
+            if finalizado is True:
                 for ev in array_eventos:
                     if ev in (EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED,
                               EventoDeContacto.EVENTO_ASTERISK_AMD_MACHINE_DETECTED):
