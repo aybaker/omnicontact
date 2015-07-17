@@ -103,7 +103,7 @@ class EstadisticasCampanaService(object):
 
         return counter_por_evento
 
-    def _obtener_total_atendidos_por_evento(self, listado):
+    def _obtener_totales_atendidos_por_evento_amd(self, listado):
         """
         Se encarga de obtener los contadores de ciertos eventos(humano,
         contestador)
@@ -203,17 +203,17 @@ class EstadisticasCampanaService(object):
                         float(dic_totales['total_opciones']))
 
         # porcentaje para no atendidos
-        porcentaje_ocupados = 0
-        porcentaje_no_constestados = 0
-        porcentaje_canal_no_disponible = 0
-        porcentaje_congestion = 0
+        porcentaje_ocupados = 0.0
+        porcentaje_no_constestados = 0.0
+        porcentaje_canal_no_disponible = 0.0
+        porcentaje_congestion = 0.0
         total_ocupados = 0
         total_no_constestados= 0
         total_canal_no_disponible = 0
         total_congestion = 0
         # porcentaje para atendidos
-        porcentaje_humanos = 0
-        porcentaje_contestador = 0
+        porcentaje_humanos = 0.0
+        porcentaje_contestador = 0.0
         total_humanos = 0
         total_contestador= 0
         if tipo_agregacion is AgregacionDeEventoDeContacto.TIPO_AGREGACION_REPORTE:
@@ -242,7 +242,7 @@ class EstadisticasCampanaService(object):
                                               float(total_no_atendidos))
 
             # obtener total por eventos atendidos
-            counter_por_evento_atendido = self._obtener_total_atendidos_por_evento(listado)
+            counter_por_evento_atendido = self._obtener_totales_atendidos_por_evento_amd(listado)
             # obtenemos total de atendidos por humanos
             total_humanos = counter_por_evento_atendido[EventoDeContacto.EVENTO_ASTERISK_AMD_HUMAN_DETECTED]
             # obtenemos total de atendidos por contestador
