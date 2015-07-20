@@ -668,7 +668,7 @@ class GeneradorParaOpcionDerivacionExterna(
         ; TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA-{fts_opcion_id}-{fts_derivacion_externa_id}-{fts_dial_string}
         exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_DERIVACION_EXTERNA,llamada=${{ContactoId}},campana={fts_campana_id},dial_string={fts_dial_string})
         exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivacion_externa/)
-        exten => {fts_opcion_digito},n,Set(CALLERID(num)=TEL-${{NumberToCall}}-DNI-${{DNI}})
+        exten => {fts_opcion_digito},n,Set(CALLERID(all)=TEL-${{NumberToCall}}-DNI-${{DNI}})
         exten => {fts_opcion_digito},n,Dial({fts_dial_string})
         exten => {fts_opcion_digito},n,Hangup()
 
