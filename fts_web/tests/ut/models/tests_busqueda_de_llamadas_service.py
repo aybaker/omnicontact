@@ -27,4 +27,4 @@ class BuscarLlamadasDeUnNumeroTelefonicoTest(FTSenderBaseTest):
 
     def test_falla_con_numero_telefono_invalido(self):
         with self.assertRaises(NumeroDeTelefonoInvalidoError):
-            self.busqueda_de_llamadas_service.buscar_llamadas('35133sdfsd')
+            self.busqueda_de_llamadas_service.buscar_llamadas('3133sdfsd')
