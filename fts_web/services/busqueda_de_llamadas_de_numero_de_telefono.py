@@ -32,7 +32,7 @@ class BusquedaDeLlamadasService(object):
         # TODO: Este método ya se utiliza en el parser. Hay que sacarlo a
         # utiles para no repetir código.
 
-        numero_telefono = re.sub("[^0-9]", "", str(numero_telefono))
+        #numero_telefono = re.sub("[^0-9]", "", str(numero_telefono))
         if not re.match("^[0-9]{5,20}$", numero_telefono):
             raise(NumeroDeTelefonoInvalidoError())
 
