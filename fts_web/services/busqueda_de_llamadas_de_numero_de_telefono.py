@@ -27,13 +27,13 @@ class BusquedaDeLlamadasService(object):
 
     def _valida_numero_telefono(self, numero_telefono):
         """
-        Valida el numero telefónico tenga  entre 10 y 13 dígitos.
+        Valida el numero telefónico tenga  entre 5 y 20 dígitos.
         """
         # TODO: Este método ya se utiliza en el parser. Hay que sacarlo a
         # utiles para no repetir código.
 
         numero_telefono = re.sub("[^0-9]", "", str(numero_telefono))
-        if not re.match("^[0-9]{10,13}$", numero_telefono):
+        if not re.match("^[0-9]{5,20}$", numero_telefono):
             raise(NumeroDeTelefonoInvalidoError())
 
     def _obtener_duracion_de_llamadas_de_numero_telefono(self,
