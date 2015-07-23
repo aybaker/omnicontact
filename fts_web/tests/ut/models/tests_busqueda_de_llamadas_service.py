@@ -41,3 +41,6 @@ class BuscarLlamadasDeUnNumeroTelefonicoTest(FTSenderBaseTest):
     def test_falla_con_numero_telefono_invalido_corto(self):
         with self.assertRaises(NumeroDeTelefonoInvalidoError):
             self.busqueda_de_llamadas_service.buscar_llamadas('1234')
+
+    def test_funciona_con_numero_espacios_parentesis_guiones(self):
+        self.busqueda_de_llamadas_service.buscar_llamadas('54 (0351)157-035878')
