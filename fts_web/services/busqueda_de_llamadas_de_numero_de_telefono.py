@@ -13,6 +13,7 @@ from fts_web.errors import FtsError
 from fts_web.models import DuracionDeLlamada
 
 from fts_daemon.models import EventoDeContacto
+from fts_web.utiles import elimina_espacios_parentesis_guiones
 
 
 class NumeroDeTelefonoInvalidoError(FtsError):
@@ -27,13 +28,11 @@ class BusquedaDeLlamadasService(object):
 
     def _valida_numero_telefono(self, numero_telefono):
         """
-        Valida el numero telefónico tenga  entre 10 y 13 dígitos.
+        Valida el numero telefónico tenga  entre 5 y 20 dígitos.
+        Que sean digitos númericos ignorando espacios,guiones y parentesis
         """
-        # TODO: Este método ya se utiliza en el parser. Hay que sacarlo a
-        # utiles para no repetir código.
 
-        numero_telefono = re.sub("[^0-9]", "", str(numero_telefono))
-        if not re.match("^[0-9]{10,13}$", numero_telefono):
+        if not re.match("^[0-9]{5,20}$", numero_telefono):
             raise(NumeroDeTelefonoInvalidoError())
 
     def _obtener_duracion_de_llamadas_de_numero_telefono(self,
@@ -51,7 +50,7 @@ class BusquedaDeLlamadasService(object):
         Método publico del servicio llamado para realizar la búsqueda de las
         llamadas realizadas por un número de teléfono.
         """
-
+        numero_telefono = elimina_espacios_parentesis_guiones(numero_telefono)
         self._valida_numero_telefono(numero_telefono)
 
         duracion_de_llamadas = \

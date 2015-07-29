@@ -2431,7 +2431,7 @@ class DuracionDeLlamadaManager(models.Manager):
     """Manager para DuracionDeLlamada"""
 
     def obtener_duracion_de_llamdas(self, numero_telefono):
-        return self.filter(numero_telefono=numero_telefono)
+        return self.filter(numero_telefono__contains=numero_telefono)
 
     def obtener_de_campana(self, campana):
         return self.filter(campana=campana)

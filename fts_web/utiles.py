@@ -51,6 +51,15 @@ def elimina_tildes(s):
     return ''.join(unicodedata.normalize('NFD', s).encode('ASCII', 'ignore'))
 
 
+def elimina_espacios_parentesis_guiones(cadena):
+    """
+    Elimina espacios, parentesis y guiones de la cadena recibida por parametro
+    La cadena debe ser una instancia de unicode
+    """
+    assert isinstance(cadena, unicode), "'cadena' debe ser una instancia de unicode"
+    return re.sub("\(?\)?\s?\-?", "", cadena)
+
+
 def crear_archivo_en_media_root(dirname_template, prefix, suffix=""):
     """Crea un archivo en el directorio MEDIA_ROOT. Si los directorios
     no existen, los crea tambien.
