@@ -52,7 +52,12 @@ def elimina_tildes(s):
 
 
 def elimina_espacios_parentesis_guiones(cadena):
-    return re.sub("\(?\)?\s?\-?", "", str(cadena))
+    """
+    Elimina espacios, parentesis y guiones de la cadena recibida por parametro
+    La cadena debe ser una instancia de unicode
+    """
+    assert isinstance(cadena, unicode), "'cadena' debe ser una instancia de unicode"
+    return re.sub("\(?\)?\s?\-?", "", cadena)
 
 
 def crear_archivo_en_media_root(dirname_template, prefix, suffix=""):
