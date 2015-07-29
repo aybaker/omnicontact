@@ -12,7 +12,8 @@ import logging as _logging
 from django.conf import settings
 
 from fts_web.tests.utiles import FTSenderBaseTest
-from fts_web.utiles import upload_to, get_class, crear_archivo_en_media_root
+from fts_web.utiles import (upload_to, get_class, crear_archivo_en_media_root,
+                            elimina_espacios_parentesis_guiones)
 from fts_web.errors import FtsError
 import os
 
@@ -142,3 +143,7 @@ class UtilesTest(FTSenderBaseTest):
         self.assertTrue(join_func)
         ret = join_func('a', 'b')
         self.assertEquals(ret, "a/b")
+
+    def test_elimina_espacios_parentesis_guiones(self):
+        cadena = elimina_espacios_parentesis_guiones(" asdfg32432 ñ(899) -781")
+        self.assertEqual(cadena, "asdfg32432ñ899781")
