@@ -263,7 +263,7 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
                                                               campana),
                         GeneradorParaOpcionGrupoAtencion))
 
-    def test_crear_generador_para_opcion_con_opcion_derivacion_esterna(self):
+    def test_crear_generador_para_opcion_con_opcion_derivacion_esterna_dial(self):
         generador = GeneradorDePedazoDeDialplanFactory()
 
         campana = Campana(pk=1, nombre="C",
@@ -285,8 +285,14 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
                                           tts="FECHA")
         campana.audios_de_campana = [audio_de_campana]
 
+        derivacion_externa = DerivacionExterna(pk=1, accion=DerivacionExterna.DERIVAR_DIAL,
+                                               nombre="derivacion_dial",
+                                               dial_string="SIP/proveedor/5001"
+                                               )
+
         opcion = Opcion(digito=0, campana=campana,
-                        accion=Opcion.DERIVAR_DERIVACION_EXTERNA)
+                        accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
+                        derivacion_externa=derivacion_externa)
         campana.opciones = [opcion]
 
         # -----
@@ -294,7 +300,46 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
         self.assertTrue(isinstance(
                         generador.crear_generador_para_opcion(opcion, Mock(),
                                                               campana),
-                        GeneradorParaOpcionDerivacionExterna))
+                        GeneradorParaOpcionDerivacionExternaDial))
+
+    def test_crear_generador_para_opcion_con_opcion_derivacion_esterna_goto(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.columnas_con_fecha = [1]
+        metadata.nombres_de_columnas = ['TELEFONO', "FECHA"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
+                                          tts="FECHA")
+        campana.audios_de_campana = [audio_de_campana]
+
+        derivacion_externa = DerivacionExterna(pk=1, accion=DerivacionExterna.DERIVAR_GOTO,
+                                               nombre="derivacion_goto",
+                                               dial_string="SIP/proveedor/5001"
+                                               )
+
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
+                        derivacion_externa=derivacion_externa)
+        campana.opciones = [opcion]
+
+        # -----
+
+        self.assertTrue(isinstance(
+                        generador.crear_generador_para_opcion(opcion, Mock(),
+                                                              campana),
+                        GeneradorParaOpcionDerivacionExternaGoto))
 
     def test_crear_generador_para_opcion_con_opcion_repetir(self):
         generador = GeneradorDePedazoDeDialplanFactory()
@@ -843,9 +888,9 @@ class GeneradorParaOpcionGrupoAtencionTest(FTSenderBaseTest):
                                 opcion.grupo_atencion.nombre)))
 
 
-class GeneradorParaOpcionDerivacionExternaTest(FTSenderBaseTest):
+class GeneradorParaOpcionDerivacionExternaDialTest(FTSenderBaseTest):
     """
-    Testea que el método GeneradorParaOpcionDerivacionExterna.generar_pedazo
+    Testea que el método GeneradorParaOpcionDerivacionExternaDial.generar_pedazo
     devuelva el template correcto.
     """
 
@@ -855,7 +900,9 @@ class GeneradorParaOpcionDerivacionExternaTest(FTSenderBaseTest):
                           cantidad_canales=1, cantidad_intentos=1,
                           segundos_ring=10)
 
-        derivacion_externa = DerivacionExterna(nombre="TEST", dial_string=1)
+        derivacion_externa = DerivacionExterna(nombre="TEST_DIAL",
+                                               dial_string=1,
+                                               accion=DerivacionExterna.DERIVAR_DIAL)
         opcion = Opcion(digito=0, campana=campana,
                         accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
                         derivacion_externa=derivacion_externa)
@@ -873,11 +920,52 @@ class GeneradorParaOpcionDerivacionExternaTest(FTSenderBaseTest):
             'fts_opcion_digito': opcion.digito,
         }
 
-        generador = GeneradorParaOpcionDerivacionExterna(opcion,
+        generador = GeneradorParaOpcionDerivacionExternaDial(opcion,
                                                          param_generales)
         config = generador.generar_pedazo()
         self.assertTrue(config.find(
-            "TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA-{0}-{1}-{2}".format(
+            "TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA_DIAL-{0}-{1}-{2}".format(
+                opcion.id, opcion.derivacion_externa.id,
+                opcion.derivacion_externa.nombre)))
+
+
+class GeneradorParaOpcionDerivacionExternaGotoTest(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaOpcionDerivacionExternaGoto.generar_pedazo
+    devuelva el template correcto.
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        derivacion_externa = DerivacionExterna(nombre="TEST_DIAL",
+                                               dial_string=1,
+                                               accion=DerivacionExterna.DERIVAR_GOTO)
+        opcion = Opcion(digito=0, campana=campana,
+                        accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
+                        derivacion_externa=derivacion_externa)
+        campana.opciones = [opcion]
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now()),
+            'fts_opcion_id': opcion.id,
+            'fts_opcion_digito': opcion.digito,
+        }
+
+        generador = GeneradorParaOpcionDerivacionExternaGoto(opcion,
+                                                         param_generales)
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find(
+            "TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA_GOTO-{0}-{1}-{2}".format(
                 opcion.id, opcion.derivacion_externa.id,
                 opcion.derivacion_externa.nombre)))
 
