@@ -205,7 +205,8 @@ class TemplateForm(forms.ModelForm):
     class Meta:
         model = Campana
         fields = ('nombre', 'cantidad_canales', 'cantidad_intentos',
-                  'segundos_ring', 'duracion_de_audio', 'bd_contacto')
+                  'segundos_ring', 'duracion_de_audio', 'accion_contestador',
+                  'bd_contacto')
 
         labels = {
             'duracion_de_audio': 'Duración de los audios (HH:MM:SS)',
