@@ -7,6 +7,7 @@ Formularios de Django
 from __future__ import unicode_literals
 
 from django import forms
+from django.conf import settings
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
@@ -219,6 +220,17 @@ class TemplateForm(forms.ModelForm):
                               campaña.""",
         }
 
+    def clean(self):
+        cleaned_data = super(TemplateForm, self).clean()
+        cantidad_canales = cleaned_data.get("cantidad_canales")
+
+        if cantidad_canales > settings.FTS_LIMITE_GLOBAL_DE_CANALES:
+                        raise forms.ValidationError("Ha excedido el limite de "
+            "cantitad de canales. Su cantidad de canales contratado "
+            "es {0}".format(settings.FTS_LIMITE_GLOBAL_DE_CANALES))
+
+        return cleaned_data
+
 
 # =============================================================================
 # Campaña
@@ -291,6 +303,17 @@ class CampanaForm(forms.ModelForm):
             'bd_contacto': 'Base de Datos de Contactos',
             'duracion_de_audio': 'Duración de los audios (HH:MM:SS)'
         }
+
+    def clean(self):
+        cleaned_data = super(CampanaForm, self).clean()
+        cantidad_canales = cleaned_data.get("cantidad_canales")
+
+        if cantidad_canales > settings.FTS_LIMITE_GLOBAL_DE_CANALES:
+                        raise forms.ValidationError("Ha excedido el limite de "
+            "cantitad de canales. Su cantidad de canales contratado "
+            "es {0}".format(settings.FTS_LIMITE_GLOBAL_DE_CANALES))
+
+        return cleaned_data
 
 
 class CampanaSmsForm(forms.ModelForm):
