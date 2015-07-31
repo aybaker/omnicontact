@@ -121,18 +121,18 @@ class GeneradorDePedazoDeDialplanFactory(object):
             return GeneradorParaOpcionGrupoAtencion(opcion, parametros)
 
         elif opcion.accion == Opcion.DERIVAR_DERIVACION_EXTERNA:
-            if opcion.derivacion_externa.accion == DerivacionExterna.DERIVAR_DIAL:
+            if opcion.derivacion_externa.tipo_derivacion == DerivacionExterna.TIPO_DERIVACION_DIAL:
                 return GeneradorParaOpcionDerivacionExternaDial(opcion, parametros)
 
-            elif opcion.derivacion_externa.accion == DerivacionExterna.DERIVAR_GOTO:
+            elif opcion.derivacion_externa.tipo_derivacion == DerivacionExterna.TIPO_DERIVACION_GOTO:
                 return GeneradorParaOpcionDerivacionExternaGoto(opcion, parametros)
 
             else:
                 raise NoSePuedeCrearDialplanError(
                     "Tipo de acción '{0}'"
                     "Campana '{1}'"
-                    "Tipo de derivacion '{2}' accion derivacion desconocida".\
-                        format(opcion.accion, campana.id, opcion.derivacion_externa.accion))
+                    "Tipo de derivacion '{2}' tipo derivacion desconocida".\
+                        format(opcion.accion, campana.id, opcion.derivacion_externa.tipo_derivacion))
 
         elif opcion.accion == Opcion.REPETIR:
             return GeneradorParaOpcionRepetir(opcion, parametros)
