@@ -285,7 +285,7 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
                                           tts="FECHA")
         campana.audios_de_campana = [audio_de_campana]
 
-        derivacion_externa = DerivacionExterna(pk=1, accion=DerivacionExterna.DERIVAR_DIAL,
+        derivacion_externa = DerivacionExterna(pk=1, tipo_derivacion=DerivacionExterna.TIPO_DERIVACION_DIAL,
                                                nombre="derivacion_dial",
                                                dial_string="SIP/proveedor/5001"
                                                )
@@ -324,7 +324,7 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
                                           tts="FECHA")
         campana.audios_de_campana = [audio_de_campana]
 
-        derivacion_externa = DerivacionExterna(pk=1, accion=DerivacionExterna.DERIVAR_GOTO,
+        derivacion_externa = DerivacionExterna(pk=1, tipo_derivacion=DerivacionExterna.TIPO_DERIVACION_GOTO,
                                                nombre="derivacion_goto",
                                                dial_string="SIP/proveedor/5001"
                                                )
@@ -902,7 +902,7 @@ class GeneradorParaOpcionDerivacionExternaDialTest(FTSenderBaseTest):
 
         derivacion_externa = DerivacionExterna(nombre="TEST_DIAL",
                                                dial_string=1,
-                                               accion=DerivacionExterna.DERIVAR_DIAL)
+                                               tipo_derivacion=DerivacionExterna.TIPO_DERIVACION_DIAL)
         opcion = Opcion(digito=0, campana=campana,
                         accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
                         derivacion_externa=derivacion_externa)
@@ -941,9 +941,9 @@ class GeneradorParaOpcionDerivacionExternaGotoTest(FTSenderBaseTest):
                           cantidad_canales=1, cantidad_intentos=1,
                           segundos_ring=10)
 
-        derivacion_externa = DerivacionExterna(nombre="TEST_DIAL",
+        derivacion_externa = DerivacionExterna(nombre="TEST_GOTO",
                                                dial_string=1,
-                                               accion=DerivacionExterna.DERIVAR_GOTO)
+                                               tipo_derivacion=DerivacionExterna.TIPO_DERIVACION_GOTO)
         opcion = Opcion(digito=0, campana=campana,
                         accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
                         derivacion_externa=derivacion_externa)
