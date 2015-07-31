@@ -48,6 +48,21 @@ class DerivacionExterna(models.Model):
 
     objects = DerivacionExternaManager()
 
+    TIPO_DERIVACION_DIAL = 1
+    """Derivacion a atraves de dial."""
+
+    TIPO_DERIVACION_GOTO = 2
+    """Derivacion a atraves de goto."""
+
+    TIPO_DERIVACION_CHOICES = (
+        (TIPO_DERIVACION_DIAL, 'DIAL'),
+        (TIPO_DERIVACION_GOTO, 'GOTO'),
+    )
+    tipo_derivacion = models.PositiveIntegerField(
+        choices=TIPO_DERIVACION_CHOICES,
+        default=TIPO_DERIVACION_DIAL,
+    )
+
     nombre = models.CharField(
         max_length=128,
     )

@@ -11,7 +11,7 @@ import pprint
 
 from django.conf import settings
 from fts_web.errors import FtsError
-from fts_web.models import Campana, Opcion, AudioDeCampana
+from fts_web.models import Campana, Opcion, AudioDeCampana, DerivacionExterna
 import logging as _logging
 
 
@@ -121,7 +121,18 @@ class GeneradorDePedazoDeDialplanFactory(object):
             return GeneradorParaOpcionGrupoAtencion(opcion, parametros)
 
         elif opcion.accion == Opcion.DERIVAR_DERIVACION_EXTERNA:
-            return GeneradorParaOpcionDerivacionExterna(opcion, parametros)
+            if opcion.derivacion_externa.tipo_derivacion == DerivacionExterna.TIPO_DERIVACION_DIAL:
+                return GeneradorParaOpcionDerivacionExternaDial(opcion, parametros)
+
+            elif opcion.derivacion_externa.tipo_derivacion == DerivacionExterna.TIPO_DERIVACION_GOTO:
+                return GeneradorParaOpcionDerivacionExternaGoto(opcion, parametros)
+
+            else:
+                raise NoSePuedeCrearDialplanError(
+                    "Tipo de acción '{0}'"
+                    "Campana '{1}'"
+                    "Tipo de derivacion '{2}' tipo derivacion desconocida".\
+                        format(opcion.accion, campana.id, opcion.derivacion_externa.tipo_derivacion))
 
         elif opcion.accion == Opcion.REPETIR:
             return GeneradorParaOpcionRepetir(opcion, parametros)
@@ -659,7 +670,7 @@ class GeneradorParaOpcionGrupoAtencion(GeneradorDePedazoDeDialplanParaOpcion):
         return parametros
 
 
-class GeneradorParaOpcionDerivacionExterna(
+class GeneradorParaOpcionDerivacionExternaDial(
     GeneradorDePedazoDeDialplanParaOpcion):
 
     def get_template(self):
@@ -670,6 +681,31 @@ class GeneradorParaOpcionDerivacionExterna(
         exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivacion_externa/)
         exten => {fts_opcion_digito},n,Set(CALLERID(all)=TEL-${{NumberToCall}}-DNI-${{DNI}})
         exten => {fts_opcion_digito},n,Dial({fts_dial_string})
+        exten => {fts_opcion_digito},n,Hangup()
+
+        """
+
+    def get_parametros(self):
+        parametros = dict(self._parametros)
+        de = self._opcion.derivacion_externa
+        parametros.update({
+            'fts_derivacion_externa_id': de.id,
+            'fts_dial_string': de.dial_string,
+        })
+        return parametros
+
+
+class GeneradorParaOpcionDerivacionExternaGoto(
+    GeneradorDePedazoDeDialplanParaOpcion):
+
+    def get_template(self):
+        return """
+
+        ; TEMPLATE_OPCION_DERIVAR_DERIVACION_EXTERNA-{fts_opcion_id}-{fts_derivacion_externa_id}-{fts_dial_string}
+        exten => {fts_opcion_digito},1,NoOp(FTS,DERIVAR_DERIVACION_EXTERNA,llamada=${{ContactoId}},campana={fts_campana_id},dial_string={fts_dial_string})
+        exten => {fts_opcion_digito},n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/opcion/{fts_opcion_digito}/{fts_opcion_id}/derivacion_externa/)
+        exten => {fts_opcion_digito},n,Set(CALLERID(all)=TEL-${{NumberToCall}}-DNI-${{DNI}})
+        exten => {fts_opcion_digito},n,Goto({fts_dial_string})
         exten => {fts_opcion_digito},n,Hangup()
 
         """

@@ -31,6 +31,7 @@ class DerivacionExternaForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Field('nombre'),
+            Field('tipo_derivacion'),
             Field('dial_string'),
         )
         super(DerivacionExternaForm, self).__init__(*args, **kwargs)
