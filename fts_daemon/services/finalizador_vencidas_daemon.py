@@ -16,7 +16,6 @@ from __future__ import unicode_literals
 
 import logging as _logging
 import time
-import signal
 
 from django.conf import settings
 
@@ -134,7 +133,7 @@ class FinalizadorDeCampanasVencidasDaemon(object):
             self._sleep()
 
 
-LOCK_DAEMON_FINALIZADOR_VENCIDAS= 'freetechsender/daemon-finalizador-vencidas'
+LOCK_DAEMON_FINALIZADOR_VENCIDAS = 'freetechsender/daemon-finalizador-vencidas'
 
 if __name__ == '__main__':
     locks.lock(LOCK_DAEMON_FINALIZADOR_VENCIDAS)
