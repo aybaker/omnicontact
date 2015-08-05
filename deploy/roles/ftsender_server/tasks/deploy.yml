@@ -129,7 +129,7 @@
 - name: Stop FTSender services (except FastAGI daemon)
   command: /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.sh
   sudo: yes
-  ignore_errors: True
+  ignore_errors: no
   tags:
     - deploy
     - quick_deploy
