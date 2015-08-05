@@ -11,34 +11,16 @@ Los paths indicados aquí son relativos al directorio base de
 los fuentes del proyectos, o sea, *no* se refieren a los paths
 en donde se encontrarán en el servidor.
 
-Aplicación Web: Django + uWSGI
+
+
+
+Notas generales
 ---------------------------------------------------------------
-
-Este proceso es gestionado directamente con "init scripts":
-
-.. code::
-
-    deploy/roles/ftsender_server/templates/etc/init.d/ftsender-daemon
-
-los settings son tomados desde:
-
-.. code::
-
-    deploy/roles/ftsender_server/templates/ftsender_uwsgi.ini
-
-El reload y stop del servicio es realizado a travez del FIFO.
-
-.. note::
-
-    Si este servicio no corre, la aplicación web queda inaccesible, pero
-    **el resto del sistema funciona correctamente**, y no implica ninguna
-    pérdida de datos.
-
 
 SupervisorD
----------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-SupervisorD es utilizado para lanzar y gestionar los demas daemons.
+SupervisorD es utilizado para lanzar y gestionar muchos de los servicios.
 
 El archivo de configuración utilizado es:
 
@@ -58,30 +40,10 @@ en el archivo de configuración, de la forma: ``[program:NOMBRE-DEL-DAEMON]``.
     [program:fts-celery-worker-finalizar-campana]
 
 
-Daemon llamador
----------------
-
-fts-llamador-poll-daemon
-++++++++++++++++++++++++
-
-Este servicio se encarga de interactuar con Asterisk para generar
-las llamadas.
-
-El daemon está implementado en:
-
-.. code::
-
-    fts_daemon/poll_daemon/main.py
 
 
-.. note::
-
-    Si este servicio no corre, el sistema **no generará más llamadas**.
-    No es un problema menor, pero tampoco es tan grave, teniendo en
-    cuenta que **no hay pérdida de datos**.
-
-Daemon FastAGI
---------------
+[A] Daemon FastAGI
+------------------
 
 fts-fastagi-daemon
 ++++++++++++++++++
@@ -113,8 +75,35 @@ El daemon está implementado en:
     producidos **se pierden**. No sabremos quién atendió y quién no,
 
 
-Chequeador de campañas vencidas
--------------------------------
+
+
+[B] Daemon llamador
+-------------------
+
+fts-llamador-poll-daemon
+++++++++++++++++++++++++
+
+Este servicio se encarga de interactuar con Asterisk para generar
+las llamadas.
+
+El daemon está implementado en:
+
+.. code::
+
+    fts_daemon/poll_daemon/main.py
+
+
+.. note::
+
+    Si este servicio no corre, el sistema **no generará más llamadas**.
+    No es un problema menor, pero tampoco es tan grave, teniendo en
+    cuenta que **no hay pérdida de datos**.
+
+
+
+
+[C] Chequeador de campañas vencidas
+-----------------------------------
 
 fts-chequeador-campanas-vencidas
 ++++++++++++++++++++++++++++++++
@@ -138,8 +127,10 @@ El daemon está implementado en:
     ni reutilizar dicha campaña.
 
 
-Worker Celery esperador
------------------------
+
+
+[D] Worker Celery · Espera finalización de llamadas en curso
+------------------------------------------------------------
 
 fts-celery-worker-esperar-finaliza-campana
 ++++++++++++++++++++++++++++++++++++++++++
@@ -164,8 +155,10 @@ Las tasks asíncronas, que se ejecutarán en workers de Celery, están definidas
     ni reutilizar dicha campaña.
 
 
-Worker Celery finalizador
--------------------------
+
+
+[E] Worker Celery · Finalizador / depurador
+-------------------------------------------
 
 fts-celery-worker-finalizar-campana
 +++++++++++++++++++++++++++++++++++
@@ -185,3 +178,33 @@ Las tasks asíncronas, que se ejecutarán en workers de Celery, están definidas
     No es un problema grave si tenemos en cuenta que no se producen perdidas de datos,
     pero produce problemas a los usuarios, ya que ellos no podrán ver los reportes
     ni reutilizar dicha campaña.
+
+
+
+
+[F] Aplicación Web
+---------------------------------------------------------------
+
+Django + uWSGI
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Este proceso es gestionado directamente con "init scripts":
+
+.. code::
+
+    deploy/roles/ftsender_server/templates/etc/init.d/ftsender-daemon
+
+los settings son tomados desde:
+
+.. code::
+
+    deploy/roles/ftsender_server/templates/ftsender_uwsgi.ini
+
+El reload y stop del servicio es realizado a travez del FIFO.
+
+.. note::
+
+    Si este servicio no corre, la aplicación web queda inaccesible, pero
+    **el resto del sistema funciona correctamente**, y no implica ninguna
+    pérdida de datos.
