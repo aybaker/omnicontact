@@ -17,3 +17,4 @@ settings_local.py
 /dev/static_root
 /deploy/virtualenv-fig
 .pydevproject
+/.idea
