@@ -43,7 +43,7 @@
     - bin/manage.sh
     - bin/db_update_plpython_stored_proc.sh
     - bin/restart-ftsender.sh
-    - bin/stop-ftsender-daemons-for-deploy.sh
+    - bin/stop-ftsender-daemons-for-deploy.py
   tags:
     - deploy
     - docker
@@ -127,7 +127,7 @@
     - docker
 
 - name: Stop FTSender services (except FastAGI daemon)
-  command: /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.sh
+  command: python /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.py
   sudo: yes
   ignore_errors: no
   tags:
