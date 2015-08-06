@@ -54,7 +54,11 @@ def _internal_command(campana_id):
 
 @fts_celery_daemon.app.task(ignore_result=True)
 def depurar_campana(campana_id):
-    """Depura la campaña"""
+    """
+    Depura la campaña
+
+    Este metodo es ejecutado en el WORKER de Celery
+    """
 
     locks.lock(LOCK_DEPURACION_DE_CAMPANA)
 
@@ -66,7 +70,8 @@ def depurar_campana(campana_id):
 
 
 def depurar_campana_async(campana_id):
-    """Depura la campaña.
+    """
+    Depura la campaña.
 
     Realiza la llamada asyncrona y devuelve el control inmediatamente.
     """
