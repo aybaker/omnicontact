@@ -48,6 +48,16 @@
     - deploy
     - docker
 
+- name: Stop FTSender services (except FastAGI daemon)
+  shell: python -u /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.py 2>&1 | logger -t stop-ftsender-daemons
+  sudo: yes
+  ignore_errors: no
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
 #----------------------------------------------------------------------
 # pip / virtualenv
 #----------------------------------------------------------------------
@@ -120,16 +130,6 @@
   file: >
     state=touch
     dest=/home/ftsender/deploy/local/fts_web_settings_local_customizations.py
-  tags:
-    - deploy
-    - quick_deploy
-    - update_settings
-    - docker
-
-- name: Stop FTSender services (except FastAGI daemon)
-  command: python /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.py
-  sudo: yes
-  ignore_errors: no
   tags:
     - deploy
     - quick_deploy
