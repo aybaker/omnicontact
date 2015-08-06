@@ -127,9 +127,21 @@ def main():
     for lock_name in LOCK_SOCKETS:
         logger.info("Chequeando LOCK '%s'", lock_name)
         try:
-            while shell("netstat -n | grep -q '{0}'".format(lock_name)):
-                logger.info(" + Lock '%s' EXISTE, esperaremos y re-chequearemos...", lock_name)
-                time.sleep(5)
+            for iter_num in range(int(180)):
+                if iter_num % 5 == 0:
+                    shell("netstat -n | grep -q '{0}'".format(lock_name))
+                    logger.info(" + Lock '%s' EXISTE, esperaremos y re-chequearemos...", lock_name)
+                    time.sleep(5)
+
+            # El lock existe despues de esperar bastante. Salimos con error
+            logger.error("Despues de esperar un tiempo, el lock '%s' no ha sido liberado", lock_name)
+            _, stdout, stderr = get_output("netstat -nx | grep @")
+            logger.error(" + netstat - STDOUT")
+            logger.error("%s", stdout)
+            logger.error(" + netstat - STDERR")
+            logger.error("%s", stderr)
+            sys.exit(1)
+
         except subprocess.CalledProcessError:
             # No se encontro lock, podemos continuar
             logger.info(" + Lock '%s' no existe, continuamos...", lock_name)
