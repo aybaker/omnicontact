@@ -61,8 +61,19 @@ LOCK_SOCKETS = [
 
 
 def shell(cmd):
+    """Ejecuta comando shell, lanza excepcion si exit status != 0"""
     logger.debug(" + Ejecutando '%s'", cmd)
     subprocess.check_call(cmd, shell=True)
+
+
+def get_output(cmd):
+    """Ejecuta comando shell, devuelve [proc, stdout, stderr]"""
+    proc = subprocess.Popen(
+        cmd,
+        shell=True,
+        stdout=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    return proc, stdout, stderr
 
 
 def main():
@@ -79,7 +90,7 @@ def main():
     for task in SUPERVISORD_SUBPROCESSES:
         logger.info("Bajando subprocess %s", task)
         try:
-            shell("/usr/bin/timeout 2s supervisorctl stop {0} > /dev/null 2> /dev/null")
+            shell("/usr/bin/timeout 2s supervisorctl stop {0} > /dev/null 2> /dev/null".format(task))
         except subprocess.CalledProcessError:
             pass
 
@@ -93,10 +104,15 @@ def main():
             for iter_num in range(1, 61):
                 shell("supervisorctl status | egrep '^{0}' | grep -q -v STOPPED".format(task))
                 if iter_num % 10 == 0:
-                    shell("/usr/bin/timeout 2s supervisorctl stop {0} > /dev/null 2> /dev/null")
+                    shell("/usr/bin/timeout 2s supervisorctl stop {0} > /dev/null 2> /dev/null".format(task))
                 time.sleep(1)
 
-            logger.error("Despues de 60 segundos, no se encontro el subproceso '{0}' en estado STOPPED!")
+            logger.error("Despues de 60 segundos, no se encontro el subproceso '%s' en estado STOPPED!", task)
+            _, stdout, stderr = get_output("/usr/bin/timeout 5s supervisorctl status")
+            logger.error(" + supervisorctl status - STDOUT")
+            logger.error("%s", stdout)
+            logger.error(" + supervisorctl status - STDERR")
+            logger.error("%s", stderr)
             sys.exit(1)
 
         except subprocess.CalledProcessError:
