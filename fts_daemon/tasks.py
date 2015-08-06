@@ -25,6 +25,8 @@ logger = logging.getLogger(__name__)
 
 
 LOCK_DEPURACION_DE_CAMPANA = 'freetechsender/depurador-de-campana'
+LOCK_ESPERADOR_FINALIZACION_DE_LLAMADAS = 'freetechsender/esperador-finalizacion-de-llamadas'
+# LOCK_ESPERADOR_FINALIZACION_DE_LLAMADAS: es el prefijo, el lock finalmente se llamara XXX-0, XXX-1, etc.
 
 
 def _internal_command(campana_id):
@@ -84,9 +86,27 @@ def depurar_campana_async(campana_id):
 # EsperadorParaDepuracionSegura
 # -----------------------------------------------------------------------------
 
+
 @fts_celery_daemon.app.task(ignore_result=True)
 def esperar_y_depurar_campana(campana_id):
-    """Espera a que no haya llamadas en curso, y depura la campaña"""
+    """Espera a que no haya llamadas en curso, y depura la campaña.
+
+    Este metodo es ejecutado en el WORKER de Celery
+    """
+
+    class LockAcquired(Exception):
+        pass
+
+    try:
+        for intento in range(4):
+            try:
+                locks.lock(LOCK_ESPERADOR_FINALIZACION_DE_LLAMADAS + "-{0}".format(intento))
+                raise LockAcquired
+            except locks.LockingError:
+                pass
+        logger.error("esperar_y_depurar_campana(): no se pudo obtener lock")
+    except LockAcquired:
+        pass
 
     if isinstance(campana_id, (str, unicode)):
         if _internal_command(campana_id):
