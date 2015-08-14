@@ -138,6 +138,86 @@ a dicho archivo, por ejemplo: ~/hosts-virtual-freetech-produccion o ~/hosts-virt
     se crean y activan varios servicios.
 
 
+Uno de los pasos del deploy es bajar los servicios:
+
+.. code::
+
+     ________________________________________________________
+    / TASK: ftsender_server | Stop FTSender services (except \
+    \ FastAGI daemon)                                        /
+     --------------------------------------------------------
+            \   ^__^
+             \  (oo)\_______
+                (__)\       )\/\
+                    ||----w |
+                    ||     ||
+
+
+Este paso puede tardar unos minutos, porque además de bajar los servicios,
+espera a que estos realmente hayan sido bajados.
+
+En particular, el proceso de Celery que hace la finalización y depurado
+de campañas, es el que puede generar mayor espera (en caso de que se
+esté ejecutando este proceso).
+
+Este paso en el proceso de deploy fallará si, despues de un tiempo,
+se detecta que alguno de los sercicios no pudo ser bajado. En este caso, se puede
+reiniciar el deploy tantas veces como sea necesario.
+
+En el syslog del servidor podrán verse los mensajes de status generados
+por el script que baja los servicios. Para verlos, hace falta acceder
+al servidor donde se ejecuta FTSender, y, por ejemplo, ver los mensajes
+usando tail:
+
+.. code::
+
+    $ sudo tail -f /var/log/messages
+
+
+Lo que permitirá ver algo así:
+
+.. code::
+
+    Aug 14 14:42:17 localhost # ------------------------------------------------------------------------------------------
+    Aug 14 14:42:17 localhost # Bajamos uWSGI
+    Aug 14 14:42:17 localhost # ------------------------------------------------------------------------------------------
+    Aug 14 14:42:17 localhost  + uWSGI pid: 5618
+    Aug 14 14:42:17 localhost  + Bajando servicio 'ftsender-daemon'
+    Aug 14 14:42:17 localhost # ------------------------------------------------------------------------------------------
+    Aug 14 14:42:17 localhost # Antes que nada pedimos a Supervisor q' baje subprocesos
+    Aug 14 14:42:17 localhost # ------------------------------------------------------------------------------------------
+    Aug 14 14:42:17 localhost Bajando subprocess fts-llamador-poll-daemon
+    Aug 14 14:42:19 localhost Bajando subprocess fts-chequeador-campanas-vencidas
+    Aug 14 14:42:21 localhost Bajando subprocess fts-celery-worker-esperar-finaliza-campana
+    Aug 14 14:42:23 localhost Bajando subprocess fts-celery-worker-finalizar-campana
+    Aug 14 14:42:25 localhost # ------------------------------------------------------------------------------------------
+    Aug 14 14:42:25 localhost # Chequeamos supervisord status & reintentamos
+    Aug 14 14:42:25 localhost # ------------------------------------------------------------------------------------------
+    Aug 14 14:42:25 localhost Chequeando fts-llamador-poll-daemon
+    Aug 14 14:42:25 localhost  + Supervisor: subproceso 'fts-llamador-poll-daemon' en stado STOPPED, continuamos...
+    Aug 14 14:42:25 localhost Chequeando fts-chequeador-campanas-vencidas
+    Aug 14 14:42:25 localhost  + Supervisor: subproceso 'fts-chequeador-campanas-vencidas' en stado STOPPED, continuamos...
+    Aug 14 14:42:25 localhost Chequeando fts-celery-worker-esperar-finaliza-campana
+    Aug 14 14:42:26 localhost  + Supervisor: subproceso 'fts-celery-worker-esperar-finaliza-campana' en stado STOPPED, continuamos...
+    Aug 14 14:42:26 localhost Chequeando fts-celery-worker-finalizar-campana
+    Aug 14 14:42:26 localhost  + Supervisor: subproceso 'fts-celery-worker-finalizar-campana' en stado STOPPED, continuamos...
+    Aug 14 14:42:26 localhost # ------------------------------------------------------------------------------------------
+    Aug 14 14:42:26 localhost # Chequeamos LOCK SOCKETS
+    Aug 14 14:42:26 localhost # ------------------------------------------------------------------------------------------
+    Aug 14 14:42:26 localhost Chequeando LOCK '@freetechsender/daemon-llamador'
+    Aug 14 14:42:26 localhost  + Lock '@freetechsender/daemon-llamador' no existe, continuamos...
+    Aug 14 14:42:26 localhost Chequeando LOCK '@freetechsender/daemon-finalizador-vencidas'
+    Aug 14 14:42:26 localhost  + Lock '@freetechsender/daemon-finalizador-vencidas' no existe, continuamos...
+    Aug 14 14:42:26 localhost Chequeando LOCK '@freetechsender/esperador-finalizacion-de-llamadas'
+    Aug 14 14:42:26 localhost  + Lock '@freetechsender/esperador-finalizacion-de-llamadas' no existe, continuamos...
+    Aug 14 14:42:26 localhost Chequeando LOCK '@freetechsender/depurador-de-campana'
+    Aug 14 14:42:26 localhost  + Lock '@freetechsender/depurador-de-campana' no existe, continuamos...
+    Aug 14 14:42:26 localhost # ------------------------------------------------------------------------------------------
+    Aug 14 14:42:26 localhost # FIN!
+    Aug 14 14:42:26 localhost # ------------------------------------------------------------------------------------------
+
+
+
 
 Deploy de versión más nueva del software (en desarrollo)
 ........................................................
@@ -256,8 +336,6 @@ Para verificar que el usuario ``deployer`` puede acceder al nuevo servidor, ejec
 .. code::
 
      deployer@ftsender-deployer $ ssh ftsender@192.168.99.222
-
-
 
 
 
