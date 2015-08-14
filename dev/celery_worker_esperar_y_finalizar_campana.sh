@@ -15,7 +15,6 @@ celery \
 	--loglevel=info \
 	-Q esperar_y_finalizar_campana \
 	--concurrency=4 \
-	--pidfile=/tmp/fts-celery-worker-esperar_y_finalizar_campana.pid \
 	worker \
 	$*
 exit $?
