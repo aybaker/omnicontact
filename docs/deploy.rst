@@ -10,6 +10,12 @@ Deploy
     A fines de octubre/2014 se creo un nuevo deployer, repositorio git y servidor de doc. Estos
     cambios todavia no estan reflejados en la documentación.
 
+.. caution::
+
+    Al deployar en CentOS 6.7 x64, SELinux no permite que NGINX inicie en el puerto que usamos.
+    La solución es configurar SELinux para que permita usar el puerto alternativo, y como
+    workaround, se puede desactivar SELinux (esto NO es recomendado, sobre todo en ambientes productivos).
+
 .. note::
 
     Los scripts de deploy estan probados extensivamente en arquitectura i386.
@@ -173,6 +179,30 @@ El deploy automatizado fue probado en CentOS 6.5. Para asegurar el correcto func
 
     root@new-server $ cat /etc/centos-release 
     CentOS release 6.5 (Final)
+
+
+Desactivar SELinux
+..................
+
+Desactivar SELinux hace al servidor mucho más vulnerable, pero puede ser necesario para
+utilizar el sistema con CentOS posteriores a 6.5, ya que las nuevas versiones de CentOS
+pueden traer controles activados que en la versión 6.5 no existían.
+
+Para desactivarlo, hace falta editar el archivo ``/etc/selinux/config``, setear
+el valor ``SELINUX=permissive``, y reiniciar el servidor para asegurarnos que
+haya tomado la configuración.
+
+.. code::
+
+    root@new-server $ vim /etc/selinux/config
+
+Para verificar que SELinux esta desactivado, se puede utilizar ``getenforce``. Si dicho
+comando muestra por pantalla ``Permissive``, es porque SELinux está desactivado:
+
+.. code::
+
+    root@new-server $ getenforce
+    Permissive
 
 
 Instalar paquetes requeridos
