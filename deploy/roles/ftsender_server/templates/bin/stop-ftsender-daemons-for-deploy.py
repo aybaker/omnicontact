@@ -1,6 +1,28 @@
 # -*- coding: utf-8 -*-
 
 """
+Este script es ejecutado en el servidor (por eso no podemos importar ninguna constante!)
+y la funcion que tiene es bajar los servicios y asegurarse que están bajados.
+
+Baja los sigientes servicos:
+    - uWSGI (servidor Django)
+
+Baja los siguientes subprocesos de Supervisor:
+    - fts-llamador-poll-daemon
+    - fts-chequeador-campanas-vencidas
+    - fts-celery-worker-esperar-finaliza-campana
+    - fts-celery-worker-finalizar-campana
+
+El subproceso correspondiente al servidor FastAGI NUNCA es bajado, ya que actualmente
+no verificamos si hay llamadas en curso (ver nota mas abajo).
+
+
+Nota: FastAGI y llamadas en curso
+---------------------------------
+
+Podría implementarse un nuevo control, que verifique si hay llamadas en curso,
+y el script podría esperar hasta que no haya mas llamadas en curso, y de esta manera,
+asegurarnos que absolutamente todos los servicios son iniciados.
 
 FIXME: chequear si anda en 1er deploy!
 FIXME: chequear si anda en 1er deploy!
@@ -22,7 +44,6 @@ FIXME: chequear si anda en 1er deploy!
 FIXME: chequear si anda en 1er deploy!
 FIXME: chequear si anda en 1er deploy!
 FIXME: chequear si anda en 1er deploy!
-
 """
 
 from __future__ import unicode_literals
@@ -34,7 +55,11 @@ import subprocess
 import sys
 import time
 
-logger = logging.getLogger('main')
+logger = logging.getLogger('stop-ftpsender')
+
+#
+# 8< --- copy & paste --- Mantener esto igual al script de START --- >8
+#
 
 SUPERVISORD_SUBPROCESSES = [
     "fts-llamador-poll-daemon",
@@ -43,7 +68,6 @@ SUPERVISORD_SUBPROCESSES = [
     "fts-celery-worker-finalizar-campana",
 ]
 
-
 # Usamos mismo nombre de variables q' en codigo, y agregamos '@'
 LOCK_DAEMON_LLAMADOR = '@freetechsender/daemon-llamador'
 LOCK_DAEMON_FINALIZADOR_VENCIDAS = '@freetechsender/daemon-finalizador-vencidas'
@@ -51,7 +75,6 @@ LOCK_ESPERADOR_FINALIZACION_DE_LLAMADAS = '@freetechsender/esperador-finalizacio
 # LOCK_ESPERADOR_FINALIZACION_DE_LLAMADAS: el lock se llamara XXX-0, XXX-1, etc., pero no hay
 #  problema, porque hacemos el grep funcionara igual sin importar el sufijo
 LOCK_DEPURACION_DE_CAMPANA = '@freetechsender/depurador-de-campana'
-
 
 LOCK_SOCKETS = [
     LOCK_DAEMON_LLAMADOR,
@@ -79,6 +102,24 @@ def get_output(cmd, stderr=subprocess.PIPE):
     )
     stdout, stderr = proc.communicate()
     return proc, stdout, stderr
+
+
+def setup_logging():
+    if 'DEBUG' in os.environ:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
+    handler = logging.handlers.SysLogHandler(address=str('/dev/log'))
+    logging.getLogger('').addHandler(handler)
+
+
+class Done(Exception):
+    pass
+
+#
+# 8< (FIN) --- copy & paste --- Mantener esto igual al script de STOP --- >8
+#
 
 
 def bajar_uwsgi():
@@ -110,19 +151,11 @@ def bajar_uwsgi():
 
 
 def main():
-
-    if 'DEBUG' in os.environ:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
-
-    handler = logging.handlers.SysLogHandler(address=str('/dev/log'))
-    logging.getLogger('').addHandler(handler)
-
+    setup_logging()
     bajar_uwsgi()
 
     logger.info("# ------------------------------------------------------------------------------------------")
-    logger.info("# Antes que nada pedimos a Supervisor q' baje tasks")
+    logger.info("# Antes que nada pedimos a Supervisor q' baje subprocesos")
     logger.info("# ------------------------------------------------------------------------------------------")
 
     for task in SUPERVISORD_SUBPROCESSES:
