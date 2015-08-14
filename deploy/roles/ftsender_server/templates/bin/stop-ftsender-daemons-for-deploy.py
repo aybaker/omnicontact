@@ -59,6 +59,8 @@ LOCK_SOCKETS = [
     LOCK_DEPURACION_DE_CAMPANA,
 ]
 
+UWSGI_PID_FILE = "/home/ftsender/deploy/run/fts-uwsgi.pid"
+
 
 def shell(cmd):
     """Ejecuta comando shell, lanza excepcion si exit status != 0"""
@@ -66,14 +68,44 @@ def shell(cmd):
     subprocess.check_call(cmd, shell=True)
 
 
-def get_output(cmd):
+def get_output(cmd, stderr=subprocess.PIPE):
     """Ejecuta comando shell, devuelve [proc, stdout, stderr]"""
     proc = subprocess.Popen(
         cmd,
         shell=True,
-        stdout=subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        stderr=stderr,
+    )
     stdout, stderr = proc.communicate()
     return proc, stdout, stderr
+
+
+def bajar_uwsgi():
+    logger.info("# ------------------------------------------------------------------------------------------")
+    logger.info("# Bajamos uWSGI")
+    logger.info("# ------------------------------------------------------------------------------------------")
+
+    # TOMAR PID (si existe)
+    # /home/ftsender/deploy/run/fts-uwsgi.pid
+    if os.path.exists(UWSGI_PID_FILE):
+        with open(UWSGI_PID_FILE, 'r') as pid_file:
+            uwsgi_pid = pid_file.read().splitlines()[0]
+    else:
+        uwsgi_pid = None
+
+    logger.info(" + uWSGI pid: %s", uwsgi_pid)
+
+    if uwsgi_pid:
+        try:
+            shell("pgrep -u ftsender uwsgi | egrep -q '^{0}$'".format(uwsgi_pid))
+        except subprocess.CalledProcessError:
+            pass
+        else:
+            logger.info(" + Bajando servicio 'ftsender-daemon'")
+            try:
+                shell("/sbin/service ftsender-daemon stop")
+            except subprocess.CalledProcessError:
+                logger.exception("ERROR DETECTADO al intentar bajar servicio 'ftsender-daemon'")
 
 
 def main():
@@ -82,6 +114,8 @@ def main():
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
+
+    bajar_uwsgi()
 
     logger.info("# ------------------------------------------------------------------------------------------")
     logger.info("# Antes que nada pedimos a Supervisor q' baje tasks")
