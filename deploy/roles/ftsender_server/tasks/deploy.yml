@@ -49,7 +49,7 @@
     - docker
 
 - name: Stop FTSender services (except FastAGI daemon)
-  shell: python -u /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.py 2>&1 | logger -t stop-ftsender-daemons
+  shell: python -u /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.py 2>&1
   sudo: yes
   ignore_errors: no
   tags:

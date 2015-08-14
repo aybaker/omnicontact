@@ -28,6 +28,7 @@ FIXME: chequear si anda en 1er deploy!
 from __future__ import unicode_literals
 
 import logging
+import logging.handlers
 import os
 import subprocess
 import sys
@@ -114,6 +115,9 @@ def main():
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
+
+    handler = logging.handlers.SysLogHandler(address=str('/dev/log'))
+    logging.getLogger('').addHandler(handler)
 
     bajar_uwsgi()
 
