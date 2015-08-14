@@ -24,26 +24,6 @@ Podría implementarse un nuevo control, que verifique si hay llamadas en curso,
 y el script podría esperar hasta que no haya mas llamadas en curso, y de esta manera,
 asegurarnos que absolutamente todos los servicios son iniciados.
 
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
 """
 
 from __future__ import unicode_literals

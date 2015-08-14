@@ -13,26 +13,6 @@ Inicia los siguientes subprocesos de Supervisor:
     - fts-celery-worker-esperar-finaliza-campana
     - fts-celery-worker-finalizar-campana
 
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
-FIXME: chequear si anda en 1er deploy!
 """
 
 from __future__ import unicode_literals
