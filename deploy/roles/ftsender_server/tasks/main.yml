@@ -95,3 +95,5 @@
 - include: celery.yml
 
 - include: deploy.yml
+
+- include: gammu.yml
