@@ -83,6 +83,11 @@
                         <li>
                             <a href="{% url 'lista_campana_reportes' %}">Reportes</a>
                         </li>
+                        {% if reporte_sms_url %}
+                        <li>
+                        	<a href="{{reporte_sms_url}}" >Reportes SMS</a>
+                        </li>
+                        {% endif %}
                         <li>
                             <a href="{% url 'lista_campana_por_estados' %}">Supervisión</a>
                         </li>

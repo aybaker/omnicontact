@@ -218,7 +218,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
-    "fts_web.context_processors.testing_mode"
+    "fts_web.context_processors.testing_mode",
+    "fts_web.context_processors.reporte_sms"
 )
 
 
@@ -382,6 +383,16 @@ Path completo (absoluto) al dir donde se debe generar los dumps de la
 depuración de BaseDatoContacto.
 """
 
+
+#==============================================================================
+# DEPLOY -> REPORTE SMS
+#==============================================================================
+
+FTS_REPORTE_SMS_URL = None
+"""URL donde se encuentran los reportes sms
+
+Ej: http://172.20.2.249:9088/reporte_sms/REPORTE_SMS
+"""
 
 #==============================================================================
 # Import de `fts_web_settings_local`
