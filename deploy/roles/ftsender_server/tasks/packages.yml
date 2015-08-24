@@ -169,15 +169,15 @@
   yum: name={{item}} state=installed
   with_items:
     - tcl
-    - libusb.i686
-    - libusb-devel.i686
-    - libusb1.i686
-    - libusb1-devel.i686 
+    - libusb
+    - libusb-devel
+    - libusb1
+    - libusb1-devel 
     - usbutils
     - sqlite3
-    - libdbi-dbd-pgsql.i686
-    - libdbi-devel.i686
-    - libdbi-drivers.i686
+    - libdbi-dbd-pgsql
+    - libdbi-devel
+    - libdbi-drivers
     - httpd php php-pgsql
     - python-psycopg2 mailx
     - postgresql-contrib
