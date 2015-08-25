@@ -4,7 +4,7 @@ set -e
 
 cd /opt/gammu
 
-tar xzf {{ DOWNLOAD_GAMMU_FILENAME }}
+tar -xvzf {{ DOWNLOAD_GAMMU_FILENAME }}
 
 cd {{ DOWNLOAD_GAMMU_EXTRACT_DIRNAME }}
 
