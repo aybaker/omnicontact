@@ -178,8 +178,11 @@
     - libdbi-dbd-pgsql
     - libdbi-devel
     - libdbi-drivers
-    - httpd php php-pgsql
-    - python-psycopg2 mailx
+    - httpd
+    - php
+    - php-pgsql
+    - python-psycopg2
+    - mailx
     - postgresql-contrib
   when: fts_distribution == "centos6"
   tags:
