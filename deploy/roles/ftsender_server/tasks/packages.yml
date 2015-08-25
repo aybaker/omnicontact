@@ -174,7 +174,7 @@
     - libusb1
     - libusb1-devel 
     - usbutils
-    - sqlite3
+    - sqlite
     - libdbi-dbd-pgsql
     - libdbi-devel
     - libdbi-drivers
