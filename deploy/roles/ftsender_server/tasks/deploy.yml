@@ -190,6 +190,7 @@
   shell: >
     /home/ftsender/deploy/bin/db_update_plpython_stored_proc.sh
     /home/ftsender/deploy/app/fts_web/sql/plpython/*.sql
+    /home/ftsender/deploy/app/fts_web/sql/plpgsql/update_timestamp.sql
   tags:
     - deploy
     - docker
