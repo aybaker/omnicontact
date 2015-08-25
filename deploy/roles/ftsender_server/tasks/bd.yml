@@ -88,11 +88,30 @@
     - db
     - docker
 
+- name: Check if plpgsql is installed
+  shell: psql -c "select * from pg_language" ftsender | grep -q plpgsql
+  sudo: yes
+  sudo_user: postgres
+  register: plpgsql_installed
+  ignore_errors: True
+  tags:
+    - db
+    - docker
+
 - name: Install plpython if not installed
   command: createlang plpythonu ftsender
   sudo: yes
   sudo_user: postgres
   when: plpython_installed|failed
+  tags:
+    - db
+    - docker
+
+- name: Install plpgsql if not installed
+  command: createlang plpgsql ftsender
+  sudo: yes
+  sudo_user: postgres
+  when: plpgsql_installed|failed
   tags:
     - db
     - docker
