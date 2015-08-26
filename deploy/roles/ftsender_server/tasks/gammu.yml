@@ -13,6 +13,7 @@
   get_url: >
     url={{ DOWNLOAD_GAMMU_URL }}
     dest=/opt/gammu/{{ DOWNLOAD_GAMMU_FILENAME }}
+    sha256sum={{ DOWNLOAD_GAMMU_TARGZ_SHA256 }}
   when: fts_distribution == "centos6"
   tags:
     - gammu
