@@ -39,7 +39,7 @@ ASTERISK_AMI_HTTP_PORT: 7088
 DOWNLOAD_GAMMU_URL: 'http://dl.cihar.com/gammu/releases/gammu-1.36.5.tar.gz'
 
 # File name of downloaded file gammu
-DOWNLOAD_GAMMU_FILENAME: 'gammu-1.36.5.tar.bz2'
+DOWNLOAD_GAMMU_FILENAME: 'gammu-1.36.5.tar.gz'
 
 # Directory created when extracting gammu
 DOWNLOAD_GAMMU_EXTRACT_DIRNAME: 'gammu-1.36.5'
