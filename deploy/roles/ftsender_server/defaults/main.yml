@@ -36,10 +36,11 @@ ASTERISK_AMI_HTTP_BIND: 127.0.0.1
 ASTERISK_AMI_HTTP_PORT: 7088
 
 # URL to download GAMMU sources
-DOWNLOAD_GAMMU_URL: 'https://172.16.20.249/sources-sms/gammu-1.34.0.tar.gz'
+DOWNLOAD_GAMMU_URL: 'http://dl.cihar.com/gammu/releases/gammu-1.36.5.tar.bz2'
 
 # File name of downloaded file gammu
-DOWNLOAD_GAMMU_FILENAME: 'gammu-1.34.0.tar.gz'
+DOWNLOAD_GAMMU_FILENAME: 'gammu-1.36.5.tar.bz2'
 
 # Directory created when extracting gammu
-DOWNLOAD_GAMMU_EXTRACT_DIRNAME: 'gammu-1.34.0'
+DOWNLOAD_GAMMU_EXTRACT_DIRNAME: 'gammu-1.36.5'
+DOWNLOAD_GAMMU_TARGZ_SHA256: '74133c259c4cdfbdad19ec45dd099dab4f3bbb05'
