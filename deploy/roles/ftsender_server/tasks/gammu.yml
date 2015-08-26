@@ -18,14 +18,21 @@
   tags:
     - gammu
 
+- name: Check if Gammu is installed 
+  command: test -f /opt/gammu/{{ DOWNLOAD_GAMMU_EXTRACT_DIRNAME }}
+  register: gammu_installed
+  ignore_errors: True
+  when: fts_distribution == "centos6"
+  tags:
+    - gammu
+
 - name: Upload Gammu build script 
-  when: gammu_installed|failed
   sudo: yes
   template: >
     src=bin/build_gammu.sh
     dest=/opt/gammu/
     owner=ftsender mode=0755
-  when: fts_distribution == "centos6"
+  when: fts_distribution == "centos6" and gammu_installed|failed
   tags:
     - gammu
 
@@ -38,10 +45,4 @@
   tags:
     - gammu
 
-- name: Check if Gammu is installed 
-  command: test -f /opt/gammu/{{ DOWNLOAD_GAMMU_EXTRACT_DIRNAME }}
-  register: gammu_installed
-  ignore_errors: True
-  when: fts_distribution == "centos6"
-  tags:
-    - gammu
+
