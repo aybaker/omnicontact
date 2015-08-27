@@ -184,7 +184,7 @@
     - python-psycopg2
     - mailx
     - postgresql-contrib
-    - Bluez-libs
+    - bluez-libs
   when: fts_distribution == "centos6"
   tags:
     - yum
