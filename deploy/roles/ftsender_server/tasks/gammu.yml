@@ -19,7 +19,7 @@
     - gammu
 
 - name: Check if Gammu is installed 
-  command: test -f /opt/gammu/{{ DOWNLOAD_GAMMU_EXTRACT_DIRNAME }}
+  command: test -f /usr/local/bin/gammu
   register: gammu_installed
   ignore_errors: True
   when: fts_distribution == "centos6"
