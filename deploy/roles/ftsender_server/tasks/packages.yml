@@ -185,6 +185,7 @@
     - mailx
     - postgresql-contrib
     - bluez-libs
+    - bluez-libs-devel
   when: fts_distribution == "centos6"
   tags:
     - yum
