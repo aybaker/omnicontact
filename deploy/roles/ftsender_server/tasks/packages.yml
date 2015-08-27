@@ -184,6 +184,7 @@
     - python-psycopg2
     - mailx
     - postgresql-contrib
+    - libbluetooth-dev
   when: fts_distribution == "centos6"
   tags:
     - yum
