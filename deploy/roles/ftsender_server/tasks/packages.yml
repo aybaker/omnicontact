@@ -42,6 +42,18 @@
   tags:
     - yum
 
+- name: Instala Repositorio usb_modeswitch
+  sudo: yes
+  yum: name={{ RPM_REPO_USB_MODESWITCH }} state=present
+  tags:
+    - yum
+
+- name: Instala Repositorio usb_modeswitch_data
+  sudo: yes
+  yum: name={{ RPM_REPO_USB_MODESWITCH_DATA }} state=present
+  tags:
+    - yum
+
 #----------------------------------------------------------------------
 # Ahora largamos instalacion de paquetes
 #----------------------------------------------------------------------
