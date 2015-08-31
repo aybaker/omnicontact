@@ -45,12 +45,18 @@
 - name: Instala Repositorio usb_modeswitch
   sudo: yes
   yum: name={{ RPM_REPO_USB_MODESWITCH }} state=present
+  when: repo_usb_modeswitch_installed|failed and (
+    fts_distribution == "centos6"
+    )
   tags:
     - yum
 
 - name: Instala Repositorio usb_modeswitch_data
   sudo: yes
   yum: name={{ RPM_REPO_USB_MODESWITCH_DATA }} state=present
+  when: repo_usb_modeswitch_data_installed|failed and (
+    fts_distribution == "centos6"
+    )
   tags:
     - yum
 
@@ -198,8 +204,6 @@
     - postgresql-contrib
     - bluez-libs
     - bluez-libs-devel
-    - usb_modeswitch
-    - usb_modeswitch-data
   when: fts_distribution == "centos6"
   tags:
     - yum
