@@ -36,49 +36,10 @@
   tags:
     - gammu
 
-- name: Upload Gammu test script 
-  sudo: yes
-  template: >
-    src=bin/test_gammu.sh
-    dest=/opt/gammu/
-    owner=ftsender mode=0755
-  when: fts_distribution == "centos6" and gammu_installed|failed
-  tags:
-    - gammu
-
-- name: Upload Gammu install script 
-  sudo: yes
-  template: >
-    src=bin/install_gammu.sh
-    dest=/opt/gammu/
-    owner=ftsender mode=0755
-  when: fts_distribution == "centos6" and gammu_installed|failed
-  tags:
-    - gammu
-
 - name: Run Gammu build script 
   sudo: yes
   sudo_user: ftsender
   command: /opt/gammu/build_gammu.sh
-  when: fts_distribution == "centos6" and gammu_installed|failed
-  register: gammu_installed
-  tags:
-    - gammu
-
-- name: Run Gammu test script 
-  sudo: yes
-  sudo_user: ftsender
-  command: /opt/gammu/test_gammu.sh
-  when: fts_distribution == "centos6" and gammu_installed|failed
-  register: gammu_installed
-  ignore_errors: True
-  tags:
-    - gammu
-
-- name: Run Gammu install script 
-  sudo: yes
-  sudo_user: ftsender
-  command: /opt/gammu/install_gammu.sh
   when: fts_distribution == "centos6" and gammu_installed|failed
   register: gammu_installed
   tags:
