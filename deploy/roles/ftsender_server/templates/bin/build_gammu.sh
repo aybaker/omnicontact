@@ -12,5 +12,5 @@ mkdir build
 cd build
 cmake ..
 make
-make test >> gammu.log
-make install
+make -i test >> gammu.log
+make install >> gammu.log
