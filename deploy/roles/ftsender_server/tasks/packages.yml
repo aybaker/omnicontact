@@ -198,6 +198,8 @@
     - postgresql-contrib
     - bluez-libs
     - bluez-libs-devel
+    - usb_modeswitch
+    - usb_modeswitch-data
   when: fts_distribution == "centos6"
   tags:
     - yum
