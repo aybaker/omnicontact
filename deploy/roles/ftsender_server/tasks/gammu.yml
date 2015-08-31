@@ -60,7 +60,8 @@
   sudo: yes
   sudo_user: ftsender
   command: /opt/gammu/build_gammu.sh
-  when: fts_distribution == "centos6" and gammu_installed|failed 
+  when: fts_distribution == "centos6" and gammu_installed|failed
+  register: gammu_installed
   tags:
     - gammu
 
@@ -69,6 +70,7 @@
   sudo_user: ftsender
   command: /opt/gammu/test_gammu.sh
   when: fts_distribution == "centos6" and gammu_installed|failed
+  register: gammu_installed
   ignore_errors: True
   tags:
     - gammu
