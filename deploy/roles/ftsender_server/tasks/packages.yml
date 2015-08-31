@@ -45,18 +45,14 @@
 - name: Instala Repositorio usb_modeswitch
   sudo: yes
   yum: name={{ RPM_REPO_USB_MODESWITCH }} state=present
-  when: repo_usb_modeswitch_installed|failed and (
-    fts_distribution == "centos6"
-    )
+  when: fts_distribution == "centos6"
   tags:
     - yum
 
 - name: Instala Repositorio usb_modeswitch_data
   sudo: yes
   yum: name={{ RPM_REPO_USB_MODESWITCH_DATA }} state=present
-  when: repo_usb_modeswitch_data_installed|failed and (
-    fts_distribution == "centos6"
-    )
+  when: fts_distribution == "centos6"
   tags:
     - yum
 
