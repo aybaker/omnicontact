@@ -13,4 +13,4 @@ cd build
 cmake ..
 make
 make -i test >> gammu.log
-make install >> gammu.log
+sudo make install >> gammu.log
