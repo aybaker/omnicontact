@@ -50,9 +50,8 @@ mkdir -p $TMP/appsms
 echo "Usando directorio temporal: $TMP/appsms..."
 
 echo "Descargando demonio sms en directorio temporal"
-cd $TMP/appsms
-tar -xvzf /home/deployer/aplicacionsms/DEMONIO-SMS.tar.gz
-cd /home/deployer/ftsenderweb
+tar -xzf /home/deployer/aplicacionsms/DEMONIO-SMS.tar.gz -C $TMP/appsms
+
 # ----------
 
 echo "Obteniendo datos de version..."
