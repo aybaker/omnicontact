@@ -52,7 +52,7 @@ echo "Usando directorio temporal: $TMP/appsms..."
 echo "Descargando demonio sms en directorio temporal"
 cd $TMP/appsms
 tar -xvzf /home/deployer/aplicacionsms/DEMONIO-SMS.tar.gz
-pwd
+cd /home/deployer/ftsenderweb
 # ----------
 
 echo "Obteniendo datos de version..."
