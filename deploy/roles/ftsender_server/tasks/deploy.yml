@@ -18,6 +18,7 @@
     - /home/ftsender/deploy
     - /home/ftsender/deploy/bin
     - /home/ftsender/deploy/app
+    - /home/ftsender/deploy/appsms
     - /home/ftsender/deploy/local
     - /home/ftsender/deploy/media_root
     - /home/ftsender/deploy/static_root
@@ -54,6 +55,17 @@
   # Copies xxx/app to /home/ftsender/deploy/app (/app on dest is implicit)
   synchronize: >
     src={{BUILD_DIR}}
+    dest=/home/ftsender/deploy
+    delete=yes checksum=yes times=no
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Upload built (rsync to /appsms)
+  # Copies xxx/app to /home/ftsender/deploy/app (/appsms on dest is implicit)
+  synchronize: >
+    src={{BUILD_DIR_SMS}}
     dest=/home/ftsender/deploy
     delete=yes checksum=yes times=no
   tags:
