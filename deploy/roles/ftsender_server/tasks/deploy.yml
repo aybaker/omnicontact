@@ -270,7 +270,7 @@
 
 - name: Upload /etc/rc.local 
   command: /home/ftsender/deploy/bin/upload_etc_rclocal.sh
-  register: ftsdaemon_checks_output
+  sudo: yes
   tags:
     - deploy
     - quick_deploy
