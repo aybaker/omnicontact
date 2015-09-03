@@ -194,6 +194,7 @@
     - bin/manage.sh
     - bin/db_update_plpython_stored_proc.sh
     - bin/restart-ftsender.sh
+    - bin/upload_etc_rclocal.sh
   tags:
     - deploy
     - docker
@@ -262,4 +263,18 @@
     - quick_deploy
     - update_settings
     - docker
+
+#----------------------------------------------------------------------
+# Upload Demonio SMS
+#----------------------------------------------------------------------
+
+- name: Upload /etc/rc.local 
+  command: /home/ftsender/deploy/bin/upload_etc_rclocal.sh
+  register: ftsdaemon_checks_output
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+  ignore_errors: True
     
