@@ -298,6 +298,7 @@
 
 - name: Create - Crontab de modem 
   command: echo "*/4 * * * * /usr/sbin/3g_switch" >> /var/spool/cron/root
+  sudo: yes
   register: crontab_modem_running
   when: crontab_modem_running|failed
   tags:
