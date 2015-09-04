@@ -195,6 +195,7 @@
     - bin/db_update_plpython_stored_proc.sh
     - bin/restart-ftsender.sh
     - bin/upload_etc_rclocal.sh
+    - bin/usb_modem.sh
   tags:
     - deploy
     - docker
@@ -288,19 +289,11 @@
     - deploy
     - docker
   
-- name: Check - Crontab de modem 
-  command: test -f /var/spool/cron/root
-  register: crontab_modem_running
-  ignore_errors: True
-  tags:
-    - deploy
-    - docker
-
-- name: Create - Crontab de modem 
-  command: echo "*/4 * * * * /usr/sbin/3g_switch" >> /var/spool/cron/root
+- name: Upload Usb modem modes
+  command: /home/ftsender/deploy/bin/usb_modem.sh
   sudo: yes
-  register: crontab_modem_running
-  when: crontab_modem_running|failed
   tags:
     - deploy
+    - quick_deploy
     - docker
+  ignore_errors: True
