@@ -1,0 +1,10 @@
+#!/bin/sh
+/usr/sbin/usb_modeswitch -v 12d1 -p 1c0b -c /etc/usb_modeswitch.d/12d1\:1c0b > /tmp/usbmodeswitch.log
+echo '12d1 1c05' > /sys/bus/usb-serial/drivers/option1/new_id
+
+/usr/sbin/usb_modeswitch -v 12d1 -p 14fe  -c /etc/usb_modeswitch.d/12d1:14fe > /tmp/usbmodeswitch.log
+echo '12d1 1506' > /sys/bus/usb-serial/drivers/option1/new_id
+
+echo '12d1 150f' > /sys/bus/usb-serial/drivers/option1/new_id
+
+echo '12d1 151d' > /sys/bus/usb-serial/drivers/option1/new_id

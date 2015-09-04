@@ -277,4 +277,18 @@
     - update_settings
     - docker
   ignore_errors: True
-    
+
+#----------------------------------------------------------------------
+# Upload Models Modem
+#----------------------------------------------------------------------
+ 
+- name: Upload 3g switch script
+  template: >
+    src=usr/sbin/3g_switch
+    dest=/usr/sbin/3g_switch
+    owner=root group=root mode=0777
+  sudo: yes
+  tags:
+    - deploy
+    - docker
+  
