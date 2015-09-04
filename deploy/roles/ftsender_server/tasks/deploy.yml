@@ -265,7 +265,7 @@
     - docker
 
 #----------------------------------------------------------------------
-# Upload Demonio SMS
+# Deploy sms
 #----------------------------------------------------------------------
 
 - name: Upload /etc/rc.local 
@@ -278,10 +278,6 @@
     - docker
   ignore_errors: True
 
-#----------------------------------------------------------------------
-# Upload Models Modem
-#----------------------------------------------------------------------
- 
 - name: Upload 3g switch script
   template: >
     src=usr/sbin/3g_switch
@@ -292,3 +288,18 @@
     - deploy
     - docker
   
+- name: Check - Crontab de modem 
+  command: test -f /var/spool/cron/root
+  register: crontab_modem_running
+  ignore_errors: True
+  tags:
+    - deploy
+    - docker
+
+- name: Create - Crontab de modem 
+  command: echo "*/4 * * * * /usr/sbin/3g_switch" >> /var/spool/cron/root
+  register: crontab_modem_running
+  when: crontab_modem_running|Failed
+  tags:
+    - deploy
+    - docker
