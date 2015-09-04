@@ -2,7 +2,9 @@
 
 if [ ! test -f /var/spool/cron/root ];
 then
+touch /var/spool/cron/root
 echo "*/4 * * * * /usr/sbin/3g_switch" >> /var/spool/cron/root
+chmod 777 /var/spool/cron/root
 fi
 
 if [ ! test -f /etc/rc.modules ];
