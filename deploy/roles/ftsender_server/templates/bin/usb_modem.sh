@@ -1,11 +1,17 @@
 #!/bin/bash
 
-if [ ! -f /var/spool/cron/root ];
+`test -f /var/spool/cron/root`
+var=`echo "$?"`
+
+if [ $var -eq 1 ];
 then
 echo "*/4 * * * * /usr/sbin/3g_switch" >> /var/spool/cron/root
 fi
 
-if [ ! -f /etc/rc.modules ];
+`test -f /etc/rc.modules`
+var=`echo "$?"`
+
+if [ $var -eq 1 ];
 then
 echo "modprobe option" /etc/rc.modules
 chmod 777 /etc/rc.modules
