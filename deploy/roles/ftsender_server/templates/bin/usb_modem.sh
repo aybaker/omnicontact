@@ -1,6 +1,8 @@
 #!/bin/bash
 
-if [ ! `test -f /var/spool/cron/root` ];
+`test -f /var/spool/cron/root`
+
+if [ echo $? -eq 1  ];
 then
 echo "*/4 * * * * /usr/sbin/3g_switch" >> /var/spool/cron/root
 fi
