@@ -10,6 +10,7 @@ import csv
 import logging
 import os
 import json
+import datetime
 
 from django.conf import settings
 from fts_web.models import Campana
@@ -117,9 +118,11 @@ class ArchivoDeReporteCsv(object):
                     if dialstatus_razon_de_llamada_no_atendida is None:
                         lista_opciones.append(None)
                     else:
-                        lista_opciones.append(dialstatus_razon_de_llamada_no_atendida.timestamp)
+                        assert isinstance(dialstatus_razon_de_llamada_no_atendida.timestamp, datetime.datetime)
+                        lista_opciones.append(dialstatus_razon_de_llamada_no_atendida.timestamp.strftime("%d/%m/%y %H:%M"))
                 else:
-                    lista_opciones.append(timestamp_evento_finalizador)
+                    assert isinstance(timestamp_evento_finalizador, datetime.datetime)
+                    lista_opciones.append(timestamp_evento_finalizador.strftime("%d/%m/%y %H:%M"))
 
                 # Agregamos opciones digitadas por contacto
                 for opcion in range(10):
