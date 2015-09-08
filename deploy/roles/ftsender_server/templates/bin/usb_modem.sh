@@ -13,6 +13,7 @@ var=`echo "$?"`
 
 if [ $var -eq 1 ];
 then
+touch /etc/rc.modules
 echo "modprobe option" /etc/rc.modules
 chmod 777 /etc/rc.modules
 fi
