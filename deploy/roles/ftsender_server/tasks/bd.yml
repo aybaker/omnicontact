@@ -151,3 +151,18 @@
     - db
     - docker
 
+- name: Cargar extension dblink
+  shell:psql ftsender < /usr/share/pgsql/contrib/dblink.sql
+  sudo: yes
+  sudo_user: postgres
+  tags:
+    - db
+    - docker
+
+- name: Create extension dblink
+  shell:psql -d ftsender -c "CREATE EXTENSION dblink"
+  sudo: yes
+  sudo_user: postgres
+  tags:
+    - db
+    - docker
