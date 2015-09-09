@@ -309,7 +309,7 @@
     - db
     - docker
 
-- name Correr script creacion de tablas smsd
+- name: Correr script creacion de tablas smsd
   shell: >
     /home/ftsender/deploy/bin/pgsql.sql  
   when: fts_distribution == "centos6" and smsd_installed|failed
