@@ -65,8 +65,8 @@
 - name: Upload .gammurc
   sudo: yes
   template: >
-    src=etc/.gammurc
-    dest=/root/
+    src=etc/gammurc
+    dest=/root/.gammurc
     owner=root mode=0755
   tags:
     - gammu
