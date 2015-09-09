@@ -1,0 +1,28 @@
+[gammu]
+logformat=textall
+device=/dev/ttyUSB26
+connection=at
+gammucoding = utf8
+logformat = textall
+
+[smsd]
+Service = SQL
+LogFile = /tmp/smsd8.log
+DebugLevel = 255
+Driver = pgsql
+#PhoneID=phone used for sending/receiving
+PhoneID = 8
+#RunOnReceive=/path/to/script.sh
+User = smsd
+Password = smsd
+Host = 127.0.0.1
+Database = smsd
+BackendRetries=1
+
+[sql]
+#User=smsd
+#Password=smsd
+#Host=127.0.0.1
+#Database=smsd
+#Driver=pgsql
+

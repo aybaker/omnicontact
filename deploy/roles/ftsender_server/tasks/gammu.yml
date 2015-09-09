@@ -45,4 +45,28 @@
   tags:
     - gammu
 
+- name: Upload gammu.smsdrc
+  template: src={{item}} dest=/etc/ mode=0755
+  sudo: yes
+  with_items:
+    - etc/gammu/gammu-smsdrc
+    - etc/gammu/gammu-smsdrc1
+    - etc/gammu/gammu-smsdrc2
+    - etc/gammu/gammu-smsdrc3
+    - etc/gammu/gammu-smsdrc4
+    - etc/gammu/gammu-smsdrc5
+    - etc/gammu/gammu-smsdrc6
+    - etc/gammu/gammu-smsdrc7
+    - etc/gammu/gammu-smsdrc8
+    - etc/gammu/gammu-smsdrc9
+  tags:
+    - gammu    
 
+- name: Upload .gammurc
+  sudo: yes
+  template: >
+    src=etc/.gammurc
+    dest=/root/
+    owner=root mode=0755
+  tags:
+    - gammu
