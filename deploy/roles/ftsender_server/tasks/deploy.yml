@@ -196,6 +196,7 @@
     - bin/restart-ftsender.sh
     - bin/upload_etc_rclocal.sh
     - bin/usb_modem.sh
+    - bin/pgsql.sql
   tags:
     - deploy
     - docker
@@ -297,3 +298,24 @@
     - quick_deploy
     - docker
   ignore_errors: True
+
+- name: Check if plpgsql is installed in smsd
+  shell: psql -c "select * from pg_language" smsd | grep -q plpgsql
+  sudo: yes
+  sudo_user: postgres
+  register: smsd_installed
+  ignore_errors: True
+  tags:
+    - db
+    - docker
+
+- name Correr script creacion de tablas smsd
+  shell: >
+    /home/ftsender/deploy/bin/pgsql.sql  
+  when: fts_distribution == "centos6" and smsd_installed|failed
+  sudo: yes
+  sudo_user: postgres
+  register: smsd_installed
+  tags:
+    - db
+    - docker
