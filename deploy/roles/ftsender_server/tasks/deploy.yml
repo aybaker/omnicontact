@@ -320,13 +320,13 @@
     - db
     - docker
 
-- name: Upload script dblink
-  template: src=/usr/share/pgsql/contrib/dblink.sql dest=/home/ftsender/deploy/bin/dblink.sql mode=0755
-  sudo: yes
-  sudo_user: postgres
-  tags:
-    - db
-    - docker
+#- name: Upload script dblink
+#  template: src=/usr/share/pgsql/contrib/dblink.sql dest=/home/ftsender/deploy/bin/dblink.sql mode=0755
+#  sudo: yes
+#  sudo_user: postgres
+#  tags:
+#    - db
+#    - docker
 
 - name: Cargar extension dblink
   action: command psql -d ftsender -f $item
