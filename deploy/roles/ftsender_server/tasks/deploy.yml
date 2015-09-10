@@ -339,7 +339,7 @@
     - docker
 
 - name: Create extension dblink
-  shell:psql -d ftsender -c "CREATE EXTENSION dblink"
+  action: command psql -d ftsender -c "CREATE EXTENSION dblink"
   sudo: yes
   sudo_user: postgres
   tags:
