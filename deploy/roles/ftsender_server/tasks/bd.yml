@@ -151,8 +151,16 @@
     - db
     - docker
 
+- name: Upload script dblink 
+  copy: src=/usr/share/pgsql/contrib/dblink.sql /tmp/dblink.sql
+  sudo: yes
+  sudo_user: postgres
+  tags:
+    - db
+    - docker
+
 - name: Cargar extension dblink
-  shell:psql ftsender < /usr/share/pgsql/contrib/dblink.sql
+  shell:psql ftsender > /tmp/dblink.sql
   sudo: yes
   sudo_user: postgres
   tags:
