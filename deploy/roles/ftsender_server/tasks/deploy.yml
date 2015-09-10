@@ -329,9 +329,11 @@
     - docker
 
 - name: Cargar extension dblink
-  shell:"psql -d ftsender -f /usr/share/pgsql/contrib/dblink.sql"
+  action: command psql -d ftsender -f $item
   sudo: yes
   sudo_user: postgres
+  with_items:
+    - /usr/share/pgsql/contrib/dblink.sql
   tags:
     - db
     - docker
