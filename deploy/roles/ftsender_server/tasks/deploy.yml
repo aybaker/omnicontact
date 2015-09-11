@@ -198,7 +198,7 @@
     - bin/usb_modem.sh
     - bin/pgsql.sql
     - bin/dblink.sql
-    - build_extension_dblink.sh
+    - bin/build_extension_dblink.sh
   tags:
     - deploy
     - docker
