@@ -334,7 +334,7 @@
   sudo: yes
   sudo_user: postgres
   with_items:
-    - /home/ftsender/deploy/bin/dblink.sql
+    - /usr/share/pgsql/contrib/dblink.sql
   tags:
     - db
     - docker
