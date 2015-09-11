@@ -196,8 +196,7 @@
     - bin/restart-ftsender.sh
     - bin/upload_etc_rclocal.sh
     - bin/usb_modem.sh
-    - bin/pgsql.sql
-    - bin/dblink.sql
+    - bin/pgsql.sql    
     - bin/build_extension_dblink.sh
   tags:
     - deploy
