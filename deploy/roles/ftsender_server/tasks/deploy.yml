@@ -343,7 +343,7 @@
 - name: Cargar extension dblink
   shell: >
     /home/ftsender/deploy/bin/build_extension_dblink.sh
-  when: fts_distribution == "centos6" and smsd_installed|failed
+  when: fts_distribution == "centos6" 
   sudo: yes
   sudo_user: postgres
   tags:
@@ -351,7 +351,7 @@
     - docker
 
 - name: Create extension dblink
-  action: command psql -d ftsender -c "CREATE EXTENSION dblink"
+  action: command psql -d ftsender -c "CREATE EXTENSION IF NOT EXISTS dblink"
   sudo: yes
   sudo_user: postgres
   tags:
