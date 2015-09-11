@@ -11,6 +11,7 @@ import logging
 import os
 import json
 import datetime
+from pytz import timezone
 
 from django.conf import settings
 from fts_web.models import Campana
@@ -22,6 +23,20 @@ from django.utils.encoding import force_text
 
 
 logger = logging.getLogger(__name__)
+
+argentina = timezone(settings.TIME_ZONE)
+
+def convert_timestamp_fecha_hora_local(timestamp):
+    """
+    Este metodo convierte los timestamp, a fecha hora local 
+    """
+    print timestamp.astimezone(argentina)
+    _, hora_timezone = timestamp.__str__().split(' ')
+    print hora_timezone
+    _, timezone = hora_timezone.split('-')
+    fecha_convertida = timestamp + datetime.timedelta(hours = timezone)
+    print fecha_convertida
+    return fecha_convertida
 
 
 class ArchivoDeReporteCsv(object):
@@ -122,7 +137,10 @@ class ArchivoDeReporteCsv(object):
                         lista_opciones.append(dialstatus_razon_de_llamada_no_atendida.timestamp.strftime("%d/%m/%y %H:%M"))
                 else:
                     assert isinstance(timestamp_evento_finalizador, datetime.datetime)
-                    lista_opciones.append(timestamp_evento_finalizador.strftime("%d/%m/%y %H:%M"))
+                    fecha_formateada = timestamp_evento_finalizador.strftime("%d/%m/%y %H:%M")
+                    fecha_convertida = (convert_timestamp_fecha_hora_local(timestamp_evento_finalizador))
+                    print fecha_convertida
+                    lista_opciones.append(fecha_formateada)
 
                 # Agregamos opciones digitadas por contacto
                 for opcion in range(10):
