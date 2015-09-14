@@ -5,10 +5,12 @@
 
 from __future__ import unicode_literals
 
+import logging as _logging
 import time
 
 from django.conf import settings
 from django.core.cache import get_cache
+
 from fts_daemon import llamador_contacto
 from fts_daemon import tasks
 from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
@@ -18,8 +20,9 @@ from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
     TodosLosContactosPendientesEstanEnCursoError, DatosParaRealizarLlamada
 from fts_daemon.poll_daemon.originate_throttler import OriginateThrottler
 from fts_daemon.poll_daemon.statistics import StatisticsService
+from fts_daemon import main_utils
+
 from fts_web.errors import FTSOptimisticLockingError
-import logging as _logging
 
 
 logger = _logging.getLogger(__name__)
@@ -50,7 +53,7 @@ class RoundRobinTracker(object):
     en las campañas.
     """
 
-    def __init__(self):
+    def __init__(self, running_status=None):
         """Crea instancia de RoundRobinTracker"""
 
         self._originate_throttler = OriginateThrottler()
@@ -64,6 +67,8 @@ class RoundRobinTracker(object):
         self._statistics_service = StatisticsService(
             cache=get_cache('default')
         )
+
+        self._running_status = running_status or main_utils.RunningStatus()
 
         self.max_iterations = None
         """Cantidad de interaciones maxima que debe realizar ``generator()``.
@@ -246,6 +251,10 @@ class RoundRobinTracker(object):
         """Metodo que realiza la espera real Si ``espera`` es < 0,
         no hace nada
         """
+        if not self._running_status.should_continue_running:
+            logger.info("real_sleep(): no esperaremos porque 'should_continue_running' es False")
+            return
+
         espera = float(espera)
         if espera > 0.0:
             # TODO: si esto tarda mucho, puede hacer que la espera
@@ -276,6 +285,13 @@ class RoundRobinTracker(object):
         iter_num = 0
 
         while True:
+
+            # Chequeamos 'running_status.should_continue_running'.
+            # Esto deberia hacerse en todos los loops...
+            if not self._running_status.should_continue_running:
+                logger.info("Se ha detectado should_continue_running = False. "
+                            "Se detendra la ejecucion del loop.")
+                return
 
             if self.max_iterations is not None:
                 if iter_num >= self.max_iterations:
@@ -382,6 +398,13 @@ class RoundRobinTracker(object):
             # Trabajamos en copia, por si hace falta modificarse
             for tracker_campana in trackers_activos:
 
+                # Chequeamos 'running_status.should_continue_running'.
+                # Esto deberia hacerse en todos los loops...
+                if not self._running_status.should_continue_running:
+                    logger.info("Se ha detectado should_continue_running = False. "
+                                "Se detendra la ejecucion del loop.")
+                    return
+
                 # Publicamos estadisticas si corresponde
                 self.publish_statistics(sleeping=False)
 
@@ -413,6 +436,14 @@ class RoundRobinTracker(object):
                         #    con un break del loop, y continuamos el
                         #    procesamiento normal de la campaña
                         while True:
+
+                            # Chequeamos 'running_status.should_continue_running'.
+                            # Esto deberia hacerse en todos los loops...
+                            if not self._running_status.should_continue_running:
+                                logger.info("Se ha detectado should_continue_running = False. "
+                                            "Se detendra la ejecucion del loop.")
+                                return
+
                             loop__esperas_por_limite_global += 1
                             # Somos más agresivos, usamos 'si_es_posible'
                             self._asterisk_call_status.\
@@ -506,8 +537,9 @@ class Llamador(object):
     y realiza los llamados.
     """
 
-    def __init__(self):
-        self.rr_tracker = RoundRobinTracker()
+    def __init__(self, running_status):
+        self.running_status = running_status
+        self.rr_tracker = RoundRobinTracker(running_status=self.running_status)
 
     def procesar_contacto(self, datos_para_realizar_llamada):
         return llamador_contacto.procesar_contacto(datos_para_realizar_llamada)
@@ -518,19 +550,27 @@ class Llamador(object):
 
         for datos_para_realizar_llamada in self.rr_tracker.generator():
 
+            if not self.running_status.should_continue_running:
+                logger.info("Llamador.run(): should_continue_running es False. Exit!")
+                return
+
             assert isinstance(datos_para_realizar_llamada,
                               DatosParaRealizarLlamada)
 
-            logger.debug("Llamador.run(): campana: %s - id_contacto: %s"
-                " - numero: %s - intento: %s",
-                datos_para_realizar_llamada.campana.id,
-                datos_para_realizar_llamada.id_contacto,
-                datos_para_realizar_llamada.telefono,
-                datos_para_realizar_llamada.intentos)
+            logger.debug("Llamador.run(): campana: %s - id_contacto: %s "
+                         "- numero: %s - intento: %s",
+                         datos_para_realizar_llamada.campana.id,
+                         datos_para_realizar_llamada.id_contacto,
+                         datos_para_realizar_llamada.telefono,
+                         datos_para_realizar_llamada.intentos)
 
             originate_ok = self.procesar_contacto(datos_para_realizar_llamada)
 
             self.rr_tracker.originate_throttler.set_originate(originate_ok)
+
+            if not self.running_status.should_continue_running:
+                logger.info("Llamador.run(): should_continue_running es False. Exit!")
+                return
 
             current_loop += 1
             if max_loops > 0 and current_loop > max_loops:

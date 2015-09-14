@@ -36,6 +36,28 @@
     - deploy
     - docker
 
+- name: Upload scripts to deploy/bin
+  template: src={{item}} dest=/home/ftsender/deploy/bin mode=0755
+  with_items:
+    - bin/run_uwsgi.sh
+    - bin/manage.sh
+    - bin/db_update_plpython_stored_proc.sh
+    - bin/stop-ftsender-daemons-for-deploy.py
+    - bin/start-ftsender-daemons-for-deploy.py
+  tags:
+    - deploy
+    - docker
+
+- name: Stop FTSender services (except FastAGI daemon)
+  shell: python -u /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.py 2>&1
+  sudo: yes
+  ignore_errors: no
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
 #----------------------------------------------------------------------
 # pip / virtualenv
 #----------------------------------------------------------------------
@@ -175,17 +197,6 @@
     - deploy
     - docker
 
-- name: Upload scripts to deploy/bin
-  template: src={{item}} dest=/home/ftsender/deploy/bin mode=0755
-  with_items:
-    - bin/run_uwsgi.sh
-    - bin/manage.sh
-    - bin/db_update_plpython_stored_proc.sh
-    - bin/restart-ftsender.sh
-  tags:
-    - deploy
-    - docker
-
 - name: Install stored procedures
   shell: >
     /home/ftsender/deploy/bin/db_update_plpython_stored_proc.sh
@@ -216,16 +227,19 @@
 # Con supervisor configurado, hacemos reload
 #----------------------------------------------------------------------
 
-- name: Reload FTSender services (except FastAGI daemon)
-  command: /home/ftsender/deploy/bin/restart-ftsender.sh
+
+- name: Start FTSender services (except FastAGI daemon)
+  shell: python -u /home/ftsender/deploy/bin/start-ftsender-daemons-for-deploy.py 2>&1
   sudo: yes
-  ignore_errors: True
+  ignore_errors: no
   tags:
     - deploy
     - quick_deploy
     - update_settings
     - docker
 
+# FIXME: si 'start' falla, deberiamos ejecutar 'stop', para asegurarnos
+#        que nada haya quedado andando, ¿no?
 
 #----------------------------------------------------------------------
 # Checks
