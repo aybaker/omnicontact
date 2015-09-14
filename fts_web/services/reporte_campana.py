@@ -24,18 +24,13 @@ from django.utils.encoding import force_text
 
 logger = logging.getLogger(__name__)
 
-argentina = timezone(settings.TIME_ZONE)
 
 def convert_timestamp_fecha_hora_local(timestamp):
     """
     Este metodo convierte los timestamp, a fecha hora local 
     """
-    print timestamp.astimezone(argentina)
-    _, hora_timezone = timestamp.__str__().split(' ')
-    print hora_timezone
-    _, timezone = hora_timezone.split('-')
-    fecha_convertida = timestamp + datetime.timedelta(hours = timezone)
-    print fecha_convertida
+    argentina = timezone(settings.TIME_ZONE)
+    fecha_convertida = timestamp.astimezone(argentina)
     return fecha_convertida
 
 
@@ -134,13 +129,12 @@ class ArchivoDeReporteCsv(object):
                         lista_opciones.append(None)
                     else:
                         assert isinstance(dialstatus_razon_de_llamada_no_atendida.timestamp, datetime.datetime)
-                        lista_opciones.append(dialstatus_razon_de_llamada_no_atendida.timestamp.strftime("%d/%m/%y %H:%M"))
+                        fecha_convertida = (convert_timestamp_fecha_hora_local(dialstatus_razon_de_llamada_no_atendida.timestamp))
+                        lista_opciones.append(fecha_convertida.strftime("%d/%m/%y %H:%M:%S"))
                 else:
                     assert isinstance(timestamp_evento_finalizador, datetime.datetime)
-                    fecha_formateada = timestamp_evento_finalizador.strftime("%d/%m/%y %H:%M")
                     fecha_convertida = (convert_timestamp_fecha_hora_local(timestamp_evento_finalizador))
-                    print fecha_convertida
-                    lista_opciones.append(fecha_formateada)
+                    lista_opciones.append(fecha_convertida.strftime("%d/%m/%y %H:%M:%S"))
 
                 # Agregamos opciones digitadas por contacto
                 for opcion in range(10):
