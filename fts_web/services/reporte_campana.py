@@ -24,13 +24,14 @@ from django.utils.encoding import force_text
 
 logger = logging.getLogger(__name__)
 
+TIMEZONE_CONFIGURADA = timezone(settings.TIME_ZONE)
+
 
 def convert_timestamp_fecha_hora_local(timestamp):
     """
-    Este metodo convierte los timestamp, a fecha hora local 
+    Este metodo convierte los timestamp, a fecha hora local
     """
-    argentina = timezone(settings.TIME_ZONE)
-    fecha_convertida = timestamp.astimezone(argentina)
+    fecha_convertida = timestamp.astimezone(TIMEZONE_CONFIGURADA)
     return fecha_convertida
 
 
