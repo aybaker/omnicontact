@@ -342,7 +342,7 @@
 
 - name: Cargar modulo reporte sms
   shell: >
-    /home/ftsender/deploy/bin/buid_reporte_sms.sh
+    /home/ftsender/deploy/bin/build_reporte_sms.sh
   when: fts_distribution == "centos6" 
   sudo: yes
   tags:
