@@ -340,6 +340,14 @@
     - db
     - docker
 
+- name: Copy reporte sms 
+  copy: src={{BUILD_DIR_REPORTE_SMS}}/reporte_sms.tar.gz dest=/home/ftsender/deploy/appsms
+  sudo: yes
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
 - name: Cargar modulo reporte sms
   shell: >
     /home/ftsender/deploy/bin/build_reporte_sms.sh
