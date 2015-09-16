@@ -56,7 +56,7 @@ mkdir -p $TMP/reportesms
 echo "Usando directorio temporal: $TMP/reportesms..."
 
 echo "Descargando modulo reporte sms en directorio temporal"
-tar -xzf /home/deployer/aplicacionsms/reporte_sms.tar.gz -C $TMP/reportesms
+cp /home/deployer/aplicacionsms/reporte_sms.tar.gz $TMP/reportesms
 
 # ----------
 
