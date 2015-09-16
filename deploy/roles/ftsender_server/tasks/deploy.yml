@@ -73,6 +73,17 @@
     - quick_deploy
     - docker
 
+- name: Upload built reporte sms (rsync to /reportesms)
+  # Copies xxx/reportesms/reporte_sms to /var/www/http 
+  synchronize: >
+    src={{BUILD_DIR_REPORTE_SMS}}/reporte_sms
+    dest=/var/www/http
+    delete=yes checksum=yes times=no
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
 - name: Setup virtualenv
   pip: >
     requirements=/home/ftsender/deploy/app/requirements.txt
