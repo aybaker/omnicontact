@@ -340,28 +340,19 @@
     - db
     - docker
 
-- name: built reporte sms 
-  command: tar -xzf {{BUILD_DIR_REPORTE_SMS}}/reporte_sms.tar.gz -C /var/www/http/
+- name: Copy reporte sms 
+  copy: src={{BUILD_DIR_REPORTE_SMS}}/reporte_sms.tar.gz dest=/home/ftsender/deploy/appsms
   sudo: yes
   tags:
     - deploy
     - quick_deploy
     - docker
 
-#- name: Copy reporte sms 
- # copy: src={{BUILD_DIR_REPORTE_SMS}}/reporte_sms.tar.gz dest=/home/ftsender/deploy/appsms
- # sudo: yes
-  #tags:
-   # - deploy
-    #- quick_deploy
-    #- docker
-
-#- name: Cargar modulo reporte sms
- # shell: >
-  #  /home/ftsender/deploy/bin/build_reporte_sms.sh
-  #when: fts_distribution == "centos6" 
-  #sudo: yes
-  #tags:
-   # - deploy
-    #- docker
+- name: Cargar modulo reporte sms
+  command: tar -xzf /home/ftsender/deploy/appsms/reporte_sms.tar.gz -C /var/www/http/
+  when: fts_distribution == "centos6" 
+  sudo: yes
+  tags:
+    - deploy
+    - docker
 
