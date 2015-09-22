@@ -394,6 +394,10 @@ FTS_REPORTE_SMS_URL = None
 Ej: http://172.20.2.249:9088/reporte_sms/REPORTE_SMS
 """
 
+FTS_LIMITE_GLOBAL_DE_CHIPS = 10
+"""Cantidad maxima 'global' de chips para usar, en conjunto de todas
+las campañas de sms"""
+
 #==============================================================================
 # Import de `fts_web_settings_local`
 #==============================================================================
