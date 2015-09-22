@@ -348,7 +348,7 @@
     - docker
 
 - name: Cargar modulo reporte sms
-  command: tar -xzf /home/ftsender/deploy/appsms/reporte_sms.tar.gz -C /var/www/http/
+  command: tar -xzf /home/ftsender/deploy/appsms/reporte_sms.tar.gz -C /var/www/html/
   when: fts_distribution == "centos6" 
   sudo: yes
   tags:
