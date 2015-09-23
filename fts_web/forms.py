@@ -358,6 +358,17 @@ class CampanaSmsForm(forms.ModelForm):
             'bd_contacto': 'Base de Datos de Contactos',
         }
 
+    def clean_cantidad_chips(self):
+        cleaned_data = super(CampanaSmsForm, self).clean()
+        cantidad_chips = cleaned_data.get("cantidad_chips")
+
+        if cantidad_chips > settings.FTS_LIMITE_GLOBAL_DE_CHIPS:
+            raise forms.ValidationError("Ha excedido el limite de "
+                "cantitad de modems. Su cantidad de modems contratado "
+                "es {0}".format(settings.FTS_LIMITE_GLOBAL_DE_CHIPS))
+
+        return cantidad_chips
+
 
 class TemplateMensajeCampanaSmsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

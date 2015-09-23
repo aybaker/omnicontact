@@ -120,6 +120,8 @@ FTS_LIMITE_GLOBAL_DE_CANALES = {{dj_sett_FTS_LIMITE_GLOBAL_DE_CANALES}}
 
 FTS_REPORTE_SMS_URL = '{{dj_sett_FTS_REPORTE_SMS_URL}}'
 
+FTS_LIMITE_GLOBAL_DE_CHIPS = {{dj_sett_FTS_LIMITE_GLOBAL_DE_CHIPS}}
+
 _logging_output_file = os.environ.get("FTS_LOGFILE", "django.log")
 assert os.path.split(_logging_output_file)[0] == "",\
     "La variable de entorno FTS_LOGFILE solo debe contener " +\
