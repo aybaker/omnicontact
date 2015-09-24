@@ -1819,7 +1819,9 @@ class CampanaSms(AbstractCampana):
         choices=ESTADOS, default=ESTADO_EN_DEFINICION)
 
     cantidad_chips = models.PositiveIntegerField()
-    template_mensaje = models.TextField(null=True, blank=True)
+    template_mensaje = models.TextField()
+    template_mensaje_opcional = models.TextField(null=True, blank=True)
+    template_mensaje_alternativo = models.TextField(null=True, blank=True)
     tiene_respuesta = models.BooleanField()
     identificador_campana_sms = models.PositiveIntegerField(unique=True)
 
@@ -1828,6 +1830,11 @@ class CampanaSms(AbstractCampana):
 
     def __unicode__(self):
         return self.nombre
+
+    def valida_mensaje(self):
+        if self.template_mensaje:
+            return True
+        return False
 
     def confirmar(self):
         """
