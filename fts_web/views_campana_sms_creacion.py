@@ -70,7 +70,7 @@ class CampanaSmsCreateView(CreateView):
         return super(CampanaSmsCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('datos_basicos_campana_sms',
+        return reverse('template_mensaje_campana_sms',
                        kwargs={"pk_campana_sms": self.object.pk})
 
 
