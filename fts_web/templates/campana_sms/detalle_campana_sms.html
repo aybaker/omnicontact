@@ -43,17 +43,26 @@
                     <dl>
                    
                     <hr>
-
-                    <h4>Cuerpo del Mensaje</h4>
+                        <h4>Cuerpo del Mensaje</h4>
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr class="fts-table-bg">
+                                <th></th>
                                 <th>Mensaje</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
+                                <td>Principal</td>
                                 <td>{{ campana_sms.template_mensaje }}</td>
+                            </tr>
+                            <tr>
+                                <td>Opcional</td>
+                                <td>{{ campana_sms.template_mensaje_opcional }}</td>
+                            </tr>
+                            <tr>
+                                <td>Alternativo</td>
+                                <td>{{ campana_sms.template_mensaje_alternativo }}</td>
                             </tr>
                         </tbody>
                     </table>
