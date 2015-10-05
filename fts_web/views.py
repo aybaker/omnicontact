@@ -11,6 +11,7 @@ from fts_web.views_campana import *  # @UnusedWildImport
 from fts_web.views_campana_sms import *  # @UnusedWildImport
 from fts_web.views_campana_creacion import *  # @UnusedWildImport
 from fts_web.views_campana_sms_creacion import *  # @UnusedWildImport
+from fts_web.views_campana_sms_reciclado import * # @UnusedWildImport
 from fts_web.views_grupo_atencion import *  # @UnusedWildImport
 from fts_web.views_campana_reciclado import *  # @UnusedWildImport
 from fts_web.views_campana_template import *  # @UnusedWildImport
