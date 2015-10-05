@@ -200,7 +200,11 @@ urlpatterns = patterns('',
         login_required(views.ConfirmaCampanaSmsView.as_view()),
         name='confirma_campana_sms',
     ),
-
+    #Reciclado
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/recicla/tipo/$',
+        login_required(views.TipoRecicladoCampanaSmsView.as_view()),
+        name='tipo_reciclado_campana_sms',
+    ),
 
 
 
