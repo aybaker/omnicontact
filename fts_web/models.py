@@ -1773,6 +1773,13 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
         """
         return self.filter(estado=CampanaSms.ESTADO_CONFIRMADA)
 
+    def obtener_confirmadas_pausadas(self):
+        """Devuelve campañas en estado confirmadas.
+        """
+        ESTADOS_PARA_MOSTRAR = [CampanaSms.ESTADO_CONFIRMADA,
+                                CampanaSms.ESTADO_PAUSADA]
+        return self.filter(estado__in=ESTADOS_PARA_MOSTRAR)
+
     def obtener_para_detalle(self, campana_sms_id):
         """Devuelve la campaña pasada por ID, siempre que a dicha
         campaña se le pueda ver el detalle, debe estar en estado activa,
@@ -1788,6 +1795,21 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
             raise(SuspiciousOperation("No se encontro campana en "
                                       "estado ESTADO_CONFIRMADA."))
 
+    def obtener_campana_sms_para_reciclar(self, campana_sms_id):
+        """Devuelve la campaña sms pasada por ID, siempre que dicha
+        campaña pueda ser reciclada. Debe haber estar confirmada ó pausada.
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            ESTADOS_RECICLAR = [CampanaSms.ESTADO_CONFIRMADA,
+                                CampanaSms.ESTADO_PAUSADA]
+            return self.filter(estado__in=ESTADOS_RECICLAR).get(
+                pk=campana_sms_id)
+        except CampanaSms.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana en estado"
+                                      "ESTADO_CONFIRMADA ó ESTADO_PAUSADA"))
+
 
 class CampanaSms(AbstractCampana):
     """
@@ -1801,6 +1823,14 @@ class CampanaSms(AbstractCampana):
 
     objects = CampanaSmsManager()
 
+    TIPO_RECICLADO_TOTAL = 1
+    TIPO_RECICLADO_ERROR_ENVIO = 2
+
+    TIPO_RECICLADO_UNICO = (
+        (TIPO_RECICLADO_TOTAL, 'TOTAL'),
+        (TIPO_RECICLADO_ERROR_ENVIO, 'ERROR DE ENVIO'),
+    )
+
     # FIXME: El atributo estado podría ir en la clase base,
     # pero las constantes que definen las choices no se
     # sobreescriben. Revisar.
@@ -1810,9 +1840,13 @@ class CampanaSms(AbstractCampana):
     ESTADO_CONFIRMADA = 2
     """Se completó la definición de la campaña en el wizard"""
 
+    ESTADO_PAUSADA = 3
+    """La capaña fue pausada"""
+
     ESTADOS = (
         (ESTADO_EN_DEFINICION, '(en definicion)'),
         (ESTADO_CONFIRMADA, 'Confirmada'),
+        (ESTADO_PAUSADA, 'Pausada'),
     )
 
     estado = models.PositiveIntegerField(
