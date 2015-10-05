@@ -499,6 +499,29 @@ class TipoRecicladoForm(forms.Form):
         )
 
 
+class TipoRecicladoCampanaSmsForm(forms.Form):
+    tipo_reciclado_unico = forms.ChoiceField(
+        choices=CampanaSms.TIPO_RECICLADO_UNICO,
+        widget=forms.RadioSelect,
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(TipoRecicladoCampanaSmsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+        self.helper.form_id = 'id_guardar'
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Field('tipo_reciclado_unico', css_class='radio_reciclado'),
+            HTML("""
+                <button type="submit" name="continuar" id="submit-id-continuar"
+                    class="btn btn-default pull-right modal_proceso_grande">
+                    Continuar
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </button>"""),
+        )
+
 # =============================================================================
 # Calificaciones
 # =============================================================================
