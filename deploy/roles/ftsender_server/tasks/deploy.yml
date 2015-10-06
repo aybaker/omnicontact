@@ -280,7 +280,7 @@
 - name: Upload usb_modeswitch
   command: /home/ftsender/deploy/bin/usb_modem.sh
   sudo: yes
-- when: repo_usb_modeswitch_installed and fts_distribution == "centos6"
+  when: repo_usb_modeswitch_installed and fts_distribution == "centos6"
   tags:
     - deploy
     - quick_deploy
