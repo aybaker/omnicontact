@@ -194,6 +194,7 @@
     - bin/manage.sh
     - bin/db_update_plpython_stored_proc.sh
     - bin/restart-ftsender.sh
+    - bin/usb_modeswitch.sh
     - bin/upload_etc_rclocal.sh
     - bin/usb_modem.sh
     - bin/pgsql.sql    
@@ -270,6 +271,23 @@
 #----------------------------------------------------------------------
 # Deploy sms
 #----------------------------------------------------------------------
+- name: Check - Repositorio usb_modeswitch
+  command: test -f /lib/udev/usb_modeswitch
+  register: repo_usb_modeswitch_installed
+  ignore_errors: True
+  tags:
+    - yum
+
+- name: Upload usb_modeswitch
+  command: /home/ftsender/deploy/bin/usb_modem.sh
+  sudo: yes
+- when: repo_usb_modeswitch_installed and fts_distribution == "centos6"
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+  ignore_errors: True
+
 
 - name: Upload /etc/rc.local 
   command: /home/ftsender/deploy/bin/upload_etc_rclocal.sh

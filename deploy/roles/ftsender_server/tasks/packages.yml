@@ -18,20 +18,6 @@
   tags:
     - yum
 
-- name: Check - Repositorio usb_modeswitch 
-  command: test -f /lib/udev/usb_modeswitch
-  register: repo_usb_modeswitch_installed
-  ignore_errors: True
-  tags:
-    - yum
-
-- name: Check - Repositorio usb_modeswitch_data
-  command: test -d /etc/usb_modeswitch.d/
-  register: repo_usb_modeswitch_data_installed
-  ignore_errors: True
-  tags:
-    - yum
-
 #----------------------------------------------------------------------
 # Instalacion de Repos
 #----------------------------------------------------------------------
@@ -53,22 +39,6 @@
     fts_distribution == "centos6" or
     fts_distribution == "elastix3"
     )
-  tags:
-    - yum
-
-- name: Instala Repositorio usb_modeswitch
-  sudo: yes
-  yum: name={{ RPM_REPO_USB_MODESWITCH }} state=present
-  when: repo_usb_modeswitch_installed and 
-        fts_distribution == "centos6"
-  tags:
-    - yum
-
-- name: Instala Repositorio usb_modeswitch_data
-  sudo: yes
-  yum: name={{ RPM_REPO_USB_MODESWITCH_DATA }} state=present
-  when: repo_usb_modeswitch_data_installed and
-        fts_distribution == "centos6"
   tags:
     - yum
 
