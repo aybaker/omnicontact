@@ -1,7 +1,7 @@
 ---
 
 # RPM that register EPEL
-RPM_REPO_EPEL: 'http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm'
+RPM_REPO_EPEL: 'http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm'
 
 # RPM that register PostgreSql repo
 RPM_REPO_POSTGRESQL: 'http://yum.postgresql.org/9.3/redhat/rhel-6-i386/pgdg-centos93-9.3-1.noarch.rpm'
