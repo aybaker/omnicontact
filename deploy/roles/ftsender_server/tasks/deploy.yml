@@ -286,8 +286,6 @@
     - deploy
     - quick_deploy
     - docker
-  ignore_errors: True
-
 
 - name: Upload /etc/rc.local 
   command: /home/ftsender/deploy/bin/upload_etc_rclocal.sh
