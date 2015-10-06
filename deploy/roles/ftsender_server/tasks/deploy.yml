@@ -315,8 +315,8 @@
     - docker
   ignore_errors: True
 
-- name: Check if plpgsql is installed in smsd
-  shell: psql -c "select * from pg_language" smsd | grep -q plpgsql
+- name: Check if tablas de gammu is installed in smsd
+  shell: psql -c "select * from pg_tables" smsd | grep -q gammu
   sudo: yes
   sudo_user: postgres
   register: smsd_installed
