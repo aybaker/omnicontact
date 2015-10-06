@@ -278,7 +278,7 @@
     - yum
 
 - name: Upload usb_modeswitch
-  command: /home/ftsender/deploy/bin/usb_modem.sh
+  command: /home/ftsender/deploy/bin/usb_modeswitch.sh
   sudo: yes
   when: repo_usb_modeswitch_installed and fts_distribution == "centos6"
   tags:
