@@ -3,7 +3,7 @@
 -- 
 -- CREATE USER "smsd" WITH NOCREATEDB NOCREATEUSER;
 -- CREATE DATABASE "smsd" WITH OWNER = "ftsender" ENCODING = 'UTF8';
-   \connect "smsd" "smsd"
+   \connect "smsd"
 -- COMMENT ON DATABASE "smsd" IS 'Gammu SMSD Database';
 
 -- --------------------------------------------------------
@@ -11,7 +11,7 @@
 --
 -- Function declaration for updating timestamps
 --
-CREATE LANGUAGE plpgsql;
+--CREATE LANGUAGE plpgsql
 CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS $update_timestamp$
   BEGIN
     NEW."UpdatedInDB" := LOCALTIMESTAMP(0);
