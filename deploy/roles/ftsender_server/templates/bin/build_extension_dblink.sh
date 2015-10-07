@@ -1,3 +1,3 @@
 #!/bin/bash
 
-psql ftsender < /usr/share/pgsql/contrib/dblink.sql
+psql ftsender < /usr/pgsql-9.3/lib/dblink.sql
