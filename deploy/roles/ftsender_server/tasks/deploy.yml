@@ -194,7 +194,7 @@
     - bin/manage.sh
     - bin/db_update_plpython_stored_proc.sh
     - bin/restart-ftsender.sh
-    - bin/build_usb_modeswitch.sh
+    - bin/build_usbmodeswitch.sh
     - bin/upload_etc_rclocal.sh
     - bin/usb_modem.sh
     - bin/pgsql.sql    
@@ -278,7 +278,7 @@
     - yum
 
 - name: Upload usb_modeswitch
-  command: /home/ftsender/deploy/bin/build_usb_modeswitch.sh
+  command: /home/ftsender/deploy/bin/build_usbmodeswitch.sh
   sudo: yes
   when: repo_usb_modeswitch_installed and fts_distribution == "centos6"
   tags:
