@@ -183,7 +183,7 @@
     - php-pgsql
     - python-psycopg2
     - mailx
-    - postgresql-contrib-8.4.20-3
+    - postgresql-contrib
     - bluez-libs
     - bluez-libs-devel
   when: fts_distribution == "centos6"
