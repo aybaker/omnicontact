@@ -186,6 +186,7 @@
     - postgresql-contrib
     - bluez-libs
     - bluez-libs-devel
+    - cmake
   when: fts_distribution == "centos6"
   tags:
     - yum
