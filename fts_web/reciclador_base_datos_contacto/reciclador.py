@@ -172,3 +172,7 @@ class RecicladorBaseDatosContacto(object):
             bd_contacto_reciclada.genera_contactos(contactos_reciclados)
             bd_contacto_reciclada.define()
             return bd_contacto_reciclada
+
+        else:
+            raise CampanaTipoRecicladoInvalidoError(
+                    "No se selecciono mas un tipo de reciclado valido ")
