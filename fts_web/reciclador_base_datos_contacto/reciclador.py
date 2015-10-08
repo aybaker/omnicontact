@@ -132,7 +132,7 @@ class RecicladorBaseDatosContacto(object):
         # Obtenemos la instancia de CampanaSms que se esta reciclando y
         # validamos que se encuentre en el estado correcto.
         campana = self._obtener_campana_sms(campana_id)
-        if campana.estado not in (CampanaSms.ESTADO_CONFIRMADA or
+        if campana.estado not in (CampanaSms.ESTADO_CONFIRMADA,
                                   CampanaSms.ESTADO_PAUSADA):
             raise CampanaEstadoInvalidoError(
                 "El estado de la campana que se intenta reciclar no es: "
