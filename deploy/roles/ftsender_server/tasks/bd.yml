@@ -88,11 +88,30 @@
     - db
     - docker
 
+- name: Check if plpgsql is installed
+  shell: psql -c "select * from pg_language" ftsender | grep -q plpgsql
+  sudo: yes
+  sudo_user: postgres
+  register: plpgsql_installed
+  ignore_errors: True
+  tags:
+    - db
+    - docker
+
 - name: Install plpython if not installed
   command: createlang plpythonu ftsender
   sudo: yes
   sudo_user: postgres
   when: plpython_installed|failed
+  tags:
+    - db
+    - docker
+
+- name: Install plpgsql if not installed
+  command: createlang plpgsql ftsender
+  sudo: yes
+  sudo_user: postgres
+  when: plpgsql_installed|failed
   tags:
     - db
     - docker
@@ -108,3 +127,27 @@
     - db
     - docker
     - docker-image
+
+#----------------------------------------------------------------------
+# Gammu
+#----------------------------------------------------------------------
+# Se va hacer momentaneamente hasta que se migre todo a ftsender
+- name: Create PostgreSql user smsd
+  postgresql_user: >
+    name=smsd
+    password=smsd
+    role_attr_flags=CREATEDB,SUPERUSER
+  sudo: yes
+  sudo_user: postgres
+  tags:
+    - db
+    - docker
+
+- name: Create PostgreSql database
+  postgresql_db: name=smsd owner=smsd
+  sudo: yes
+  sudo_user: postgres
+  tags:
+    - db
+    - docker
+

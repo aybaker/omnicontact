@@ -163,3 +163,31 @@
   tags:
     - yum
     - docker-image
+
+- name: Install basic packages for gammusms
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - tcl
+    - libusb
+    - libusb-devel
+    - libusb1
+    - libusb1-devel 
+    - usbutils
+    - libdbi-dbd-sqlite
+    - libdbi-dbd-pgsql
+    - libdbi-devel
+    - libdbi-drivers
+    - httpd
+    - php
+    - php-pgsql
+    - python-psycopg2
+    - mailx
+    - postgresql-contrib
+    - bluez-libs
+    - bluez-libs-devel
+    - cmake
+  when: fts_distribution == "centos6"
+  tags:
+    - yum
+    - gammu

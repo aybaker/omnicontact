@@ -1,7 +1,7 @@
 ---
 
 # RPM that register EPEL
-RPM_REPO_EPEL: 'http://epel.mirror.mendoza-conicet.gob.ar/6/i386/epel-release-6-8.noarch.rpm'
+RPM_REPO_EPEL: 'http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm'
 
 # RPM that register PostgreSql repo
 RPM_REPO_POSTGRESQL: 'http://yum.postgresql.org/9.3/redhat/rhel-6-i386/pgdg-centos93-9.3-1.noarch.rpm'
@@ -34,3 +34,17 @@ UWSGI_HTTP_PORT: 8080
 # Asterisk AMI over HTTP
 ASTERISK_AMI_HTTP_BIND: 127.0.0.1
 ASTERISK_AMI_HTTP_PORT: 7088
+
+# URL to download GAMMU sources
+DOWNLOAD_GAMMU_URL: 'http://dl.cihar.com/gammu/releases/gammu-1.34.0.tar.gz'
+
+# File name of downloaded file gammu
+DOWNLOAD_GAMMU_FILENAME: 'gammu-1.34.0.tar.gz'
+
+# Directory created when extracting gammu
+DOWNLOAD_GAMMU_EXTRACT_DIRNAME: 'gammu-1.34.0'
+DOWNLOAD_GAMMU_TARGZ_SHA256: 'dcf93ced37b369a9cfed7d10a71e8d283819c8b779adf630be85e7e7f97e81e2'
+
+# RPM that register usb_modeswitch
+RPM_REPO_USB_MODESWITCH: 'http://apt.sw.be/redhat/el6/en/i386/rpmforge/RPMS/usb_modeswitch-1.1.5-1.el6.rf.i686.rpm'
+RPM_REPO_USB_MODESWITCH_DATA: 'http://apt.sw.be/redhat/el6/en/i386/rpmforge/RPMS/usb_modeswitch-data-20101202-1.el6.rf.noarch.rpm'

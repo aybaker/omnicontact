@@ -8,6 +8,15 @@
     - ntp
     - ntp_check
 
+- name: Copy timezone
+  sudo: yes
+  when: clock_synchronized|failed
+  register: clock_synchronized
+  copy: src={{os_timezone}} dest=/etc/localtime force=yes
+  tags:
+    - ntp
+    - ntp_check
+
 - name: Report timezone errors
   fail: msg="The server has an invalid TIMEZONE - Check {{os_timezone}}"
   when: clock_synchronized|failed

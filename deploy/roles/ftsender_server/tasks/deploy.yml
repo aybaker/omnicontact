@@ -18,6 +18,7 @@
     - /home/ftsender/deploy
     - /home/ftsender/deploy/bin
     - /home/ftsender/deploy/app
+    - /home/ftsender/deploy/appsms
     - /home/ftsender/deploy/local
     - /home/ftsender/deploy/media_root
     - /home/ftsender/deploy/static_root
@@ -76,6 +77,17 @@
   # Copies xxx/app to /home/ftsender/deploy/app (/app on dest is implicit)
   synchronize: >
     src={{BUILD_DIR}}
+    dest=/home/ftsender/deploy
+    delete=yes checksum=yes times=no
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Upload built (rsync to /appsms)
+  # Copies xxx/app to /home/ftsender/deploy/app (/appsms on dest is implicit)
+  synchronize: >
+    src={{BUILD_DIR_SMS}}
     dest=/home/ftsender/deploy
     delete=yes checksum=yes times=no
   tags:
@@ -197,6 +209,24 @@
     - deploy
     - docker
 
+- name: Upload scripts to deploy/bin
+  template: src={{item}} dest=/home/ftsender/deploy/bin mode=0755
+  with_items:
+    - bin/run_uwsgi.sh
+    - bin/manage.sh
+    - bin/db_update_plpython_stored_proc.sh
+    - bin/stop-ftsender-daemons-for-deploy.py
+    - bin/start-ftsender-daemons-for-deploy.py
+    - bin/build_usbmodeswitch.sh
+    - bin/upload_etc_rclocal.sh
+    - bin/usb_modem.sh
+    - bin/pgsql.sql    
+    - bin/build_extension_dblink.sh
+    - bin/build_pgsql.sh
+  tags:
+    - deploy
+    - docker
+
 - name: Install stored procedures
   shell: >
     /home/ftsender/deploy/bin/db_update_plpython_stored_proc.sh
@@ -263,4 +293,107 @@
     - quick_deploy
     - update_settings
     - docker
-    
+
+#----------------------------------------------------------------------
+# Deploy sms
+#----------------------------------------------------------------------
+- name: Check - Repositorio usb_modeswitch
+  command: test -f /lib/udev/usb_modeswitch
+  register: repo_usb_modeswitch_installed
+  ignore_errors: True
+  tags:
+    - yum
+
+- name: Upload usb_modeswitch
+  command: /home/ftsender/deploy/bin/build_usbmodeswitch.sh
+  sudo: yes
+  when: repo_usb_modeswitch_installed|failed and fts_distribution == "centos6"
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Upload /etc/rc.local 
+  command: /home/ftsender/deploy/bin/upload_etc_rclocal.sh
+  sudo: yes
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+  ignore_errors: True
+
+- name: Upload 3g switch script
+  template: >
+    src=usr/sbin/3g_switch
+    dest=/usr/sbin/3g_switch
+    owner=root group=root mode=0777
+  sudo: yes
+  tags:
+    - deploy
+    - docker
+  
+- name: Upload Usb modem modes
+  command: /home/ftsender/deploy/bin/usb_modem.sh
+  sudo: yes
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+  ignore_errors: True
+
+- name: Check if tablas de gammu is installed in smsd
+  shell: psql -c "select * from pg_tables" smsd | grep -q gammu
+  sudo: yes
+  sudo_user: postgres
+  register: smsd_installed
+  ignore_errors: True
+  tags:
+    - db
+    - docker
+
+- name: Correr script creacion de tablas smsd
+  shell: >
+    /home/ftsender/deploy/bin/build_pgsql.sh
+  when: fts_distribution == "centos6" and smsd_installed|failed
+  sudo: yes
+  sudo_user: postgres
+  register: smsd_installed
+  tags:
+    - db
+    - docker
+
+- name: Cargar extension dblink
+  shell: >
+    /home/ftsender/deploy/bin/build_extension_dblink.sh
+  when: fts_distribution == "centos6" 
+  sudo: yes
+  sudo_user: postgres
+  tags:
+    - db
+    - docker
+
+- name: Create extension dblink
+  action: command psql -d ftsender -c "CREATE EXTENSION IF NOT EXISTS dblink"
+  sudo: yes
+  sudo_user: postgres
+  tags:
+    - db
+    - docker
+
+- name: Copy reporte sms 
+  copy: src={{BUILD_DIR_REPORTE_SMS}}/reporte_sms.tar.gz dest=/home/ftsender/deploy/appsms
+  sudo: yes
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Cargar modulo reporte sms
+  command: tar -xzf /home/ftsender/deploy/appsms/reporte_sms.tar.gz -C /var/www/html/
+  when: fts_distribution == "centos6" 
+  sudo: yes
+  tags:
+    - deploy
+    - docker
+
