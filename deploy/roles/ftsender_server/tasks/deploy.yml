@@ -193,7 +193,8 @@
     - bin/run_uwsgi.sh
     - bin/manage.sh
     - bin/db_update_plpython_stored_proc.sh
-    - bin/restart-ftsender.sh
+    - bin/stop-ftsender-daemons-for-deploy.py
+    - bin/start-ftsender-daemons-for-deploy.py
     - bin/build_usbmodeswitch.sh
     - bin/upload_etc_rclocal.sh
     - bin/usb_modem.sh
