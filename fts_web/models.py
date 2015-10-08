@@ -1810,6 +1810,89 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
             raise(SuspiciousOperation("No se encontro campana en estado"
                                       "ESTADO_CONFIRMADA ó ESTADO_PAUSADA"))
 
+    def reciclar_campana_sms(self, campana_sms_id, bd_contacto):
+        """
+        Este método replica la campana pasada por parámetro con fin de
+        reciclar la misma.
+        """
+        try:
+            campana_sms = self.get(pk=campana_sms_id)
+            # Fixme chequear a futuro unestado
+
+        except CampanaSms.DoesNotExist:
+            logger.warn("No se pudo recuperar la CampanaSms: %s", campana_sms_id)
+            raise FtsRecicladoCampanaError("No se pudo recuperar la Campaña de Sms.")
+        else:
+            campana_reciclada = self.replicar_campana_sms(campana_sms)
+            campana_reciclada.nombre = '{0} (reciclada)'.format(
+                campana_reciclada.nombre)
+            campana_reciclada.bd_contacto = bd_contacto
+            campana_reciclada.save()
+
+        return campana_reciclada
+
+    def replicar_campana_sms(self, campana_sms):
+        """
+        Este método se encarga de replicar una campana existente, creando una
+        campana nueva de iguales características.
+        """
+        assert isinstance(campana_sms, CampanaSms)
+
+        # Replica Campana.
+        campana_replicada = self.create(
+            nombre=campana_sms.nombre,
+            cantidad_chips=campana_sms.cantidad_chips,
+            cantidad_intentos=campana.cantidad_intentos,
+            template_mensaje=campana.segundos_ring,
+            fecha_inicio=campana.fecha_inicio,
+            fecha_fin=campana.fecha_fin,
+            duracion_de_audio=campana.duracion_de_audio,
+            bd_contacto=campana.bd_contacto,
+        )
+
+        # Replica Opciones y Calificaciones.
+        opciones = campana.opciones.all()
+        for opcion in opciones:
+            calificacion_replicada = None
+            if opcion.calificacion:
+                calificacion_replicada = Calificacion.objects.create(
+                    nombre=opcion.calificacion.nombre,
+                    campana=campana_replicada,
+                )
+
+            Opcion.objects.create(
+                digito=opcion.digito,
+                accion=opcion.accion,
+                grupo_atencion=opcion.grupo_atencion,
+                derivacion_externa=opcion.derivacion_externa,
+                calificacion=calificacion_replicada,
+                campana=campana_replicada,
+            )
+
+        # Replica Actuaciones.
+        actuaciones = campana.actuaciones.all()
+        for actuacion in actuaciones:
+            Actuacion.objects.create(
+                dia_semanal=actuacion.dia_semanal,
+                hora_desde=actuacion.hora_desde,
+                hora_hasta=actuacion.hora_hasta,
+                campana=campana_replicada,
+            )
+
+        audios_de_campana = campana.audios_de_campana.all()
+        for audio_de_campana in audios_de_campana:
+            AudioDeCampana.objects.create(
+                orden=audio_de_campana.orden,
+                audio_descripcion=audio_de_campana.audio_descripcion,
+                audio_original=audio_de_campana.audio_original,
+                audio_asterisk=audio_de_campana.audio_asterisk,
+                tts=audio_de_campana.tts,
+                archivo_de_audio=audio_de_campana.archivo_de_audio,
+                campana=campana_replicada
+            )
+
+        return campana_replicada
+
 
 class CampanaSms(AbstractCampana):
     """
