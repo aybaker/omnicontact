@@ -175,4 +175,4 @@ class RecicladorBaseDatosContacto(object):
 
         else:
             raise CampanaTipoRecicladoInvalidoError(
-                    "No se selecciono mas un tipo de reciclado valido ")
+                    "No se selecciono un tipo de reciclado valido ")
