@@ -388,20 +388,31 @@ class TemplateMensajeCampanaSmsForm(forms.ModelForm):
         layout = Layout(
             Div(
                 'variables',
-                css_class='col-lg-5'
+                css_class='col-lg-3'
             ),
             Div(
                 'template_mensaje',
-                css_class='col-lg-5'
+                css_class='col-lg-3'
+            ),
+            Div(
+                'template_mensaje_opcional',
+                css_class='col-lg-3'
+            ),
+            Div(
+                'template_mensaje_alternativo',
+                css_class='col-lg-3'
             ),
         )
         self.helper.layout = layout
 
     class Meta:
         model = CampanaSms
-        fields = ('template_mensaje',)
+        fields = ('template_mensaje', 'template_mensaje_opcional',
+                  'template_mensaje_alternativo')
         labels = {
             'template_mensaje': 'Cuerpo del Mensaje',
+            'template_mensaje_opcional': 'Cuerpo del Mensaje Opcional',
+            'template_mensaje_alternativo': 'Cuerpo del Mensaje Alternativo',
         }
 
 

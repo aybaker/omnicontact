@@ -36,7 +36,13 @@ class ConfirmacionCampanaSmsService(object):
                 "Las Actuaciones de la campana no son validas. Debe "
                 "seleccionar actuaciones validas."))
 
+    def _validar_mensaje(self, campana):
+        if not campana.valida_mensaje():
+            raise(ValidarCampanaSmsError(
+                "Debe ingresar el cuerpo de mensaje es obligatorio."))
+
     def confirmar(self, campana_sms):
         self._validar_bd_contacto_campana(campana_sms)
         self._validar_actuacion_campana(campana_sms)
+        self._validar_mensaje(campana_sms)
         campana_sms.confirmar()
