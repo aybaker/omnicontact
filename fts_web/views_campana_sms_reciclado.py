@@ -17,6 +17,8 @@ from fts_web.reciclador_base_datos_contacto.reciclador import (
 from fts_web.views_campana_creacion import (ConfirmaCampanaView,
                                             CheckEstadoCampanaMixin,
                                             CampanaEnDefinicionMixin)
+from fts_web.services.creacion_identificador_sms import (
+    IndentificadorSmsService)
 
 import logging as logging_
 
@@ -60,7 +62,7 @@ class TipoRecicladoCampanaSmsView(FormView):
             # reciclada que usara la campana que se está reciclando.
             reciclador_base_datos_contacto = RecicladorBaseDatosContacto()
             bd_contacto_reciclada = reciclador_base_datos_contacto.\
-                reciclar_campana_sms(self.campana_id, tipos_reciclado)
+                reciclar_campana_sms(self.campana_sms_id, tipos_reciclado)
 
         except (CampanaEstadoInvalidoError,
                 CampanaTipoRecicladoInvalidoError,
@@ -79,8 +81,14 @@ class TipoRecicladoCampanaSmsView(FormView):
             try:
                 # Intenta reciclar la campana con el tipo de reciclado
                 # seleccionado.
-                self.campana_reciclada = CampanaSms.objects.reciclar_campana(
-                    self.campana_sms_id, bd_contacto_reciclada)
+                self.campana_reciclada = CampanaSms.objects.\
+                    reciclar_campana_sms(self.campana_sms_id,
+                                         bd_contacto_reciclada)
+                identificador = IndentificadorSmsService()
+                self.campana_reciclada.identificador_campana_sms = \
+                    identificador.obtener_ultimo_identificador_sms()
+                self.campana_reciclada.save()
+
             except FtsRecicladoCampanaError:
                 # TODO: En esta excepción verificar si la BD generada,
                 # es una "nueva" en la que se reciclaron contactos,
@@ -88,7 +96,7 @@ class TipoRecicladoCampanaSmsView(FormView):
                 # definir si se borra o que acción se realiza.
 
                 message = '<strong>Operación Errónea!</strong>\
-                No se pudo reciclar la Campana.'
+                No se pudo reciclar la Campana SMS.'
 
                 messages.add_message(
                     self.request,
