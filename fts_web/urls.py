@@ -205,9 +205,22 @@ urlpatterns = patterns('',
         login_required(views.TipoRecicladoCampanaSmsView.as_view()),
         name='tipo_reciclado_campana_sms',
     ),
-
-
-
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/recicla/redefinicion/$',
+        login_required(views.RedefinicionRecicladoCampanaSmsView.as_view()),
+        name='redefinicion_reciclado_campana_sms',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/recicla/actuacion/$',
+        login_required(views.ActuacionRecicladoCampanaSmsView.as_view()),
+        name='actuacion_reciclado_campana_sms',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/recicla/actuacion/(?P<pk>\d+)/elimina/$',
+        login_required(views.ActuacionRecicladoCampanaSmsDeleteView.as_view()),
+        name='actuacion_reciclado_campana_sms_elimina',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/recicla/confirma/$',
+        login_required(views.ConfirmaRecicladoCampanaSmsView.as_view()),
+        name='confirma_reciclado_campana_sms',
+    ),
 
     #==========================================================================
     # Campaña

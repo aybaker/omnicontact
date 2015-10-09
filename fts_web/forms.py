@@ -319,7 +319,7 @@ class CampanaForm(forms.ModelForm):
 
 
 class CampanaSmsForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, reciclado=False, *args, **kwargs):
         super(CampanaSmsForm, self).__init__(*args, **kwargs)
 
         self.fields['bd_contacto'].queryset =\
@@ -338,16 +338,28 @@ class CampanaSmsForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
 
-        self.fields['bd_contacto'].required = True
+        if reciclado:
+            self.fields.pop('bd_contacto')
 
-        layout = Layout(
-            Field('nombre'),
-            Field('cantidad_chips'),
-            Field('fecha_inicio'),
-            Field('fecha_fin'),
-            Field('bd_contacto'),
-            Field('tiene_respuesta'),
-        )
+            layout = Layout(
+                Field('nombre'),
+                Field('cantidad_chips'),
+                Field('fecha_inicio'),
+                Field('fecha_fin'),
+                Field('tiene_respuesta'),
+            )
+
+        else:
+            self.fields['bd_contacto'].required = True
+
+            layout = Layout(
+                Field('nombre'),
+                Field('cantidad_chips'),
+                Field('fecha_inicio'),
+                Field('fecha_fin'),
+                Field('bd_contacto'),
+                Field('tiene_respuesta'),
+            )
         self.helper.layout = layout
 
     class Meta:

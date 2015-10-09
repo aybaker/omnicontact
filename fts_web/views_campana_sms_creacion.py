@@ -41,7 +41,7 @@ class CheckEstadoCampanaSmsMixin(object):
                 self.kwargs['pk_campana_sms'])
 
         return super(CheckEstadoCampanaSmsMixin, self).dispatch(request, *args,
-                                                             **kwargs)
+                                                                **kwargs)
 
 
 class CampanaSmsCreateView(CreateView):
