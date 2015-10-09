@@ -1842,53 +1842,31 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
         campana_replicada = self.create(
             nombre=campana_sms.nombre,
             cantidad_chips=campana_sms.cantidad_chips,
-            cantidad_intentos=campana.cantidad_intentos,
-            template_mensaje=campana.segundos_ring,
-            fecha_inicio=campana.fecha_inicio,
-            fecha_fin=campana.fecha_fin,
-            duracion_de_audio=campana.duracion_de_audio,
-            bd_contacto=campana.bd_contacto,
+            fecha_inicio=campana_sms.fecha_inicio,
+            fecha_fin=campana_sms.fecha_fin,
+            bd_contacto=campana_sms.bd_contacto,
+            template_mensaje=campana_sms.template_mensaje,
+            template_mensaje_opcional=campana_sms.template_mensaje_opcional,
+            template_mensaje_alternativo=campana_sms.template_mensaje_alternativo,
+            tiene_respuesta=campana_sms.tiene_respuesta,
         )
 
-        # Replica Opciones y Calificaciones.
-        opciones = campana.opciones.all()
-        for opcion in opciones:
-            calificacion_replicada = None
-            if opcion.calificacion:
-                calificacion_replicada = Calificacion.objects.create(
-                    nombre=opcion.calificacion.nombre,
-                    campana=campana_replicada,
-                )
-
-            Opcion.objects.create(
-                digito=opcion.digito,
-                accion=opcion.accion,
-                grupo_atencion=opcion.grupo_atencion,
-                derivacion_externa=opcion.derivacion_externa,
-                calificacion=calificacion_replicada,
-                campana=campana_replicada,
+        # Replica OpcionSms
+        opciones_sms = campana_sms.opcionsms.all()
+        for opcion in opciones_sms:
+            OpcionSms.objects.create(
+                repuesta=opcion.repuesta,
+                campana_sms=campana_replicada,
             )
 
         # Replica Actuaciones.
-        actuaciones = campana.actuaciones.all()
+        actuaciones = campana_sms.actuaciones.all()
         for actuacion in actuaciones:
             Actuacion.objects.create(
                 dia_semanal=actuacion.dia_semanal,
                 hora_desde=actuacion.hora_desde,
                 hora_hasta=actuacion.hora_hasta,
                 campana=campana_replicada,
-            )
-
-        audios_de_campana = campana.audios_de_campana.all()
-        for audio_de_campana in audios_de_campana:
-            AudioDeCampana.objects.create(
-                orden=audio_de_campana.orden,
-                audio_descripcion=audio_de_campana.audio_descripcion,
-                audio_original=audio_de_campana.audio_original,
-                audio_asterisk=audio_de_campana.audio_asterisk,
-                tts=audio_de_campana.tts,
-                archivo_de_audio=audio_de_campana.archivo_de_audio,
-                campana=campana_replicada
             )
 
         return campana_replicada
