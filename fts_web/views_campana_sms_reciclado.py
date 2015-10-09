@@ -81,7 +81,6 @@ class TipoRecicladoCampanaSmsView(FormView):
             try:
                 # Intenta reciclar la campana con el tipo de reciclado
                 # seleccionado.
-
                 self.campana_reciclada = CampanaSms.objects.\
                     reciclar_campana_sms(self.campana_sms_id,
                                          bd_contacto_reciclada)

@@ -111,6 +111,7 @@ class RecicladorBaseDatosContacto(object):
         bd_contacto_reciclada.define()
         return bd_contacto_reciclada
 
+
     def reciclar_campana_sms(self, campana_sms_id, tipos_reciclado):
         logger.info("Se iniciara el proceso de reciclado de base de datos"
                     " para la campana de sms %s", campana_sms_id)

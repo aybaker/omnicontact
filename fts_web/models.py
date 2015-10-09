@@ -1861,6 +1861,7 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
 
         # Replica Actuaciones.
         actuaciones = campana_sms.actuaciones.all()
+
         for actuacion in actuaciones:
             Actuacion.objects.create(
                 dia_semanal=actuacion.dia_semanal,
