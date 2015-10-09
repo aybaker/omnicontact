@@ -20,6 +20,8 @@ from fts_web.models import (Campana, CampanaSms, OpcionSms,
 
 from fts_web.services.creacion_campana_sms import (
     ConfirmacionCampanaSmsService, ValidarCampanaSmsError)
+from fts_web.services.creacion_identificador_sms import (
+    IndentificadorSmsService)
 
 import logging as logging_
 
@@ -57,14 +59,9 @@ class CampanaSmsCreateView(CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
 
-        # TODO: Cambiar la creación del identificador y pasarla a un servicio.
-        try:
-            identificador = \
-                CampanaSms.objects.latest('id').identificador_campana_sms + 1
-        except CampanaSms.DoesNotExist:
-            identificador = 1000
-
-        self.object.identificador_campana_sms = identificador
+        identificador = IndentificadorSmsService()
+        self.object.identificador_campana_sms = identificador.\
+            obtener_ultimo_identificador_sms()
         self.object.save()
 
         return super(CampanaSmsCreateView, self).form_valid(form)
