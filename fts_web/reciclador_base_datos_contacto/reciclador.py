@@ -111,9 +111,9 @@ class RecicladorBaseDatosContacto(object):
         bd_contacto_reciclada.define()
         return bd_contacto_reciclada
 
-    def reciclar_campana_sms(self, campana_id, tipos_reciclado):
+    def reciclar_campana_sms(self, campana_sms_id, tipos_reciclado):
         logger.info("Se iniciara el proceso de reciclado de base de datos"
-                    " para la campana de sms %s", campana_id)
+                    " para la campana de sms %s", campana_sms_id)
 
         # Validamos que el parámetro tipos_reciclado contenga datos.
         if not tipos_reciclado:
@@ -131,8 +131,8 @@ class RecicladorBaseDatosContacto(object):
 
         # Obtenemos la instancia de CampanaSms que se esta reciclando y
         # validamos que se encuentre en el estado correcto.
-        campana = self._obtener_campana_sms(campana_id)
-        if campana.estado not in (CampanaSms.ESTADO_CONFIRMADA,
+        campana_sms = self._obtener_campana_sms(campana_sms_id)
+        if campana_sms.estado not in (CampanaSms.ESTADO_CONFIRMADA,
                                   CampanaSms.ESTADO_PAUSADA):
             raise CampanaEstadoInvalidoError(
                 "El estado de la campana que se intenta reciclar no es: "
@@ -146,7 +146,7 @@ class RecicladorBaseDatosContacto(object):
                     "Se selecciono mas de un tipo de reciclado, cuando "
                     "deberia ser solo el tipo: TIPO_RECICLADO_TOTAL.")
 
-            return campana.bd_contacto
+            return campana_sms.bd_contacto
 
         elif CampanaSms.TIPO_RECICLADO_ERROR_ENVIO in tipos_reciclado:
             # Validamos que si el tipo de reciclado es
@@ -158,7 +158,7 @@ class RecicladorBaseDatosContacto(object):
                     "deberia ser solo el tipo: TIPO_RECICLADO_ERROR_ENVIO.")
             reciclador = RecicladorContactosCampanaSMS()
             contactos_reciclados = reciclador.\
-                obtener_contactos_reciclados(campana, tipos_reciclado)
+                obtener_contactos_reciclados(campana_sms, tipos_reciclado)
 
             # Si no se devolvieron contactos reciclados se genera una excepción.
             if not contactos_reciclados:
@@ -168,7 +168,7 @@ class RecicladorBaseDatosContacto(object):
                     "reciclado seleccionado.")
 
             # Creamos la insancia de BaseDatosContacto para el reciclado.
-            bd_contacto_reciclada = campana.bd_contacto.copia_para_reciclar()
+            bd_contacto_reciclada = campana_sms.bd_contacto.copia_para_reciclar()
             bd_contacto_reciclada.genera_contactos(contactos_reciclados)
             bd_contacto_reciclada.define()
             return bd_contacto_reciclada
