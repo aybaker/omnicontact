@@ -1768,6 +1768,19 @@ class Campana(AbstractCampana):
 
 class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
 
+    def obtener_ultimo_identificador_sms(self):
+        """
+        Este metodo se encarga de devolver el siguinte identificador sms
+        y si no existe campana sms me devuelve 1000
+        """
+        try:
+            identificador = \
+                self.latest('id').identificador_campana_sms + 1
+        except CampanaSms.DoesNotExist:
+            identificador = 1000
+
+        return identificador
+
     def obtener_confirmadas(self):
         """Devuelve campañas en estado confirmadas.
         """
@@ -1849,13 +1862,14 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
             template_mensaje_opcional=campana_sms.template_mensaje_opcional,
             template_mensaje_alternativo=campana_sms.template_mensaje_alternativo,
             tiene_respuesta=campana_sms.tiene_respuesta,
+            identificador_campana_sms=self.obtener_ultimo_identificador_sms(),
         )
 
         # Replica OpcionSms
-        opciones_sms = campana_sms.opcionsms.all()
+        opciones_sms = campana_sms.opcionsmss.all()
         for opcion in opciones_sms:
             OpcionSms.objects.create(
-                repuesta=opcion.repuesta,
+                respuesta=opcion.respuesta,
                 campana_sms=campana_replicada,
             )
 
@@ -1863,11 +1877,11 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
         actuaciones = campana_sms.actuaciones.all()
 
         for actuacion in actuaciones:
-            Actuacion.objects.create(
+            ActuacionSms.objects.create(
                 dia_semanal=actuacion.dia_semanal,
                 hora_desde=actuacion.hora_desde,
                 hora_hasta=actuacion.hora_hasta,
-                campana=campana_replicada,
+                campana_sms=campana_replicada,
             )
 
         return campana_replicada
