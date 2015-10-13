@@ -1786,12 +1786,10 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
         """
         return self.filter(estado=CampanaSms.ESTADO_CONFIRMADA)
 
-    def obtener_confirmadas_pausadas(self):
-        """Devuelve campañas en estado confirmadas.
+    def obtener_pausadas(self):
+        """Devuelve campañas en estado pausadas.
         """
-        ESTADOS_PARA_MOSTRAR = [CampanaSms.ESTADO_CONFIRMADA,
-                                CampanaSms.ESTADO_PAUSADA]
-        return self.filter(estado__in=ESTADOS_PARA_MOSTRAR)
+        return self.filter(estado=CampanaSms.ESTADO_PAUSADA)
 
     def obtener_para_detalle(self, campana_sms_id):
         """Devuelve la campaña pasada por ID, siempre que a dicha
