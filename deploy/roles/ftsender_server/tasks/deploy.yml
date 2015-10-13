@@ -316,9 +316,8 @@
 
 - name: Copy archivo T-Mobile NL (Huawei E352)
   sudo: yes
-  when: repo_usb_modeswitch_installed|failed and fts_distribution == "centos6"
-  register: clock_synchronized
-  copy: src=etc/usb_modeswitch.d/12d1:14fe dest=/etc/usb_modeswitch.d/12d1:14fe 
+  when: repo_usb_modeswitch_installed and fts_distribution == "centos6"
+  copy: src=etc/usb_modeswitch.d/12d1:14fe dest=/etc/usb_modeswitch.d/12d1:14fe
   tags:
 
 - name: Upload /etc/rc.local 
