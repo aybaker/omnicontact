@@ -89,6 +89,12 @@
                                                 Reciclar
                                             </button>
                                         </a>
+                                        <a href="{% url 'campana_sms_elimina' campana.pk %}">
+                                            <button type="button" class="btn btn-danger btn-sm">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                                Eliminar
+                                            </button>
+                                        </a>
                                     </td>
                                 </tr>
                             {% empty %}

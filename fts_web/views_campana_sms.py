@@ -3,9 +3,11 @@
 from __future__ import unicode_literals
 
 
-from django.views.generic import DetailView
+from django.contrib import messages
+from django.views.generic import DetailView, DeleteView
 from django.views.generic.list import ListView
-
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from fts_web.models import CampanaSms
 
 import logging as logging_
@@ -58,50 +60,48 @@ class DetalleCampanSmsView(DetailView):
             self.kwargs['pk_campana_sms'])
 
 
-# class CampanaDeleteView(DeleteView):
-#     """
-#     Esta vista se encarga de la eliminación del
-#     objeto Campana.
-#     """
-# 
-#     model = Campana
-#     template_name = 'campana/elimina_campana.html'
-# 
-#     # @@@@@@@@@@@@@@@@@@@@
-# 
-#     def dispatch(self, request, *args, **kwargs):
-#         self.campana = \
-#             Campana.objects.obtener_depurada_para_eliminar(
-#                 kwargs['pk_campana'])
-#         return super(CampanaDeleteView, self).dispatch(request, *args,
-#                                                        **kwargs)
-# 
-#     def get_object(self, queryset=None):
-#         return Campana.objects.obtener_depurada_para_eliminar(
-#             self.kwargs['pk_campana'])
-# 
-#     def delete(self, request, *args, **kwargs):
-#         self.object = self.get_object()
-#         success_url = self.get_success_url()
-# 
-#         # Marcamos la campaña como borrada. Lo hacemos primero para que,
-#         # en caso de error, la excepcion se lance lo antes posible
-#         self.object.borrar()
-# 
-#         # Eliminamos la tabla generada en la depuración de la campaña.
-#         from fts_daemon.models import EventoDeContacto
-#         EventoDeContacto.objects.eliminar_tabla_eventos_de_contacto_depurada(
-#             self.object)
-# 
-#         message = '<strong>Operación Exitosa!</strong>\
-#         Se llevó a cabo con éxito la eliminación de la Campaña.'
-# 
-#         messages.add_message(
-#             self.request,
-#             messages.SUCCESS,
-#             message,
-#         )
-#         return HttpResponseRedirect(success_url)
-# 
-#     def get_success_url(self):
-#         return reverse('lista_campana')
+class CampanaSmsDeleteView(DeleteView):
+    """
+    Esta vista se encarga de la eliminación del
+    objeto Campana.
+    """
+
+    model = CampanaSms
+    context_object_name = 'campana_sms'
+    template_name = 'campana_sms/elimina_campana_sms.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana_sms = \
+            CampanaSms.objects.obtener_pausada_para_eliminar(
+                kwargs['pk_campana_sms'])
+        return super(CampanaSmsDeleteView, self).dispatch(request, *args,
+                                                          **kwargs)
+
+    def get_object(self, queryset=None):
+        return CampanaSms.objects.obtener_pausada_para_eliminar(
+            self.kwargs['pk_campana_sms'])
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        # Marcamos la campaña como borrada. Lo hacemos primero para que,
+        # en caso de error, la excepcion se lance lo antes posible
+        self.object.borrar()
+
+        # Eliminamos la tabla fts_web_contwcto generada por el demonio sms.
+        CampanaSms.objects.eliminar_tabla_fts_web_contacto_generada_por_demonio(
+            self.object)
+
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la eliminación de la Campaña SMS.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse('lista_campana_sms')
