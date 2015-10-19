@@ -308,10 +308,17 @@
   command: /home/ftsender/deploy/bin/build_usbmodeswitch.sh
   sudo: yes
   when: repo_usb_modeswitch_installed|failed and fts_distribution == "centos6"
+  register: repo_usb_modeswitch_installed
   tags:
     - deploy
     - quick_deploy
     - docker
+
+- name: Copy archivo T-Mobile NL (Huawei E352)
+  sudo: yes
+  when: repo_usb_modeswitch_installed|success and fts_distribution == "centos6"
+  template: src=etc/usb_modeswitch.d/12d1:14fe dest=/etc/usb_modeswitch.d/
+  tags:
 
 - name: Upload /etc/rc.local 
   command: /home/ftsender/deploy/bin/upload_etc_rclocal.sh
