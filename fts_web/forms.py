@@ -319,7 +319,7 @@ class CampanaForm(forms.ModelForm):
 
 
 class CampanaSmsForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, reciclado=False, *args, **kwargs):
         super(CampanaSmsForm, self).__init__(*args, **kwargs)
 
         self.fields['bd_contacto'].queryset =\
@@ -338,16 +338,28 @@ class CampanaSmsForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
 
-        self.fields['bd_contacto'].required = True
+        if reciclado:
+            self.fields.pop('bd_contacto')
 
-        layout = Layout(
-            Field('nombre'),
-            Field('cantidad_chips'),
-            Field('fecha_inicio'),
-            Field('fecha_fin'),
-            Field('bd_contacto'),
-            Field('tiene_respuesta'),
-        )
+            layout = Layout(
+                Field('nombre'),
+                Field('cantidad_chips'),
+                Field('fecha_inicio'),
+                Field('fecha_fin'),
+                Field('tiene_respuesta'),
+            )
+
+        else:
+            self.fields['bd_contacto'].required = True
+
+            layout = Layout(
+                Field('nombre'),
+                Field('cantidad_chips'),
+                Field('fecha_inicio'),
+                Field('fecha_fin'),
+                Field('bd_contacto'),
+                Field('tiene_respuesta'),
+            )
         self.helper.layout = layout
 
     class Meta:
@@ -498,6 +510,29 @@ class TipoRecicladoForm(forms.Form):
                 </button>"""),
         )
 
+
+class TipoRecicladoCampanaSmsForm(forms.Form):
+    tipo_reciclado_unico = forms.ChoiceField(
+        choices=CampanaSms.TIPO_RECICLADO_UNICO,
+        widget=forms.RadioSelect,
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(TipoRecicladoCampanaSmsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+        self.helper.form_id = 'id_guardar'
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Field('tipo_reciclado_unico', css_class='radio_reciclado'),
+            HTML("""
+                <button type="submit" name="continuar" id="submit-id-continuar"
+                    class="btn btn-default pull-right modal_proceso_grande">
+                    Continuar
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </button>"""),
+        )
 
 # =============================================================================
 # Calificaciones

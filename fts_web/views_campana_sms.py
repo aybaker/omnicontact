@@ -34,6 +34,7 @@ class CampanaSmsListView(ListView):
         context = super(CampanaSmsListView, self).get_context_data(
            **kwargs)
         context['confirmadas'] = CampanaSms.objects.obtener_confirmadas()
+        context['pausadas'] = CampanaSms.objects.obtener_pausadas()
         return context
 
 

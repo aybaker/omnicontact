@@ -26,7 +26,7 @@
                           <tr class="fts-table-bg">                                
                             <th width="45%">Campañas Confirmadas</th>                    
                             <th width="15%">Estado</th>
-                            <!-- <th></th> -->
+                            <th></th>
                           </tr>
                         </thead>
                         <tbody>
@@ -43,7 +43,53 @@
                                             <span class="glyphicon glyphicon-pause"></span>
                                             Pausar
                                         </button>
-                                    </td>    -->                     
+                                    </td>    -->
+                                    <td>
+                                        <a href="{% url 'tipo_reciclado_campana_sms' campana.pk %}">
+                                            <button type="button" class="btn btn-primary btn-sm">
+                                                <span class="glyphicon glyphicon-retweet"></span>
+                                                Reciclar
+                                            </button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Campañas SMS.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr class="fts-table-bg">
+                            <th width="45%">Campañas Pausadas</th>
+                            <th width="15%">Estado</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for campana in pausadas %}
+                                <tr >
+                                    <td width="45%">
+                                        <a href="{% url 'detalle_campana_sms' campana.id %}">{{ campana.nombre }}</a>
+                                    </td>
+                                    <td>
+                                        {{ campana.get_estado_display }}
+                                    </td>
+
+                                    <td>
+                                        <a href="{% url 'tipo_reciclado_campana_sms' campana.pk %}">
+                                            <button type="button" class="btn btn-primary btn-sm">
+                                                <span class="glyphicon glyphicon-retweet"></span>
+                                                Reciclar
+                                            </button>
+                                        </a>
+                                    </td>
                                 </tr>
                             {% empty %}
                                 <tr>

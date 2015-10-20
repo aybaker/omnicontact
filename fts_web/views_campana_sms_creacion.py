@@ -41,7 +41,7 @@ class CheckEstadoCampanaSmsMixin(object):
                 self.kwargs['pk_campana_sms'])
 
         return super(CheckEstadoCampanaSmsMixin, self).dispatch(request, *args,
-                                                             **kwargs)
+                                                                **kwargs)
 
 
 class CampanaSmsCreateView(CreateView):
@@ -57,14 +57,8 @@ class CampanaSmsCreateView(CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
 
-        # TODO: Cambiar la creación del identificador y pasarla a un servicio.
-        try:
-            identificador = \
-                CampanaSms.objects.latest('id').identificador_campana_sms + 1
-        except CampanaSms.DoesNotExist:
-            identificador = 1000
-
-        self.object.identificador_campana_sms = identificador
+        self.object.identificador_campana_sms = \
+            CampanaSms.objects.obtener_ultimo_identificador_sms()
         self.object.save()
 
         return super(CampanaSmsCreateView, self).form_valid(form)
