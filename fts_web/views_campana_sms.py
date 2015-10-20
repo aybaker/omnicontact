@@ -106,3 +106,26 @@ class CampanaSmsDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse('lista_campana_sms')
+
+
+# =============================================================================
+# Reporte
+# =============================================================================
+
+
+class CampanaSmsReporteListView(ListView):
+    """
+    Esta vista lista las campañas finalizadas con
+    un resumen de sus características.
+    """
+
+    template_name = 'reporte/reporte_sms.html'
+    context_object_name = 'campana_sms'
+    model = CampanaSms
+
+    def get_context_data(self, **kwargs):
+        context = super(CampanaSmsReporteListView, self).get_context_data(
+            **kwargs)
+        context['campanas_confirmadas'] = CampanaSms.objects.obtener_confirmadas()
+        return context
+
