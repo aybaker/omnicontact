@@ -80,8 +80,19 @@
                         <li>
                             <a href="{% url 'lista_derivacion' %}">Derivación</a>
                         </li>
-                        <li>
-                            <a href="{% url 'lista_campana_reportes' %}">Reportes</a>
+                        <li role="presentation" class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+						      Reportes <span class="caret"></span>
+						    </a>
+                            <ul class="dropdown-menu" role="menu">
+						    	<li>
+                                    <a href="{% url 'lista_campana_reportes' %}">Reportes Campañas Telefónicas</a>
+                        		</li>
+
+                        		<li>
+                            		<a href="#">Reportes Campañas SMS</a>
+                        		</li>
+						    </ul>
                         </li>
                         {% if reporte_sms_url %}
                         <li>
