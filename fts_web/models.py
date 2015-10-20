@@ -1884,6 +1884,44 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
 
         return campana_replicada
 
+    def obtener_pausada_para_eliminar(self, campana_sms_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser eliminada.
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(
+                estado=CampanaSms.ESTADO_PAUSADA).get(pk=campana_sms_id)
+        except CampanaSms.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana en "
+                                      "estado ESTADO_PAUSADA"))
+
+    def eliminar_tabla_fts_web_contacto_generada_por_demonio(self, campana_sms):
+        """
+        Este método se encarga de eliminar la tabla de fts_web_contacto_xx
+        que se genero en por el demonio sms.
+
+        Este método se invoca en la eliminación de la campaña.
+
+        #Mover a un servicio o app el dia que se migre DEMONIO-SMS
+        """
+
+        assert isinstance(campana_sms, CampanaSms)
+        assert isinstance(campana_sms.pk, int)
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms.pk))
+
+        cursor = connection.cursor()
+        sql = """DROP TABLE {0}""".format(nombre_tabla)
+
+        params = [campana_sms.pk]
+        with log_timing(logger,
+            "Eliminación tabla fts_web_contacto: Proceso de eliminación de la "
+            "eliminar_tabla_fts_web_contacto_generada_por_demonio tardo"
+            ":  %s seg"):
+            cursor.execute(sql, params)
+
 
 class CampanaSms(AbstractCampana):
     """
@@ -1917,6 +1955,9 @@ class CampanaSms(AbstractCampana):
     ESTADO_PAUSADA = 3
     """La capaña fue pausada"""
 
+    ESTADO_BORRADA = 4
+    """La campaña ya fue borrada"""
+
     ESTADOS = (
         (ESTADO_EN_DEFINICION, '(en definicion)'),
         (ESTADO_CONFIRMADA, 'Confirmada'),
@@ -1944,6 +1985,16 @@ class CampanaSms(AbstractCampana):
             return True
         return False
 
+    def puede_borrarse(self):
+        """Metodo que realiza los chequeos necesarios del modelo, y
+        devuelve booleano indincando si se puede o no borrar.
+
+        Actualmente solo chequea el estado de la campaña sms.
+
+        :returns: bool - True si la campaña puede borrarse.
+        """
+        return self.estado == Campana.ESTADO_PAUSADA
+
     def confirmar(self):
         """
         Setea la campana sms como confirmada, lista para ser utilizada.
@@ -1952,6 +2003,16 @@ class CampanaSms(AbstractCampana):
         logger.info("Seteando campana sms %s como CONFIRMADA", self.id)
         assert self.estado == CampanaSms.ESTADO_EN_DEFINICION
         self.estado = self.ESTADO_CONFIRMADA
+        self.save()
+
+    def borrar(self):
+        """
+        Setea la campaña como BORRADA
+        """
+        logger.info("Seteando campana sms %s como BORRADA", self.id)
+        assert self.puede_borrarse()
+
+        self.estado = CampanaSms.ESTADO_BORRADA
         self.save()
 
 
