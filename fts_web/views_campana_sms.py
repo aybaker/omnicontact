@@ -9,6 +9,7 @@ from django.views.generic.list import ListView
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from fts_web.models import CampanaSms
+from fts_web.services.reporte_campana_sms import EstadisticasContactoReporteSms
 
 import logging as logging_
 
@@ -126,5 +127,22 @@ class CampanaSmsReporteListView(ListView):
         context = super(CampanaSmsReporteListView, self).get_context_data(
             **kwargs)
         context['campanas_confirmadas'] = CampanaSms.objects.obtener_confirmadas()
+        return context
+
+
+class CampanaReporteSmsEnviadosListView(ListView):
+    """
+    Muestra un listado de contactos a los cuales se le enviaron o se estan
+    por enviar mensajes de texto
+    """
+    template_name = 'reporte/detalle_reporte_sms_enviado.html'
+    context_object_name = 'campana_sms'
+    model = CampanaSms
+
+    def get_context_data(self, **kwargs):
+        context = super(CampanaReporteSmsEnviadosListView, self).get_context_data(
+            **kwargs)
+        estadisticas_sms_enviados = EstadisticasContactoReporteSms()
+        context['contactos_enviados'] = estadisticas_sms_enviados.obtener_contacto_sms_enviado(self.kwargs['pk_campana_sms'])
         return context
 
