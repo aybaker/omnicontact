@@ -104,4 +104,3 @@ class FtsWebContactoSmsManager():
         with log_timing(logger,
             "ALTER_TABLE: cant_intentos tardo %s seg"):
             cursor.execute(sql)
-
