@@ -42,6 +42,8 @@ class FtsWebContactoSmsManager():
         self._alter_table_fts_web_contacto(campana_sms.id)
 
         # ahora update el campo destino
+        # Fixme: ojo que si en el primer campo de la base datos no esta el
+        # telefono guarda cualquier cosa
         sql = """UPDATE {0}
             SET destino=substring(datos from 3 for
             position('\"' in substring(datos from 3 for 50))-1  )
