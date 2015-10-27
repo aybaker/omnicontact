@@ -6,8 +6,7 @@ from django.conf import settings
 from fts_web.models import (BaseDatosContacto, Campana, CampanaSms)
 from fts_daemon.models import EventoDeContacto
 from fts_web.errors import FtsRecicladoBaseDatosContactoError
-from fts_web.reciclador_base_datos_contacto.reciclado_de_contacto_sms import \
-    RecicladorContactosCampanaSMS
+from fts_web.services.datos_sms import RecicladorContactosCampanaSMS
 
 import logging as _logging
 
