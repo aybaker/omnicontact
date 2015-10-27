@@ -105,6 +105,28 @@ class FtsWebContactoSmsManager():
             "ALTER_TABLE: cant_intentos tardo %s seg"):
             cursor.execute(sql)
 
+    def eliminar_tabla_fts_web_contacto(self, campana_sms):
+        """
+        Este método se encarga de eliminar la tabla de fts_web_contacto_xx
+        que se genero en por el demonio sms.
+
+        Este método se invoca en la eliminación de la campaña.
+        """
+
+        assert isinstance(campana_sms, CampanaSms)
+        assert isinstance(campana_sms.pk, int)
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms.pk))
+
+        cursor = connection.cursor()
+        sql = """DROP TABLE {0}""".format(nombre_tabla)
+
+        params = [campana_sms.pk]
+        with log_timing(logger,
+            "Eliminación tabla fts_web_contacto: Proceso de eliminación de la "
+            " tabla fts_web_contacto tardo:  %s seg"):
+            cursor.execute(sql, params)
+
 
 class RecicladorContactosCampanaSMS():
     """

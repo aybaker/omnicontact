@@ -9,6 +9,7 @@ from django.views.generic.list import ListView
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from fts_web.models import CampanaSms
+from fts_web.services.datos_sms import FtsWebContactoSmsManager
 
 import logging as logging_
 
@@ -90,8 +91,8 @@ class CampanaSmsDeleteView(DeleteView):
         self.object.borrar()
 
         # Eliminamos la tabla fts_web_contwcto generada por el demonio sms.
-        CampanaSms.objects.eliminar_tabla_fts_web_contacto_generada_por_demonio(
-            self.object)
+        service_datos_sms = FtsWebContactoSmsManager()
+        service_datos_sms.eliminar_tabla_fts_web_contacto(self.object)
 
         message = '<strong>Operación Exitosa!</strong>\
         Se llevó a cabo con éxito la eliminación de la Campaña SMS.'
