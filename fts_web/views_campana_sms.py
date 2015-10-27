@@ -9,8 +9,9 @@ from django.views.generic.list import ListView
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from fts_web.models import CampanaSms
-from fts_web.services.datos_sms import (FtsWebContactoSmsManager,
-                                        EstadisticasContactoReporteSms)
+from fts_web.services.datos_sms import FtsWebContactoSmsManager
+from fts_web.services.estadisticas_campana_sms import \
+    EstadisticasCampanaSmsService
 
 import logging as logging_
 
@@ -144,8 +145,8 @@ class CampanaReporteSmsEnviadosListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(CampanaReporteSmsEnviadosListView, self).get_context_data(
             **kwargs)
-        estadisticas_sms_enviados = EstadisticasContactoReporteSms()
+        estadisticas_sms_enviados = EstadisticasCampanaSmsService()
         context['contactos_enviados'] = estadisticas_sms_enviados.\
-            obtener_contacto_sms_enviado(self.kwargs['pk_campana_sms'])
+            obtener_estadisticas_reporte_sms_enviados(self.kwargs['pk_campana_sms'])
         return context
 
