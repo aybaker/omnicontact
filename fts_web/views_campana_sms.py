@@ -127,7 +127,8 @@ class CampanaSmsReporteListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(CampanaSmsReporteListView, self).get_context_data(
             **kwargs)
-        context['campanas_confirmadas'] = CampanaSms.objects.obtener_confirmadas()
+        context['campanas_reportes'] = CampanaSms.objects.\
+            obtener_pausadas_confirmadas_para_reportes()
         return context
 
 
