@@ -1799,12 +1799,13 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
         En caso de no encontarse, lanza SuspiciousOperation
         """
         try:
-            ESTADOS_VER_DETALLE = [CampanaSms.ESTADO_CONFIRMADA]
+            ESTADOS_VER_DETALLE = [CampanaSms.ESTADO_CONFIRMADA,
+                                   CampanaSms.ESTADO_PAUSADA]
             return self.filter(estado__in=ESTADOS_VER_DETALLE).get(
                 pk=campana_sms_id)
         except CampanaSms.DoesNotExist:
-            raise(SuspiciousOperation("No se encontro campana en "
-                                      "estado ESTADO_CONFIRMADA."))
+            raise(SuspiciousOperation("No se encontro campana en estadp"
+                                      "ESTADO_CONFIRMADA ó ESTADO_PAUSADA."))
 
     def obtener_campana_sms_para_reciclar(self, campana_sms_id):
         """Devuelve la campaña sms pasada por ID, siempre que dicha

@@ -5,7 +5,7 @@
     <div class="panel fts-border-verde">
         <!-- Default panel contents -->
         <div class="panel-heading fts-bg-verde-gradiente">                
-            <h4 class="inline">Reportes: Campañas SMS</h4>
+            <h4 class="inline">Reporte SMS recibidos con repuesta esperada: campaña n° {{ campana_sms.pk }}</h4>
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
@@ -13,35 +13,30 @@
                 <table class="table table-bordered">
                     <thead>
                       <tr class="fts-table-bg">                                
-                        <th>Campaña</th>
-                        <th>Fecha Desde</th>
-                        <th>Fecha Hasta</th>
-                        <th>Base Datos</th>
-                        <th>Estado </th>
-                        <th>SMS Enviados</th>
-                        <th>SMS Recibidos con Repuestas </th>
-                          <th>SMS Recibidos sin Repuestas</th>
+                        <th>Id contacto</th>
+                        <th>Número contacto</th>
+                        <th>Fecha de envio sms</th>
+                        <th>Fecha de sms recibido</th>
+                        <th>Mensaje de repuesta</th>
                       </tr>
                     </thead>
                     <tbody>
-                        {% for campana in campanas_reportes %}
+                        {% for contacto in contactos_recibidos %}
                             <tr>
+
                                 <td width="45%">                          
-                                    {{ campana.nombre }}
+                                    {{contacto.id_contacto}}
                                 </td>
                                 <td>
-                                    {{ campana.fecha_inicio|date:"d/m/Y" }}           
+                                    {{ contacto.numero_contacto}}
                                 </td>
-                                <td>{{ campana.fecha_fin|date:"d/m/Y" }}</td>
+                                <td>{{ contacto.fecha_envio|date:"d/m/Y" }}</td>
                                 <td>
-                                    {{ campana.bd_contacto }}
+                                    {{ contacto.fecha_recibido|date:"d/m/Y"  }}
                                 </td>
                                 <td>
-                                    {{ campana.get_estado_display}}
+                                    {{ contacto.mensaje_repuesta}}
                                 </td>
-                                <td><a href="{% url 'reporte_sms_enviado' campana.id %}">Ver Reporte SMS enviados</a></td>
-                                <td><a href="{% url 'reporte_sms_recibido_repuesta' campana.id %}">Ver Reporte SMS recibido</a></td>
-                                <td></td>
                             </tr>
                         {% empty %}
                             <tr>
