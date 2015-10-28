@@ -23,18 +23,19 @@
                     <tbody>
                         {% for contacto in contactos_enviados %}
                             <tr>
+
                                 <td width="45%">                          
-                                    {{ contacto.0 }}
+                                    {{contacto.id}}
                                 </td>
                                 <td>
-                                    {{ contacto.1|date:"d/m/Y" }}
+                                    {{ contacto.sms_enviado_fecha|date:"d/m/Y" }}
                                 </td>
-                                <td>{{ contacto.2}}</td>
+                                <td>{{ contacto.destino}}</td>
                                 <td>
-                                    {{ contacto.3 }}
+                                    {{ contacto.sms_enviado_fecha }}
                                 </td>
                                 <td>
-                                    {{ contacto.4}}
+                                    {{ contacto.datos}}
                                 </td>
                             </tr>
                         {% empty %}

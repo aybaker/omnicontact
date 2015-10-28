@@ -18,40 +18,40 @@ class EstadisticasCampanaSmsService():
     Reporteria de las campaña sms
     """
 
-    def obtener_estadisticas_reporte_sms_enviados(self, campana_sms):
+    def obtener_estadisticas_reporte_sms_enviados(self, campana_sms_id):
         """
         Este método devuelve las estadísticas de
         la campaña actual.
         """
+
+        campana_sms = CampanaSms.objects.get(pk=campana_sms_id)
+
         assert campana_sms.estado in (CampanaSms.ESTADO_CONFIRMADA,
                                       CampanaSms.ESTADO_PAUSADA)
 
         servicio_estadisticas_sms = EstadisticasContactoReporteSms()
         datos_sms_enviados  = servicio_estadisticas_sms.\
             obtener_contacto_sms_enviado(campana_sms.id)
-        lista_id = []
-        lista_sms_enviado_fecha = []
-        lista_destino = []
-        lista_sms_enviado_estado = []
-        lista_datos = []
-        for dato in datos_sms_enviados:
-            lista_id.append(dato[0])
-            lista_sms_enviado_fecha.append(dato[1])
-            lista_destino.append(dato[2])
-            lista_sms_enviado_estado.append(FtsWebContactoSmsManager.\
-                                            MAP_ESTADO_ENVIO_A_LABEL[dato[3]])
-            lista_datos.append(dato[4])
-
-
-        diccionario_sms_enviado = {
-            'id': lista_id,
-            'sms_enviado_fecha': lista_sms_enviado_fecha,
-            'destino': lista_destino,
-            'sms_enviado_estado': lista_sms_enviado_estado,
-            'datos': lista_datos,
+        lista_contactos = []
+        contacto = {
+            'id': None,
+            'sms_enviado_fecha': None,
+            'destino': None,
+            'sms_enviado_estado': None,
+            'datos': None,
         }
+        for dato in datos_sms_enviados:
+            contacto = {
+                'id': dato[0],
+                'sms_enviado_fecha': dato[1],
+                'destino': dato[2],
+                'sms_enviado_estado': FtsWebContactoSmsManager.\
+                    MAP_ESTADO_ENVIO_A_LABEL[dato[3]],
+                'datos': dato[4],
+            }
+            lista_contactos.append(contacto)
 
-        return diccionario_sms_enviado
+        return lista_contactos
 
 
 
