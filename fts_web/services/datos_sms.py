@@ -16,6 +16,20 @@ class FtsWebContactoSmsManager():
     """
     Manager de la fts_web_contacto_{0} donde cero es el id de la CampanaSms
     """
+
+    # ESTADOS de envio de sms
+    ESTADO_ENVIO_NO_PROCESADO = 0
+    ESTADO_ENVIO_ENVIADO = 1
+    ESTADO_ENVIO_ERROR_ENVIO = -1
+    ESTADO_ENVIO_NO_HAY_MODEM = - 2
+
+    MAP_ESTADO_ENVIO_A_LABEL = {
+        ESTADO_ENVIO_NO_PROCESADO: 'No procesado',
+        ESTADO_ENVIO_ENVIADO: 'Enviado correctamente',
+        ESTADO_ENVIO_ERROR_ENVIO: 'Error en el envio',
+        ESTADO_ENVIO_NO_HAY_MODEM: 'No hay modem disponible',
+    }
+
     def crear_tabla_de_fts_web_contacto(self, campana_sms_id):
         """
         Este método se encarga de hacer la depuración de los eventos de
@@ -171,6 +185,31 @@ class RecicladorContactosCampanaSMS():
         with log_timing(logger,
                         "_obtener_contactos_error_envio() tardo %s seg"):
             cursor.execute(sql)
+            values = cursor.fetchall()
+
+        return values
+
+
+class EstadisticasContactoReporteSms():
+
+    def obtener_contacto_sms_enviado(self, campana_sms_id):
+        """
+        Este método se encarga de devolver los contactos
+        """
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
+
+        cursor = connection.cursor()
+        sql = """SELECT id, sms_enviado_fecha, destino, sms_enviado, datos
+            FROM  {0}
+            WHERE campana_sms_id = %s
+        """.format(nombre_tabla)
+
+        params = [campana_sms_id]
+
+        with log_timing(logger,
+                        "obtener_contacto_sms_enviado() tardo %s seg"):
+            cursor.execute(sql, params)
             values = cursor.fetchall()
 
         return values

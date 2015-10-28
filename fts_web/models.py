@@ -1897,6 +1897,15 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
             raise(SuspiciousOperation("No se encontro campana en "
                                       "estado ESTADO_PAUSADA"))
 
+    def obtener_pausadas_confirmadas_para_reportes(self):
+        """Devuelve campañas sms confirmadas y pausadas para listado de reportes
+        debe estar ordenadas.
+        """
+        ESTADOS_REPORTE = [CampanaSms.ESTADO_PAUSADA,
+                           CampanaSms.ESTADO_CONFIRMADA
+                           ]
+        return self.filter(estado__in=ESTADOS_REPORTE).order_by('-id')
+
 
 class CampanaSms(AbstractCampana):
     """

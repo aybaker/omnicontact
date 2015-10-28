@@ -10,6 +10,8 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from fts_web.models import CampanaSms
 from fts_web.services.datos_sms import FtsWebContactoSmsManager
+from fts_web.services.estadisticas_campana_sms import \
+    EstadisticasCampanaSmsService
 
 import logging as logging_
 
@@ -106,3 +108,45 @@ class CampanaSmsDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse('lista_campana_sms')
+
+
+# =============================================================================
+# Reporte
+# =============================================================================
+
+
+class CampanaSmsReporteListView(ListView):
+    """
+    Esta vista lista las campañas finalizadas con
+    un resumen de sus características.
+    """
+
+    template_name = 'reporte/reporte_sms.html'
+    context_object_name = 'campana_sms'
+    model = CampanaSms
+
+    def get_context_data(self, **kwargs):
+        context = super(CampanaSmsReporteListView, self).get_context_data(
+            **kwargs)
+        context['campanas_reportes'] = CampanaSms.objects.\
+            obtener_pausadas_confirmadas_para_reportes()
+        return context
+
+
+class CampanaReporteSmsEnviadosListView(ListView):
+    """
+    Muestra un listado de contactos a los cuales se le enviaron o se estan
+    por enviar mensajes de texto
+    """
+    template_name = 'reporte/detalle_reporte_sms_enviado.html'
+    context_object_name = 'campana_sms'
+    model = CampanaSms
+
+    def get_context_data(self, **kwargs):
+        context = super(CampanaReporteSmsEnviadosListView, self).get_context_data(
+            **kwargs)
+        estadisticas_sms_enviados = EstadisticasCampanaSmsService()
+        context['contactos_enviados'] = estadisticas_sms_enviados.\
+            obtener_estadisticas_reporte_sms_enviados(self.kwargs['pk_campana_sms'])
+        return context
+

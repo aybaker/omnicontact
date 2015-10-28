@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Reportes: Campañas Finalizadas</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">                                  
+                <table class="table table-bordered">
+                    <thead>
+                      <tr class="fts-table-bg">                                
+                        <th>Campaña</th>
+                        <th>Fecha Desde</th>
+                        <th>Fecha Hasta</th>
+                        <th>Base Datos</th>
+                        <th>Estado </th>
+                        <th>SMS Enviados</th>
+                          <th>SMS Recibidos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for campana in campanas_reportes %}
+                            <tr>
+                                <td width="45%">                          
+                                    {{ campana.nombre }}
+                                </td>
+                                <td>
+                                    {{ campana.fecha_inicio|date:"d/m/Y" }}           
+                                </td>
+                                <td>{{ campana.fecha_fin|date:"d/m/Y" }}</td>
+                                <td>
+                                    {{ campana.bd_contacto }}
+                                </td>
+                                <td>
+                                    {{ campana.get_estado_display}}
+                                </td>
+                                <td><a href="{% url 'reporte_sms_enviado' campana.id %}">Ver Reporte SMS enviados</a></td>
+                            <td></td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron Contactos para esta campaña.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

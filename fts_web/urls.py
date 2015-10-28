@@ -222,6 +222,17 @@ urlpatterns = patterns('',
         name='confirma_reciclado_campana_sms',
     ),
 
+    # Reportes
+    url(r'^campana_sms/reportes/$',
+        login_required(views.CampanaSmsReporteListView.as_view()),
+        name='lista_campana_sms_reportes',
+    ),
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/reportes_sms_enviados/$',
+        login_required(views.CampanaReporteSmsEnviadosListView.as_view()),
+        name='reporte_sms_enviado',
+    ),
+
+
     #==========================================================================
     # Campaña
     #==========================================================================

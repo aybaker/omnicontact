@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Reporte SMS enviados: campaña n° {{ campana_sms.pk }}</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">                                  
+                <table class="table table-bordered">
+                    <thead>
+                      <tr class="fts-table-bg">                                
+                        <th>id</th>
+                        <th>Fecha de Envio</th>
+                        <th>Destino</th>
+                        <th>Estado de envio</th>
+                        <th>Datos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for contacto in contactos_enviados %}
+                            <tr>
+
+                                <td width="45%">                          
+                                    {{contacto.id}}
+                                </td>
+                                <td>
+                                    {{ contacto.sms_enviado_fecha|date:"d/m/Y" }}
+                                </td>
+                                <td>{{ contacto.destino}}</td>
+                                <td>
+                                    {{ contacto.sms_enviado_fecha }}
+                                </td>
+                                <td>
+                                    {{ contacto.datos}}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron Contactos para esta campaña.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
