@@ -33,13 +33,6 @@ class EstadisticasCampanaSmsService():
         datos_sms_enviados  = servicio_estadisticas_sms.\
             obtener_contacto_sms_enviado(campana_sms.id)
         lista_contactos = []
-        contacto = {
-            'id': None,
-            'sms_enviado_fecha': None,
-            'destino': None,
-            'sms_enviado_estado': None,
-            'datos': None,
-        }
         for dato in datos_sms_enviados:
             contacto = {
                 'id': dato[0],
