@@ -235,7 +235,10 @@ urlpatterns = patterns('',
         login_required(views.CampanaReporteSmsRecibidosRepuestaListView.as_view()),
         name='reporte_sms_recibido_repuesta',
     ),
-
+    url(r'^campana_sms/(?P<pk_campana_sms>\d+)/reportes_sms_recibido_repuesta_invalida/$',
+        login_required(views.CampanaReporteSmsRecibidosRepuestaInvalidaListView.as_view()),
+        name='reporte_sms_recibido_repuesta_invalida',
+    ),
 
     #==========================================================================
     # Campaña

@@ -44,7 +44,10 @@
                                     <a href="{% url 'reporte_sms_recibido_repuesta' campana.id %}">Ver Reporte SMS recibido</a>
                                     {% endif %}
                                 </td>
-                                <td></td>
+                                <td> {% if campana.tiene_respuesta %}
+                                    <a href="{% url 'reporte_sms_recibido_repuesta_invalida' campana.id %}">Ver Reporte SMS recibido invalido</a>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% empty %}
                             <tr>

@@ -180,3 +180,35 @@ class CampanaReporteSmsRecibidosRepuestaListView(ListView):
         context['campana_sms'] = self.get_object()
         return context
 
+
+class CampanaReporteSmsRecibidosRepuestaInvalidaListView(ListView):
+    """
+    Muestra un listado de contactos a los cuales se le recibieron una repuesta
+    esperada
+    """
+    template_name = 'reporte/detalle_reporte_sms_recibidos.html'
+    context_object_name = 'campana_sms'
+    model = CampanaSms
+
+    def dispatch(self, request, *args, **kwargs):
+        self.campana_sms = \
+            CampanaSms.objects.obtener_tiene_repuesta_reporte(
+                kwargs['pk_campana_sms'])
+        return super(CampanaReporteSmsRecibidosRepuestaInvalidaListView,
+                     self).dispatch(
+            request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        return CampanaSms.objects.obtener_tiene_repuesta_reporte(
+            self.kwargs['pk_campana_sms'])
+
+    def get_context_data(self, **kwargs):
+        context = super(CampanaReporteSmsRecibidosRepuestaInvalidaListView,
+                        self).get_context_data(
+            **kwargs)
+        estadisticas_sms_enviados = EstadisticasCampanaSmsService()
+        context['contactos_recibidos'] = estadisticas_sms_enviados.\
+            obtener_estadisticas_reporte_sms_recibido_respuesta_invalida(
+            self.kwargs['pk_campana_sms'])
+        context['campana_sms'] = self.get_object()
+        return context

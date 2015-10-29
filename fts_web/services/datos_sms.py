@@ -241,3 +241,31 @@ class EstadisticasContactoReporteSms():
             values = cursor.fetchall()
 
         return values
+
+    def obtener_contacto_sms_repuesta_invalida(self, campana_sms_id):
+        """
+        Este método se encarga de devolver los contactos
+        """
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
+
+        cursor = connection.cursor()
+        sql = """SELECT c.id, i.SenderNumber,  c.sms_enviado_fecha,
+            i.UpdatedInDB,  i.TextDecoded
+            FROM  {0} c INNER JOIN inbox i
+            ON i.SenderNumber like concat('%',
+            substring(c.destino from 7 for 50) ) AND i.UpdatedInDB >
+            c.sms_enviado_fecha INNER JOIN fts_web_opcionsms o ON
+            o.campana_sms_id=c.campana_sms_id AND i.TextDecoded not like
+            concat('%',o.respuesta,'%')
+            """.format(nombre_tabla)
+
+        params = [campana_sms_id]
+
+        with log_timing(logger,
+                        "obtener_contacto_sms_repuesta_invalida()"
+                        "tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+
+        return values
