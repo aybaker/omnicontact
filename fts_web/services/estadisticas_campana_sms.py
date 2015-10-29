@@ -58,6 +58,7 @@ class EstadisticasCampanaSmsService():
 
         assert campana_sms.estado in (CampanaSms.ESTADO_CONFIRMADA,
                                       CampanaSms.ESTADO_PAUSADA)
+        assert campana_sms.tiene_respuesta
 
         servicio_estadisticas_sms = EstadisticasContactoReporteSms()
         datos_sms_recibido  = servicio_estadisticas_sms.\

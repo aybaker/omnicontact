@@ -160,12 +160,23 @@ class CampanaReporteSmsRecibidosRepuestaListView(ListView):
     context_object_name = 'campana_sms'
     model = CampanaSms
 
+    def dispatch(self, request, *args, **kwargs):
+        self.campana_sms = \
+            CampanaSms.objects.obtener_tiene_repuesta_reporte(
+                kwargs['pk_campana_sms'])
+        return super(CampanaReporteSmsRecibidosRepuestaListView, self).dispatch(
+            request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        return CampanaSms.objects.obtener_tiene_repuesta_reporte(
+            self.kwargs['pk_campana_sms'])
+
     def get_context_data(self, **kwargs):
         context = super(CampanaReporteSmsRecibidosRepuestaListView, self).get_context_data(
             **kwargs)
         estadisticas_sms_enviados = EstadisticasCampanaSmsService()
         context['contactos_recibidos'] = estadisticas_sms_enviados.\
             obtener_estadisticas_reporte_sms_recibido_respuesta(self.kwargs['pk_campana_sms'])
-        context['campana_sms'] = CampanaSms.objects.get(pk=self.kwargs['pk_campana_sms'])
+        context['campana_sms'] = self.get_object()
         return context
 

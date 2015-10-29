@@ -1907,6 +1907,20 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
                            ]
         return self.filter(estado__in=ESTADOS_REPORTE).order_by('-id')
 
+    def obtener_tiene_repuesta_reporte(self, campana_sms_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser mostrada.
+
+        Si tiene_respuesta es True
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(tiene_respuesta=True).get(pk=campana_sms_id)
+        except CampanaSms.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana en "
+                                      "tiene_respuesta"))
+
 
 class CampanaSms(AbstractCampana):
     """
