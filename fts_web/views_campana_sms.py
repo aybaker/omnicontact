@@ -4,15 +4,17 @@ from __future__ import unicode_literals
 
 
 from django.contrib import messages
-from django.views.generic import DetailView, DeleteView
+from django.views.generic import DetailView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.core import paginator as django_paginator
 from fts_web.models import CampanaSms
 from fts_web.services.datos_sms import FtsWebContactoSmsManager
 from fts_web.services.estadisticas_campana_sms import \
     EstadisticasCampanaSmsService
+from fts_web.services.reporte_campana_sms import ReporteCampanaSmsService
 
 import logging as logging_
 
@@ -111,6 +113,23 @@ class CampanaSmsDeleteView(DeleteView):
         return reverse('lista_campana_sms')
 
 
+class ExportaReporteCampanaView(UpdateView):
+    """
+    Esta vista invoca a generar un csv de reporte de la campana.
+    """
+
+    model = CampanaSms
+    context_object_name = 'campana_sms'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        service = ReporteCampanaSmsService()
+        url = service.obtener_url_reporte_csv_descargar(self.object)
+
+        return redirect(url)
+
+
 # =============================================================================
 # Reporte
 # =============================================================================
@@ -149,6 +168,9 @@ class CampanaReporteSmsEnviadosListView(ListView):
         estadisticas_sms_enviados = EstadisticasCampanaSmsService()
         qs = estadisticas_sms_enviados.\
             obtener_estadisticas_reporte_sms_enviados(self.kwargs['pk_campana_sms'])
+        campana_sms = CampanaSms.objects.get(pk=self.kwargs['pk_campana_sms'])
+        reporte_campana_sms_service = ReporteCampanaSmsService()
+        reporte_campana_sms_service.crea_reporte_csv(campana_sms, qs)
 
          # ----- <Paginate> -----
         page = self.kwargs['pagina']
