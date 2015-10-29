@@ -166,5 +166,6 @@ class CampanaReporteSmsRecibidosRepuestaListView(ListView):
         estadisticas_sms_enviados = EstadisticasCampanaSmsService()
         context['contactos_recibidos'] = estadisticas_sms_enviados.\
             obtener_estadisticas_reporte_sms_recibido_respuesta(self.kwargs['pk_campana_sms'])
+        context['campana_sms'] = CampanaSms.objects.get(pk=self.kwargs['pk_campana_sms'])
         return context
 
