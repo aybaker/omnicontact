@@ -49,6 +49,44 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                    <!-- pagination -->
+                <nav>
+                    <ul class="pagination pagination-lg">
+
+                        <li class="{% if not contactos_recibidos.has_previous %} disabled {% endif %}">
+                        {% if contactos_recibidos.has_previous %}
+                            <a href="{% url 'reporte_sms_enviado' pk_campana_sms=campana_sms.id pagina=contactos_recibidos.previous_page_number %}">
+                            &laquo;
+                            </a>
+                        {% else %}
+                            <a href="javascript:void(0);">
+                            &laquo;
+                            </a>
+                        {% endif %}
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0);">
+                            Página {{ contactos_recibidos.number }} de {{ contactos_recibidos.paginator.num_pages }}
+                            </a>
+                        </li>
+
+                        <li class="{% if not contactos_recibidos.has_next %} disabled {% endif %}">
+                            {% if contactos_recibidos.has_next %}
+                            <a href="{% url 'reporte_sms_enviado' pk_campana_sms=campana_sms.id pagina=contactos_recibidos.next_page_number %}">
+
+                            &raquo;
+                            </a>
+                            {% else %}
+                            <a href="javascript:void(0);">
+                            &raquo;
+                            </a>
+                            {% endif %}
+                        </li>
+
+                    </ul>
+                </nav>
+                <a class="btn btn-success" href="{% url 'lista_campana_sms_reportes' %}" >Volver a Reportes SMS</a>            
             </div>
         </div>
     </div>
