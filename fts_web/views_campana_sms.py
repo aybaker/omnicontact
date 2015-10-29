@@ -8,6 +8,7 @@ from django.views.generic import DetailView, DeleteView
 from django.views.generic.list import ListView
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core import paginator as django_paginator
 from fts_web.models import CampanaSms
 from fts_web.services.datos_sms import FtsWebContactoSmsManager
 from fts_web.services.estadisticas_campana_sms import \
@@ -146,8 +147,22 @@ class CampanaReporteSmsEnviadosListView(ListView):
         context = super(CampanaReporteSmsEnviadosListView, self).get_context_data(
             **kwargs)
         estadisticas_sms_enviados = EstadisticasCampanaSmsService()
-        context['contactos_enviados'] = estadisticas_sms_enviados.\
+        qs = estadisticas_sms_enviados.\
             obtener_estadisticas_reporte_sms_enviados(self.kwargs['pk_campana_sms'])
+
+         # ----- <Paginate> -----
+        page = self.kwargs['pagina']
+        result_paginator = django_paginator.Paginator(qs, 20)
+        try:
+            qs = result_paginator.page(page)
+        except django_paginator.PageNotAnInteger:  # If page is not an integer, deliver first page.
+            qs = result_paginator.page(1)
+        except django_paginator.EmptyPage:  # If page is out of range (e.g. 9999), deliver last page of results.
+            qs = result_paginator.page(result_paginator.num_pages)
+        # ----- </Paginate> -----
+
+        context['contactos_enviados'] = qs
+        context['campana_sms'] = CampanaSms.objects.get(pk=self.kwargs['pk_campana_sms'])
         return context
 
 

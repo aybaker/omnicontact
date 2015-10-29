@@ -39,7 +39,7 @@
                                 <td>
                                     {{ campana.get_estado_display}}
                                 </td>
-                                <td><a href="{% url 'reporte_sms_enviado' campana.id %}">Ver Reporte SMS enviados</a></td>
+                                <td><a href="{% url 'reporte_sms_enviado' pk_campana_sms=campana.id pagina=1 %}">Ver Reporte SMS enviados</a></td>
                                 <td> {% if campana.tiene_respuesta %}
                                     <a href="{% url 'reporte_sms_recibido_repuesta' campana.id %}">Ver Reporte SMS recibido</a>
                                     {% endif %}
