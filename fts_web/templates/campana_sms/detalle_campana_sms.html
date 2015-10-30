@@ -115,6 +115,37 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="col-lg-6">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <th>estado</th>
+                                <th>cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Enviado OK</td>
+                                <td>{{total_supervision.total_enviado}}</td>
+                            </tr>
+                            <tr>
+                                <td>Error en el envio</td>
+                                <td>{{total_supervision.total_error_envio}}</td>
+                            </tr>
+                            <tr>
+                                <td>No procesados</td>
+                                <td>{{total_supervision.total_no_procesados}}</td>
+                            </tr>
+                            <tr>
+                                <td>Recibido con respuesta esperada</td>
+                                <td>{{total_supervision.total_recibidos_respuesta}}</td>
+                            </tr>
+                            <tr>
+                                <td>Recibido con respuesta invalida</td>
+                                <td>{{total_supervision.total_recibidos_respuesta_invalida}}</td>
+                            </tr>
+                        </tbody>
+                    </div>
             </form>          
             </div>
         </div>

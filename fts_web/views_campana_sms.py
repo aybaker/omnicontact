@@ -65,6 +65,12 @@ class DetalleCampanSmsView(DetailView):
         return CampanaSms.objects.obtener_para_detalle(
             self.kwargs['pk_campana_sms'])
 
+    def get_context_data(self, **kwargs):
+        context = super(DetalleCampanSmsView, self).get_context_data(
+            **kwargs)
+        servicio_estadisticas = EstadisticasCampanaSmsService()
+        context['total_supervision'] = servicio_estadisticas.obtener_estadisticas_supervision(self.kwargs['pk_campana_sms'])
+        return context
 
 class CampanaSmsDeleteView(DeleteView):
     """

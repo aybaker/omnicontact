@@ -269,3 +269,130 @@ class EstadisticasContactoReporteSms():
             values = cursor.fetchall()
 
         return values
+
+    def obtener_total_contactos_no_procesados(self, campana_sms_id):
+        """
+        Este método se encarga de devolver la cantidad total de contactos que
+        tengan el estado no proceso de del sms
+        """
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
+
+        cursor = connection.cursor()
+        sql = """SELECT count(*)
+            FROM  {0}
+            WHERE sms_enviado = %s
+        """.format(nombre_tabla)
+
+        contacto_manager = FtsWebContactoSmsManager()
+
+        params = [contacto_manager.ESTADO_ENVIO_NO_PROCESADO]
+
+        with log_timing(logger,
+                        "obtener_total_contactos_no_procesados() tardo %s seg"):
+            cursor.execute(sql, params)
+            values = cursor.fetchall()
+
+        return values
+
+    def obtener_total_contactos_error_envio(self, campana_sms_id):
+        """
+        Este método se encarga de devolver la cantidad total de contactos que
+        tengan el error en el envio de del sms
+        """
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
+
+        cursor = connection.cursor()
+        sql = """SELECT count(*)
+            FROM  {0}
+            WHERE sms_enviado = %s
+        """.format(nombre_tabla)
+
+        contacto_manager = FtsWebContactoSmsManager()
+
+        params = [contacto_manager.ESTADO_ENVIO_ERROR_ENVIO]
+
+        with log_timing(logger,
+                        "obtener_total_contactos_error_envio() tardo %s seg"):
+            cursor.execute(sql, params)
+            values = cursor.fetchall()
+
+        return values
+
+    def obtener_total_contactos_enviados(self, campana_sms_id):
+        """
+        Este método se encarga de devolver la cantidad total de contactos que
+        tengan el error en el envio de del sms
+        """
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
+
+        cursor = connection.cursor()
+        sql = """SELECT count(*)
+            FROM  {0}
+            WHERE sms_enviado = %s
+        """.format(nombre_tabla)
+
+        contacto_manager = FtsWebContactoSmsManager()
+
+        params = [contacto_manager.ESTADO_ENVIO_ENVIADO]
+
+        with log_timing(logger,
+                        "obtener_total_contactos_enviados() tardo %s seg"):
+            cursor.execute(sql, params)
+            values = cursor.fetchall()
+
+        return values
+
+    def obtener_total_contacto_sms_repuesta_esperada(self, campana_sms_id):
+        """
+        Este método se encarga de devolver el total de los contactos con
+        sms repuesta esperada
+        """
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
+
+        cursor = connection.cursor()
+        sql = """SELECT count(*)
+            FROM  {0} c INNER JOIN inbox i
+            ON i.SenderNumber like concat('%',
+            substring(c.destino from 7 for 50) ) AND i.UpdatedInDB >
+            c.sms_enviado_fecha INNER JOIN fts_web_opcionsms o ON
+            o.campana_sms_id=c.campana_sms_id AND i.TextDecoded like
+            concat('%',o.respuesta,'%')
+            """.format(nombre_tabla)
+
+        with log_timing(logger,
+                        "obtener_total_contacto_sms_repuesta_esperada()"
+                        "tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+
+        return values
+
+    def obtener_total_contacto_sms_repuesta_invalida(self, campana_sms_id):
+        """
+        Este método se encarga de devolver el total delos contactos
+        con sms respuesta invalida
+        """
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
+
+        cursor = connection.cursor()
+        sql = """SELECT count(*)
+            FROM  {0} c INNER JOIN inbox i
+            ON i.SenderNumber like concat('%',
+            substring(c.destino from 7 for 50) ) AND i.UpdatedInDB >
+            c.sms_enviado_fecha INNER JOIN fts_web_opcionsms o ON
+            o.campana_sms_id=c.campana_sms_id AND i.TextDecoded not like
+            concat('%',o.respuesta,'%')
+            """.format(nombre_tabla)
+
+        with log_timing(logger,
+                        "obtener_total_contacto_sms_repuesta_invalida()"
+                        "tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+
+        return values

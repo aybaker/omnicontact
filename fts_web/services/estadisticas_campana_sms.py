@@ -106,4 +106,31 @@ class EstadisticasCampanaSmsService():
 
         return lista_contactos
 
+    def obtener_estadisticas_supervision(self, campana_sms_id):
+        """
+        Este metodo devuelve las estadisticas de la campaña sms
+        """
+
+        campana_sms = CampanaSms.objects.get(pk=campana_sms_id)
+
+        assert campana_sms.estado in (CampanaSms.ESTADO_CONFIRMADA,
+                                      CampanaSms.ESTADO_PAUSADA)
+
+        servicio_estadisticas_sms = EstadisticasContactoReporteSms()
+        total_enviado = servicio_estadisticas_sms.obtener_total_contactos_enviados(campana_sms_id)
+        total_error = servicio_estadisticas_sms.obtener_total_contactos_error_envio(campana_sms_id)
+        total_no_procesados = servicio_estadisticas_sms.obtener_total_contactos_no_procesados(campana_sms_id)
+        total_recibidos_respuesta = servicio_estadisticas_sms.obtener_total_contacto_sms_repuesta_esperada(campana_sms_id)
+        total_recibidos_respuesta_invalida = servicio_estadisticas_sms.\
+            obtener_total_contacto_sms_repuesta_invalida(campana_sms_id)
+
+        total_supervision = {
+            'total_enviado': total_enviado,
+            'total_error_envio': total_error,
+            'total_no_procesados': total_no_procesados,
+            'total_recibidos_respuesta': total_recibidos_respuesta,
+            'total_recibidos_respuesta_invalida': total_recibidos_respuesta_invalida,
+        }
+
+        return total_supervision
 
