@@ -216,6 +216,9 @@ class CampanaReporteSmsRecibidosRepuestaListView(ListView):
         qs = estadisticas_sms_recibidos.\
             obtener_estadisticas_reporte_sms_recibido_respuesta(
             self.kwargs['pk_campana_sms'])
+        reporte_campana_sms_service = ReporteCampanaSmsService()
+        reporte_campana_sms_service.crea_reporte_csv(self.get_object(), qs,
+            reporte_campana_sms_service.REPORTE_SMS_RECIBIDOS)
         context['campana_sms'] = self.get_object()
 
          # ----- <Paginate> -----
@@ -263,6 +266,9 @@ class CampanaReporteSmsRecibidosRepuestaInvalidaListView(ListView):
         qs = estadisticas_sms_recibidos.\
             obtener_estadisticas_reporte_sms_recibido_respuesta_invalida(
             self.kwargs['pk_campana_sms'])
+        reporte_campana_sms_service = ReporteCampanaSmsService()
+        reporte_campana_sms_service.crea_reporte_csv(self.get_object(), qs,
+            reporte_campana_sms_service.REPORTE_SMS_RECIBIDOS)
         context['campana_sms'] = self.get_object()
 
          # ----- <Paginate> -----
