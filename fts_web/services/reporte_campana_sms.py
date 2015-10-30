@@ -99,18 +99,17 @@ class ArchivoDeReporteCsv(object):
                                        for item in lista_opciones]
                 csvwiter.writerow(lista_opciones_utf8)
 
-    def escribir_archivo_csv_sms_recibidos(self, contactos_enviados):
+    def escribir_archivo_csv_sms_recibidos(self, contactos_recibidos):
 
         with open(self.ruta, 'wb') as csvfile:
             # Creamos encabezado
             encabezado = []
-            cantidad_datos = len(json.loads(contactos_enviados[0]['datos']))
-            for c in range(cantidad_datos):
-                encabezado.append("Extra{0}".format(c+1))
+
             encabezado.append("Id contacto")
+            encabezado.append("Numero contacto")
             encabezado.append("Fecha de envio")
-            encabezado.append("Destino")
-            encabezado.append("Estado de envio")
+            encabezado.append("Fecha de recibido")
+            encabezado.append("Mensaje de respuesta")
 
             # Creamos csvwriter
             csvwiter = csv.writer(csvfile)
@@ -121,14 +120,14 @@ class ArchivoDeReporteCsv(object):
             csvwiter.writerow(lista_encabezados_utf8)
 
             # Iteramos cada uno de los contactos, con los eventos de TODOS los intentos
-            for contacto in contactos_enviados:
+            for contacto in contactos_recibidos:
                 lista_opciones = []
-                for dato in json.loads(contacto['datos']):
-                    lista_opciones.append(dato)
-                lista_opciones.append(contacto['id'])
-                lista_opciones.append(contacto['sms_enviado_fecha'])
-                lista_opciones.append(contacto['destino'])
-                lista_opciones.append(contacto['sms_enviado_estado'])
+
+                lista_opciones.append(contacto['id_contacto'])
+                lista_opciones.append(contacto['numero_contacto'])
+                lista_opciones.append(contacto['fecha_envio'])
+                lista_opciones.append(contacto['fecha_recibido'])
+                lista_opciones.append(contacto['mensaje_respuesta'])
 
                 # --- Finalmente, escribimos la linea
 

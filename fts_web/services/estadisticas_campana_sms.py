@@ -70,7 +70,7 @@ class EstadisticasCampanaSmsService():
                 'numero_contacto': dato[1],
                 'fecha_envio': dato[2],
                 'fecha_recibido': dato[3],
-                'mensaje_repuesta': dato[4],
+                'mensaje_respuesta': dato[4],
             }
             lista_contactos.append(contacto)
 
@@ -100,7 +100,7 @@ class EstadisticasCampanaSmsService():
                 'numero_contacto': dato[1],
                 'fecha_envio': dato[2],
                 'fecha_recibido': dato[3],
-                'mensaje_repuesta': dato[4],
+                'mensaje_respuesta': dato[4],
             }
             lista_contactos.append(contacto)
 
