@@ -13,10 +13,10 @@ Driver = pgsql
 #PhoneID=phone used for sending/receiving
 PhoneID = 2
 #RunOnReceive=/path/to/script.sh
-User = smsd
-Password = smsd
+User = ftsender
+Password = Freetech123
 Host = 127.0.0.1
-Database = smsd
+Database = ftsender
 BackendRetries=1
 
 [sql]
