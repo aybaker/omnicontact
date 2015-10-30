@@ -170,7 +170,8 @@ class CampanaReporteSmsEnviadosListView(ListView):
             obtener_estadisticas_reporte_sms_enviados(self.kwargs['pk_campana_sms'])
         campana_sms = CampanaSms.objects.get(pk=self.kwargs['pk_campana_sms'])
         reporte_campana_sms_service = ReporteCampanaSmsService()
-        reporte_campana_sms_service.crea_reporte_csv(campana_sms, qs)
+        reporte_campana_sms_service.crea_reporte_csv(campana_sms, qs,
+            reporte_campana_sms_service.REPORTE_SMS_ENVIADOS)
 
          # ----- <Paginate> -----
         page = self.kwargs['pagina']

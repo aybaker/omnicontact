@@ -62,7 +62,44 @@ class ArchivoDeReporteCsv(object):
             self.prefijo_nombre_de_archivo,
             self.sufijo_nombre_de_archivo)
 
-    def escribir_archivo_csv(self, contactos_enviados):
+    def escribir_archivo_csv_sms_enviados(self, contactos_enviados):
+
+        with open(self.ruta, 'wb') as csvfile:
+            # Creamos encabezado
+            encabezado = []
+            cantidad_datos = len(json.loads(contactos_enviados[0]['datos']))
+            for c in range(cantidad_datos):
+                encabezado.append("Extra{0}".format(c+1))
+            encabezado.append("Id contacto")
+            encabezado.append("Fecha de envio")
+            encabezado.append("Destino")
+            encabezado.append("Estado de envio")
+
+            # Creamos csvwriter
+            csvwiter = csv.writer(csvfile)
+
+            # guardamos encabezado
+            lista_encabezados_utf8 = [force_text(item).encode('utf-8')
+                                      for item in encabezado]
+            csvwiter.writerow(lista_encabezados_utf8)
+
+            # Iteramos cada uno de los contactos, con los eventos de TODOS los intentos
+            for contacto in contactos_enviados:
+                lista_opciones = []
+                for dato in json.loads(contacto['datos']):
+                    lista_opciones.append(dato)
+                lista_opciones.append(contacto['id'])
+                lista_opciones.append(contacto['sms_enviado_fecha'])
+                lista_opciones.append(contacto['destino'])
+                lista_opciones.append(contacto['sms_enviado_estado'])
+
+                # --- Finalmente, escribimos la linea
+
+                lista_opciones_utf8 = [force_text(item).encode('utf-8')
+                                       for item in lista_opciones]
+                csvwiter.writerow(lista_opciones_utf8)
+
+    def escribir_archivo_csv_sms_recibidos(self, contactos_enviados):
 
         with open(self.ruta, 'wb') as csvfile:
             # Creamos encabezado
@@ -105,7 +142,10 @@ class ArchivoDeReporteCsv(object):
 
 class ReporteCampanaSmsService(object):
 
-    def crea_reporte_csv(self, campana_sms, contactos_enviados):
+    REPORTE_SMS_ENVIADOS = "Reporte de SMS enviados"
+    REPORTE_SMS_RECIBIDOS = "Reporte de SMS recibidos"
+
+    def crea_reporte_csv(self, campana_sms, contactos, tipo_reporte):
         assert campana_sms.estado in (CampanaSms.ESTADO_CONFIRMADA,
                                       CampanaSms.ESTADO_PAUSADA)
 
@@ -113,7 +153,10 @@ class ReporteCampanaSmsService(object):
 
         archivo_de_reporte.crear_archivo_en_directorio()
 
-        archivo_de_reporte.escribir_archivo_csv(contactos_enviados)
+        if tipo_reporte is self.REPORTE_SMS_ENVIADOS:
+            archivo_de_reporte.escribir_archivo_csv_sms_enviados(contactos)
+        elif tipo_reporte is self.REPORTE_SMS_RECIBIDOS:
+            archivo_de_reporte.escribir_archivo_csv_sms_recibidos(contactos)
 
     def obtener_url_reporte_csv_descargar(self, campana_sms):
         assert campana_sms.estado in (CampanaSms.ESTADO_CONFIRMADA,
