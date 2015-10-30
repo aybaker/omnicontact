@@ -10,8 +10,6 @@ import csv
 import logging
 import os
 import json
-import datetime
-from pytz import timezone
 
 from django.conf import settings
 from fts_web.models import CampanaSms
@@ -22,22 +20,12 @@ from django.utils.encoding import force_text
 
 logger = logging.getLogger(__name__)
 
-TIMEZONE_CONFIGURADA = timezone(settings.TIME_ZONE)
-
-
-def convert_timestamp_fecha_hora_local(timestamp):
-    """
-    Este metodo convierte los timestamp, a fecha hora local
-    """
-    fecha_convertida = timestamp.astimezone(TIMEZONE_CONFIGURADA)
-    return fecha_convertida
-
 
 class ArchivoDeReporteCsv(object):
     def __init__(self, campana_sms):
         self._campana_sms = campana_sms
         self.nombre_del_directorio = 'reporte_campana_sms'
-        self.prefijo_nombre_de_archivo = "{0}-reporte".format(self._campana_sms.id)
+        self.prefijo_nombre_de_archivo = "{0}-reporte-sms".format(self._campana_sms.id)
         self.sufijo_nombre_de_archivo = ".csv"
         self.nombre_de_archivo = "{0}{1}".format(
             self.prefijo_nombre_de_archivo, self.sufijo_nombre_de_archivo)
