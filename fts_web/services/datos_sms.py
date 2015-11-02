@@ -270,68 +270,18 @@ class EstadisticasContactoReporteSms():
 
         return values
 
-    def obtener_total_contactos_no_procesados(self, campana_sms_id):
+    def obtener_count_contactos_estado(self, campana_sms_id):
         """
-        Este método se encarga de devolver la cantidad total de contactos que
-        tengan el estado no proceso de del sms
-        """
-
-        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
-
-        cursor = connection.cursor()
-        sql = """SELECT count(*)
-            FROM  {0}
-            WHERE sms_enviado = %s
-        """.format(nombre_tabla)
-
-        contacto_manager = FtsWebContactoSmsManager()
-
-        params = [contacto_manager.ESTADO_ENVIO_NO_PROCESADO]
-
-        with log_timing(logger,
-                        "obtener_total_contactos_no_procesados() tardo %s seg"):
-            cursor.execute(sql, params)
-            values = cursor.fetchall()
-
-        return values
-
-    def obtener_total_contactos_error_envio(self, campana_sms_id):
-        """
-        Este método se encarga de devolver la cantidad total de contactos que
-        tengan el error en el envio de del sms
+        Este método se encarga de devolver una lista con informacion del
+         total de los eventos(no procesado, error envio y enviado)
         """
 
         nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
 
         cursor = connection.cursor()
-        sql = """SELECT count(*)
+        sql = """SELECT sms_enviado, count(*)
             FROM  {0}
-            WHERE sms_enviado = %s
-        """.format(nombre_tabla)
-
-        contacto_manager = FtsWebContactoSmsManager()
-
-        params = [contacto_manager.ESTADO_ENVIO_ERROR_ENVIO]
-
-        with log_timing(logger,
-                        "obtener_total_contactos_error_envio() tardo %s seg"):
-            cursor.execute(sql, params)
-            values = cursor.fetchall()
-
-        return values
-
-    def obtener_total_contactos_enviados(self, campana_sms_id):
-        """
-        Este método se encarga de devolver la cantidad total de contactos que
-        tengan el error en el envio de del sms
-        """
-
-        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
-
-        cursor = connection.cursor()
-        sql = """SELECT count(*)
-            FROM  {0}
-            WHERE sms_enviado = %s
+            group by sms_enviado
         """.format(nombre_tabla)
 
         contacto_manager = FtsWebContactoSmsManager()
@@ -339,8 +289,8 @@ class EstadisticasContactoReporteSms():
         params = [contacto_manager.ESTADO_ENVIO_ENVIADO]
 
         with log_timing(logger,
-                        "obtener_total_contactos_enviados() tardo %s seg"):
-            cursor.execute(sql, params)
+                        "obtener_count_contactos_estado() tardo %s seg"):
+            cursor.execute(sql)
             values = cursor.fetchall()
 
         return values
