@@ -148,8 +148,8 @@ class EstadisticasCampanaSmsService():
             'total_enviado': total_estado_enviado['total_enviado'],
             'total_error_envio': total_estado_enviado['total_error_envio'],
             'total_no_procesados': total_estado_enviado['total_no_procesados'],
-            'total_recibidos_respuesta': total_recibidos_respuesta,
-            'total_recibidos_respuesta_invalida': total_recibidos_respuesta_invalida,
+            'total_recibidos_respuesta': total_recibidos_respuesta[0][0],
+            'total_recibidos_respuesta_invalida': total_recibidos_respuesta_invalida[0][0],
         }
 
         return total_supervision
