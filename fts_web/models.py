@@ -2014,6 +2014,21 @@ class CampanaSms(AbstractCampana):
         self.estado = CampanaSms.ESTADO_BORRADA
         self.save()
 
+    def pausar(self):
+        """Setea la campaña como ESTADO_PAUSADA"""
+        logger.info("Seteando campana %s como ESTADO_PAUSADA", self.id)
+        assert self.estado == CampanaSms.ESTADO_CONFIRMADA
+        self.estado = Campana.ESTADO_PAUSADA
+        self.save()
+
+    def despausar(self):
+        """Setea la campaña como ESTADO_ACTIVA.
+        """
+        logger.info("Seteando campana %s como ESTADO_CONFIRMADA", self.id)
+        assert self.estado == CampanaSms.ESTADO_PAUSADA
+        self.estado = CampanaSms.ESTADO_CONFIRMADA
+        self.save()
+
 
 class AudioDeCampanaManager(models.Manager):
 
