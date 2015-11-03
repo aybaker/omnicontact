@@ -8,6 +8,7 @@ from django.views.generic import DetailView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
+from django.views.generic.base import RedirectView
 from django.core.urlresolvers import reverse
 from django.core import paginator as django_paginator
 from fts_web.models import CampanaSms
@@ -117,6 +118,52 @@ class CampanaSmsDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse('lista_campana_sms')
+
+
+class PausaCampanaSmsView(RedirectView):
+    """
+    Esta vista actualiza la campañana pausándola.
+    """
+
+    pattern_name = 'lista_campana_sms'
+
+    def post(self, request, *args, **kwargs):
+        campana_sms = CampanaSms.objects.get(pk=request.POST['campana_id'])
+        campana_sms.pausar()
+
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito el pausado de\
+        la Campaña.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return super(PausaCampanaSmsView, self).post(request, *args, **kwargs)
+
+
+class ActivaCampanaSmsView(RedirectView):
+    """
+    Esta vista actualiza la campañana activándola.
+    """
+
+    pattern_name = 'lista_campana_sms'
+
+    def post(self, request, *args, **kwargs):
+        campana_sms = CampanaSms.objects.get(pk=request.POST['campana_id'])
+        campana_sms.despausar()
+
+        message = '<strong>Operación Exitosa!</strong>\
+        Se llevó a cabo con éxito la activación de\
+        la Campaña.'
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            message,
+        )
+        return super(ActivaCampanaSmsView, self).post(request, *args, **kwargs)
 
 
 class ExportaReporteCampanaView(UpdateView):
