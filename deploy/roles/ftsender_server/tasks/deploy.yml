@@ -220,9 +220,6 @@
     - bin/build_usbmodeswitch.sh
     - bin/upload_etc_rclocal.sh
     - bin/usb_modem.sh
-    - bin/pgsql.sql    
-    - bin/build_extension_dblink.sh
-    - bin/build_pgsql.sh
   tags:
     - deploy
     - docker
