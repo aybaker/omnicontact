@@ -24,7 +24,7 @@ from django.test.testcases import LiveServerTestCase, TransactionTestCase
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
     Contacto, BaseDatosContacto, Campana, Opcion, Actuacion, \
-    DerivacionExterna, AudioDeCampana
+    DerivacionExterna, AudioDeCampana, CampanaSms, ActuacionSms
 import shutil
 import json
 
@@ -554,6 +554,71 @@ class FTSenderTestUtilsMixin(object):
             audio_asterisk="test/audio/for-asterisk.wav",
         )
 
+    def crear_campana_sms(self, fecha_inicio=None, fecha_fin=None,
+        cant_contactos=None, bd_contactos=None, columna_extra=None, **kwargs):
+        """Crea una campana sms en su estado inicial
+        - cant_contactos: cant. de contactos a crear para la campaña
+            Si es None, se generara un nro. aleatorio de contactos
+        - bd_contactos: base de datos de contactos a usar. Si es
+            None, se generara una nueva. Si se especifica, entonces
+            el valor de `cant_contactos` es ignorado
+        - fecha_inicio: fecha de inicio de la campaña. Si es None
+            utiliza una por default.
+        - fecha_fin: fecha de fin de la campaña. Si es None
+            utiliza una por default.
+        """
+
+        cantidad_chips = kwargs.get('cantidad_chips', 2)
+
+        if bd_contactos:
+            assert bd_contactos.get_cantidad_contactos() > cantidad_chips, \
+                "La cant. de contactos en BD debe ser mayor a cant. chips"
+        else:
+            if cant_contactos is not None:
+                assert cant_contactos > cantidad_chips, \
+                    "La cant. de contactos en BD debe ser mayor a los chips"
+
+            bd_contactos = self.crear_base_datos_contacto(
+                cant_contactos=cant_contactos, columna_extra=columna_extra)
+
+        if not fecha_inicio or not fecha_fin:
+            fecha_inicio = datetime.date.today()
+            fecha_fin = fecha_inicio + datetime.timedelta(days=10)
+
+
+        c = CampanaSms(
+            nombre="campaña-" + ru(),
+            cantidad_chips=cantidad_chips,
+            template_mensaje="No estamos comunicando con ud por una deuda",
+            tiene_respuesta=True,
+            identificador_campana_sms=CampanaSms.objects.obtener_ultimo_identificador_sms(),
+            fecha_inicio=fecha_inicio,
+            fecha_fin=fecha_fin,
+            bd_contacto=bd_contactos,
+        )
+        c.save()
+
+        c.nombre = "Campaña de PRUEBA - {0}".format(c.id)
+        c.save()
+
+        return c
+
+    def crea_campana_sms_actuacion_sms(self, dia_semanal,
+        hora_desde, hora_hasta, campana_sms):
+        """
+        Crea un opbjeto ActuacionSms relacionado a una
+        CampanaSms, la cuál se tiene que tomar como
+        parámetro.
+        """
+
+        actuacion_sms = ActuacionSms(
+            dia_semanal=dia_semanal,
+            hora_desde=hora_desde,
+            hora_hasta=hora_hasta,
+            campana_sms=campana_sms,
+        )
+        actuacion_sms.save()
+        return actuacion_sms
 
     def registra_evento_de_intento(self, campana_id, contacto_id, intento):
         """Genera evento asociado a intento de contactacion"""
