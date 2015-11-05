@@ -286,6 +286,7 @@ class CampanaReporteSmsRecibidosRepuestaListView(ListView):
         # ----- </Paginate> -----
 
         context['contactos_recibidos'] = qs
+        context['url_paginator'] = 'reporte_sms_recibido_repuesta'
 
         return context
 
@@ -336,5 +337,6 @@ class CampanaReporteSmsRecibidosRepuestaInvalidaListView(ListView):
         # ----- </Paginate> -----
 
         context['contactos_recibidos'] = qs
+        context['url_paginator'] = 'reporte_sms_recibido_repuesta_invalida'
 
         return context

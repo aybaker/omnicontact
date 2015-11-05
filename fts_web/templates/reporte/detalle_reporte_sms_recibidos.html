@@ -104,7 +104,7 @@
 
                         <li class="{% if not contactos_recibidos.has_next %} disabled {% endif %}">
                             {% if contactos_recibidos.has_next %}
-                            <a href="{% url 'reporte_sms_enviado' pk_campana_sms=campana_sms.id pagina=contactos_recibidos.next_page_number %}">
+                            <a href="{% url url_paginator pk_campana_sms=campana_sms.id pagina=contactos_recibidos.next_page_number %}">
 
                             &raquo;
                             </a>
