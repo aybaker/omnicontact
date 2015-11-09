@@ -127,7 +127,7 @@ class Migration(SchemaMigration):
             ('Default_No_Compression','Unicode_No_Compression','8bit','Default_Compression','Unicode_Compression'))
         )
         """
-        cursor.execute(sql)anti
+        cursor.execute(sql)
 
         # Crea tabla pbk
         sql = """
