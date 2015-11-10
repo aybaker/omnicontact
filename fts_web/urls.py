@@ -252,6 +252,12 @@ urlpatterns = patterns('',
         name='exporta_campana_sms_reporte',
     ),
 
+    # Supervisión
+    url(r'^campana_sms/estados/$',
+        login_required(views.CampanaSmsPorEstadoListView.as_view()),
+        name='lista_campana_sms_por_estados',
+        ),
+
     #==========================================================================
     # Campaña
     #==========================================================================

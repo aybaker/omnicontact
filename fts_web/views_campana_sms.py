@@ -340,3 +340,35 @@ class CampanaReporteSmsRecibidosRepuestaInvalidaListView(ListView):
         context['url_paginator'] = 'reporte_sms_recibido_repuesta_invalida'
 
         return context
+
+
+# =============================================================================
+# Estados
+# =============================================================================
+
+
+class CampanaSmsPorEstadoListView(ListView):
+    """
+    Esta vista lista los objetos CampanaSms
+    diferenciadas por sus estados actuales.
+    Pasa un diccionario al template
+    con las claves como estados.
+    """
+
+    template_name = 'estado/estado_sms.html'
+    context_object_name = 'campana_sms'
+    model = CampanaSms
+
+    def get_context_data(self, **kwargs):
+        context = super(CampanaSmsPorEstadoListView, self).get_context_data(
+           **kwargs)
+
+        # obtener_estadisticas_render_graficos_supervision()
+        servicio_estadisticas = EstadisticasCampanaSmsService()
+        campanas_ejecucion = CampanaSms.objects.obtener_confirmadas()
+        for campana_sms in campanas_ejecucion:
+            campana_sms.hack__graficos_estadisticas = \
+                servicio_estadisticas.obtener_estadisticas_supervision(
+                    campana_sms.id)
+        context['campanas_ejecucion'] = campanas_ejecucion
+        return context
