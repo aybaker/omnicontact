@@ -99,8 +99,19 @@
                         	<a href="{{reporte_sms_url}}" >Reportes SMS</a>
                         </li>
                         {% endif %}
-                        <li>
-                            <a href="{% url 'lista_campana_por_estados' %}">Supervisión</a>
+                        <li role="presentation" class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+						      Supervision <span class="caret"></span>
+						    </a>
+                            <ul class="dropdown-menu" role="menu">
+						    	<li>
+                                    <a href="{% url 'lista_campana_por_estados' %}">Supervision Campañas Telefónicas</a>
+                        		</li>
+
+                        		<li>
+                            		<a href="{% url 'lista_campana_sms_por_estados' %}">Supervision Campañas SMS</a>
+                        		</li>
+						    </ul>
                         </li>
                         <li>
                             <a href="{% url 'busqueda_de_llamadas' %}">Búsqueda Llamadas</a>
