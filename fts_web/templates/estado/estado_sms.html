@@ -31,38 +31,54 @@
         <div class="panel-body">
             <div>  
                
-                {% for campana in campanas_ejecucion %}
-                    {% with graficos_estadisticas=campana.hack__graficos_estadisticas %}
+                {% for campana_sms in campanas_ejecucion %}
+                    {% with graficos_estadisticas=campana_sms.hack__graficos_estadisticas %}
                         <div class="col-sm-6 col-md-6 col-lg-4">
                             <table class="table table-bordered table-hover">
-                        <thead>
+                      <!--  <thead>
                             <tr class="fts-table-bg">
                                 <th>estado</th>
                                 <th>cantidad</th>
                             </tr>
-                        </thead>
-                        <tbody>
+                        </thead>-->
+                                <tbody>
+                                    <tr class="fts-table-bg">
+                                        <td width="65%">
+                                            <h4 class="text-primary">{{ campana_sms.nombre }}</h4>
+                                        </td>
+                                        <td>
+                                            <h6>
+                                                <p>{{ campana_sms.fecha_inicio|date:"d/m/Y" }} - {{ campana_sms.fecha_fin|date:"d/m/Y" }}</p>
+                                                <p>
+                                                    {{ campana_sms.obtener_actuacion_actual.get_dia_semanal_display }}:
+                                                    {{ campana_sms.obtener_actuacion_actual.hora_desde|time:"H:i" }} -
+                                                    {{ campana_sms.obtener_actuacion_actual.hora_hasta|time:"H:i" }}
+                                                </p>
+                                            </h6>
+                                        </td>
+                                    </tr>
                             <tr>
                                 <td>Enviado OK</td>
-                                <td>{{campana.total_enviado}}</td>
+                                <td>{{graficos_estadisticas.total_enviado}}</td>
                             </tr>
                             <tr>
                                 <td>Error en el envio</td>
-                                <td>{{campana.total_error_envio}}</td>
+                                <td>{{graficos_estadisticas.total_error_envio}}</td>
                             </tr>
                             <tr>
                                 <td>No procesados</td>
-                                <td>{{campana.total_no_procesados}}</td>
+                                <td>{{graficos_estadisticas.total_no_procesados}}</td>
                             </tr>
                             <tr>
                                 <td>Recibido con respuesta esperada</td>
-                                <td>{{campana.total_recibidos_respuesta}}</td>
+                                <td>{{graficos_estadisticas.total_recibidos_respuesta}}</td>
                             </tr>
                             <tr>
                                 <td>Recibido con respuesta invalida</td>
-                                <td>{{campana.total_recibidos_respuesta_invalida}}</td>
+                                <td>{{graficos_estadisticas.total_recibidos_respuesta_invalida}}</td>
                             </tr>
                         </tbody>
+                            </table>
                         </div>
                     {% endwith %}
                 {% empty %} 
