@@ -128,7 +128,7 @@ class PausaCampanaSmsView(RedirectView):
     pattern_name = 'lista_campana_sms'
 
     def post(self, request, *args, **kwargs):
-        campana_sms = CampanaSms.objects.get(pk=request.POST['campana_id'])
+        campana_sms = CampanaSms.objects.get(pk=request.POST['campana_sms_id'])
         campana_sms.pausar()
 
         message = '<strong>Operación Exitosa!</strong>\
@@ -151,7 +151,7 @@ class ActivaCampanaSmsView(RedirectView):
     pattern_name = 'lista_campana_sms'
 
     def post(self, request, *args, **kwargs):
-        campana_sms = CampanaSms.objects.get(pk=request.POST['campana_id'])
+        campana_sms = CampanaSms.objects.get(pk=request.POST['campana_sms_id'])
         campana_sms.despausar()
 
         message = '<strong>Operación Exitosa!</strong>\
