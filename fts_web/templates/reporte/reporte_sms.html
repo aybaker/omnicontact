@@ -5,7 +5,7 @@
     <div class="panel fts-border-verde">
         <!-- Default panel contents -->
         <div class="panel-heading fts-bg-verde-gradiente">                
-            <h4 class="inline">Reportes: Campañas Finalizadas</h4>
+            <h4 class="inline">Reportes: Campañas SMS</h4>
             <div class="clear-fix"></div>
         </div>
         <div class="panel-body">
@@ -19,7 +19,8 @@
                         <th>Base Datos</th>
                         <th>Estado </th>
                         <th>SMS Enviados</th>
-                          <th>SMS Recibidos</th>
+                        <th>SMS Recibidos con Repuestas </th>
+                          <th>SMS Recibidos sin Repuestas</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -38,12 +39,19 @@
                                 <td>
                                     {{ campana.get_estado_display}}
                                 </td>
-                                <td><a href="{% url 'reporte_sms_enviado' campana.id %}">Ver Reporte SMS enviados</a></td>
-                            <td></td>
+                                <td><a href="{% url 'reporte_sms_enviado' pk_campana_sms=campana.id pagina=1 %}">Ver Reporte SMS enviados</a></td>
+                                <td> {% if campana.tiene_respuesta %}
+                                    <a href="{% url 'reporte_sms_recibido_repuesta' pk_campana_sms=campana.id pagina=1 %}">Ver Reporte SMS recibido</a>
+                                    {% endif %}
+                                </td>
+                                <td> {% if campana.tiene_respuesta %}
+                                    <a href="{% url 'reporte_sms_recibido_repuesta_invalida' pk_campana_sms=campana.id pagina=1 %}">Ver Reporte SMS recibido invalido</a>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="6">
+                                <td colspan="8">
                                     <p class="text-center text-danger">
                                         <em>No se encontraron Contactos para esta campaña.</em>
                                     </p>

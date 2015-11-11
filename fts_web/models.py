@@ -1799,12 +1799,13 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
         En caso de no encontarse, lanza SuspiciousOperation
         """
         try:
-            ESTADOS_VER_DETALLE = [CampanaSms.ESTADO_CONFIRMADA]
+            ESTADOS_VER_DETALLE = [CampanaSms.ESTADO_CONFIRMADA,
+                                   CampanaSms.ESTADO_PAUSADA]
             return self.filter(estado__in=ESTADOS_VER_DETALLE).get(
                 pk=campana_sms_id)
         except CampanaSms.DoesNotExist:
-            raise(SuspiciousOperation("No se encontro campana en "
-                                      "estado ESTADO_CONFIRMADA."))
+            raise(SuspiciousOperation("No se encontro campana en estadp"
+                                      "ESTADO_CONFIRMADA ó ESTADO_PAUSADA."))
 
     def obtener_campana_sms_para_reciclar(self, campana_sms_id):
         """Devuelve la campaña sms pasada por ID, siempre que dicha
@@ -1906,6 +1907,20 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
                            ]
         return self.filter(estado__in=ESTADOS_REPORTE).order_by('-id')
 
+    def obtener_tiene_repuesta_reporte(self, campana_sms_id):
+        """Devuelve la campaña pasada por ID, siempre que dicha
+        campaña pueda ser mostrada.
+
+        Si tiene_respuesta es True
+
+        En caso de no encontarse, lanza SuspiciousOperation
+        """
+        try:
+            return self.filter(tiene_respuesta=True).get(pk=campana_sms_id)
+        except CampanaSms.DoesNotExist:
+            raise(SuspiciousOperation("No se encontro campana en "
+                                      "tiene_respuesta"))
+
 
 class CampanaSms(AbstractCampana):
     """
@@ -1997,6 +2012,21 @@ class CampanaSms(AbstractCampana):
         assert self.puede_borrarse()
 
         self.estado = CampanaSms.ESTADO_BORRADA
+        self.save()
+
+    def pausar(self):
+        """Setea la campaña como ESTADO_PAUSADA"""
+        logger.info("Seteando campana %s como ESTADO_PAUSADA", self.id)
+        assert self.estado == CampanaSms.ESTADO_CONFIRMADA
+        self.estado = Campana.ESTADO_PAUSADA
+        self.save()
+
+    def despausar(self):
+        """Setea la campaña como ESTADO_ACTIVA.
+        """
+        logger.info("Seteando campana %s como ESTADO_CONFIRMADA", self.id)
+        assert self.estado == CampanaSms.ESTADO_PAUSADA
+        self.estado = CampanaSms.ESTADO_CONFIRMADA
         self.save()
 
 

@@ -220,9 +220,6 @@
     - bin/build_usbmodeswitch.sh
     - bin/upload_etc_rclocal.sh
     - bin/usb_modem.sh
-    - bin/pgsql.sql    
-    - bin/build_extension_dblink.sh
-    - bin/build_pgsql.sh
   tags:
     - deploy
     - docker
@@ -231,6 +228,7 @@
   shell: >
     /home/ftsender/deploy/bin/db_update_plpython_stored_proc.sh
     /home/ftsender/deploy/app/fts_web/sql/plpython/*.sql
+    /home/ftsender/deploy/app/fts_web/sql/plpgsql/update_timestamp.sql
   tags:
     - deploy
     - docker
@@ -349,58 +347,4 @@
     - docker
   ignore_errors: True
 
-- name: Check if tablas de gammu is installed in smsd
-  shell: psql -c "select * from pg_tables" smsd | grep -q gammu
-  sudo: yes
-  sudo_user: postgres
-  register: smsd_installed
-  ignore_errors: True
-  tags:
-    - db
-    - docker
-
-- name: Correr script creacion de tablas smsd
-  shell: >
-    /home/ftsender/deploy/bin/build_pgsql.sh
-  when: fts_distribution == "centos6" and smsd_installed|failed
-  sudo: yes
-  sudo_user: postgres
-  register: smsd_installed
-  tags:
-    - db
-    - docker
-
-- name: Cargar extension dblink
-  shell: >
-    /home/ftsender/deploy/bin/build_extension_dblink.sh
-  when: fts_distribution == "centos6" 
-  sudo: yes
-  sudo_user: postgres
-  tags:
-    - db
-    - docker
-
-- name: Create extension dblink
-  action: command psql -d ftsender -c "CREATE EXTENSION IF NOT EXISTS dblink"
-  sudo: yes
-  sudo_user: postgres
-  tags:
-    - db
-    - docker
-
-- name: Copy reporte sms 
-  copy: src={{BUILD_DIR_REPORTE_SMS}}/reporte_sms.tar.gz dest=/home/ftsender/deploy/appsms
-  sudo: yes
-  tags:
-    - deploy
-    - quick_deploy
-    - docker
-
-- name: Cargar modulo reporte sms
-  command: tar -xzf /home/ftsender/deploy/appsms/reporte_sms.tar.gz -C /var/www/html/
-  when: fts_distribution == "centos6" 
-  sudo: yes
-  tags:
-    - deploy
-    - docker
 

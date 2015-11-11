@@ -52,12 +52,6 @@ echo "Usando directorio temporal: $TMP/appsms..."
 echo "Descargando demonio sms en directorio temporal"
 tar -xzf /home/deployer/aplicacionsms/DEMONIO-SMS.tar.gz -C $TMP/appsms
 
-mkdir -p $TMP/reportesms
-echo "Usando directorio temporal: $TMP/reportesms..."
-
-echo "Descargando modulo reporte sms en directorio temporal"
-cp /home/deployer/aplicacionsms/reporte_sms.tar.gz $TMP/reportesms
-
 # ----------
 
 echo "Obteniendo datos de version..."
@@ -94,5 +88,5 @@ python $TMP/app/fts_web/version.py
 export DO_CHECKS="${DO_CHECKS:-no}"
 
 echo "Ejecutando Ansible"
-ansible-playbook deploy/playbook.yml --extra-vars "BUILD_DIR=$TMP/app  BUILD_DIR_SMS=$TMP/appsms BUILD_DIR_REPORTE_SMS=$TMP/reportesms" $*
+ansible-playbook deploy/playbook.yml --extra-vars "BUILD_DIR=$TMP/app  BUILD_DIR_SMS=$TMP/appsms" $*
 
