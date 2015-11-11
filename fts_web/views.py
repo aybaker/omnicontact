@@ -23,6 +23,9 @@ from fts_web.views_grupo_atencion import *  # @UnusedWildImport
 from fts_web.forms import BusquedaDeLlamadasForm
 from fts_web.services.busqueda_de_llamadas_de_numero_de_telefono import (
     BusquedaDeLlamadasService, NumeroDeTelefonoInvalidoError)
+from django.views.generic.list import ListView
+from fts_web.models import Campana, CampanaSms
+from django.conf import settings
 
 import logging as logging_
 
@@ -103,3 +106,27 @@ class BusquedaDeLlamadasView(FormView):
 
 def test_view_exception(request):
     raise Exception("ERROR FICTICIO")
+
+
+# =============================================================================
+# Pagina Inicio
+# =============================================================================
+
+class IndexListView(ListView):
+    """
+    Esta vista es la pagina principal
+    Muestra la campana sms y la capana ivr las activas.
+    """
+
+    template_name = 'index.html'
+    context_object_name = 'campanas'
+    model = Campana
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexListView, self).get_context_data(
+           **kwargs)
+        context['campana_activas'] = Campana.objects.obtener_activas()
+        context['campana_sms_activas'] = CampanaSms.objects.obtener_confirmadas()
+        context['canales_ivr'] = settings.FTS_LIMITE_GLOBAL_DE_CANALES
+        context['cantidad_chips'] = settings.FTS_LIMITE_GLOBAL_DE_CHIPS
+        return context

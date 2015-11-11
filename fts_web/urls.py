@@ -20,8 +20,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$',
-        RedirectView.as_view(pattern_name='lista_campana_por_estados',
-            permanent=False),
+        login_required(views.IndexListView.as_view()),
+        name='index',
     ),
 
     #==========================================================================
