@@ -96,8 +96,9 @@ class CampanaReplicarCampana(FTSenderBaseTest):
         hora_hasta = datetime.time(23, 59)
 
         campana_sms = self.crear_campana_sms()
-        repuesta = OpcionSms(respuesta="SI", campana_sms=campana_sms)
-        repuesta.save()
+        respuesta = OpcionSms(respuesta="SI", respuesta_descripcion="afirmativo",
+                             campana_sms=campana_sms)
+        respuesta.save()
 
         [self.crea_campana_sms_actuacion_sms(dia_semanal, hora_desde,
             hora_hasta, campana_sms) for dia_semanal in range(0, 4)]

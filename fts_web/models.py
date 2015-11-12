@@ -1869,6 +1869,7 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
         for opcion in opciones_sms:
             OpcionSms.objects.create(
                 respuesta=opcion.respuesta,
+                respuesta_descripcion=opcion.respuesta_descripcion,
                 campana_sms=campana_replicada,
             )
 
