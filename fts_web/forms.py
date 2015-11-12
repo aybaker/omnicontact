@@ -612,6 +612,7 @@ class OpcionSmsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Field('respuesta'),
+            Field('respuesta_descripcion'),
             Field('campana_sms', type="hidden"),
         )
         super(OpcionSmsForm, self).__init__(*args, **kwargs)

@@ -85,12 +85,14 @@
                         <thead>
                             <tr class="fts-table-bg">
                                 <th>Respuesta</th>
+                                <th>Repuesta descripcion</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for opcion in campana_sms.opcionsmss.all %}
                                 <tr>
-                                    <td>{{ opcion.respuesta }}</td>                                    
+                                    <td>{{ opcion.respuesta }}</td>
+                                    <td>{{ opcion.respuesta_descripcion }}</td>
                                 </tr>
                              {% empty %}
                                 <tr>
