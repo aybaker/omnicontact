@@ -1869,6 +1869,7 @@ class CampanaSmsManager(BaseCampanaYCampanaSmsManager):
         for opcion in opciones_sms:
             OpcionSms.objects.create(
                 respuesta=opcion.respuesta,
+                respuesta_descripcion=opcion.respuesta_descripcion,
                 campana_sms=campana_replicada,
             )
 
@@ -2667,10 +2668,14 @@ class DuracionDeLlamada(models.Model):
 
 class OpcionSms(models.Model):
     """
-    Representa las posibles respuesta que puede tener una CampanaSma.
+    Representa las posibles respuesta que puede tener una CampanaSms.
     """
 
     respuesta = models.CharField(max_length=64)
+    respuesta_descripcion = models.CharField(
+        max_length=100,
+        null=True, blank=True,
+    )
     campana_sms = models.ForeignKey(
         'CampanaSms',
         related_name='opcionsmss'
