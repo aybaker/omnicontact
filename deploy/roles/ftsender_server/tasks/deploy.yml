@@ -95,6 +95,14 @@
     - quick_deploy
     - docker
 
+- name: Change permissions to directory DEMONIO-SMS
+  shell: chmod -R 777 /home/ftsender/deploy/appsms/DEMONIO-SMS/
+  when: fts_distribution == "centos6"
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
 - name: Setup virtualenv
   pip: >
     requirements=/home/ftsender/deploy/app/requirements.txt
