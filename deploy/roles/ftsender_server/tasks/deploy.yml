@@ -5,7 +5,7 @@
 #----------------------------------------------------------------------
 
 - name: Create the required directories
-  file: path={{item}} state=directory owner=ftsender mode=0777
+  file: path={{item}} state=directory owner=ftsender mode=0755
   sudo: yes
   # /home/ftsender es incluido xq el permiso por default (0700) hace que
   # Nginx NO puda leer archivos estaticos y de media
