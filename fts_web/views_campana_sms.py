@@ -166,7 +166,7 @@ class ActivaCampanaSmsView(RedirectView):
         return super(ActivaCampanaSmsView, self).post(request, *args, **kwargs)
 
 
-class ExportaReporteCampanaView(UpdateView):
+class ExportaReporteCampanaSmsView(UpdateView):
     """
     Esta vista invoca a generar un csv de reporte de la campana.
     """

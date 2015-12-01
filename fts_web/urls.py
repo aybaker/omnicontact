@@ -248,7 +248,7 @@ urlpatterns = patterns('',
         name='reporte_sms_recibido_repuesta_invalida',
     ),
     url(r'^campana_sms/(?P<pk>\d+)/exporta/$',
-        login_required(views.ExportaReporteCampanaView.as_view()),
+        login_required(views.ExportaReporteCampanaSmsView.as_view()),
         name='exporta_campana_sms_reporte',
     ),
 
