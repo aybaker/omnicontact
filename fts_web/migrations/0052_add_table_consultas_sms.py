@@ -20,7 +20,7 @@ class Migration(SchemaMigration):
         # Crea tabla consultas_sms
         sql = """
         CREATE TABLE consultas_sms (
-            fecha timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            fecha timestamp(0) WITHOUT time zone NOT NULL DEFAULT LOCALTIMESTAMP(0),
             token varchar(50) NOT NULL,
             metadatos varchar(200) NOT NULL,
 		    estado varchar(255) NOT NULL,
