@@ -64,6 +64,8 @@
                                             <strong>{{ audio_de_campana.audio_descripcion }}</strong>
                                         {% elif  audio_de_campana.archivo_de_audio %}
                                             <strong>{{ audio_de_campana.archivo_de_audio.descripcion }}</strong>
+                                        {% elif audio_de_campana.tts_mensaje %}
+                                            <strong>TTS MENSAJE:   </strong>
                                         {% else %}
                                             <strong>TTS:</strong>
                                         {% endif %}
@@ -73,6 +75,8 @@
                                             <audio src="{{ audio_de_campana.audio_original.url }}" controls></audio>
                                         {% elif  audio_de_campana.archivo_de_audio %}
                                             <audio src="{{ audio_de_campana.archivo_de_audio.audio_original.url }}" controls></audio>
+                                        {% elif audio_de_campana.tts_mensaje %}
+                                            {{ audio_de_campana.tts_mensaje }}
                                         {% else %}
                                             {{ audio_de_campana.tts }}
                                         {% endif %}

@@ -432,15 +432,24 @@ class AudioForm(forms.ModelForm):
     check_audio_original = forms.BooleanField(
         label="Seleccionar y subir audio", required=False,
         widget=forms.CheckboxInput())
+    check_tts_mensaje = forms.BooleanField(
+        label="Seleccionar variables TTS y escribir mensaje", required=False,
+        widget=forms.CheckboxInput())
 
     def __init__(self, tts_choices, *args, **kwargs):
         super(AudioForm, self).__init__(*args, **kwargs)
+
+        self.fields['variables'] = forms.MultipleChoiceField(
+            choices=tts_choices)
         tts_choices.insert(0, ('', '---------'))
         self.fields['tts'].widget = forms.Select(choices=tts_choices)
 
         self.fields['audio_original'].widget.attrs['disabled'] = True
         self.fields['archivo_de_audio'].queryset =\
             ArchivoDeAudio.objects.all()
+        self.fields['variables'].required = False
+        self.fields['variables'].widget.attrs['disabled'] = True
+        self.fields['tts_mensaje'].widget.attrs['disabled'] = True
 
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -449,12 +458,16 @@ class AudioForm(forms.ModelForm):
             Field('check_audio_original'),
             Field('audio_original'),
             Field('tts'),
+            Field('check_tts_mensaje'),
             Field('campana', type="hidden"),
+            Field('variables'),
+            Field('tts_mensaje'),
         )
 
     class Meta:
         model = AudioDeCampana
-        fields = ('audio_original', 'archivo_de_audio', 'tts', 'campana')
+        fields = ('audio_original', 'archivo_de_audio', 'tts', 'campana',
+                  'tts_mensaje')
         widgets = {
             'audio_original': forms.FileInput(),
         }
@@ -462,6 +475,7 @@ class AudioForm(forms.ModelForm):
             'audio_original': '',
             'archivo_de_audio': 'Audio Precargado',
             'tts': 'TTS',
+            'tts_mensaje': 'Mensaje',
         }
         help_texts = {
             'audio_original': """Seleccione el archivo de audio que desea para

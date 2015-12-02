@@ -25,12 +25,17 @@
 
                     $("#id_tts option:selected").attr("selected", false);
                     $("#id_tts").attr('disabled', true);
-                }else {
+
+                    $("#id_check_tts_mensaje").attr('disabled', true);
+
+;                }else {
                     $("#id_audio_original").attr('disabled', true);
                     $("#id_audio_original").val('');
 
                     $("#id_archivo_de_audio").removeAttr('disabled');
                     $("#id_tts").removeAttr('disabled');
+                    $("#id_check_tts_mensaje").removeAttr('disabled');
+
                 }
             });
 
@@ -40,6 +45,31 @@
                     $("#id_archivo_de_audio").attr('disabled', true);
                 } else {
                     $("#id_archivo_de_audio").removeAttr('disabled');
+                }
+            });
+
+            $("#id_check_tts_mensaje").change(function() {
+                if($(this).is(":checked")) {
+                    $('#id_variables').removeAttr('disabled');
+                    $('#id_tts_mensaje').removeAttr('disabled', true);
+
+                    $("#id_archivo_de_audio option:selected").attr("selected", false);
+                    $("#id_archivo_de_audio").attr('disabled', true);
+
+                    $("#id_tts option:selected").attr("selected", false);
+                    $("#id_tts").attr('disabled', true);
+
+                    $("#id_check_audio_original").attr('disabled', true);
+
+;                }else {
+                    $("#id_variables option:selected").attr("selected", false);
+                    $('#id_variables').attr('disabled', true);
+                    $('#id_tts_mensaje').attr('disabled', true);
+                    $('#id_tts_mensaje').val('');
+
+                    $("#id_archivo_de_audio").removeAttr('disabled');
+                    $("#id_tts").removeAttr('disabled');
+                    $("#id_check_audio_original").removeAttr('disabled');
                 }
             });
             /**/
@@ -55,6 +85,13 @@
                 $("#form-orden-audios").submit();
             });
             /**/
+
+            $("#id_variables").click(function (){
+		var variable =  " ${ " + $("#id_variables option:selected").val() + " }";
+		var texto = $("#id_tts_mensaje").val();
+
+		$("#id_tts_mensaje").val(texto + variable);
+	});
         });
     </script>
 {% endblock %}
@@ -112,6 +149,8 @@
                                                 <strong>{{ audio_de_campana.audio_descripcion }}</strong>
                                             {% elif  audio_de_campana.archivo_de_audio %}
                                                 <strong>{{ audio_de_campana.archivo_de_audio.descripcion }}</strong>
+                                            {% elif audio_de_campana.tts_mensaje %}
+                                                <strong>TTS MENSAJE:</strong>
                                             {% else %}
                                                 <strong>TTS:</strong>
                                             {% endif %}
@@ -121,6 +160,8 @@
                                                     <audio src="{{ audio_de_campana.audio_original.url }}" controls></audio>
                                                 {% elif  audio_de_campana.archivo_de_audio %}
                                                     <audio src="{{ audio_de_campana.archivo_de_audio.audio_original.url }}" controls></audio>
+                                                {% elif audio_de_campana.tts_mensaje %}
+                                                    {{ audio_de_campana.tts_mensaje }}
                                                 {% else %}
                                                     {{ audio_de_campana.tts }}
                                                 {% endif %}
