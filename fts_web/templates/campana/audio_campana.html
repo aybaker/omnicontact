@@ -87,7 +87,7 @@
             /**/
 
             $("#id_variables").click(function (){
-		var variable =  " ${ " + $("#id_variables option:selected").val() + " }";
+		var variable =  " ${" + $("#id_variables option:selected").val() + "}";
 		var texto = $("#id_tts_mensaje").val();
 
 		$("#id_tts_mensaje").val(texto + variable);

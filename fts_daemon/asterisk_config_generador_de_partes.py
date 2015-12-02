@@ -101,6 +101,10 @@ class GeneradorDePedazoDeDialplanFactory(object):
             else:
                 return self._crear_generador_para_tts(audio_de_campana,
                                                       parametros)
+        elif audio_de_campana.tts_mensaje:
+            return GeneradorParaTtsMensajeSwift(audio_de_campana,
+                                                     parametros)
+
         else:
             raise(Exception("Tipo de audio de campana desconocido: {0}".format(
                 audio_de_campana)))
@@ -553,6 +557,26 @@ class GeneradorParaTtsUsandoSwift(GeneradorDePedazoDeDialplanParaAudio):
             'fts_tts': self._audio_de_campana.tts,
         }
         return params_tts
+
+
+class GeneradorParaTtsMensajeSwift(GeneradorDePedazoDeDialplanParaAudio):
+
+    def get_template(self):
+        # TODO: Revisar que este bien implementado el template con Swift.
+        return """
+
+        ; TEMPLATE_DIALPLAN_TTS_MENSAJE-{fts_audio_de_campana_id}
+        exten => _ftsX.,n,Swift({fts_tts_mensaje})
+
+        """
+
+    def get_parametros(self):
+        parametros = dict(self._parametros)
+        parametros.update({
+            'fts_audio_de_campana_id': self._audio_de_campana.id,
+            'fts_tts_mensaje': self._audio_de_campana.tts_mensaje,
+        })
+        return parametros
 
 
 #==============================================================================
