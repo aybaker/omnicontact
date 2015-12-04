@@ -606,6 +606,47 @@ class GeneradorParaArchivoDeAudioTest(FTSenderBaseTest):
             audio_de_campana.id)))
 
 
+class GeneradorParaArchivoDeAudioTtsMensaje(FTSenderBaseTest):
+    """
+    Testea que el método GeneradorParaArchivoDeAudio.generar_pedazo devuelva el
+    template correcto.
+
+    Para el caso de tts puro
+    """
+
+    def test_generar_pedazo_devuelve_template_correcto(self):
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+        audio_de_campana = AudioDeCampana(
+            pk=1, orden=1, campana=campana,
+            tts_mensaje="Estimado, ${NOMBRE} usted posee una deuda cuyo "
+                        "vencimiento con fecha ${FECHA} Para regularizar "
+                        "su situación por favor marque 1 y un asesor hablará "
+                        "con usted.")
+
+        # -----
+
+        param_generales = {
+            'fts_campana_id': campana.id,
+            'fts_campana_dial_timeout': campana.segundos_ring,
+            'fts_agi_server': '127.0.0.1',
+            'fts_dial_url': 'URL TEST',
+            'date': str(datetime.datetime.now()),
+            'fts_audio_de_campana_id': audio_de_campana.id,
+            'fts_tts_mensaje': audio_de_campana.tts_mensaje,
+        }
+
+        generador = GeneradorParaTtsMensajeSwift(audio_de_campana,
+                                                 param_generales)
+        generador.get_parametros = Mock(return_value=param_generales)
+
+        config = generador.generar_pedazo()
+        self.assertTrue(config.find("TEMPLATE_DIALPLAN_TTS_MENSAJE-{0}".format(
+            audio_de_campana.id)))
+
+
 class GeneradorParaTtsHoraTest(FTSenderBaseTest):
     """
     Testea que el método GeneradorParaTtsHora.generar_pedazo devuelva el
