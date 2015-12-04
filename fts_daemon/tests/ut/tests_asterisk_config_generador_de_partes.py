@@ -135,6 +135,37 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
                             audio_de_campana, Mock(), campana),
                         GeneradorParaArchivoDeAudio))
 
+    def test_crear_generador_para_audio_con_tts_mensaje(self):
+        generador = GeneradorDePedazoDeDialplanFactory()
+
+        campana = Campana(pk=1, nombre="C",
+                          estado=Campana.ESTADO_ACTIVA,
+                          cantidad_canales=1, cantidad_intentos=1,
+                          segundos_ring=10)
+
+        bd_contacto = BaseDatosContacto(pk=1)
+        metadata = bd_contacto.get_metadata()
+        metadata.cantidad_de_columnas = 2
+        metadata.columna_con_telefono = 0
+        metadata.nombres_de_columnas = ["NOMBRE", "FECHA"]
+        metadata.primer_fila_es_encabezado = True
+        metadata.save()
+        campana.bd_contacto = bd_contacto
+
+        audio_de_campana = AudioDeCampana(
+            pk=1, orden=1, campana=campana,
+            tts_mensaje="Estimado, ${NOMBRE} usted posee una deuda cuyo "
+                        "vencimiento con fecha ${FECHA} Para regularizar "
+                        "su situación por favor marque 1 y un asesor hablará "
+                        "con usted.")
+
+        # -----
+
+        self.assertTrue(isinstance(
+                        generador.crear_generador_para_audio(
+                            audio_de_campana, Mock(), campana),
+                        GeneradorParaTtsMensajeSwift))
+
     @override_settings(FTS_TTS_UTILIZADO='google')
     def test_crear_generador_para_audio_con_tts_de_google(self):
         generador = GeneradorDePedazoDeDialplanFactory()
