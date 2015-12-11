@@ -24,33 +24,31 @@ class Migration(SchemaMigration):
             token varchar(50) NOT NULL,
             metadatos varchar(200) NOT NULL,
 		    estado varchar(255) NOT NULL,
-		    user varchar(20) NOT NULL,
+		    userfield varchar(20) NOT NULL,
 		    password varchar(20) NOT NULL,
-		    datos1 longtext NOT NULL,
-		    datos2 longtext NOT NULL,
-		    datos3 longtext NOT NULL,
-  		    datos4 longtext NOT NULL,
-		    datos5 longtext NOT NULL,
-		    datos6 longtext NOT NULL,
-		    datos7 longtext NOT NULL,
-		    datos8 longtext NOT NULL,
-		    datos9 longtext NOT NULL,
-		    datos10 longtext NOT NULL,
-		    PRIMARY KEY (token),
-		    KEY token (token),
-		    KEY fecha (fecha),
-            )
+		    datos1 text NOT NULL,
+		    datos2 text NOT NULL,
+		    datos3 text NOT NULL,
+  		    datos4 text NOT NULL,
+		    datos5 text NOT NULL,
+		    datos6 text NOT NULL,
+		    datos7 text NOT NULL,
+		    datos8 text NOT NULL,
+		    datos9 text NOT NULL,
+		    datos10 text NOT NULL,
+		    PRIMARY KEY (token)
+        )
         """
         cursor.execute(sql)
 
         # Crea indices para la tabla consultas_sms
         sql = """
-        CREATE INDEX consultas_sms_token ON outbox("token")
+        CREATE INDEX consultas_sms_token ON consultas_sms(token)
         """
         cursor.execute(sql)
 
         sql = """
-        CREATE INDEX consultas_sms_fecha ON outbox("fecha")
+        CREATE INDEX consultas_sms_fecha ON consultas_sms(fecha)
         """
         cursor.execute(sql)
 
