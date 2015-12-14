@@ -189,6 +189,7 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
         archivo_de_audio = self.request.POST.get('archivo_de_audio')
         audio_original = self.request.FILES.get('audio_original')
         tts = self.request.POST.get('tts')
+        tts_mensaje = self.request.POST.get('tts_mensaje')
 
         if ((archivo_de_audio and audio_original)
                 or (archivo_de_audio and tts)
@@ -204,7 +205,7 @@ class AudioCampanaCreateView(CheckEstadoCampanaMixin, CreateView):
             )
             return self.form_invalid(form)
 
-        if archivo_de_audio or audio_original or tts:
+        if archivo_de_audio or audio_original or tts or tts_mensaje:
             self.object = form.save(commit=False)
             self.object.orden = \
                 AudioDeCampana.objects.obtener_siguiente_orden(self.campana.pk)

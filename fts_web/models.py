@@ -1305,6 +1305,7 @@ class CampanaManager(BaseCampanaYCampanaSmsManager):
                 audio_original=audio_de_campana.audio_original,
                 audio_asterisk=audio_de_campana.audio_asterisk,
                 tts=audio_de_campana.tts,
+                tts_mensaje=audio_de_campana.tts_mensaje,
                 archivo_de_audio=audio_de_campana.archivo_de_audio,
                 campana=campana_replicada
             )
@@ -1672,7 +1673,8 @@ class Campana(AbstractCampana):
         for audio_de_campana in audios_de_campana:
             posibles_audios = [audio_de_campana.audio_asterisk,
                                audio_de_campana.archivo_de_audio,
-                               audio_de_campana.tts]
+                               audio_de_campana.tts,
+                               audio_de_campana.tts_mensaje]
             if not any(posibles_audios):
                 return False
         return True
@@ -2070,6 +2072,7 @@ class AudioDeCampana(models.Model):
         max_length=128,
         null=True, blank=True,
     )
+    tts_mensaje = models.TextField(null=True, blank=True)
     archivo_de_audio = models.ForeignKey(
         'ArchivoDeAudio',
         null=True, blank=True,
