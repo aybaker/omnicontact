@@ -1305,6 +1305,7 @@ class CampanaManager(BaseCampanaYCampanaSmsManager):
                 audio_original=audio_de_campana.audio_original,
                 audio_asterisk=audio_de_campana.audio_asterisk,
                 tts=audio_de_campana.tts,
+                tts_mensaje=audio_de_campana.tts_mensaje,
                 archivo_de_audio=audio_de_campana.archivo_de_audio,
                 campana=campana_replicada
             )
