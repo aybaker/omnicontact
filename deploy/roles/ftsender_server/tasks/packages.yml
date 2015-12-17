@@ -65,6 +65,8 @@
     - python-devel
     - ntp
     - supervisor
+    - python-soaplib
+    - python-suds
   tags:
     - yum
     - docker-image

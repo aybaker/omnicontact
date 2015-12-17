@@ -24,6 +24,7 @@
     - /home/ftsender/deploy/static_root
     - /home/ftsender/deploy/log
     - /home/ftsender/deploy/run
+    - /home/ftsender/deploy/webservice
   tags:
     - deploy
     - docker
@@ -95,8 +96,27 @@
     - quick_deploy
     - docker
 
+- name: Upload built (rsync to /webservice)
+  # Copies xxx/app to /home/ftsender/deploy/app (/webservice on dest is implicit)
+  synchronize: >
+    src={{BUILD_DIR_WEB_SERVICE}}
+    dest=/home/ftsender/deploy
+    delete=yes checksum=yes times=no
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
 - name: Change permissions to directory DEMONIO-SMS
   shell: chmod -R 777 /home/ftsender/deploy/appsms/DEMONIO-SMS/
+  when: fts_distribution == "centos6"
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Change permissions to directory APLICACION_SOAP
+  shell: chmod -R 777 /home/ftsender/deploy/webservice/APLICACION_SOAP/
   when: fts_distribution == "centos6"
   tags:
     - deploy
