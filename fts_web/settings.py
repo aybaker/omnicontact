@@ -399,6 +399,19 @@ FTS_LIMITE_GLOBAL_DE_CHIPS = 10
 las campañas de sms"""
 
 #==============================================================================
+# DEMONIo SMS: MODEMS ó GATEWAY
+#==============================================================================
+
+FTS_SMS_MODEM = 'modem'
+FTS_SMS_GATEWAY = 'gateway'
+FTS_SMS_DISPONIBLES = [
+    FTS_SMS_MODEM,
+    FTS_SMS_GATEWAY,
+]
+
+FTS_SMS_UTILIZADO = FTS_SMS_MODEM
+
+#==============================================================================
 # Import de `fts_web_settings_local`
 #==============================================================================
 
