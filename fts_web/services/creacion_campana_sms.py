@@ -8,8 +8,10 @@ from __future__ import unicode_literals
 
 import logging
 
+from django.conf import settings
 from fts_web.errors import FtsError
 from fts_web.services.datos_sms import FtsWebContactoSmsManager
+from fts_web.services.gateway_sms import GatewaySmsService
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +48,20 @@ class ConfirmacionCampanaSmsService(object):
         service_datos_sms = FtsWebContactoSmsManager()
         service_datos_sms.crear_tabla_de_fts_web_contacto(campana_sms.id)
 
+    def _elegir_demonio_sms(self, campana_sms):
+        """
+        Escoge el demonio seteado en el setting
+        :param campana_sms: campaña sms creada
+        """
+        if settings.FTS_SMS_UTILIZADO is settings.FTS_SMS_GATEWAY:
+            service_gateway_sms = GatewaySmsService()
+            service_gateway_sms.crear_sms_en_el_servidor_ics(campana_sms)
 
     def confirmar(self, campana_sms):
         self._validar_bd_contacto_campana(campana_sms)
         self._validar_actuacion_campana(campana_sms)
         self._validar_mensaje(campana_sms)
         self._depurar_fts_web_contacto(campana_sms)
+        self._elegir_demonio_sms(campana_sms)
+
         campana_sms.confirmar()
