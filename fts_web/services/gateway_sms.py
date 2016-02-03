@@ -5,6 +5,9 @@ from __future__ import unicode_literals
 from django.db import connection
 from fts_web.models import CampanaSms
 from fts_web.utiles import log_timing
+import codecs
+import os
+import json
 
 import logging as _logging
 
@@ -16,8 +19,10 @@ class GatewaySmsService(object):
     def crear_sms_en_el_servidor_ics(self, campana_sms):
         contactos_sin_procesar = self._obtener_contactos_no_procesados(
             campana_sms)
-        print contactos_sin_procesar
-        return None
+        for contacto in contactos_sin_procesar:
+            contacto_json = json.loads(contacto[0])
+            self._escribir_sms_en_send(contacto_json, 0,
+                                       campana_sms.template_mensaje)
 
     def _obtener_contactos_no_procesados(self, campana_sms):
         """
@@ -28,7 +33,7 @@ class GatewaySmsService(object):
         nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT id, datos
+        sql = """SELECT datos
             FROM  {0}
             WHERE sms_enviado = 0
             GROUP BY id, datos
@@ -41,3 +46,18 @@ class GatewaySmsService(object):
 
         return values
 
+    def _escribir_sms_en_send(self, numero, puerto, mensaje):
+
+        dwgconfig_income_path = '/home/federico/FreeTech/gateway/'
+
+        try:
+            sms_partfilename = '%s%s' % (dwgconfig_income_path, numero)
+            sms = codecs.open(sms_partfilename, 'w', 'utf-8')
+            sms.write('%s\n' % numero)
+            sms.write('%s\n' % puerto)
+            sms.write('%s\n' % mensaje)
+
+            sms.close()
+
+        except:
+            logger.error("error en la escritura del sms")
