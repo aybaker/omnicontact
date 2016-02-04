@@ -19,9 +19,10 @@ class GatewaySmsService(object):
     def crear_sms_en_el_servidor_ics(self, campana_sms):
         contactos_sin_procesar = self._obtener_contactos_no_procesados(
             campana_sms)
+
         for contacto in contactos_sin_procesar:
             contacto_json = json.loads(contacto[0])
-            self._escribir_sms_en_send(contacto_json, 0,
+            self._escribir_sms_en_send(contacto_json[0], 0,
                                        campana_sms.template_mensaje)
 
     def _obtener_contactos_no_procesados(self, campana_sms):
