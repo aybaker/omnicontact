@@ -8,6 +8,7 @@ from fts_web.utiles import log_timing
 import codecs
 import os
 import json
+import random
 
 import logging as _logging
 
@@ -22,8 +23,16 @@ class GatewaySmsService(object):
 
         for contacto in contactos_sin_procesar:
             contacto_json = json.loads(contacto[0])
-            self._escribir_sms_en_send(contacto_json[0], 0,
-                                       campana_sms.template_mensaje)
+            cont = 0
+            nombres_columnas = campana_sms.bd_contacto.get_metadata().\
+                nombres_de_columnas
+            mensaje = self._random_mensajes(campana_sms.template_mensaje,
+                campana_sms.template_mensaje_opcional,
+                campana_sms.template_mensaje_alternativo)
+            for columna in nombres_columnas:
+                mensaje = mensaje.replace('$'+columna+'', contacto_json[cont])
+                cont = cont + 1
+            self._escribir_sms_en_send(contacto_json[0], 0, mensaje)
 
     def _obtener_contactos_no_procesados(self, campana_sms):
         """
@@ -62,3 +71,26 @@ class GatewaySmsService(object):
 
         except:
             logger.error("error en la escritura del sms")
+
+
+    def _random_mensajes(self, mensaje_principal, mensaje_opcional, mensaje_alternativo):
+        """ Este metodo hace un random entre los 3 tipos de mensajes si existe
+        (opcional, alternativo) si no devuelve el mensaje_principal
+        :return: devuelve el mensaje a enviar
+        """
+        if mensaje_principal and mensaje_opcional and mensaje_alternativo:
+            mensajes = (mensaje_principal, mensaje_opcional, mensaje_alternativo)
+            mensaje = random.choice(mensajes)
+            return mensaje
+        elif mensaje_principal and mensaje_opcional:
+            mensajes = (mensaje_principal, mensaje_opcional)
+            mensaje = random.choice(mensajes)
+            return mensaje
+        elif mensaje_principal and  mensaje_alternativo:
+            mensajes = (mensaje_principal, mensaje_alternativo)
+            mensaje = random.choice(mensajes)
+            return mensaje
+        elif mensaje_principal:
+            return mensaje_principal
+        else:
+            return None
