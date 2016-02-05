@@ -18,21 +18,29 @@ logger = _logging.getLogger(__name__)
 class GatewaySmsService(object):
 
     def crear_sms_en_el_servidor_ics(self, campana_sms):
+        """
+        En este metodo vamos buscar los sms a enviar y lo vamos a crear
+        y escribir en el servidor
+        """
         contactos_sin_procesar = self._obtener_contactos_no_procesados(
             campana_sms)
 
         for contacto in contactos_sin_procesar:
-            contacto_json = json.loads(contacto[0])
+
+            contacto_json = json.loads(contacto[1])
             cont = 0
             nombres_columnas = campana_sms.bd_contacto.get_metadata().\
                 nombres_de_columnas
             mensaje = self._random_mensajes(campana_sms.template_mensaje,
                 campana_sms.template_mensaje_opcional,
                 campana_sms.template_mensaje_alternativo)
+
             for columna in nombres_columnas:
                 mensaje = mensaje.replace('$'+columna+'', contacto_json[cont])
                 cont = cont + 1
-            self._escribir_sms_en_send(contacto_json[0], 0, mensaje)
+
+            self._escribir_sms_en_send(contacto[0], contacto_json[0], 0,
+                                       mensaje, campana_sms.id)
 
     def _obtener_contactos_no_procesados(self, campana_sms):
         """
@@ -43,7 +51,7 @@ class GatewaySmsService(object):
         nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms.pk))
 
         cursor = connection.cursor()
-        sql = """SELECT datos
+        sql = """SELECT id, datos
             FROM  {0}
             WHERE sms_enviado = 0
             GROUP BY id, datos
@@ -56,12 +64,17 @@ class GatewaySmsService(object):
 
         return values
 
-    def _escribir_sms_en_send(self, numero, puerto, mensaje):
+    def _escribir_sms_en_send(self, id, numero, puerto, mensaje, campana_sms_id):
+        """
+        Este metodo escribir los archivos sms en el servidor
+        """
 
         dwgconfig_income_path = '/home/federico/FreeTech/gateway/'
 
         try:
-            sms_partfilename = '%s%s' % (dwgconfig_income_path, numero)
+            sms_partfilename = '%s%s.%s' % (dwgconfig_income_path, id,
+                                            campana_sms_id)
+
             sms = codecs.open(sms_partfilename, 'w', 'utf-8')
             sms.write('%s\n' % numero)
             sms.write('%s\n' % puerto)
