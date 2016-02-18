@@ -39,13 +39,13 @@
                                 <td>
                                     {{ campana.get_estado_display}}
                                 </td>
-                                <td><a href="{% url 'reporte_sms_enviado' pk_campana_sms=campana.id pagina=1 %}">Ver Reporte SMS enviados</a></td>
+                                <td><a href="{% url 'reporte_sms_enviado' pk_campana_sms=campana.id pagina=1 %}">Ver Reporte </a></td>
                                 <td> {% if campana.tiene_respuesta %}
-                                    <a href="{% url 'reporte_sms_recibido_repuesta' pk_campana_sms=campana.id pagina=1 %}">Ver Reporte SMS recibido</a>
+                                    <a href="{% url 'reporte_sms_recibido_repuesta' pk_campana_sms=campana.id pagina=1 %}">Ver Reporte </a>
                                     {% endif %}
                                 </td>
                                 <td> {% if campana.tiene_respuesta %}
-                                    <a href="{% url 'reporte_sms_recibido_repuesta_invalida' pk_campana_sms=campana.id pagina=1 %}">Ver Reporte SMS recibido invalido</a>
+                                    <a href="{% url 'reporte_sms_recibido_repuesta_invalida' pk_campana_sms=campana.id pagina=1 %}">Ver Reporte </a>
                                     {% endif %}
                                 </td>
                             </tr>
