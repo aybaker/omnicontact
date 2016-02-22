@@ -69,7 +69,7 @@ class GatewaySmsService(object):
         Este metodo escribir los archivos sms en el servidor
         """
 
-        dwgconfig_income_path = '/home/federico/FreeTech/gateway/'
+        dwgconfig_income_path = '/var/spool/dwgp/send/'
 
         try:
             sms_partfilename = '%s%s.%s' % (dwgconfig_income_path, id,
