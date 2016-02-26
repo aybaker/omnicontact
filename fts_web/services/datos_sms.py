@@ -256,7 +256,7 @@ class EstadisticasContactoReporteSms():
             ON \"SenderNumber\" like concat('%',
             substring(c.destino from 7 for 50) ) AND \"UpdatedInDB\" >
             c.sms_enviado_fecha LEFT JOIN fts_web_opcionsms o ON
-            o.campana_sms_id=c.campana_sms_id AND \"TextDecoded\" not like
+            o.campana_sms_id=c.campana_sms_id AND \"TextDecoded\" like
             concat('%',o.respuesta,'%')
             """.format(nombre_tabla)
 
@@ -304,7 +304,7 @@ class EstadisticasContactoReporteSms():
         nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
 
         cursor = connection.cursor()
-        sql = """SELECT count(*)
+        sql = """SELECT DISTINCT count(*)
             FROM  {0} c INNER JOIN inbox
             ON \"SenderNumber\" like concat('%',
             substring(c.destino from 7 for 50) ) AND \"UpdatedInDB\" >
@@ -330,7 +330,7 @@ class EstadisticasContactoReporteSms():
         nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
 
         cursor = connection.cursor()
-        sql = """SELECT count(*)
+        sql = """SELECT DISTINCT count(*)
             FROM  {0} c INNER JOIN inbox i
             ON \"SenderNumber\" like concat('%',
             substring(c.destino from 7 for 50) ) AND \"UpdatedInDB\" >
