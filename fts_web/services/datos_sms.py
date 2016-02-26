@@ -20,6 +20,7 @@ class FtsWebContactoSmsManager():
     # ESTADOS de envio de sms
     ESTADO_ENVIO_NO_PROCESADO = 0
     ESTADO_ENVIO_ENVIADO = 1
+    ESTADO_ENVIO_SIN_CONFIRMACION= 2
     ESTADO_ENVIO_ERROR_ENVIO = -1
     ESTADO_ENVIO_NO_HAY_MODEM = - 2
 
@@ -27,6 +28,7 @@ class FtsWebContactoSmsManager():
         ESTADO_ENVIO_NO_PROCESADO: 'No procesado',
         ESTADO_ENVIO_ENVIADO: 'Enviado correctamente',
         ESTADO_ENVIO_ERROR_ENVIO: 'Error en el envio',
+        ESTADO_ENVIO_SIN_CONFIRMACION: 'Enviado sin confirmacion',
         ESTADO_ENVIO_NO_HAY_MODEM: 'No hay modem disponible',
     }
 
