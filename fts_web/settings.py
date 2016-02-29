@@ -402,6 +402,8 @@ las campañas de sms"""
 # DEMONIo SMS: MODEMS ó GATEWAY
 #==============================================================================
 
+FTS_SMS_TECNOLOGIA = None
+
 FTS_SMS_MODEM = 'modem'
 FTS_SMS_GATEWAY = 'gateway'
 FTS_SMS_DISPONIBLES = [
@@ -410,6 +412,12 @@ FTS_SMS_DISPONIBLES = [
 ]
 
 FTS_SMS_UTILIZADO = FTS_SMS_MODEM
+
+if FTS_SMS_TECNOLOGIA is 'modem':
+    FTS_SMS_UTILIZADO = FTS_SMS_MODEM
+elif FTS_SMS_TECNOLOGIA is 'gateway':
+    FTS_SMS_UTILIZADO = FTS_SMS_GATEWAY
+
 
 #==============================================================================
 # Import de `fts_web_settings_local`
