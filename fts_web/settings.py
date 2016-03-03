@@ -328,8 +328,6 @@ FTS_DAEMON_ORIGINATES_PER_SECOND = 1.0 / 3.0
 Debe ser float, y >= 0.0. Si vale 0.0, implica que no hay limite.
 """
 
-
-
 FTS_LIMITE_GLOBAL_DE_CANALES = 100
 """Cantidad maxima 'global' de canales para usar, en conjunto de todas
 las campañas"""
@@ -404,24 +402,7 @@ las campañas de sms"""
 # DEMONIo SMS: MODEMS ó GATEWAY
 #==============================================================================
 
-FTS_SMS_UTILIZADO = None
-
-FTS_SMS_TECNOLOGIA = None
-
-FTS_SMS_MODEM = 'modem'
-FTS_SMS_GATEWAY = 'gateway'
-FTS_SMS_DISPONIBLES = [
-    FTS_SMS_MODEM,
-    FTS_SMS_GATEWAY,
-]
-
-FTS_SMS_UTILIZADO = FTS_SMS_MODEM
-
-if FTS_SMS_TECNOLOGIA is 'modem':
-    FTS_SMS_UTILIZADO = FTS_SMS_MODEM
-elif FTS_SMS_TECNOLOGIA is 'gateway':
-    FTS_SMS_UTILIZADO = FTS_SMS_GATEWAY
-
+FTS_SMS_UTILIZADO = 'modem'
 
 #==============================================================================
 # Import de `fts_web_settings_local`
