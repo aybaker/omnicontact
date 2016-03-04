@@ -15,7 +15,3 @@ def testing_mode(request):
     """
     return {'testing_mode': settings.FTS_TESTING_MODE}
 
-def reporte_sms(request):
-    """Setea variable .
-    """
-    return {'reporte_sms_url': settings.FTS_REPORTE_SMS_URL}

@@ -219,7 +219,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
     "fts_web.context_processors.testing_mode",
-    "fts_web.context_processors.reporte_sms"
 )
 
 
@@ -402,14 +401,7 @@ las campañas de sms"""
 # DEMONIo SMS: MODEMS ó GATEWAY
 #==============================================================================
 
-FTS_SMS_MODEM = 'modem'
-FTS_SMS_GATEWAY = 'gateway'
-FTS_SMS_DISPONIBLES = [
-    FTS_SMS_MODEM,
-    FTS_SMS_GATEWAY,
-]
-
-FTS_SMS_UTILIZADO = FTS_SMS_MODEM
+FTS_SMS_UTILIZADO = 'modem'
 
 #==============================================================================
 # Import de `fts_web_settings_local`

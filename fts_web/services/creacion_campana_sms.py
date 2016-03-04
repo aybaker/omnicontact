@@ -53,7 +53,7 @@ class ConfirmacionCampanaSmsService(object):
         Escoge el demonio seteado en el setting
         :param campana_sms: campaña sms creada
         """
-        if settings.FTS_SMS_UTILIZADO is settings.FTS_SMS_GATEWAY:
+        if settings.FTS_SMS_UTILIZADO == 'gateway':
             service_gateway_sms = GatewaySmsService()
             service_gateway_sms.crear_sms_en_el_servidor_ics(campana_sms)
 
