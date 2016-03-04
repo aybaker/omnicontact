@@ -59,6 +59,12 @@ echo "Usando directorio temporal: $TMP/webservice..."
 echo "Descargando demonio sms en directorio temporal"
 tar -xzf /home/deployer/aplicacionsms/APLICACION_SOAP.tar.gz -C $TMP/webservice
 
+mkdir -p $TMP/apidinstar
+echo "Usando directorio temporal: $TMP/apidinstar..."
+
+echo "Descargando api dinstar en directorio temporal"
+tar -xzf /home/deployer/aplicacionsms/dinstar.tar.gz -C $TMP/apidinstar
+
 # ----------
 
 echo "Obteniendo datos de version..."
@@ -95,5 +101,5 @@ python $TMP/app/fts_web/version.py
 export DO_CHECKS="${DO_CHECKS:-no}"
 
 echo "Ejecutando Ansible"
-ansible-playbook deploy/playbook.yml --extra-vars "BUILD_DIR=$TMP/app  BUILD_DIR_SMS=$TMP/appsms BUILD_DIR_WEB_SERVICE=$TMP/webservice" $*
+ansible-playbook deploy/playbook.yml --extra-vars "BUILD_DIR=$TMP/app  BUILD_DIR_SMS=$TMP/appsms BUILD_DIR_WEB_SERVICE=$TMP/webservice BUILD_API_DINSTAR=$TMP/apidinstar " $*
 
