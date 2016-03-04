@@ -17,6 +17,7 @@
     - /home/ftsender/.pip
     - /home/ftsender/deploy
     - /home/ftsender/deploy/bin
+    - /home/ftsender/deploy/apidinstar
     - /home/ftsender/deploy/app
     - /home/ftsender/deploy/appsms
     - /home/ftsender/deploy/local
@@ -25,7 +26,10 @@
     - /home/ftsender/deploy/log
     - /home/ftsender/deploy/run
     - /home/ftsender/deploy/webservice
-    - /home/ftsender/deploy/apidinstar
+    - /var/spool/dwgp/incoming/
+    - /var/spool/dwgp/send/
+    - /var/spool/dwgp/ussd_incoming/
+    - /var/spool/dwgp/ussd_send
   tags:
     - deploy
     - docker
