@@ -381,7 +381,7 @@
   synchronize: >
     src={{BUILD_API_DINSTAR}}
     dest=/home/ftsender/deploy
-    delete=yes checksum=yes times=no
+    delete=yes checksum=yes times=no mode=0777
   tags:
     - deploy
     - quick_deploy
