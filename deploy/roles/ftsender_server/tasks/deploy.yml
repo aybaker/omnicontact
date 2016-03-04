@@ -377,18 +377,18 @@
   ignore_errors: True
 
 - name: Upload built (rsync to /apidinstar)
-  # Copies xxx/app to /home/ftsender/deploy/apidisntar (/apidinstar on dest is implicit)
+  # Copies xxx/app to /home/ftsender/deploy/apidinstar (/apidinstar on dest is implicit)
   synchronize: >
     src={{BUILD_API_DINSTAR}}
     dest=/home/ftsender/deploy
-    delete=yes checksum=yes times=no 
+    delete=yes checksum=yes times=no
   tags:
     - deploy
     - quick_deploy
     - docker
 
 - name: Change permissions to directory dinstar
-  shell: chmod -R 777 /home/ftsender/deploy/apidisntar/dinstar/
+  shell: chmod -R 777 /home/ftsender/deploy/apidinstar/dinstar/
   when: fts_distribution == "centos6"
   tags:
     - deploy
