@@ -388,12 +388,6 @@ depuración de BaseDatoContacto.
 # DEPLOY -> REPORTE SMS
 #==============================================================================
 
-FTS_REPORTE_SMS_URL = None
-"""URL donde se encuentran los reportes sms
-
-Ej: http://172.20.2.249:9088/reporte_sms/REPORTE_SMS
-"""
-
 FTS_LIMITE_GLOBAL_DE_CHIPS = 10
 """Cantidad maxima 'global' de chips para usar, en conjunto de todas
 las campañas de sms"""
