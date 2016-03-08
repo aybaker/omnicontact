@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 
+from django.conf import settings
 from django.contrib import messages
 from django.views.generic import DetailView, DeleteView, UpdateView
 from django.views.generic.list import ListView
@@ -219,8 +220,12 @@ class CampanaReporteSmsEnviadosListView(ListView):
         context = super(CampanaReporteSmsEnviadosListView, self).get_context_data(
             **kwargs)
         estadisticas_sms_enviados = EstadisticasCampanaSmsService()
-        qs = estadisticas_sms_enviados.\
-            obtener_estadisticas_reporte_sms_enviados(self.kwargs['pk_campana_sms'])
+        if settings.FTS_SMS_UTILIZADO == 'gateway':
+            qs = estadisticas_sms_enviados.\
+                obtener_estadisticas_reporte_sms_enviados_gateway(self.kwargs['pk_campana_sms'])
+        else:
+            qs = estadisticas_sms_enviados.\
+                obtener_estadisticas_reporte_sms_enviados(self.kwargs['pk_campana_sms'])
         campana_sms = CampanaSms.objects.get(pk=self.kwargs['pk_campana_sms'])
         reporte_campana_sms_service = ReporteCampanaSmsService()
         reporte_campana_sms_service.crea_reporte_csv(campana_sms, qs,
@@ -239,6 +244,7 @@ class CampanaReporteSmsEnviadosListView(ListView):
 
         context['contactos_enviados'] = qs
         context['campana_sms'] = CampanaSms.objects.get(pk=self.kwargs['pk_campana_sms'])
+        context['tipo_campana_sms'] = settings.FTS_SMS_UTILIZADO
         return context
 
 

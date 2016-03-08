@@ -226,6 +226,28 @@ class EstadisticasContactoReporteSms():
 
         return values
 
+    def obtener_contacto_sms_enviado_gateway(self, campana_sms_id):
+        """
+        Este método se encarga de devolver los contactos enviado por gateway
+        """
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
+
+        cursor = connection.cursor()
+        sql = """SELECT id, sms_enviado_fecha, destino, sms_enviado, datos,
+            puerto FROM  {0}
+            WHERE campana_sms_id = %s
+        """.format(nombre_tabla)
+
+        params = [campana_sms_id]
+
+        with log_timing(logger,
+                        "obtener_contacto_sms_enviado_gateway() tardo %s seg"):
+            cursor.execute(sql, params)
+            values = cursor.fetchall()
+
+        return values
+
     def obtener_contacto_sms_repuesta_esperada(self, campana_sms_id):
         """
         Este método se encarga de devolver los contactos
