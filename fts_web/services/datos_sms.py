@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.db import connection
 from fts_web.models import CampanaSms
 from fts_web.utiles import log_timing
@@ -120,6 +121,15 @@ class FtsWebContactoSmsManager():
         with log_timing(logger,
             "ALTER_TABLE: cant_intentos tardo %s seg"):
             cursor.execute(sql)
+
+        if settings.FTS_SMS_UTILIZADO == 'gateway':
+            sql = """ALTER TABLE {0}
+                ADD puerto integer
+            """.format(nombre_tabla)
+
+            with log_timing(logger,
+                "ALTER_TABLE: puerto tardo %s seg"):
+                cursor.execute(sql)
 
     def eliminar_tabla_fts_web_contacto(self, campana_sms):
         """
