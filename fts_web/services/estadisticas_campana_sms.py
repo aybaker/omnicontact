@@ -115,6 +115,7 @@ class EstadisticasCampanaSmsService():
             'total_enviado': 0,
             'total_error_envio': 0,
             'total_no_procesados': 0,
+            'total_sin_confirmacion': 0,
         }
 
         for estado in lista_totales_estados:
@@ -124,6 +125,8 @@ class EstadisticasCampanaSmsService():
                 total_estado['total_error_envio'] = estado[1]
             elif estado[0] is FtsWebContactoSmsManager.ESTADO_ENVIO_NO_PROCESADO:
                 total_estado['total_no_procesados'] = estado[1]
+            elif estado[0] is FtsWebContactoSmsManager.ESTADO_ENVIO_SIN_CONFIRMACION:
+                total_estado['total_sin_confirmacion'] = estado[1]
 
         return total_estado
 
@@ -148,6 +151,7 @@ class EstadisticasCampanaSmsService():
             'total_enviado': total_estado_enviado['total_enviado'],
             'total_error_envio': total_estado_enviado['total_error_envio'],
             'total_no_procesados': total_estado_enviado['total_no_procesados'],
+            'total_sin_confirmacion': total_estado_enviado['total_sin_confirmacion'],
             'total_recibidos_respuesta': total_recibidos_respuesta[0][0],
             'total_recibidos_respuesta_invalida': total_recibidos_respuesta_invalida[0][0],
         }
