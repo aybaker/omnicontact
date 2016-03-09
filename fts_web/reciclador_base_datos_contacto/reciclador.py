@@ -148,14 +148,15 @@ class RecicladorBaseDatosContacto(object):
 
             return campana_sms.bd_contacto
 
-        elif CampanaSms.TIPO_RECICLADO_ERROR_ENVIO in tipos_reciclado:
-            # Validamos que si el tipo de reciclado es
-            # TIPO_RECICLADO_PENDIENTES, sea el único tipo de reciclado que se
-            # procese.
-            if len(tipos_reciclado) > 1:
+        else:
+            # Validamos que los tipos de reciclado correspondan con los tipos
+            # de recicaldo posibles cuando se procesen mas de un tipo.
+            if not all(tipo_reciclado in
+                       dict(CampanaSms.TIPO_RECICLADO_CONJUNTO)
+                       for tipo_reciclado in tipos_reciclado):
                 raise CampanaTipoRecicladoInvalidoError(
-                    "Se selecciono mas de un tipo de reciclado, cuando "
-                    "deberia ser solo el tipo: TIPO_RECICLADO_ERROR_ENVIO.")
+                    "Ente los tipo de reciclado seleccionados existe alguno "
+                    "que es invalido para procesar el reciclado de contactos.")
             reciclador = RecicladorContactosCampanaSMS()
             contactos_reciclados = reciclador.\
                 obtener_contactos_reciclados(campana_sms, tipos_reciclado)
@@ -172,7 +173,3 @@ class RecicladorBaseDatosContacto(object):
             bd_contacto_reciclada.genera_contactos(contactos_reciclados)
             bd_contacto_reciclada.define()
             return bd_contacto_reciclada
-
-        else:
-            raise CampanaTipoRecicladoInvalidoError(
-                    "No se selecciono un tipo de reciclado valido ")

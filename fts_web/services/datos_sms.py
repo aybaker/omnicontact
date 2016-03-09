@@ -173,6 +173,10 @@ class RecicladorContactosCampanaSMS():
             if int(tipo_reciclado) == CampanaSms.TIPO_RECICLADO_ERROR_ENVIO:
                 contactos_reciclados.update(
                     self._obtener_contactos_error_envio(campana_sms))
+            elif int(tipo_reciclado) == CampanaSms.TIPO_RECICLADO_ENVIADO_SIN_CONFIRMACION:
+                contactos_reciclados.update(
+                    self._obtener_contactos_enviado_sin_confirmacion(
+                        campana_sms))
             else:
                 assert False, "El tipo de reciclado es invalido: {0}".format(
                     tipo_reciclado)
@@ -197,6 +201,31 @@ class RecicladorContactosCampanaSMS():
         with log_timing(logger,
                         "_obtener_contactos_error_envio() tardo %s seg"):
             cursor.execute(sql)
+            values = cursor.fetchall()
+
+        return values
+
+    def _obtener_contactos_enviado_sin_confirmacion(self, campana_sms):
+        """
+        Este método se encarga de devolver los contactos que tengan el
+        error en el envio de del sms
+        El -1 significa error del envio en el codigo de daniel
+        """
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms.pk))
+
+        cursor = connection.cursor()
+        sql = """SELECT datos
+            FROM  {0}
+            WHERE sms_enviado = %s
+            GROUP BY id, datos
+        """.format(nombre_tabla)
+
+        params = [FtsWebContactoSmsManager.ESTADO_ENVIO_SIN_CONFIRMACION]
+
+        with log_timing(logger,
+                        "_obtener_contactos_enviado_sin_confirmacion() tardo %s seg"):
+            cursor.execute(sql, params)
             values = cursor.fetchall()
 
         return values
