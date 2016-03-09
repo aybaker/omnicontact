@@ -46,6 +46,35 @@ class EstadisticasCampanaSmsService():
 
         return lista_contactos
 
+    def obtener_estadisticas_reporte_sms_enviados_gateway(self, campana_sms_id):
+        """
+        Este método devuelve las estadísticas de
+        la campaña actual.
+        """
+
+        campana_sms = CampanaSms.objects.get(pk=campana_sms_id)
+
+        assert campana_sms.estado in (CampanaSms.ESTADO_CONFIRMADA,
+                                      CampanaSms.ESTADO_PAUSADA)
+
+        servicio_estadisticas_sms = EstadisticasContactoReporteSms()
+        datos_sms_enviados  = servicio_estadisticas_sms.\
+            obtener_contacto_sms_enviado_gateway(campana_sms.id)
+        lista_contactos = []
+        for dato in datos_sms_enviados:
+            contacto = {
+                'id': dato[0],
+                'sms_enviado_fecha': dato[1],
+                'destino': dato[2],
+                'sms_enviado_estado': FtsWebContactoSmsManager.\
+                    MAP_ESTADO_ENVIO_A_LABEL[dato[3]],
+                'datos': dato[4],
+                'puerto': dato[5],
+            }
+            lista_contactos.append(contacto)
+
+        return lista_contactos
+
     def obtener_estadisticas_reporte_sms_recibido_respuesta(self,
                                                             campana_sms_id):
         """

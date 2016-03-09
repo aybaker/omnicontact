@@ -48,6 +48,9 @@
                         <th>Destino</th>
                         <th>Estado de envio</th>
                         <th>Datos</th>
+                          {% if tipo_campana_sms == 'gateway' %}
+                              <th>Puerto</th>
+                          {% endif %}
                       </tr>
                     </thead>
                     <tbody>
@@ -67,6 +70,9 @@
                                 <td>
                                     {{ contacto.datos}}
                                 </td>
+                                {% if tipo_campana_sms == 'gateway' %}
+                                    <td>{{ contacto.puerto}}</td>
+                                {% endif  %}
                             </tr>
                         {% empty %}
                             <tr>
