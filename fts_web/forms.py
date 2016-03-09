@@ -531,6 +531,11 @@ class TipoRecicladoCampanaSmsForm(forms.Form):
         widget=forms.RadioSelect,
         required=False,
     )
+    tipo_reciclado_conjunto = forms.MultipleChoiceField(
+        choices=CampanaSms.TIPO_RECICLADO_CONJUNTO,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         super(TipoRecicladoCampanaSmsForm, self).__init__(*args, **kwargs)
@@ -540,6 +545,7 @@ class TipoRecicladoCampanaSmsForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
             Field('tipo_reciclado_unico', css_class='radio_reciclado'),
+            Field('tipo_reciclado_conjunto', css_class='checkboxs_reciclado'),
             HTML("""
                 <button type="submit" name="continuar" id="submit-id-continuar"
                     class="btn btn-default pull-right modal_proceso_grande">
