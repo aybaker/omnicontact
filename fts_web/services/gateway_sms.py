@@ -39,8 +39,8 @@ class GatewaySmsService(object):
                 mensaje = mensaje.replace('$'+columna+'', contacto_json[cont])
                 cont = cont + 1
 
-            self._escribir_sms_en_send(contacto[0], contacto_json[0], 0,
-                                       mensaje, campana_sms.id)
+            self._escribir_sms_en_send(contacto[0], contacto_json[0], mensaje,
+                                       campana_sms.id)
 
     def _obtener_contactos_no_procesados(self, campana_sms):
         """
@@ -64,7 +64,7 @@ class GatewaySmsService(object):
 
         return values
 
-    def _escribir_sms_en_send(self, id, numero, puerto, mensaje, campana_sms_id):
+    def _escribir_sms_en_send(self, id, numero, mensaje, campana_sms_id):
         """
         Este metodo escribir los archivos sms en el servidor
         """
@@ -77,7 +77,6 @@ class GatewaySmsService(object):
 
             sms = codecs.open(sms_partfilename, 'w', 'utf-8')
             sms.write('%s\n' % numero)
-            sms.write('%s\n' % puerto)
             sms.write('%s\n' % mensaje)
 
             sms.close()
