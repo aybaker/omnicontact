@@ -409,3 +409,53 @@ class EstadisticasContactoReporteSms():
             values = cursor.fetchall()
 
         return values
+
+    def obtener_total_supervision(self, campana_sms_id):
+        """
+        Este método se encarga de devolver el totales de la superviion
+        """
+
+        nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
+
+        cursor = connection.cursor()
+        sql = """SELECT 0 as estado, count(*)
+            FROM  {0}
+            WHERE sms_enviado = 0
+
+            UNION SELECT 1 as estado, count(*)
+            FROM  {0}
+            WHERE sms_enviado = 1
+
+            UNION SELECT -1 as estado, count(*)
+            FROM  {0}
+            WHERE sms_enviado = -1
+
+            UNION SELECT 2 as estado, count(*)
+            FROM  {0}
+            WHERE sms_enviado = 2
+
+            UNION SELECT DISTINCT 3 as estado, count(*)
+            FROM  {0} c INNER JOIN inbox
+            ON \"SenderNumber\" like concat('%',
+            substring(c.destino from 7 for 50) ) AND \"UpdatedInDB\" >
+            c.sms_enviado_fecha INNER JOIN fts_web_opcionsms o ON
+            o.campana_sms_id=c.campana_sms_id AND \"TextDecoded\" like
+            concat('%',o.respuesta,'%')
+
+            UNION SELECT DISTINCT 4 as estado, count(*)
+            FROM  {0} c INNER JOIN inbox i
+            ON \"SenderNumber\" like concat('%',
+            substring(c.destino from 7 for 50) ) AND \"UpdatedInDB\" >
+            c.sms_enviado_fecha LEFT JOIN fts_web_opcionsms o ON
+            o.campana_sms_id=c.campana_sms_id AND \"TextDecoded\" not like
+            concat('%',o.respuesta,'%')
+
+            """.format(nombre_tabla)
+
+        with log_timing(logger,
+                        "obtener_total_supervision()"
+                        "tardo %s seg"):
+            cursor.execute(sql)
+            values = cursor.fetchall()
+
+        return values
