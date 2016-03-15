@@ -374,7 +374,7 @@ class CampanaSmsPorEstadoListView(ListView):
         campanas_ejecucion = CampanaSms.objects.obtener_confirmadas()
         for campana_sms in campanas_ejecucion:
             campana_sms.hack__graficos_estadisticas = \
-                servicio_estadisticas.obtener_estadisticas_supervision(
+                servicio_estadisticas.obtener_estadisticas_supervision_nuevo(
                     campana_sms.id)
         context['campanas_ejecucion'] = campanas_ejecucion
         return context

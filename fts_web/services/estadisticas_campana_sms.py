@@ -187,3 +187,58 @@ class EstadisticasCampanaSmsService():
 
         return total_supervision
 
+    def obtener_estadisticas_supervision_nuevo(self, campana_sms_id):
+        """
+        Este metodo devuelve las estadisticas de la campaña sms
+        """
+
+        campana_sms = CampanaSms.objects.get(pk=campana_sms_id)
+
+        assert campana_sms.estado in (CampanaSms.ESTADO_CONFIRMADA,
+                                      CampanaSms.ESTADO_PAUSADA)
+
+        servicio_estadisticas_sms = EstadisticasContactoReporteSms()
+        lista_total_estado = servicio_estadisticas_sms.obtener_total_supervision(campana_sms_id)
+        total_estado = self._obtener_totales_por_estado_sms_nuevo(lista_total_estado)
+
+
+        total_supervision = {
+            'total_enviado': total_estado['total_enviado'],
+            'total_error_envio': total_estado['total_error_envio'],
+            'total_no_procesados': total_estado['total_no_procesados'],
+            'total_sin_confirmacion': total_estado['total_sin_confirmacion'],
+            'total_recibidos_respuesta': total_estado['total_recibidos_respuesta'],
+            'total_recibidos_respuesta_invalida': total_estado['total_recibidos_respuesta_invalida'],
+        }
+
+        return total_supervision
+
+    def _obtener_totales_por_estado_sms_nuevo(self, lista_totales_estados):
+        """
+        Este se metodo se encarga de devolver los totales por estado de sms
+        no procesado, error_envio y enviado
+        """
+        total_estado = {
+            'total_enviado': 0,
+            'total_error_envio': 0,
+            'total_no_procesados': 0,
+            'total_sin_confirmacion': 0,
+            'total_recibidos_respuesta': 0,
+            'total_recibidos_respuesta_invalida': 0,
+        }
+
+        for estado in lista_totales_estados:
+            if estado[0] is FtsWebContactoSmsManager.ESTADO_ENVIO_ENVIADO:
+                total_estado['total_enviado'] = estado[1]
+            elif estado[0] is FtsWebContactoSmsManager.ESTADO_ENVIO_ERROR_ENVIO:
+                total_estado['total_error_envio'] = estado[1]
+            elif estado[0] is FtsWebContactoSmsManager.ESTADO_ENVIO_NO_PROCESADO:
+                total_estado['total_no_procesados'] = estado[1]
+            elif estado[0] is FtsWebContactoSmsManager.ESTADO_ENVIO_SIN_CONFIRMACION:
+                total_estado['total_sin_confirmacion'] = estado[1]
+            elif estado[0] is 3:
+                total_estado['total_recibidos_respuesta'] = estado[1]
+            elif estado[0] is 4:
+                total_estado['total_recibidos_respuesta_invalida'] = estado[1]
+
+        return total_estado
