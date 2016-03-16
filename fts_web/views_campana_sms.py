@@ -71,7 +71,7 @@ class DetalleCampanSmsView(DetailView):
         context = super(DetalleCampanSmsView, self).get_context_data(
             **kwargs)
         servicio_estadisticas = EstadisticasCampanaSmsService()
-        context['total_supervision'] = servicio_estadisticas.obtener_estadisticas_supervision(self.kwargs['pk_campana_sms'])
+        context['total_supervision'] = servicio_estadisticas.obtener_estadisticas_detalle(self.kwargs['pk_campana_sms'])
         return context
 
 class CampanaSmsDeleteView(DeleteView):
@@ -374,7 +374,7 @@ class CampanaSmsPorEstadoListView(ListView):
         campanas_ejecucion = CampanaSms.objects.obtener_confirmadas()
         for campana_sms in campanas_ejecucion:
             campana_sms.hack__graficos_estadisticas = \
-                servicio_estadisticas.obtener_estadisticas_supervision_nuevo(
+                servicio_estadisticas.obtener_estadisticas_supervision(
                     campana_sms.id)
         context['campanas_ejecucion'] = campanas_ejecucion
         return context
