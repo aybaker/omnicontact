@@ -86,7 +86,7 @@
 
                         <li class="{% if not contactos_recibidos.has_previous %} disabled {% endif %}">
                         {% if contactos_recibidos.has_previous %}
-                            <a href="{% url 'reporte_sms_enviado' pk_campana_sms=campana_sms.id pagina=contactos_recibidos.previous_page_number %}">
+                            <a href="{% url url_reporte pk_campana_sms=campana_sms.id pagina=contactos_recibidos.previous_page_number %}">
                             &laquo;
                             </a>
                         {% else %}

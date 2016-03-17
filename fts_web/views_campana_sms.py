@@ -279,6 +279,7 @@ class CampanaReporteSmsRecibidosRepuestaListView(ListView):
         reporte_campana_sms_service.crea_reporte_csv(self.get_object(), qs,
             reporte_campana_sms_service.REPORTE_SMS_RECIBIDOS)
         context['campana_sms'] = self.get_object()
+        context['url_reporte'] = 'reporte_sms_recibido_repuesta'
 
          # ----- <Paginate> -----
         page = self.kwargs['pagina']
@@ -330,6 +331,7 @@ class CampanaReporteSmsRecibidosRepuestaInvalidaListView(ListView):
         reporte_campana_sms_service.crea_reporte_csv(self.get_object(), qs,
             reporte_campana_sms_service.REPORTE_SMS_RECIBIDOS)
         context['campana_sms'] = self.get_object()
+        context['url_reporte'] = 'reporte_sms_recibido_repuesta_invalida'
 
          # ----- <Paginate> -----
         page = self.kwargs['pagina']
