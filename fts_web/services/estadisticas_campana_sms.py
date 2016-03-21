@@ -106,7 +106,7 @@ class EstadisticasCampanaSmsService():
         return lista_contactos
 
     def obtener_estadisticas_reporte_sms_recibido_respuesta_invalida(self,
-        campana_sms_id):
+        campana_sms_id, hora_desde, hora_hasta):
         """
         Este método devuelve las estadísticas de
         la campaña actual, un listado de los contactos que respondieron
@@ -121,7 +121,8 @@ class EstadisticasCampanaSmsService():
 
         servicio_estadisticas_sms = EstadisticasContactoReporteSms()
         datos_sms_recibido  = servicio_estadisticas_sms.\
-            obtener_contacto_sms_repuesta_invalida(campana_sms.id)
+            obtener_contacto_sms_repuesta_invalida(campana_sms.id, hora_desde,
+                                                   hora_hasta)
         lista_contactos = []
         for dato in datos_sms_recibido:
             contacto = {
