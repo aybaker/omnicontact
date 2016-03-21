@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.contrib import messages
-from django.views.generic import DetailView, DeleteView, UpdateView
+from django.views.generic import DetailView, DeleteView, UpdateView, FormView
 from django.views.generic.list import ListView
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -17,6 +17,7 @@ from fts_web.services.datos_sms import FtsWebContactoSmsManager
 from fts_web.services.estadisticas_campana_sms import \
     EstadisticasCampanaSmsService
 from fts_web.services.reporte_campana_sms import ReporteCampanaSmsService
+from fts_web.forms import ReporteRecibidosForm
 
 import logging as logging_
 
@@ -253,7 +254,7 @@ class CampanaReporteSmsRecibidosRepuestaListView(ListView):
     Muestra un listado de contactos a los cuales se le recibieron una repuesta
     esperada
     """
-    template_name = 'reporte/detalle_reporte_sms_recibidos.html'
+    template_name = 'reporte/detalle_reporte_sms_recibidos_respuesta.html'
     context_object_name = 'campana_sms'
     model = CampanaSms
 
@@ -298,7 +299,7 @@ class CampanaReporteSmsRecibidosRepuestaListView(ListView):
         return context
 
 
-class CampanaReporteSmsRecibidosRepuestaInvalidaListView(ListView):
+class CampanaReporteSmsRecibidosRepuestaInvalidaListView(FormView):
     """
     Muestra un listado de contactos a los cuales se le recibieron una repuesta
     esperada
@@ -306,6 +307,7 @@ class CampanaReporteSmsRecibidosRepuestaInvalidaListView(ListView):
     template_name = 'reporte/detalle_reporte_sms_recibidos.html'
     context_object_name = 'campana_sms'
     model = CampanaSms
+    form_class = ReporteRecibidosForm
 
     def dispatch(self, request, *args, **kwargs):
         self.campana_sms = \
@@ -323,15 +325,26 @@ class CampanaReporteSmsRecibidosRepuestaInvalidaListView(ListView):
         context = super(CampanaReporteSmsRecibidosRepuestaInvalidaListView,
                         self).get_context_data(
             **kwargs)
+
+        context['campana_sms'] = self.get_object()
+
+        hora_desde = self.kwargs['desde']
+        hora_hasta = self.kwargs['hasta']
+
+        if ('hora_desde' and 'hora_hasta') in context:
+            hora_desde = context['hora_desde']
+            hora_hasta = context['hora_hasta']
+
+        context['hora_desde'] = hora_desde
+        context['hora_hasta'] = hora_hasta
+
         estadisticas_sms_recibidos = EstadisticasCampanaSmsService()
         qs = estadisticas_sms_recibidos.\
             obtener_estadisticas_reporte_sms_recibido_respuesta_invalida(
-            self.kwargs['pk_campana_sms'])
+            self.kwargs['pk_campana_sms'], hora_desde, hora_hasta)
         reporte_campana_sms_service = ReporteCampanaSmsService()
         reporte_campana_sms_service.crea_reporte_csv(self.get_object(), qs,
             reporte_campana_sms_service.REPORTE_SMS_RECIBIDOS)
-        context['campana_sms'] = self.get_object()
-        context['url_reporte'] = 'reporte_sms_recibido_repuesta_invalida'
 
          # ----- <Paginate> -----
         page = self.kwargs['pagina']
@@ -343,11 +356,29 @@ class CampanaReporteSmsRecibidosRepuestaInvalidaListView(ListView):
         except django_paginator.EmptyPage:  # If page is out of range (e.g. 9999), deliver last page of results.
             qs = result_paginator.page(result_paginator.num_pages)
         # ----- </Paginate> -----
-
         context['contactos_recibidos'] = qs
         context['url_paginator'] = 'reporte_sms_recibido_repuesta_invalida'
 
         return context
+
+    def form_valid(self, form):
+        """
+        Instacia el filtro de busqueda
+        """
+        hora_desde = form.cleaned_data.get('hora_desde')
+        hora_hasta = form.cleaned_data.get('hora_hasta')
+
+        estadisticas_sms_recibidos = EstadisticasCampanaSmsService()
+        qs = estadisticas_sms_recibidos.\
+            obtener_estadisticas_reporte_sms_recibido_respuesta_invalida(
+            self.kwargs['pk_campana_sms'], hora_desde, hora_hasta)
+        reporte_campana_sms_service = ReporteCampanaSmsService()
+        reporte_campana_sms_service.crea_reporte_csv(self.get_object(), qs,
+            reporte_campana_sms_service.REPORTE_SMS_RECIBIDOS)
+
+        return self.render_to_response(self.get_context_data(
+            form=form, campana_sms=self.get_object(), hora_desde=hora_desde,
+            hora_hasta=hora_hasta))
 
 
 # =============================================================================

@@ -13,7 +13,7 @@ from django.forms.models import inlineformset_factory
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout, Div, MultiField, HTML
 from bootstrap3_datetime.widgets import DateTimePicker
-
+from crispy_forms.bootstrap import InlineField
 from fts_web.models import (Actuacion, ActuacionSms, AgenteGrupoAtencion, ArchivoDeAudio,
                             AudioDeCampana, BaseDatosContacto, Campana,
                             CampanaSms, Calificacion, GrupoAtencion, Opcion,
@@ -751,3 +751,45 @@ class BusquedaDeLlamadasForm(forms.Form):
         self.helper.layout = Layout(
             Field('numero_telefono'),
         )
+
+
+# =============================================================================
+# Reportes con filtro
+# =============================================================================
+
+class ReporteRecibidosForm(forms.Form):
+    hora_desde = forms.IntegerField(min_value=0)
+    hora_hasta = forms.IntegerField(min_value=0)
+
+    def __init__(self, *args, **kwargs):
+        super(ReporteRecibidosForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = 'form-inline'
+        self.helper.field_template = 'bootstrap3/layout/inline_field.html'
+        self.helper.help_text_inline = True
+        self.helper.layout = Layout(
+        Div(
+            Div('hora_desde', css_class='col-md-4',),
+            Div('hora_hasta', css_class='col-md-4',),
+            HTML("""
+                <button type="submit" id="id_guardar" class="btn btn-primary
+                modal_proceso_grande">
+                    Buscar
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>"""),
+            css_class='row',
+            ),
+        )
+
+    def clean(self):
+        cleaned_data = super(ReporteRecibidosForm, self).clean()
+        hora_desde = cleaned_data.get("hora_desde")
+        hora_hasta = cleaned_data.get("hora_hasta")
+
+        if hora_desde > hora_hasta:
+            raise forms.ValidationError("La hora desde no es menor a la hora "
+            "hasta {0} < {1}. Ingrese una hora desde menor que la hora"
+            " hasta".format(hora_desde, hora_hasta))
+
+        return cleaned_data
