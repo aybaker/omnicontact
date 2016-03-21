@@ -305,7 +305,8 @@ class EstadisticasContactoReporteSms():
 
         return values
 
-    def obtener_contacto_sms_repuesta_invalida(self, campana_sms_id):
+    def obtener_contacto_sms_repuesta_invalida(self, campana_sms_id, hora_desde,
+                                               hora_hasta):
         """
         Este método se encarga de devolver los contactos
         """
@@ -316,19 +317,27 @@ class EstadisticasContactoReporteSms():
         sql = """SELECT c.id, \"SenderNumber\",  c.sms_enviado_fecha,
             \"UpdatedInDB\",  \"TextDecoded\"
             FROM  {0} c INNER JOIN inbox
-            ON \"SenderNumber\" like concat('%',
+            ON \"SenderNumber\" like concat('%%',
             substring(c.destino from 7 for 50) ) AND \"UpdatedInDB\" >
-            c.sms_enviado_fecha LEFT JOIN fts_web_opcionsms o ON
-            o.campana_sms_id=c.campana_sms_id AND \"TextDecoded\" like
-            concat('%',o.respuesta,'%')
+            ( c.sms_enviado_fecha + INTERVAL %(hora_desde)s) AND "UpdatedInDB" <
+            ( c.sms_enviado_fecha + INTERVAL %(hora_hasta)s  ) LEFT JOIN
+            fts_web_opcionsms o ON o.campana_sms_id=c.campana_sms_id AND
+            \"TextDecoded\" like concat('%%',o.respuesta,'%%')
             """.format(nombre_tabla)
 
-        params = [campana_sms_id]
+        hora_hasta = str(hora_hasta) + " hour"
+        hora_desde = str(hora_desde) + " hour"
+
+        params = {
+            'hora_desde': hora_desde,
+            'hora_hasta': hora_hasta,
+
+        }
 
         with log_timing(logger,
                         "obtener_contacto_sms_repuesta_invalida()"
                         "tardo %s seg"):
-            cursor.execute(sql)
+            cursor.execute(sql, params)
             values = cursor.fetchall()
 
         return values
