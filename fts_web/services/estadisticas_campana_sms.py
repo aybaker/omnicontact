@@ -106,7 +106,7 @@ class EstadisticasCampanaSmsService():
         return lista_contactos
 
     def obtener_estadisticas_reporte_sms_recibido_respuesta_invalida(self,
-        campana_sms_id):
+        campana_sms_id, hora_desde, hora_hasta):
         """
         Este método devuelve las estadísticas de
         la campaña actual, un listado de los contactos que respondieron
@@ -121,7 +121,8 @@ class EstadisticasCampanaSmsService():
 
         servicio_estadisticas_sms = EstadisticasContactoReporteSms()
         datos_sms_recibido  = servicio_estadisticas_sms.\
-            obtener_contacto_sms_repuesta_invalida(campana_sms.id)
+            obtener_contacto_sms_repuesta_invalida(campana_sms.id, hora_desde,
+                                                   hora_hasta)
         lista_contactos = []
         for dato in datos_sms_recibido:
             contacto = {
@@ -159,7 +160,7 @@ class EstadisticasCampanaSmsService():
 
         return total_estado
 
-    def obtener_estadisticas_supervision(self, campana_sms_id):
+    def obtener_estadisticas_detalle(self, campana_sms_id):
         """
         Este metodo devuelve las estadisticas de la campaña sms
         """
@@ -187,3 +188,56 @@ class EstadisticasCampanaSmsService():
 
         return total_supervision
 
+    def obtener_estadisticas_supervision(self, campana_sms_id):
+        """
+        Este metodo devuelve las estadisticas de la campaña sms
+        """
+
+        campana_sms = CampanaSms.objects.get(pk=campana_sms_id)
+
+        assert campana_sms.estado in (CampanaSms.ESTADO_CONFIRMADA,
+                                      CampanaSms.ESTADO_PAUSADA)
+
+        servicio_estadisticas_sms = EstadisticasContactoReporteSms()
+        lista_total_estado = servicio_estadisticas_sms.obtener_count_contactos_estado(campana_sms_id)
+        total_estado = self._obtener_totales_por_estado_sms(lista_total_estado)
+
+
+        total_supervision = {
+            'total_enviado': total_estado['total_enviado'],
+            'total_error_envio': total_estado['total_error_envio'],
+            'total_no_procesados': total_estado['total_no_procesados'],
+            'total_sin_confirmacion': total_estado['total_sin_confirmacion'],
+        }
+
+        return total_supervision
+
+    def _obtener_totales_por_estado_sms_nuevo(self, lista_totales_estados):
+        """
+        Este se metodo se encarga de devolver los totales por estado de sms
+        no procesado, error_envio y enviado
+        """
+        total_estado = {
+            'total_enviado': 0,
+            'total_error_envio': 0,
+            'total_no_procesados': 0,
+            'total_sin_confirmacion': 0,
+            'total_recibidos_respuesta': 0,
+            'total_recibidos_respuesta_invalida': 0,
+        }
+
+        for estado in lista_totales_estados:
+            if estado[0] is FtsWebContactoSmsManager.ESTADO_ENVIO_ENVIADO:
+                total_estado['total_enviado'] = estado[1]
+            elif estado[0] is FtsWebContactoSmsManager.ESTADO_ENVIO_ERROR_ENVIO:
+                total_estado['total_error_envio'] = estado[1]
+            elif estado[0] is FtsWebContactoSmsManager.ESTADO_ENVIO_NO_PROCESADO:
+                total_estado['total_no_procesados'] = estado[1]
+            elif estado[0] is FtsWebContactoSmsManager.ESTADO_ENVIO_SIN_CONFIRMACION:
+                total_estado['total_sin_confirmacion'] = estado[1]
+            elif estado[0] is 3:
+                total_estado['total_recibidos_respuesta'] = estado[1]
+            elif estado[0] is 4:
+                total_estado['total_recibidos_respuesta_invalida'] = estado[1]
+
+        return total_estado

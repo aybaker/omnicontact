@@ -40,7 +40,7 @@
                     <dl class="dl-horizontal">
                         <dt>Nombre</dt>
                         <dd>{{ campana_sms.bd_contacto }}</dd>
-                    <dl>
+                    </dl>
                    
                     <hr>
                         <h4>Cuerpo del Mensaje</h4>
@@ -151,8 +151,10 @@
                                 <td>{{total_supervision.total_recibidos_respuesta_invalida}}</td>
                             </tr>
                         </tbody>
-                    </div>
-            </form>          
+                        </table>
+                    <a class="btn pull right btn-success" href="{% url 'lista_campana_sms' %}" >Volver a Campañas SMS</a>
+                </div>
+            </form>
             </div>
         </div>
     </div>
