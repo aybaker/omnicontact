@@ -46,5 +46,5 @@ DOWNLOAD_GAMMU_EXTRACT_DIRNAME: 'gammu-1.34.0'
 DOWNLOAD_GAMMU_TARGZ_SHA256: 'dcf93ced37b369a9cfed7d10a71e8d283819c8b779adf630be85e7e7f97e81e2'
 
 # RPM that register usb_modeswitch
-RPM_REPO_USB_MODESWITCH: 'http://apt.sw.be/redhat/el6/en/i386/rpmforge/RPMS/usb_modeswitch-1.1.5-1.el6.rf.i686.rpm'
-RPM_REPO_USB_MODESWITCH_DATA: 'http://apt.sw.be/redhat/el6/en/i386/rpmforge/RPMS/usb_modeswitch-data-20101202-1.el6.rf.noarch.rpm'
+RPM_REPO_USB_MODESWITCH: 'ftp.tu-chemnitz.de/pub/linux/dag/redhat/el6/en/i386/rpmforge/RPMS/usb_modeswitch-1.1.5-1.el6.rf.i686.rpm'
+RPM_REPO_USB_MODESWITCH_DATA: 'ftp.tu-chemnitz.de/pub/linux/dag/redhat/el6/en/i386/rpmforge/RPMS/usb_modeswitch-data-20101202-1.el6.rf.noarch.rpm'
