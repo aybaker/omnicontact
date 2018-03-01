@@ -1,0 +1,9 @@
+---
+- name: Instalacion de ICS
+  hosts: ics-centos
+  # Siempre 'gather_facts' ya q' lo usaoms en varios 'when'
+  # gather_facts: '{{ lookup("env","DO_CHECKS") }}'
+  roles:
+    - ftsender_server
+  gather_facts: True
+

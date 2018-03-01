@@ -1,0 +1,28 @@
+[gammu]
+logformat=textall
+device=/dev/ttyUSB20
+connection=at
+gammucoding = utf8
+logformat = textall
+
+[smsd]
+Service = SQL
+LogFile = /tmp/smsd6.log
+DebugLevel = 255
+Driver = pgsql
+#PhoneID=phone used for sending/receiving
+PhoneID = 6
+#RunOnReceive=/path/to/script.sh
+User = ftsender
+Password = Freetech123
+Host = 127.0.0.1
+Database = ftsender
+BackendRetries=1
+
+[sql]
+#User=smsd
+#Password=smsd
+#Host=127.0.0.1
+#Database=smsd
+#Driver=pgsql
+

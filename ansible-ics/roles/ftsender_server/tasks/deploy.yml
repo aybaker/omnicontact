@@ -1,0 +1,367 @@
+---
+
+#----------------------------------------------------------------------
+# Directorios básicos
+#----------------------------------------------------------------------
+
+- name: Create the required directories
+  file: path={{item}} state=directory owner=ftsender mode=0755
+  # /home/ftsender es incluido xq el permiso por default (0700) hace que
+  # Nginx NO puda leer archivos estaticos y de media
+  # TODO: la seguridad podria mejorarse moviendo statics y media a otro
+  #   directorio fuera de /home
+  with_items:
+    - /etc/ftsender/asterisk
+    - /home/ftsender
+    - /home/ftsender/.pip
+    - /home/ftsender/deploy
+    - /home/ftsender/deploy/bin
+    - /home/ftsender/deploy/apidinstar
+    - /home/ftsender/deploy/app
+    - /home/ftsender/deploy/appsms
+    - /home/ftsender/deploy/local
+    - /home/ftsender/deploy/media_root
+    - /home/ftsender/deploy/static_root
+    - /home/ftsender/deploy/log
+    - /home/ftsender/deploy/run
+    - /var/spool/dwgp/incoming/
+    - /var/spool/dwgp/send/
+    - /var/spool/dwgp/ussd_incoming/
+    - /var/spool/dwgp/ussd_send
+  tags:
+    - deploy
+    - docker
+
+- name: Create directories for DB dumps
+  file: path={{item}} state=directory owner=ftsender group=postgres mode=0770
+  with_items:
+    - "{{ dj_sett_FTS_BASE_DATO_CONTACTO_DUMP_PATH }}"
+  tags:
+    - deploy
+    - docker
+
+- name: Upload scripts to deploy/bin
+  template: src={{ item }} dest=/home/ftsender/deploy/bin mode=0755
+  with_items:
+    - bin/run_uwsgi.sh
+    - bin/manage.sh
+    - bin/db_update_plpython_stored_proc.sh
+    - bin/stop-ftsender-daemons-for-deploy.py
+    - bin/start-ftsender-daemons-for-deploy.py
+  tags:
+    - deploy
+    - docker
+
+- name: Stop FTSender services (except FastAGI daemon)
+  shell: python -u /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.py 2>&1
+  ignore_errors: no
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
+#----------------------------------------------------------------------
+# pip / virtualenv
+#----------------------------------------------------------------------
+
+- name: Setup pip
+  ini_file: >
+    dest=/home/ftsender/.pip/pip.conf
+    section=install
+    option='download-cache'
+    value='/home/ftsender/.pip/cache'
+  tags:
+    - virtualenv
+    - docker
+
+- name: Upload built (rsync to /app)
+  # Copies xxx/app to /home/ftsender/deploy/app (/app on dest is implicit)
+  synchronize: >
+    src={{ BUILD_DIR }}
+    dest=/home/ftsender/deploy
+    delete=yes checksum=yes times=no
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Upload built (rsync to /appsms)
+  # Copies xxx/app to /home/ftsender/deploy/app (/appsms on dest is implicit)
+  synchronize: >
+    src={{ BUILD_DIR_SMS }}
+    dest=/home/ftsender/deploy
+    delete=yes checksum=yes times=no
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Change permissions to directory DEMONIO-SMS
+  shell: chmod -R 777 /home/ftsender/deploy/appsms/DEMONIO-SMS/
+  when: fts_distribution == "centos6"
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Setup virtualenv
+  pip: >
+    requirements=/home/ftsender/deploy/app/requirements.txt
+    virtualenv=/home/ftsender/deploy/virtualenv
+    virtualenv_site_packages=no
+    virtualenv_command=/usr/bin/virtualenv-2.6
+  environment:
+    PATH: /usr/pgsql-{{pgsql_version}}/bin:{{ lookup('env', 'PATH') }}
+  tags:
+    - virtualenv
+    - docker
+
+#----------------------------------------------------------------------
+# StarPy
+#----------------------------------------------------------------------
+
+- name: Check - StarPy instalado 
+  shell: find /home/ftsender/deploy/virtualenv -name starpy | grep -q starpy
+  register: starpy_installed
+  ignore_errors: True
+  tags:
+    - virtualenv
+    - docker
+
+- name: Install starpy
+  pip: name={{ STARPY_PIP_URL }} virtualenv=/home/ftsender/deploy/virtualenv
+  when: starpy_installed|failed
+  tags:
+    - virtualenv
+    - docker
+
+#----------------------------------------------------------------------
+# Deploy
+#----------------------------------------------------------------------
+
+- name: Upload fts_web_settings_local.py
+  template: src=fts_web_settings_local.py dest=/home/ftsender/deploy/local
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
+- name: Create fts_web_settings_local_customizations.py if doesnt exists
+  file: >
+    state=touch
+    dest=/home/ftsender/deploy/local/fts_web_settings_local_customizations.py
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
+- name: Run Django syncdb
+  django_manage: >
+      command=syncdb
+      app_path=/home/ftsender/deploy/app
+      settings=fts_web.settings
+      virtualenv=/home/ftsender/deploy/virtualenv
+  environment:
+    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+  tags:
+    - deploy
+    - docker
+
+- name: Run Django migrations
+  django_manage: >
+      command=migrate
+      app_path=/home/ftsender/deploy/app
+      settings=fts_web.settings
+      virtualenv=/home/ftsender/deploy/virtualenv
+  environment:
+    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Run Django collectstatic
+  django_manage: >
+      command=collectstatic
+      app_path=/home/ftsender/deploy/app
+      settings=fts_web.settings
+      virtualenv=/home/ftsender/deploy/virtualenv
+  environment:
+    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Upload ftsender_uwsgi.ini
+  template: src=ftsender_uwsgi.ini dest=/home/ftsender/deploy/local
+  tags:
+    - deploy
+    - docker
+
+- name: Upload FTSender init script
+  template: >
+    src=etc/init.d/ftsender-daemon
+    dest=/etc/init.d/ftsender-daemon
+    owner=root group=root mode=0755
+  tags:
+    - deploy
+    - docker
+
+- name: Register FTSenser service
+  service: name=ftsender-daemon enabled=yes
+  tags:
+    - deploy
+    - docker
+
+- name: Upload scripts to deploy/bin
+  template: src={{ item }} dest=/home/ftsender/deploy/bin mode=0755
+  with_items:
+    - bin/run_uwsgi.sh
+    - bin/manage.sh
+    - bin/db_update_plpython_stored_proc.sh
+    - bin/stop-ftsender-daemons-for-deploy.py
+    - bin/start-ftsender-daemons-for-deploy.py
+    - bin/build_usbmodeswitch.sh
+    - bin/upload_etc_rclocal.sh
+    - bin/usb_modem.sh
+  tags:
+    - deploy
+    - docker
+
+- name: Install stored procedures
+  shell: >
+    /home/ftsender/deploy/bin/db_update_plpython_stored_proc.sh
+    /home/ftsender/deploy/app/fts_web/sql/plpython/*.sql
+    /home/ftsender/deploy/app/fts_web/sql/plpgsql/update_timestamp.sql
+  tags:
+    - deploy
+    - docker
+
+#----------------------------------------------------------------------
+# Setup supervisor
+#----------------------------------------------------------------------
+
+- name: Upload Supervisor config file
+  template: >
+    src=etc/supervisord.conf
+    dest=/etc/supervisord.conf
+  notify: reload supervisor service
+  tags:
+    - deploy
+    - celery
+    - docker
+
+- name: Flush handlers - reload de supervisor
+  meta: flush_handlers
+
+#----------------------------------------------------------------------
+# Con supervisor configurado, hacemos reload
+#----------------------------------------------------------------------
+
+
+- name: Start FTSender services (except FastAGI daemon)
+  shell: python -u /home/ftsender/deploy/bin/start-ftsender-daemons-for-deploy.py 2>&1
+  ignore_errors: no
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
+# FIXME: si 'start' falla, deberiamos ejecutar 'stop', para asegurarnos
+#        que nada haya quedado andando, ¿no?
+
+#----------------------------------------------------------------------
+# Checks
+#----------------------------------------------------------------------
+
+- name: Run ftsdaemon_checks
+  command: /home/ftsender/deploy/bin/manage.sh ftsdaemon_checks
+  register: ftsdaemon_checks_output
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+  ignore_errors: True
+
+- name: Print output of ftsdaemon_checks
+  debug: msg="{{ ftsdaemon_checks_output.stdout }}"
+  when: ftsdaemon_checks_output|failed
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
+#----------------------------------------------------------------------
+# Deploy sms
+#----------------------------------------------------------------------
+- name: Check - Repositorio usb_modeswitch
+  command: test -f /lib/udev/usb_modeswitch
+  register: repo_usb_modeswitch_installed
+  ignore_errors: True
+  tags:
+    - yum
+
+- name: Upload usb_modeswitch
+  command: /home/ftsender/deploy/bin/build_usbmodeswitch.sh
+  when: repo_usb_modeswitch_installed|failed and fts_distribution == "centos6"
+  register: repo_usb_modeswitch_installed
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Copy archivo T-Mobile NL (Huawei E352)
+  when: repo_usb_modeswitch_installed|success and fts_distribution == "centos6"
+  template: src=etc/usb_modeswitch.d/12d1:14fe dest=/etc/usb_modeswitch.d/
+
+- name: Upload /etc/rc.local 
+  command: /home/ftsender/deploy/bin/upload_etc_rclocal.sh
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+  ignore_errors: True
+
+- name: Upload 3g switch script
+  template: >
+    src=usr/sbin/3g_switch
+    dest=/usr/sbin/3g_switch
+    owner=root group=root mode=0777
+  tags:
+    - deploy
+    - docker
+  
+- name: Upload Usb modem modes
+  command: /home/ftsender/deploy/bin/usb_modem.sh
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+  ignore_errors: True
+
+- name: Upload built (rsync to /apidinstar)
+  # Copies xxx/app to /home/ftsender/deploy/apidinstar (/apidinstar on dest is implicit)
+  synchronize: >
+    src={{ BUILD_API_DINSTAR }}
+    dest=/home/ftsender/deploy
+    delete=yes checksum=yes times=no
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+- name: Change permissions to directory dinstar
+  shell: chmod -R 777 /home/ftsender/deploy/apidinstar/dinstar/
+  when: ansible_os_family == "RedHat"
+  tags:
+    - deploy
+    - quick_deploy
+    - docker

@@ -1,0 +1,70 @@
+---
+
+- name: Create Gammu directory (to install Gammu)
+  file: path=/opt/gammu state=directory owner=ftsender mode=0755
+  when: ansible_os_family == "RedHat"
+  tags:
+    - gammu
+
+- name: Download Gammu sources
+  become: yes
+  become_user: ftsender
+  become_method: su
+  get_url: >
+    url={{ DOWNLOAD_GAMMU_URL }}
+    dest=/opt/gammu/{{ DOWNLOAD_GAMMU_FILENAME }}
+    sha256sum={{ DOWNLOAD_GAMMU_TARGZ_SHA256 }}
+  when: ansible_os_family == "RedHat"
+  tags:
+    - gammu
+
+- name: Check if Gammu is installed 
+  command: test -f /usr/local/bin/gammu
+  register: gammu_installed
+  ignore_errors: True
+  when: ansible_os_family == "RedHat"
+  tags:
+    - gammu
+
+- name: Upload Gammu build script 
+  template: >
+    src=bin/build_gammu.sh
+    dest=/opt/gammu/
+    owner=ftsender mode=0755
+  when: ansible_os_family == "RedHat" and gammu_installed|failed
+  tags:
+    - gammu
+
+- name: Run Gammu build script 
+  become: yes
+  become_user: ftsender
+  become_method: su
+  command: /opt/gammu/build_gammu.sh
+  when: ansible_os_family == "RedHat" and gammu_installed|failed
+  register: gammu_installed
+  tags:
+    - gammu
+
+- name: Upload gammu.smsdrc
+  template: src={{ item }} dest=/etc/ mode=0755
+  with_items:
+    - etc/gammu/gammu-smsdrc
+    - etc/gammu/gammu-smsdrc1
+    - etc/gammu/gammu-smsdrc2
+    - etc/gammu/gammu-smsdrc3
+    - etc/gammu/gammu-smsdrc4
+    - etc/gammu/gammu-smsdrc5
+    - etc/gammu/gammu-smsdrc6
+    - etc/gammu/gammu-smsdrc7
+    - etc/gammu/gammu-smsdrc8
+    - etc/gammu/gammu-smsdrc9
+  tags:
+    - gammu    
+
+- name: Upload .gammurc
+  template: >
+    src=etc/gammu/gammurc
+    dest=/root/.gammurc
+    owner=root mode=0755
+  tags:
+    - gammu

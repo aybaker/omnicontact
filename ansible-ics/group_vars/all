@@ -1,0 +1,85 @@
+---
+
+########################################### Global vars ####################################################
+#                                                                                                          #
+#-------------------------- Estas son las variables utilizadas en los deploys----------------------------#
+#                                                                                                          #
+############################################################################################################
+
+
+OPEN_BR: '{'
+CLOSE_BR: '}'
+
+BUILD_ASTERISK_CFLAGS: ''
+
+os_timezone: /usr/share/zoneinfo/America/Argentina/Cordoba
+
+db_password: ftsender
+
+dj_sett_SECRET_KEY: 8989dfas783klenfad8s3kfad0sf2oilkf8s7fgs0fgsfgs76g8fsdf7hsdf8sdfh
+dj_sett_ASTERISK_USERNAME: astermind
+dj_sett_ASTERISK_PASSWORD: astermindXdd
+# TODO: usar 'ASTERISK_AMI_HTTP_PORT' en vez de 7088
+dj_sett_ASTERISK_HTTP_AMI_URL: http://127.0.0.1:7088
+dj_sett_ASTERISK_DIAL_URL: IAX2/192.168.122.77/${NumberToCall}
+
+dj_sett_FTS_FAST_AGI_DAEMON_PROXY_URL: http://127.0.0.1:{{ NGINX_HTTP_PORT }}
+dj_sett_FTS_DIALPLAN_FILENAME: /etc/ftsender/asterisk/extensions.conf
+dj_sett_FTS_QUEUE_FILENAME: /etc/ftsender/asterisk/queues_fts.conf
+dj_sett_FTS_RELOAD_CMD: ["sudo", "-u", "asterisk", "/opt/asterisk-11/sbin/asterisk", "-x", "dialplan reload"]
+
+dj_sett_TMPL_FTS_AUDIO_CONVERSOR: ["sox", "-t", "wav", "<INPUT_FILE>", "-r", "8k", "-c", "1", "-e", "signed-integer", "-t", "wav", "<OUTPUT_FILE>"]
+dj_sett_TMPL_FTS_AUDIO_CONVERSOR_EXTENSION: .wav
+
+dj_sett_FTS_BASE_DATO_CONTACTO_DUMP_PATH: /home/ftsender/deploy/dumps_bd_contacto/
+
+###############################################################################################################
+###############################################################################################################
+###############################################################################################################
+
+# RPM that register PostgreSql repo
+RPM_REPO_POSTGRESQL: https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-redhat96-9.6-3.noarch.rpm
+
+# URL to download Asterisk sources
+DOWNLOAD_ASTERISK_URL: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-13.18.3.tar.gz
+DOWNLOAD_ASTERISK_TARGZ_SHA256: 4b165f9824c056dd10876938867a814b8171e79666d1e68370a6d0e6e92b98c5
+
+# File name of downloaded file
+DOWNLOAD_ASTERISK_FILENAME: asterisk-13.18.3.tar.gz
+
+# Directory created when extracting
+DOWNLOAD_ASTERISK_EXTRACT_DIRNAME: asterisk-13.18.3
+
+# CFLAGS para compilar Asterisk
+BUILD_ASTERISK_CFLAGS: -march=i586
+
+# URL to install StarPy
+STARPY_PIP_URL: git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba#egg=starpy
+
+# Nginx port
+NGINX_HTTP_PORT: 8088
+
+# uWSGI port to serve 'uwsgi' protocol
+UWSGI_UWSGI_PORT: 8099
+
+# uWSGI port to serve 'http' protocol
+UWSGI_HTTP_PORT: 8080
+
+# Asterisk AMI over HTTP
+ASTERISK_AMI_HTTP_BIND: 127.0.0.1
+ASTERISK_AMI_HTTP_PORT: 7088
+
+# URL to download GAMMU sources
+DOWNLOAD_GAMMU_URL: http://dl.cihar.com/gammu/releases/gammu-1.34.0.tar.gz
+
+# File name of downloaded file gammu
+DOWNLOAD_GAMMU_FILENAME: gammu-1.34.0.tar.gz
+
+# Directory created when extracting gammu
+DOWNLOAD_GAMMU_EXTRACT_DIRNAME: gammu-1.34.0
+DOWNLOAD_GAMMU_TARGZ_SHA256: dcf93ced37b369a9cfed7d10a71e8d283819c8b779adf630be85e7e7f97e81e2
+
+# RPM that register usb_modeswitch
+RPM_REPO_USB_MODESWITCH: ftp.tu-chemnitz.de/pub/linux/dag/redhat/el6/en/i386/rpmforge/RPMS/usb_modeswitch-1.1.5-1.el6.rf.i686.rpm
+RPM_REPO_USB_MODESWITCH_DATA: ftp.tu-chemnitz.de/pub/linux/dag/redhat/el6/en/i386/rpmforge/RPMS/usb_modeswitch-data-20101202-1.el6.rf.noarch.rpm
+

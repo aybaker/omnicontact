@@ -1,0 +1,6 @@
+- name: reload supervisor service
+  service: name=supervisord state=reloaded enabled=yes
+  sudo: yes
+
+- name: reload ftsender except agi
+  shell: supervisorctl status | egrep -q "^fts-llamador-poll-daemon RUNNING" && pkill -u ftsender -f /home/ftsender/deploy/app/fts_daemon/poll_daemon/main.py

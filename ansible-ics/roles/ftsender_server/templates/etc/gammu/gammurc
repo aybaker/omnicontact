@@ -1,0 +1,60 @@
+[gammu]
+device=/dev/ttyUSB2
+connection=at
+logfile = /tmp/gammu.log
+gammucoding = utf8
+logformat = textall
+
+[gammu1]
+device=/dev/ttyUSB5
+connection=at
+logfile = /tmp/gammu1.log
+logformat = textall
+
+[gammu2]
+device=/dev/ttyUSB8
+connection=at
+logfile = /tmp/gammu2.log
+logformat = textall
+
+[gammu3]
+device=/dev/ttyUSB11
+connection=at
+logfile = /tmp/gammu3.log
+logformat = textall
+
+[gammu4]
+device=/dev/ttyUSB14
+connection=at
+logfile = /tmp/gammu4.log
+logformat = textall
+
+[gammu5]
+device=/dev/ttyUSB17
+connection=at
+logfile = /tmp/gammu5.log
+logformat = textall
+
+[gammu6]
+device=/dev/ttyUSB20
+connection=at
+logfile = /tmp/gammu6.log
+logformat = textall
+
+[gammu7]
+device=/dev/ttyUSB23
+connection=at
+logfile = /tmp/gammu7.log
+logformat = textall
+
+[gammu8]
+device=/dev/ttyUSB26
+connection=at
+logfile = /tmp/gammu8.log
+logformat = textall
+
+[gammu9]
+device=/dev/ttyUSB29
+connection=at
+logfile = /tmp/gammu9.log
+logformat = textall

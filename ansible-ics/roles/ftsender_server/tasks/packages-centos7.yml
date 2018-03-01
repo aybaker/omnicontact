@@ -1,0 +1,116 @@
+---
+
+- name: Disable Selinux
+  command: "{{ item }}"
+  with_items:
+      - sed -i 's/\(^SELINUX=\).*/\SELINUX=disabled/' /etc/sysconfig/selinux
+      - sed -i 's/\(^SELINUX=\).*/\SELINUX=disabled/' /etc/selinux/config
+  tags:
+    - issabel
+    - yum
+
+- name: Update/upgrade of centos
+  yum: name='*' state=latest update_cache=yes
+  tags:
+    - issabel
+    - yum
+
+- name: Install Development tools
+  command: "yum -y groupinstall core base \"Development Tools\""
+  tags: issabel
+
+- name: Install epel-release
+  yum: name=epel-release state=present
+
+- name: Install basic packages
+  yum: name={{item}} state=present
+  with_items:
+    - libselinux-python
+    - python-psycopg2
+    - python-virtualenv
+    - rsync
+    - libxslt-devel
+    - python-devel
+    - ntp
+    - supervisor
+  tags:
+    - yum
+    - issabel
+
+- name: Install packages for required services
+  yum: name={{item}} state=installed
+  with_items:
+    - nginx
+    - munin
+    - munin-node
+    - redis
+    - sox
+  tags:
+    - yum
+    - issabel
+
+- name: Install of postgresql 9.6
+  yum: "name={{ postgresql_url }} state=present validate_certs=no "
+  tags:
+    - yum
+    - issabel
+- yum: name=postgresql96* state=present
+  tags:
+    - issabel
+    - yum
+
+- name: Install packages for buliding Asterisk
+  yum: name={{item}} state=present
+  with_items:
+    - libselinux-python
+    - make
+    - wget
+    - openssl-devel
+    - ncurses-devel
+    - newt-devel
+    - libxml2-devel
+    - kernel-devel
+    - gcc
+    - gcc-c++
+    - sqlite-devel
+    - libuuid-devel
+  tags:
+    - asterisk
+    - yum
+
+- name: Install Python 2.6 and git
+  yum: name={{item}} state=present
+  with_items:
+    - git
+    - python26
+    - python26-virtualenv
+    - python26-devel
+  tags:
+    - yum
+
+- name: Install basic packages for gammusms
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - tcl
+    - libusb
+    - libusb-devel
+    - libusb1
+    - libusb1-devel
+    - usbutils
+    - libdbi-dbd-sqlite
+    - libdbi-dbd-pgsql
+    - libdbi-devel
+    - libdbi-drivers
+    - httpd
+    - php
+    - php-pgsql
+    - python-psycopg2
+    - mailx
+    - postgresql-contrib
+    - bluez-libs
+    - bluez-libs-devel
+    - cmake
+  tags:
+    - yum
+    - gammu

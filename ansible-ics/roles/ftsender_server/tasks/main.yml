@@ -1,0 +1,94 @@
+---
+
+#----------------------------------------------------------------------
+# Deploy de la app
+#
+# Tags mas utiles:
+#  - virtualenv: setup de virtualenv & requirements
+#  - deploy: deploy de la APP (EXCEPTUANDO cambios en otros
+#       compoenentes, como Nginx)
+#  - quick_deploy: deploy rapido de la APP (se saltea varios pasos)
+#
+# TODO:
+#
+# - ajustar configuracion de postgresql
+# - hacer rsync a temporal, y hacer chequeos antes de copiar a productivo
+# - al hacer copia, hacerla con comando remoto, para minimizar
+#     probabilidades de inconsistencias si hay corte
+# - crear ambiente de 'acceptance'
+# - copiar BD e intentar migraciones en copia
+# - reportar version instalada en remoto
+#
+# NO TIENE SOPORTE PARA:
+#
+# - resolver problemas con migraciones
+# - actualizar requirements.txt (solo se instalaran los nuevos)
+#
+#----------------------------------------------------------------------
+
+- name: Print fts_distribution
+  # nos aseguramos q' "fts_distribution" haya sido definida.
+  # si no fue definida, esta task generara un error
+  debug: msg="fts_distribution es {{ ansible_os_family }}"
+
+- name: Check fts_distribution
+  fail: msg="fts_distribution con valor {{ ansible_os_family }} es invalida"
+  when: ansible_os_family != "RedHat" or ansible_os_family != "Sangoma"or ansible_os_family != "Debian"
+  ignore_errors: yes
+
+#----------------------------------------------------------------------
+# Setup general, SO, packages, nginx, NTP, etc
+#----------------------------------------------------------------------
+
+# Elastix 2 facts:
+#   (...)
+#	"ansible_distribution": "CentOS",
+#	"ansible_distribution_major_version": "5",
+#	"ansible_distribution_release": "Final",
+#	"ansible_distribution_version": "5.11",
+#	"ansible_os_family": "RedHat",
+#	"ansible_pkg_mgr": "yum",
+#   (...)
+
+# Elastix 3 facts:
+#   (...)
+#	"ansible_distribution": "Elastix",
+#	"ansible_distribution_major_version": "3",
+#	"ansible_distribution_release": "Final",
+#	"ansible_distribution_version": "3.0",
+#	"ansible_os_family": "Elastix",
+#	"ansible_pkg_mgr": "yum",
+#   (...)
+
+- name: Setup sudoers.d/ftsender
+  template: >
+    src=etc/sudoers.d/ftsender
+    dest=/etc/sudoers.d/ftsender
+    owner=root group=root mode=0440
+  when: ansible_os_family != "RedHat" or ansible_os_family != "Sangoma"
+  tags:
+    - sudo
+
+- name: Creation of freetech group
+  group: name=freetech state=present
+
+- name: Create freetech user
+  user: name=freetech group=freetech shell=/bin/bash state=present
+
+- include: packages-centos7.yml
+
+- include: ntp.yml
+
+- include: nginx.yml
+
+- include: asterisk.yml
+
+- include: bd.yml
+
+- include: celery.yml
+
+- include: gammu.yml
+
+- include: deploy.yml
+
+

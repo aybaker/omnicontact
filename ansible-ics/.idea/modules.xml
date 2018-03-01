@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Ansible ICS.iml" filepath="$PROJECT_DIR$/.idea/Ansible ICS.iml" />
+      <module fileurl="file:///etc/ansible-docker/.idea/ansible-docker.iml" filepath="/etc/ansible-docker/.idea/ansible-docker.iml" />
+      <module fileurl="file://$USER_HOME$/ominicontacto/.idea/ominicontacto.iml" filepath="$USER_HOME$/ominicontacto/.idea/ominicontacto.iml" />
+      <module fileurl="file://$USER_HOME$/ominicontacto/.idea/ominicontacto.iml" filepath="$USER_HOME$/ominicontacto/.idea/ominicontacto.iml" />
+    </modules>
+  </component>
+</project>
