@@ -1,7 +1,7 @@
 ---
 
 - name: Create Gammu directory (to install Gammu)
-  file: path=/opt/gammu state=directory owner=ftsender mode=0755
+  file: path=/opt/gammu state=directory owner=root mode=0755
   when: ansible_os_family == "RedHat"
   tags:
     - gammu

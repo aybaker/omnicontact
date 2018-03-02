@@ -70,10 +70,10 @@
     - sudo
 
 - name: Creation of freetech group
-  group: name=freetech state=present
+  group: name=ftsender state=present
 
 - name: Create freetech user
-  user: name=freetech group=freetech shell=/bin/bash state=present
+  user: name=ftsender group=freetech shell=/bin/bash state=present
 
 - include: packages-centos7.yml
 
@@ -88,7 +88,7 @@
 
 - include: celery.yml
 
-- include: gammu.yml
+#- include: gammu.yml
 
 - include: deploy.yml
 
