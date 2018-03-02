@@ -28,6 +28,8 @@
     - libselinux-python
     - python-psycopg2
     - python-virtualenv
+    - git
+    - python
     - rsync
     - libxslt-devel
     - python-devel
@@ -50,7 +52,7 @@
     - issabel
 
 - name: Install of postgresql 9.6
-  yum: "name={{ postgresql_url }} state=present validate_certs=no "
+  yum: "name={{ RPM_REPO_POSTGRESQL }} state=present validate_certs=no "
   tags:
     - yum
     - issabel
@@ -76,16 +78,6 @@
     - libuuid-devel
   tags:
     - asterisk
-    - yum
-
-- name: Install Python 2.6 and git
-  yum: name={{item}} state=present
-  with_items:
-    - git
-    - python26
-    - python26-virtualenv
-    - python26-devel
-  tags:
     - yum
 
 - name: Install basic packages for gammusms
