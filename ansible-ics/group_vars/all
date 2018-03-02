@@ -48,6 +48,8 @@ libpri: http://downloads.asterisk.org/pub/telephony/libpri/libpri-current.tar.gz
 asterisk_v13: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-13.18.3.tar.gz
 jansson: https://github.com/akheron/jansson/archive/v2.7.tar.gz
 asterisk_centos: https://github.com/meduketto/iksemel/archive/master.zip
+DOWNLOAD_ASTERISK_URL: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-13.18.3.tar.gz
+DOWNLOAD_ASTERISK_TARGZ_SHA256: 728db9e4ef34e3f0382c77e5eaa8780b52655377a0db395274667b73cf3a6a1d.
 
 # File name of downloaded file
 DOWNLOAD_ASTERISK_FILENAME: asterisk-13.18.3.tar.gz

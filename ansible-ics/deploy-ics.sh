@@ -142,7 +142,7 @@ Tag() {
     sed -i "21s/.*/$ip ansible_ssh_port=22/" $current_directory/hosts
     echo "Transifiendo llave publica a usuario root de Centos"
     ssh-copy-id -i ~/.ssh/id_rsa.pub root@$ip
-    ansible-playbook -s $current_directory/playbook.yml -u root --extra-vars "BUILD_DIR=$TMP/app BUILD_API_DINSTAR=$TMP/apidinstar" --tags "${array[0]},${array[1]}" --skip-tags "${array[2]}"
+    ansible-playbook -s $current_directory/playbook.yml -u root --extra-vars "BUILD_DIR=$TMP/appsms BUILD_API_DINSTAR=$TMP/apidinstar" --tags "${array[0]},${array[1]}" --skip-tags "${array[2]}"
 
 if [ ${ResultadoAnsible} -ne 0 ];then
     echo "Falló la ejecucion de Ansible, favor volver a correr el script"

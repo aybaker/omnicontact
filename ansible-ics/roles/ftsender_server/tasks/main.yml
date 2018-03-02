@@ -91,5 +91,5 @@
 #- include: gammu.yml
 
 - include: deploy.yml
-  tags: deploy.yml
+  tags: deploy
 
