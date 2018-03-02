@@ -27,7 +27,9 @@ dj_sett_FTS_FAST_AGI_DAEMON_PROXY_URL: http://127.0.0.1:{{ NGINX_HTTP_PORT }}
 dj_sett_FTS_DIALPLAN_FILENAME: /etc/ftsender/asterisk/extensions.conf
 dj_sett_FTS_QUEUE_FILENAME: /etc/ftsender/asterisk/queues_fts.conf
 dj_sett_FTS_RELOAD_CMD: ["sudo", "-u", "asterisk", "/opt/asterisk-11/sbin/asterisk", "-x", "dialplan reload"]
-
+dj_sett_FTS_LIMITE_GLOBAL_DE_CANALES: 30
+dj_sett_FTS_SMS_UTILIZADO: Dinstar
+dj_sett_FTS_LIMITE_GLOBAL_DE_CHIPS: 15
 dj_sett_TMPL_FTS_AUDIO_CONVERSOR: ["sox", "-t", "wav", "<INPUT_FILE>", "-r", "8k", "-c", "1", "-e", "signed-integer", "-t", "wav", "<OUTPUT_FILE>"]
 dj_sett_TMPL_FTS_AUDIO_CONVERSOR_EXTENSION: .wav
 
