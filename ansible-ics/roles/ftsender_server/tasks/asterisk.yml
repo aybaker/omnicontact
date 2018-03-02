@@ -16,73 +16,116 @@
     - docker
     - docker-image
 
-- name: Create Asterisk directory (to install Asterisk)
-  file: path=/opt/asterisk-13 state=directory owner=asterisk mode=0755
-  when: ansible_os_family == "RedHat"
-  tags:
-    - asterisk
-    - docker
-    - docker-image
+- name: Descarga de paquetes de asterisk
+  get_url: "url={{ item }} dest=/usr/src/"
+  register: destino
+  with_items:
+        - "{{ dahdi_linux }}"
+        - "{{ libpri }}"
+        - "{{ asterisk_centos }}"
+        - "{{ asterisk_v13 }}"
+        - "{{ jansson }}"
 
-- name: Download Asterisk sources
-  become: yes
-  become_user: asterisk
-  become_method: su
-  get_url: url={{ DOWNLOAD_ASTERISK_URL }} dest=/home/asterisk/{{ DOWNLOAD_ASTERISK_FILENAME }} sha256sum={{ DOWNLOAD_ASTERISK_TARGZ_SHA256 }}
-  when: ansible_os_family == "RedHat"
-  tags:
-    - asterisk
-    - docker
-    - docker-image
+- name: Descompresion de todos los paquetes
+  unarchive: "src={{ item }} dest=/usr/src/ remote_src=yes"
+  with_items:
+          - "{{ destino.results[0].dest }}"
+          - "{{ destino.results[1].dest }}"
+          - "{{ destino.results[2].dest }}"
+          - "{{ destino.results[3].dest }}"
+          - "{{ destino.results[4].dest }}"
+  register: nombres_tar
 
-- name: Check if Asterisk is installed 
-  command: test -f /opt/asterisk-13/sbin/asterisk
+- name: Borrado de los tar
+  file: "dest={{ item }} state=absent"
+  with_items:
+         - "{{ nombres_tar.results[0].src }}"
+         - "{{ nombres_tar.results[1].src }}"
+         - "{{ nombres_tar.results[2].src }}"
+         - "{{ nombres_tar.results[3].src }}"
+         - "{{ nombres_tar.results[4].src }}"
+
+- action: shell ls /usr/src/
+  register: dirsrc
+
+- name: Instalacion de Iksemel-Master
+  shell: "{{ item }} chdir=/usr/src/{{ dirsrc.stdout_lines[3] }}"
+  with_items:
+        - ./autogen.sh
+        - ./configure
+        - make
+        - make install
+
+- name: Instalacion de Dahdi Linux
+  shell: "{{ item }} chdir=/usr/src/{{ dirsrc.stdout_lines[1] }}"
+  with_items:
+        - "make all"
+        - "make install"
+        - "make config"
+
+- name: Instalacion de libpri
+  shell: "{{ item }} chdir=/usr/src/{{dirsrc.stdout_lines[6] }}"
+  with_items:
+          - "make"
+          - "make install"
+
+- name: Instalacion de jansson
+  shell: "{{ item }} chdir=/usr/src/{{ dirsrc.stdout_lines[4] }}"
+  with_items:
+          - "autoreconf -i"
+          - "./configure --libdir=/usr/lib64"
+          - "make"
+          - "make install"
+
+- name: Creacion de carpeta /tmp/downloads
+  file: path=/tmp/downloads state=directory mode=755
+
+- name: Descarga de pjsip-project
+  shell: "wget -O /tmp/downloads/pjproject-2.6.tar.bz2 http://www.pjsip.org/release/2.6/pjproject-2.6.tar.bz2 chdir=/tmp/downloads"
+- shell: "wget -O /tmp/downloads/pjproject-2.6.md5 http://www.pjsip.org/release/2.6/MD5SUM.txt chdir=/tmp/downloads"
+  register: command_result
+  failed_when:
+    - "'ERROR 404: Not Found' not in command_result.stderr"
+    - "command_result.rc != 0"
+
+- name: Instalacion de asterisk
+  shell: "{{ item }} chdir=/usr/src/{{ dirsrc.stdout_lines[0] }}"
+  with_items:
+          - contrib/scripts/install_prereq install
+          - ./configure --libdir=/usr/lib64 --with-externals-cache=/tmp/downloads
+
+- shell: "contrib/scripts/get_mp3_source.sh chdir=/usr/src/{{ dirsrc.stdout_lines[0] }}"
+  register: command_result
+  ignore_errors: yes
+
+- shell: "{{ item }} chdir=/usr/src/{{ dirsrc.stdout_lines[0] }}"
+  with_items:
+          - make menuselect.makeopts
+          - menuselect/menuselect --enable format_mp3
+          - make
+          - make install
+          - make config
+          - make samples
+          - ldconfig
+          - chkconfig asterisk off
+- meta: clear_host_errors
+
+- name: Set up permissiond and raise up service
+  shell: "{{ item }}"
+  with_items:
+          - "chown asterisk. /var/run/asterisk"
+          - "chown -R asterisk. /etc/asterisk"
+          - "chown -R asterisk. /var/lib/asterisk"
+          - "chown -R asterisk. /var/log/asterisk"
+          - "chown -R asterisk. /var/spool/asterisk"
+          - "chown -R asterisk. /usr/lib64/asterisk"
+          - "chown -R asterisk. /var/www/"
+
+- name: Check if Asterisk is installed
+  command: test -f /usr/sbin/asterisk
   register: asterisk_installed
   ignore_errors: True
   when: ansible_os_family == "RedHat"
-  tags:
-    - asterisk
-    - docker
-    - docker-image
-
-- name: Upload Asterisk build script 
-  when: asterisk_installed|failed
-  template: >
-    src=bin/build_asterisk.sh
-    dest=/home/asterisk/
-    owner=asterisk group=asterisk mode=0755
-  when: ansible_os_family == "RedHat"
-  tags:
-    - asterisk
-    - docker
-    - docker-image
-
-- name: Run Asterisk build script 
-  become: yes
-  become_user: asterisk
-  become_method: su
-  command: /home/asterisk/build_asterisk.sh
-  when: ansible_os_family == "RedHat" and asterisk_installed|failed
-  register: asterisk_installed
-  tags:
-    - asterisk
-    - docker
-    - docker-image
-
-- name: Upload Asterisk init script
-  template: >
-    src=etc/init.d/asterisk-13-ftsender
-    dest=/etc/init.d/asterisk-13-ftsender
-    owner=root group=root mode=0755
-  when: ansible_os_family == "RedHat"
-  tags:
-    - asterisk
-    - docker
-    - docker-image
-
-- name: Register Asterisk service
-  service: name=asterisk-13-ftsender enabled=yes
-  when: ansible_os_family == "RedHat" and asterisk_installed|success
   tags:
     - asterisk
     - docker
@@ -95,11 +138,11 @@
 - name: Modify Asterisk extensions.conf
   lineinfile: >
     state=present
-    dest=/opt/asterisk-13/etc/asterisk/extensions.conf
-    regexp="^#include\s+{{dj_sett_FTS_DIALPLAN_FILENAME}}\s*"
+    dest=/etc/asterisk/extensions.conf
+    regexp="^#include\s+{{ dj_sett_FTS_DIALPLAN_FILENAME }}\s*"
     insertafter=EOF
-    line="#include {{dj_sett_FTS_DIALPLAN_FILENAME}}"
-  when: ansible_os_family == "RedHat" and asterisk_installed|success
+    line="#include {{ dj_sett_FTS_DIALPLAN_FILENAME }}"
+  when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   tags:
     - asterisk
     - docker
@@ -110,56 +153,56 @@
 
 - name: Modify Asterisk manager.conf - general/enabled/yes
   ini_file: >
-    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    dest=/etc/asterisk/manager.conf
     section=general
     option=enabled
     value=yes
-  when: ansible_os_family == "RedHat" and asterisk_installed|success
+  when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   tags:
     - asterisk
     - docker
+    - test
 
 - name: Modify Asterisk manager.conf - general/webenabled/yes
   ini_file: >
-    dest=/opt/asterisk-13/etc/asterisk/manager.conf
+    dest=/etc/asterisk/manager.conf
     section=general
     option=webenabled
     value=yes
-  when: ansible_os_family == "RedHat" and asterisk_installed|success
+  when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   tags:
     - asterisk
     - docker
 
 - name: Modify Asterisk manager.conf - manager/user/secret
   ini_file: >
-    dest=/opt/asterisk-13/etc/asterisk/manager.conf
+    dest=/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
     option=secret
     value={{ dj_sett_ASTERISK_PASSWORD }}
-  when: ansible_os_family == "RedHat" and asterisk_installed|success
-  sudo: yes
+  when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   tags:
     - asterisk
     - docker
 
 - name: Modify Asterisk manager.conf - manager/user/read
   ini_file: >
-    dest=/opt/asterisk-13/etc/asterisk/manager.conf
+    dest=/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
     option=read
     value=system,call,log,verbose,command,agent,user,originate
-  when: ansible_os_family == "RedHat" and asterisk_installed|success
+  when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   tags:
     - asterisk
     - docker
 
 - name: Modify Asterisk manager.conf - manager/user/write
   ini_file: >
-    dest=/opt/asterisk-13/etc/asterisk/manager.conf
+    dest=/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
     option=write
     value=system,call,log,verbose,command,agent,user,originate
-  when: ansible_os_family == "RedHat" and asterisk_installed|success
+  when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   tags:
     - asterisk
     - docker
@@ -170,10 +213,10 @@
 
 - name: Modify Asterisk http.conf - general/enabled/yes
   ini_file: >
-    dest=/opt/asterisk-13/etc/asterisk/http.conf
+    dest=/etc/asterisk/http.conf
     section=general
     option=enabled
-  when: ansible_os_family == "RedHat" and asterisk_installed|success
+  when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   sudo: yes
   tags:
     - asterisk
@@ -181,11 +224,11 @@
 
 - name: Modify Asterisk http.conf - general/bindaddr/ASTERISK_AMI_HTTP_BIND
   ini_file: >
-    dest=/opt/asterisk-13/etc/asterisk/http.conf
+    dest=/etc/asterisk/http.conf
     section=general
     option=bindaddr
     value={{ ASTERISK_AMI_HTTP_BIND }}
-  when: ansible_os_family == "RedHat" and asterisk_installed|success
+  when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   sudo: yes
   tags:
     - asterisk
@@ -193,11 +236,11 @@
 
 - name: Modify Asterisk http.conf - general/bindport/ASTERISK_AMI_HTTP_PORT
   ini_file: >
-    dest=/opt/asterisk-13/etc/asterisk/http.conf
+    dest=/etc/asterisk/http.conf
     section=general
     option=bindport
     value={{ ASTERISK_AMI_HTTP_PORT }}
-  when: ansible_os_family == "RedHat"and asterisk_installed|success
+  when: ansible_os_family == "RedHat"and asterisk_installed|succeeded
   sudo: yes
   tags:
     - asterisk
@@ -208,17 +251,17 @@
 #----------------------------------------------------------------------
 
 - name: Start Asterisk (only if installed)
-  service: name=asterisk-13-ftsender state=started
+  service: name=asterisk state=started
   ignore_errors: True
   register: asterisk_started
-  when: ansible_os_family == "RedHat" and asterisk_installed|success
+  when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   tags:
     - asterisk
     - docker
 
 - name: Reload Asterisk (only if 'start' failed)
   sudo: yes
-  service: name=asterisk-13-ftsender state=reloaded
+  service: name=asterisk state=reloaded
   ignore_errors: True
   when: ansible_os_family == "RedHat" and asterisk_started|failed
   tags:

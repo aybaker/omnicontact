@@ -74,6 +74,7 @@
     - kernel-devel
     - gcc
     - gcc-c++
+    - texinfo
     - sqlite-devel
     - libuuid-devel
   tags:
