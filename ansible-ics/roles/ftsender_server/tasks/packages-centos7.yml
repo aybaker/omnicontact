@@ -35,6 +35,7 @@
     - python-devel
     - ntp
     - supervisor
+    - git
   tags:
     - yum
     - issabel

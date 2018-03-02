@@ -1,6 +1,9 @@
 ---
 - name: Instalacion de ICS
   hosts: ics-centos
+  vars:
+          build_dir: "{{ BUILD_DIR }}"
+          BUILD_API_DINSTAR: "{{ BUILD_API_DINSTAR }}"
   # Siempre 'gather_facts' ya q' lo usaoms en varios 'when'
   # gather_facts: '{{ lookup("env","DO_CHECKS") }}'
   roles:
