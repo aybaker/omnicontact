@@ -155,11 +155,11 @@
 - name: Run Django syncdb
   django_manage: >
       command=syncdb
-      app_path=/home/ftsender/deploy/app
+      app_path=/home/ftsender/deploy/ftsender
       settings=fts_web.settings
       virtualenv=/home/ftsender/deploy/virtualenv
   environment:
-    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+    PYTHONPATH: '/home/ftsender/deploy/ftsender:/home/ftsender/deploy/local'
   tags:
     - deploy
     - docker
@@ -167,11 +167,11 @@
 - name: Run Django migrations
   django_manage: >
       command=migrate
-      app_path=/home/ftsender/deploy/app
+      app_path=/home/ftsender/deploy/ftsender
       settings=fts_web.settings
       virtualenv=/home/ftsender/deploy/virtualenv
   environment:
-    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+    PYTHONPATH: '/home/ftsender/deploy/ftsender:/home/ftsender/deploy/local'
   tags:
     - deploy
     - quick_deploy
@@ -180,11 +180,11 @@
 - name: Run Django collectstatic
   django_manage: >
       command=collectstatic
-      app_path=/home/ftsender/deploy/app
+      app_path=/home/ftsender/deploy/ftsender
       settings=fts_web.settings
       virtualenv=/home/ftsender/deploy/virtualenv
   environment:
-    PYTHONPATH: '/home/ftsender/deploy/app:/home/ftsender/deploy/local'
+    PYTHONPATH: '/home/ftsender/deploy/ftsender:/home/ftsender/deploy/local'
   tags:
     - deploy
     - quick_deploy
