@@ -69,11 +69,11 @@
   tags:
     - sudo
 
-- name: Creation of freetech group
+- name: Creation of ftsender group
   group: name=ftsender state=present
 
-- name: Create freetech user
-  user: name=ftsender group=freetech shell=/bin/bash state=present
+- name: Create ftsender user
+  user: name=ftsender group=ftsender shell=/bin/bash state=present
 
 - include: packages-centos7.yml
 

@@ -41,26 +41,26 @@ dj_sett_FTS_BASE_DATO_CONTACTO_DUMP_PATH: /home/ftsender/deploy/dumps_bd_contact
 
 # RPM that register PostgreSql repo
 RPM_REPO_POSTGRESQL: https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-redhat96-9.6-3.noarch.rpm
-
+#RPM_REPO_POSTGRESQL: https://download.postgresql.org/pub/repos/yum/9.3/redhat/rhel-7-x86_64/pgdg-centos93-9.3-3.noarch.rpm
 # URL to download Asterisk sources
-#DOWNLOAD_ASTERISK_URL: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-13.18.3.tar.gz
-DOWNLOAD_ASTERISK_TARGZ_SHA256: 728db9e4ef34e3f0382c77e5eaa8780b52655377a0db395274667b73cf3a6a1d.
+#DOWNLOAD_ASTERISK_URL: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-11.9.0.tar.gz
+#DOWNLOAD_ASTERISK_TARGZ_SHA256: 728db9e4ef34e3f0382c77e5eaa8780b52655377a0db395274667b73cf3a6a1d.
 dahdi_linux: http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz
 libpri: http://downloads.asterisk.org/pub/telephony/libpri/libpri-current.tar.gz
-asterisk_v13: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-13.18.3.tar.gz
+asterisk_v13: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-11.9.0.tar.gz
 jansson: https://github.com/akheron/jansson/archive/v2.7.tar.gz
 asterisk_centos: https://github.com/meduketto/iksemel/archive/master.zip
-DOWNLOAD_ASTERISK_URL: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-13.18.3.tar.gz
-DOWNLOAD_ASTERISK_TARGZ_SHA256: 728db9e4ef34e3f0382c77e5eaa8780b52655377a0db395274667b73cf3a6a1d.
+DOWNLOAD_ASTERISK_URL: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-11.9.0.tar.gz
+DOWNLOAD_ASTERISK_TARGZ_SHA256: 1627c9d48db2dab2763c65feb7b6e576b03d09e38b6b05c36d300de7d0eca1d6.
 
 # File name of downloaded file
-DOWNLOAD_ASTERISK_FILENAME: asterisk-13.18.3.tar.gz
+DOWNLOAD_ASTERISK_FILENAME: asterisk-11.9.0.tar.gz
 
 # Directory created when extracting
-DOWNLOAD_ASTERISK_EXTRACT_DIRNAME: asterisk-13.18.3
+DOWNLOAD_ASTERISK_EXTRACT_DIRNAME: asterisk-11.9.0
 
 # CFLAGS para compilar Asterisk
-#BUILD_ASTERISK_CFLAGS: -march=i586
+BUILD_ASTERISK_CFLAGS: -march=native
 
 # URL to install StarPy
 STARPY_PIP_URL: git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba#egg=starpy

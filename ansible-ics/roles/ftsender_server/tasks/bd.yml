@@ -4,10 +4,10 @@
 # BD
 #----------------------------------------------------------------------
 - set_fact: pgsql_version=9.6
-
+- set_fact: pgsql_number=96
 
 - name: Setup of postgresql
-  command: "/usr/pgsql-9.6/bin/postgresql96-setup initdb"
+  command: "/usr/pgsql-{{ pgsql_version }}/bin/postgresql{{ pgsql_number }}-setup initdb"
   register: command_result
   failed_when:
     - "'is not empty' not in command_result.stdout"
@@ -20,8 +20,8 @@
 
 - shell: "{{ item }}"
   with_items:
-      - systemctl enable postgresql-9.6.service
-      - systemctl start postgresql-9.6.service
+      - systemctl enable postgresql-{{ pgsql_version }}.service
+      - systemctl start postgresql-{{ pgsql_version }}.service
   tags:
     - issabel
     - db

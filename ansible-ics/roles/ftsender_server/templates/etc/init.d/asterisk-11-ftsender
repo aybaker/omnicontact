@@ -10,10 +10,10 @@
 RETVAL=0
 USER=asterisk
 GROUP=asterisk
-CMD=/opt/asterisk-13/sbin/asterisk
+CMD=/opt/asterisk-11/sbin/asterisk
 
 # $ wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-11-current.tar.gz
-# $ tar xzf asterisk-13-current.tar.gz 
+# $ tar xzf asterisk-11-current.tar.gz 
 # $ cd asterisk-11.9.0/
 # $ ./configure --prefix=/opt/asterisk-11
 # $ make -j2
@@ -23,7 +23,7 @@ CMD=/opt/asterisk-13/sbin/asterisk
 # See how we were called.
 case "$1" in
   start)
-        echo -n "Starting asterisk-13... "
+        echo -n "Starting asterisk-11... "
         $CMD -U $USER -G $GROUP -g
         RETVAL=$?
         if [ $RETVAL -eq 0 ]
@@ -35,7 +35,7 @@ case "$1" in
         echo
         ;;
   stop)
-        echo -n "Stopping asterisk-13... "
+        echo -n "Stopping asterisk-11... "
         su -l -s /bin/bash -c "$CMD -x 'core stop now'" $USER
         RETVAL=$?
         if [ $RETVAL -eq 0 ]
@@ -47,7 +47,7 @@ case "$1" in
         echo
         ;;
   reload)
-        echo -n "Reloading asterisk-13... "
+        echo -n "Reloading asterisk-11... "
         su -l -s /bin/bash -c "$CMD -x 'core restart gracefully'" $USER
         RETVAL=$?
         if [ $RETVAL -eq 0 ]
@@ -59,7 +59,7 @@ case "$1" in
         echo
         ;;
   status)
-        echo -n "Asterisk 13 - Llamadas en curso:"
+        echo -n "Asterisk 11 - Llamadas en curso:"
         su -l -s /bin/bash -c "$CMD -x 'core show calls'" $USER
         RETVAL=$?
         if [ $RETVAL -eq 0 ]

@@ -84,7 +84,7 @@
 
 - name: Setup virtualenv
   pip:
-    requirements=/home/ftsender/deploy/ftsender/requirements.txt
+    requirements=/home/ftsender/deploy/app/requirements.txt
     virtualenv=/home/ftsender/deploy/virtualenv
     virtualenv_site_packages=no
     virtualenv_command=/usr/bin/virtualenv-2.7
@@ -155,7 +155,7 @@
 - name: Run Django syncdb
   django_manage: >
       command=syncdb
-      app_path=/home/ftsender/deploy/ftsender
+      app_path=/home/ftsender/deploy/app
       settings=fts_web.settings
       virtualenv=/home/ftsender/deploy/virtualenv
   environment:
@@ -167,7 +167,7 @@
 - name: Run Django migrations
   django_manage: >
       command=migrate
-      app_path=/home/ftsender/deploy/ftsender
+      app_path=/home/ftsender/deploy/app
       settings=fts_web.settings
       virtualenv=/home/ftsender/deploy/virtualenv
   environment:
@@ -180,7 +180,7 @@
 - name: Run Django collectstatic
   django_manage: >
       command=collectstatic
-      app_path=/home/ftsender/deploy/ftsender
+      app_path=/home/ftsender/deploy/app
       settings=fts_web.settings
       virtualenv=/home/ftsender/deploy/virtualenv
   environment:
