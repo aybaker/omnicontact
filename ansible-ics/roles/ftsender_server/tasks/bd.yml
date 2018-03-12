@@ -70,7 +70,7 @@
     role_attr_flags=CREATEDB,SUPERUSER
   become: yes
   become_user: postgres
-  become_method: su
+  become_method: sudo
   tags:
     - db
     - docker
@@ -79,7 +79,7 @@
   postgresql_db: name=ftsender owner=ftsender
   become: yes
   become_user: postgres
-  become_method: su
+  become_method: sudo
   tags:
     - db
     - docker
@@ -88,7 +88,7 @@
   shell: psql -c "select * from pg_language" ftsender | grep -q plpythonu
   become: yes
   become_user: postgres
-  become_method: su
+  become_method: sudo
   register: plpython_installed
   ignore_errors: True
   tags:
@@ -99,7 +99,7 @@
   shell: psql -c "select * from pg_language" ftsender | grep -q plpgsql
   become: yes
   become_user: postgres
-  become_method: su
+  become_method: sudo
   register: plpgsql_installed
   ignore_errors: True
   tags:
@@ -110,7 +110,7 @@
   command: createlang plpythonu ftsender
   become: yes
   become_user: postgres
-  become_method: su
+  become_method: sudo
   when: plpython_installed|failed
   tags:
     - db
@@ -120,7 +120,7 @@
   command: createlang plpgsql ftsender
   become: yes
   become_user: postgres
-  become_method: su
+  become_method: sudo
   when: plpgsql_installed|failed
   tags:
     - db
@@ -132,6 +132,8 @@
 
 - name: Start Redis and enable at boot
   service: name=redis enabled=yes state=started
+  become: yes
+  become_method: sudo
   tags:
     - db
     - docker

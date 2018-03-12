@@ -22,6 +22,13 @@
 - name: Install epel-release
   yum: name=epel-release state=present
 
+- name: Stop freepbx firewall
+  shell: "{{ item }}"
+  with_items:
+      - systemctl stop firewalld
+      - systemctl disable firewalld
+  tags: issabel
+
 - name: Install basic packages
   yum: name={{item}} state=present
   with_items:

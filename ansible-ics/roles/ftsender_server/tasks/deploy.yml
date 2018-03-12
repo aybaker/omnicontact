@@ -243,11 +243,20 @@
   template: >
     src=etc/supervisord.conf
     dest=/etc/supervisord.conf
-  notify: reload supervisor service
   tags:
     - deploy
     - celery
     - docker
+
+- name: Create /var/tmp/supervisor.sock file
+  file: path=/var/tmp/supervisor.sock state=touch mode=755
+  tags:
+    - deploy
+    - celery
+    - docker
+
+- name: Reload supervisor service
+  shell: supervisorctl reload
 
 - name: Flush handlers - reload de supervisor
   meta: flush_handlers
@@ -255,7 +264,6 @@
 #----------------------------------------------------------------------
 # Con supervisor configurado, hacemos reload
 #----------------------------------------------------------------------
-
 
 - name: Start FTSender services (except FastAGI daemon)
   shell: python -u /home/ftsender/deploy/bin/start-ftsender-daemons-for-deploy.py 2>&1
@@ -304,7 +312,7 @@
 
 - name: Upload usb_modeswitch
   command: /home/ftsender/deploy/bin/build_usbmodeswitch.sh
-  when: repo_usb_modeswitch_installed|failed and fts_distribution == "centos6"
+  when: repo_usb_modeswitch_installed|failed and ansible_os_family == "RedHat"
   register: repo_usb_modeswitch_installed
   tags:
     - deploy
@@ -312,7 +320,7 @@
     - docker
 
 - name: Copy archivo T-Mobile NL (Huawei E352)
-  when: repo_usb_modeswitch_installed|succeeded and fts_distribution == "centos6"
+  when: repo_usb_modeswitch_installed|succeeded and ansible_os_family == "RedHat"
   template: src=etc/usb_modeswitch.d/12d1:14fe dest=/etc/usb_modeswitch.d/
 
 - name: Upload /etc/rc.local 

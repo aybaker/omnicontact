@@ -7,6 +7,7 @@
           BUILD_API_SMS: "{{ BUILD_API_SMS }}"
   # Siempre 'gather_facts' ya q' lo usaoms en varios 'when'
   # gather_facts: '{{ lookup("env","DO_CHECKS") }}'
+  remote_user: ftsender
   roles:
     - ftsender_server
   gather_facts: True
