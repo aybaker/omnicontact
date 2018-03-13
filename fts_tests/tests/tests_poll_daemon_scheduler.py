@@ -891,7 +891,7 @@ class TestMain(FTSenderBaseTest, PollDaemonTestUtilsMixin,
 
         # -----
 
-        llamador = Llamador()
+        llamador = Llamador(running_status=mock.MagicMock())
         llamador.rr_tracker = rr_tracker
         llamador.procesar_contacto = mock.MagicMock(return_value=True)
 
