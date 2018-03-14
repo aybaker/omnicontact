@@ -44,7 +44,7 @@
     - docker-image
 
 - name: Check if Asterisk is installed
-  command: test -f /opt/asterisk-11/sbin/asterisk
+  command: test -f /opt/asterisk-13/sbin/asterisk
   register: asterisk_installed
   ignore_errors: True
   when: ansible_os_family == "RedHat"
@@ -77,8 +77,8 @@
 
 - name: Upload Asterisk init script
   template: >
-    src=etc/init.d/asterisk-11-ftsender
-    dest=/etc/init.d/asterisk-11-ftsender
+    src=etc/init.d/asterisk-13-ftsender
+    dest=/etc/init.d/asterisk-13-ftsender
     owner=root group=root mode=0755
   
   when: ansible_os_family == "RedHat"
@@ -88,7 +88,7 @@
     - docker-image
 
 - name: Register Asterisk service
-  service: name=asterisk-11-ftsender enabled=yes
+  service: name=asterisk-13-ftsender enabled=yes
   when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   
   tags:
@@ -103,7 +103,7 @@
 - name: Modify Asterisk extensions.conf
   lineinfile: >
     state=present
-    dest=/opt/asterisk-11/etc/asterisk/extensions.conf
+    dest=/opt/asterisk-13/etc/asterisk/extensions.conf
     regexp="^#include\s+{{dj_sett_FTS_DIALPLAN_FILENAME}}\s*"
     insertafter=EOF
     line="#include {{dj_sett_FTS_DIALPLAN_FILENAME}}"
@@ -119,7 +119,7 @@
 
 - name: Modify Asterisk manager.conf - general/enabled/yes
   ini_file: >
-    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    dest=/opt/asterisk-13/etc/asterisk/manager.conf
     section=general
     option=enabled
     value=yes
@@ -131,7 +131,7 @@
 
 - name: Modify Asterisk manager.conf - general/webenabled/yes
   ini_file: >
-    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    dest=/opt/asterisk-13/etc/asterisk/manager.conf
     section=general
     option=webenabled
     value=yes
@@ -143,7 +143,7 @@
 
 - name: Modify Asterisk manager.conf - manager/user/secret
   ini_file: >
-    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    dest=/opt/asterisk-13/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
     option=secret
     value={{ dj_sett_ASTERISK_PASSWORD }}
@@ -155,7 +155,7 @@
 
 - name: Modify Asterisk manager.conf - manager/user/read
   ini_file: >
-    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    dest=/opt/asterisk-13/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
     option=read
     value=system,call,log,verbose,command,agent,user,originate
@@ -167,7 +167,7 @@
 
 - name: Modify Asterisk manager.conf - manager/user/write
   ini_file: >
-    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    dest=/opt/asterisk-13/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
     option=write
     value=system,call,log,verbose,command,agent,user,originate
@@ -183,7 +183,7 @@
 
 - name: Modify Asterisk http.conf - general/enabled/yes
   ini_file: >
-    dest=/opt/asterisk-11/etc/asterisk/http.conf
+    dest=/opt/asterisk-13/etc/asterisk/http.conf
     section=general
     option=enabled
     value=yes
@@ -195,7 +195,7 @@
 
 - name: Modify Asterisk http.conf - general/bindaddr/ASTERISK_AMI_HTTP_BIND
   ini_file: >
-    dest=/opt/asterisk-11/etc/asterisk/http.conf
+    dest=/opt/asterisk-13/etc/asterisk/http.conf
     section=general
     option=bindaddr
     value={{ ASTERISK_AMI_HTTP_BIND }}
@@ -207,7 +207,7 @@
 
 - name: Modify Asterisk http.conf - general/bindport/ASTERISK_AMI_HTTP_PORT
   ini_file: >
-    dest=/opt/asterisk-11/etc/asterisk/http.conf
+    dest=/opt/asterisk-13/etc/asterisk/http.conf
     section=general
     option=bindport
     value={{ ASTERISK_AMI_HTTP_PORT }}
@@ -223,7 +223,7 @@
 
 - name: Start Asterisk (only if installed)
   
-  service: name=asterisk-11-ftsender state=started
+  service: name=asterisk-13-ftsender state=started
   ignore_errors: True
   register: asterisk_started
   when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
@@ -233,7 +233,7 @@
 
 - name: Reload Asterisk (only if 'start' failed)
   
-  service: name=asterisk-11-ftsender state=reloaded
+  service: name=asterisk-13-ftsender state=reloaded
   ignore_errors: True
   when: ansible_os_family == "RedHat" and asterisk_started|failed
   tags:
