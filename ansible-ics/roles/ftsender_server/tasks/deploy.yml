@@ -5,7 +5,7 @@
 #----------------------------------------------------------------------
 
 - name: Create the required directories
-  file: path={{item}} state=directory owner=ftsender mode=0755
+  file: path={{item}} state=directory owner=ftsender group=ftsender mode=0755
   # /home/ftsender es incluido xq el permiso por default (0700) hace que
   # Nginx NO puda leer archivos estaticos y de media
   # TODO: la seguridad podria mejorarse moviendo statics y media a otro
@@ -250,6 +250,9 @@
     - deploy
     - celery
     - docker
+
+- name: Start supervisor service
+  service: name=supervisord state=started enabled=yes
 
 - name: Reload supervisor service
   shell: supervisorctl reload

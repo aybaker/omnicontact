@@ -70,7 +70,7 @@
     - sudo
 
 - name: Edit sudoers to permit rsync and asterisk
-  lineinfile: "dest=/etc/sudoers line=\"ftsender ALL = NOPASSWD: /usr/bin/rsync, /usr/sbin/asterisk-11/asterisk\""
+  lineinfile: "dest=/etc/sudoers line=\"ftsender ALL = (ALL) NOPASSWD: /usr/bin/rsync, /opt/asterisk-13/sbin/asterisk\""
   tags: sudo
 
 - name: Creation of ftsender group

@@ -139,8 +139,8 @@ Tag() {
 
     echo -en "Ingrese IP  de maquina a deployar: "; read ip
     sed -i "21s/.*/$ip ansible_ssh_port=22/" $current_directory/hosts
-    echo "Transifiendo llave publica a usuario root de Centos"
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@$ip
+    echo "Transifiendo llave publica a usuario ftsender de Centos"
+    ssh-copy-id -i ~/.ssh/id_rsa.pub ftsender@$ip
     ansible-playbook -s $current_directory/playbook.yml --extra-vars "BUILD_DIR=$TMP/app BUILD_DIR_SMS=$TMP/appsms BUILD_API_DINSTAR=$TMP/apidinstar" --tags "${array[0]},${array[1]}" --skip-tags "${array[2]}" -K
 
 if [ ${ResultadoAnsible} -ne 0 ];then
