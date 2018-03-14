@@ -65,9 +65,13 @@
     src=etc/sudoers.d/ftsender
     dest=/etc/sudoers.d/ftsender
     owner=root group=root mode=0440
-  when: ansible_os_family != "RedHat" or ansible_os_family != "Sangoma"
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Sangoma"
   tags:
     - sudo
+
+- name: Edit sudoers to permit rsync and asterisk
+  lineinfile: "dest=/etc/sudoers line=\"ftsender ALL = NOPASSWD: /usr/bin/rsync, /usr/sbin/asterisk-11/asterisk\""
+  tags: sudo
 
 - name: Creation of ftsender group
   group: name=ftsender state=present
@@ -81,8 +85,7 @@
 
 - include: nginx.yml
 
-- include: asterisk.yml
-  tags: asterisk
+- include: asterisk-v13.yml
 
 - include: bd.yml
   tags: db

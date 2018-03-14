@@ -16,6 +16,18 @@
     - docker
     - docker-image
 
+- name: Create Asterisk directory (to install Asterisk)
+  file: path=/opt/{{ item }} state=directory owner=asterisk mode=0755
+  with_items:
+      - "asterisk-13"
+      - "iksemel-master"
+      - "jansson"
+  when: ansible_os_family == "RedHat"
+  tags:
+    - asterisk
+    - docker
+    - docker-image
+
 - name: Descarga de paquetes de asterisk
   get_url: "url={{ item }} dest=/usr/src/"
   register: destino
@@ -52,7 +64,7 @@
   shell: "{{ item }} chdir=/usr/src/{{ dirsrc.stdout_lines[3] }}"
   with_items:
         - ./autogen.sh
-        - ./configure
+        - ./configure --prefix=/opt/iksemel-master --libdir=/opt/iksemel-master/lib64
         - make
         - make install
 
@@ -73,7 +85,7 @@
   shell: "{{ item }} chdir=/usr/src/{{ dirsrc.stdout_lines[4] }}"
   with_items:
           - "autoreconf -i"
-          - "./configure --libdir=/usr/lib64"
+          - "./configure --prefix=/opt/jansson --libdir=/opt/jansson/lib64"
           - "make"
           - "make install"
 
@@ -92,7 +104,7 @@
   shell: "{{ item }} chdir=/usr/src/{{ dirsrc.stdout_lines[0] }}"
   with_items:
           - contrib/scripts/install_prereq install
-          - ./configure --libdir=/usr/lib64 --with-externals-cache=/tmp/downloads
+          - ./configure --prefix=/opt/asterisk-13 --with-externals-cache=/tmp/downloads --libdir=/opt/asterisk-13/lib64
 
 - shell: "contrib/scripts/get_mp3_source.sh chdir=/usr/src/{{ dirsrc.stdout_lines[0] }}"
   register: command_result
@@ -113,16 +125,12 @@
 - name: Set up permissiond and raise up service
   shell: "{{ item }}"
   with_items:
-          - "chown asterisk. /var/run/asterisk"
-          - "chown -R asterisk. /etc/asterisk"
-          - "chown -R asterisk. /var/lib/asterisk"
-          - "chown -R asterisk. /var/log/asterisk"
-          - "chown -R asterisk. /var/spool/asterisk"
-          - "chown -R asterisk. /usr/lib64/asterisk"
-          - "chown -R asterisk. /var/www/"
+          - "chown -R asterisk. /opt/asterisk-13"
+          - "chown -R asterisk. /opt/jansson"
+          - "chown -R asterisk. /opt/iksemel-master"
 
 - name: Check if Asterisk is installed
-  command: test -f /usr/sbin/asterisk
+  command: test -f /opt/asterisk-13/sbin/asterisk
   register: asterisk_installed
   ignore_errors: True
   when: ansible_os_family == "RedHat"
@@ -138,7 +146,7 @@
 - name: Modify Asterisk extensions.conf
   lineinfile: >
     state=present
-    dest=/etc/asterisk/extensions.conf
+    dest=/opt/asterisk-13/etc/asterisk/extensions.conf
     regexp="^#include\s+{{ dj_sett_FTS_DIALPLAN_FILENAME }}\s*"
     insertafter=EOF
     line="#include {{ dj_sett_FTS_DIALPLAN_FILENAME }}"
@@ -153,7 +161,7 @@
 
 - name: Modify Asterisk manager.conf - general/enabled/yes
   ini_file: >
-    dest=/etc/asterisk/manager.conf
+    dest=/opt/asterisk-13/etc/asterisk/manager.conf
     section=general
     option=enabled
     value=yes
@@ -165,7 +173,7 @@
 
 - name: Modify Asterisk manager.conf - general/webenabled/yes
   ini_file: >
-    dest=/etc/asterisk/manager.conf
+    dest=/opt/asterisk-13/etc/asterisk/manager.conf
     section=general
     option=webenabled
     value=yes
@@ -176,7 +184,7 @@
 
 - name: Modify Asterisk manager.conf - manager/user/secret
   ini_file: >
-    dest=/etc/asterisk/manager.conf
+    dest=/opt/asterisk-13/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
     option=secret
     value={{ dj_sett_ASTERISK_PASSWORD }}
@@ -187,7 +195,7 @@
 
 - name: Modify Asterisk manager.conf - manager/user/read
   ini_file: >
-    dest=/etc/asterisk/manager.conf
+    dest=/opt/asterisk-13/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
     option=read
     value=system,call,log,verbose,command,agent,user,originate
@@ -198,10 +206,18 @@
 
 - name: Modify Asterisk manager.conf - manager/user/write
   ini_file: >
-    dest=/etc/asterisk/manager.conf
+    dest=/opt/asterisk-13/etc/asterisk/manager.conf
     section={{ dj_sett_ASTERISK_USERNAME }}
     option=write
     value=system,call,log,verbose,command,agent,user,originate
+  when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
+  tags:
+    - asterisk
+    - docker
+
+
+- name: Create simbolic link of asterisk binarie
+  file: state=link src=/opt/asterisk-13/sbin/asterisk dest=/sbin/asterisk force=true
   when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   tags:
     - asterisk
@@ -213,7 +229,7 @@
 
 - name: Modify Asterisk http.conf - general/enabled/yes
   ini_file: >
-    dest=/etc/asterisk/http.conf
+    dest=/opt/asterisk-13/etc/asterisk/http.conf
     section=general
     option=enabled
   when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
@@ -224,7 +240,7 @@
 
 - name: Modify Asterisk http.conf - general/bindaddr/ASTERISK_AMI_HTTP_BIND
   ini_file: >
-    dest=/etc/asterisk/http.conf
+    dest=/opt/asterisk-13/etc/asterisk/http.conf
     section=general
     option=bindaddr
     value={{ ASTERISK_AMI_HTTP_BIND }}
@@ -236,7 +252,7 @@
 
 - name: Modify Asterisk http.conf - general/bindport/ASTERISK_AMI_HTTP_PORT
   ini_file: >
-    dest=/etc/asterisk/http.conf
+    dest=/opt/asterisk-13/etc/asterisk/http.conf
     section=general
     option=bindport
     value={{ ASTERISK_AMI_HTTP_PORT }}

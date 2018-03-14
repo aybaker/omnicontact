@@ -74,10 +74,6 @@
     - virtualenv
     - docker
 
-
-- name: Editar el sudoers para ejecutar rsync sin pedir password de sudo
-  lineinfile: "dest=/etc/sudoers line=\"ftsender ALL = NOPASSWD: /usr/bin/rsync\""
-
 - name: Upload built (rsync to /ominicontacto)
   # Copies xxx/app to /home/freetech/ominicontacto (/ominicontacto on dest is implicit)
   synchronize: "src={{ build_dir }} dest=/home/ftsender/deploy delete=yes checksum=yes times=no"

@@ -25,7 +25,7 @@
 
 - name: Create Asterisk directory (to install Asterisk)
   
-  file: path=/opt/asterisk-11 state=directory owner=asterisk mode=0755
+  file: path=/opt/asterisk-13 state=directory owner=asterisk mode=0755
   when: ansible_os_family == "RedHat"
   tags:
     - asterisk
