@@ -85,7 +85,7 @@
 
 - include: nginx.yml
 
-- include: asterisk.yml
+- include: asterisk-v13.yml
 
 - include: bd.yml
   tags: db
