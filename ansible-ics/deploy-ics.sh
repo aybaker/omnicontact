@@ -29,6 +29,13 @@ USAGE="
 }
 
 Rama() {
+    cd $current_directory
+    echo "Creando directorio temporal de ansible"
+    mkdir -p /var/tmp/ansible-ics
+    TMP_ANSIBLE='/var/tmp/ansible-ics'
+    echo "Copiando el contenido de ansible del repositorio al directorio temporal"
+    cp -a $current_directory/* $TMP_ANSIBLE
+    cd ..
     echo "Pasando al deploy de OmniAPP"
     set -e
     echo ""
@@ -123,13 +130,6 @@ Preliminar() {
         ssh-keygen
     fi
 
-    cd ~/ftsenderweb
-#    git config --global user.name "lionite"
-#    git config --global user.email "felipe.macias@freetechsolutions.com.ar"
-    git pull origin $1
-
-    sed -i "s|inventory.*$|inventory = $current_directory\/hosts|g" $current_directory/ansible.cfg
-    sed -i "s|roles_path.*$|roles_path = $current_directory\/roles\/|g" $current_directory/ansible.cfg
 }
 
 #IngresarIP(){
@@ -142,6 +142,7 @@ Tag() {
     echo "Transifiendo llave publica a usuario ftsender de Centos"
     ssh-copy-id -i ~/.ssh/id_rsa.pub ftsender@$ip
     ansible-playbook -s $current_directory/playbook.yml --extra-vars "BUILD_DIR=$TMP/app BUILD_DIR_SMS=$TMP/appsms BUILD_API_DINSTAR=$TMP/apidinstar" --tags "${array[0]},${array[1]}" --skip-tags "${array[2]}" -K
+    ResultadoAnsible=`echo $?`
 
 if [ ${ResultadoAnsible} -ne 0 ];then
     echo "Falló la ejecucion de Ansible, favor volver a correr el script"

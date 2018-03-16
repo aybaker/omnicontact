@@ -232,6 +232,7 @@
     dest=/opt/asterisk-13/etc/asterisk/http.conf
     section=general
     option=enabled
+    value=yes
   when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
   sudo: yes
   tags:
