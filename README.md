@@ -1,31 +1,31 @@
 Entorno de desarrollo
 =====================
 
-El entorno utilizado para desarrollo es Ubuntu 14.04.
+FIXME: El entorno utilizado para desarrollo es Ubuntu 14.04.
 
-El sistema debe ser desarrollado usando Python 2.6 y virtualenv.
+El sistema debe ser desarrollado usando Python 2.7 y virtualenv.
 
 Para la instalación de algunos paquetes en virtualenv, puede ser necesario
 instalar paquetes en el sistema operativo.
 
 El sistema requiere que los siguientes sistemas estén funcionando:
 
- - PostgreSql 8 o superior, con 'plpythonu'
-    - sudo apt-get install postgresql-plpython-9.3
-    - ANTES de crear la BD, ejecutar (con un usuario con permisos de administrador de Postgresql):
+ - PostgreSql 9 o superior, con 'plpythonu'
+    - En ubuntu: `sudo apt install postgresql-plpython-9.6`
+    - ANTES de crear la BD, conviene asignar el lenguaje `postgresql-plpython-9.6` a la BD de template `template1`, ejecutando (con un usuario con permisos de administrador de Postgresql):
     - $ `createlang plpythonu template1`
  - Sox (Sound eXchange)
-    - sudo apt-get install sox
+    - sudo apt install sox
  - Redis
-    -sudo apt-get install redis-server
- - Asterisk 11
+    -sudo apt install redis-server
+ - Asterisk 13
 
 Armado inicial del entorno
 --------------------------
 
-    $ git clone git@bitbucket.org:hgdeoro/ftsenderweb.git
-    $ cd cd ftsenderweb/
-    $ virtualenv -p python2.6 virtualenv
+    $ git clone git@bitbucket.org:freetechdesarrollo/ftsenderweb.git
+    $ cd ftsenderweb/
+    $ virtualenv -p python2.7 virtualenv
     $ . virtualenv/bin/activate
     $ pip install -r requirements.txt
     $ pip install -r requirements-dev.txt
@@ -97,8 +97,9 @@ Sync de BD:
 
 Además, deberá ejecutar los archivos \*.sql del directorio /fts\_web/sql/plpython/,
 ya que dichos scripts SQL *NO* son aplicados por las migraciones.
-    - fts_web/sql/plpython/recalculate_agregacion_edc_py_v1.sql
-    - fts_web/sql/plpython/update_agregacion_edc_py_v1.sql 
+
+* `fts_web/sql/plpython/recalculate_agregacion_edc_py_v1.sql`
+* `fts_web/sql/plpython/update_agregacion_edc_py_v1.sql`
 
 
 
