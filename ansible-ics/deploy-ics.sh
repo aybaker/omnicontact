@@ -33,6 +33,7 @@ Rama() {
     echo "Creando directorio temporal de ansible"
     mkdir -p /var/tmp/ansible-ics
     TMP_ANSIBLE='/var/tmp/ansible-ics'
+    export TMP_ANSIBLE_PATH=$TMP_ANSIBLE
     echo "Copiando el contenido de ansible del repositorio al directorio temporal"
     cp -a $current_directory/* $TMP_ANSIBLE
     cd ..
