@@ -8,6 +8,8 @@
 
 ##IP de ICS
 ics_ip: "{{ ansible_all_ipv4_addresses[0] }}"
+################ Puerto SSH ##################
+ssh_port="{{ ansible_ssh_port }}"
 
 OPEN_BR: '{'
 CLOSE_BR: '}'
