@@ -1,0 +1,23 @@
+# This is the default ansible 'hosts' file.
+#
+# It should live in /etc/ansible/hosts
+#
+#   - Comments begin with the '#' character
+#   - Blank lines are ignored
+#   - Groups of hosts are delimited by [header] elements
+#   - You can enter hostnames or ip addresses
+#   - A hostname/ip can be a member of multiple groups
+# Ex 1: Ungrouped hosts, specify before any group headers.
+#green.example.com
+#blue.example.com
+#192.168.100.1
+#192.168.100.10
+
+[omni-app]
+192.168.70.63
+[omni-voip]
+192.168.70.62
+[ics-centos]
+192.168.99.12 ansible_ssh_port=22
+[ics-freepbx]
+192.168.99.2 ansible_ssh_port=22

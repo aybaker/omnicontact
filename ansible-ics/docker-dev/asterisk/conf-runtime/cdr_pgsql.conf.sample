@@ -1,0 +1,23 @@
+;
+; Para setear acceso a tabla CDR, configurar:
+;  - dbname
+;  - user
+;  - password
+;
+; Para el ambiente de testing, utilizar los mismos parametros, y
+;  anteponer 'test_' al nombre de la BD
+;
+
+
+[global]
+; usar 172.17.42.1 como IP, NUNCA 127.0.0.1 (a no ser que sepas lo q' estas haciendo!)
+hostname=172.17.42.1
+port=5432
+; nombre de la BD de FTS
+dbname=fts
+; usuario/pass con el q' se accede a la BD
+user=fts
+password=fts
+table=cdr
+encoding=UTF8
+timezone=UTC

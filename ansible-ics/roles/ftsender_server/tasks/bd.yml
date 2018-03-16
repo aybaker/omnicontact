@@ -1,0 +1,140 @@
+---
+
+#----------------------------------------------------------------------
+# BD
+#----------------------------------------------------------------------
+- set_fact: pgsql_version=9.6
+- set_fact: pgsql_number=96
+
+- name: Setup of postgresql
+  command: "/usr/pgsql-{{ pgsql_version }}/bin/postgresql{{ pgsql_number }}-setup initdb"
+  register: command_result
+  failed_when:
+    - "'is not empty' not in command_result.stdout"
+    - "command_result.rc != 0"
+  tags:
+    - issabel
+    - db
+    - docker
+    - docker-image
+
+- shell: "{{ item }}"
+  with_items:
+      - systemctl enable postgresql-{{ pgsql_version }}.service
+      - systemctl start postgresql-{{ pgsql_version }}.service
+  tags:
+    - issabel
+    - db
+    - docker
+    - docker-image
+
+- name: Copy pg_hba.conf
+  register: pg_hba_updated
+  copy: src=pg_hba.conf dest=/var/lib/pgsql/{{ pgsql_version }}/data/
+  tags:
+    - issabel
+    - db
+    - docker
+
+- name: Copy postgresql-fts.conf
+  template: src=etc/pgsql/postgresql-fts.conf dest=/var/lib/pgsql/{{ pgsql_version }}/data/
+  register: postgresql_fts_updated
+  tags:
+    - issabel
+    - db
+    - docker
+
+- name: Include postgresql-fts.conf in postgresql.conf
+  lineinfile: >
+    state=present
+    dest=/var/lib/pgsql/{{ pgsql_version }}/data/postgresql.conf
+    regexp="^include\s+'/var/lib/pgsql/{{ pgsql_version }}/data/postgresql-fts.conf'"
+    insertafter=EOF
+    line="include '/var/lib/pgsql/{{ pgsql_version }}/data/postgresql-fts.conf'"
+  # TODO: reload (si cambio el archivo)
+  tags:
+    - db
+    - docker
+
+- name: Reload PostgreSql
+  service: name=postgresql-{{ pgsql_version }} state=reloaded
+  when: pg_hba_updated.changed or postgresql_fts_updated.changed
+  tags:
+    - db
+    - docker
+
+- name: Create PostgreSql user
+  postgresql_user: >
+    name=ftsender
+    password={{ db_password }}
+    role_attr_flags=CREATEDB,SUPERUSER
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  tags:
+    - db
+    - docker
+
+- name: Create PostgreSql database
+  postgresql_db: name=ftsender owner=ftsender
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  tags:
+    - db
+    - docker
+
+- name: Check if plpython is installed
+  shell: psql -c "select * from pg_language" ftsender | grep -q plpythonu
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  register: plpython_installed
+  ignore_errors: True
+  tags:
+    - db
+    - docker
+
+- name: Check if plpgsql is installed
+  shell: psql -c "select * from pg_language" ftsender | grep -q plpgsql
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  register: plpgsql_installed
+  ignore_errors: True
+  tags:
+    - db
+    - docker
+
+- name: Install plpython if not installed
+  command: createlang plpythonu ftsender
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  when: plpython_installed|failed
+  tags:
+    - db
+    - docker
+
+- name: Install plpgsql if not installed
+  command: createlang plpgsql ftsender
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  when: plpgsql_installed|failed
+  tags:
+    - db
+    - docker
+
+#----------------------------------------------------------------------
+# Redis
+#----------------------------------------------------------------------
+
+- name: Start Redis and enable at boot
+  service: name=redis enabled=yes state=started
+  become: yes
+  become_method: sudo
+  tags:
+    - db
+    - docker
+    - docker-image

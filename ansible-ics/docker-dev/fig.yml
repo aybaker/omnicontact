@@ -1,0 +1,10 @@
+asterisk:
+  build: asterisk/
+  command: /srv/asterisk/in_docker_start.sh
+  ports:
+   - "5060:5060"
+   - "7088:7088"
+  volumes:
+   - asterisk/:/srv/asterisk
+   - asterisk/runtime/var/run/asterisk/:/opt/asterisk-11/var/run/asterisk
+   - /opt/fts-dev/media_root

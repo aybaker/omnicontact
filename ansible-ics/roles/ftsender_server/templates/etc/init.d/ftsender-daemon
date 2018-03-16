@@ -1,0 +1,86 @@
+#! /bin/sh
+#
+# ftsender-daemon
+#
+# chkconfig: - 95 9
+# description:  Daemon WEB de FTSender
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+USER=ftsender
+GROUP=ftsender
+CMD=/home/ftsender/deploy/virtualenv/bin/uwsgi
+
+export PYTHONPATH=/home/ftsender/deploy/app:/home/ftsender/deploy/local
+
+. /home/ftsender/deploy/virtualenv/bin/activate
+
+# See how we were called.
+case "$1" in
+  start)
+        echo -n "Starting FTSenderDaemon... "
+        # $CMD --ini /home/ftsender/deploy/local/ftsender_uwsgi.ini
+        su -l -s /bin/bash -c "$CMD --ini /home/ftsender/deploy/local/ftsender_uwsgi.ini" $USER
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]
+        then
+                echo_success
+        else
+                echo_failure
+        fi
+        echo
+        ;;
+  stop)
+        echo -n "Stopping FTSenderDaemon... "
+        pgrep -u ftsender uwsgi > /dev/null || {
+                echo "FTSenderDaemon no esta corriendo..."
+                echo_failure
+                exit 1
+        }
+
+        su -l -s /bin/bash -c "echo 'q' > /home/ftsender/deploy/run/.uwsgi-fifo" $USER
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]
+        then
+                echo_success
+        else
+                echo_failure
+        fi
+        echo
+        ;;
+  reload)
+        echo -n "Reload de FTSenderDaemon... "
+        pgrep -u ftsender uwsgi > /dev/null || {
+            echo_failure
+			echo "FTSenderDaemon no esta corriendo..."
+            exit 1
+        }
+
+        su -l -s /bin/bash -c "echo 'r' > /home/ftsender/deploy/run/.uwsgi-fifo" $USER
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]
+        then
+                echo_success
+        else
+                echo_failure
+        fi
+        echo
+        ;;
+  status)
+        pgrep -u ftsender uwsgi > /dev/null || {
+                echo_failure
+                echo "FTSenderDaemon no esta corriendo..."
+                exit 1
+        }
+        echo_success
+        echo "FTSenderDaemon esta corriendo..."
+        exit 0
+        ;;
+   *)
+        echo "Usage: $0 start|stop|reload"
+        exit 1
+esac
+
+exit $RETVAL
