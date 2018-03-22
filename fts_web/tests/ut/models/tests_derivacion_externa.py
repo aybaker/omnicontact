@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import datetime
 
-from django.utils.unittest.case import skipIf
+from unittest.case import skipIf
 from fts_web.models import Campana, Actuacion, DerivacionExterna, Opcion
 from fts_web.tests.utiles import FTSenderBaseTest
 

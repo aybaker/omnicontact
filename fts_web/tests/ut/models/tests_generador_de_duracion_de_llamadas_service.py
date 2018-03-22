@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import connection
 from django.test.testcases import TestCase
-from django.utils.unittest.case import skipUnless
+from unittest.case import skipUnless
 from mock import Mock, create_autospec
 
 from fts_web.tests.utiles import FTSenderBaseTest, default_db_is_postgresql

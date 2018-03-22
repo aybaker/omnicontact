@@ -4,8 +4,8 @@
 
 from __future__ import unicode_literals
 
+from unittest.case import skipIf
 from django.test.utils import override_settings
-from django.utils.unittest.case import skipIf
 from fts_daemon.services.depurador_de_campana import DepuradorDeCampanaWorkflow
 from fts_web.models import Campana
 from fts_web.tests.utiles import FTSenderBaseTest

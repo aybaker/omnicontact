@@ -4,8 +4,8 @@
 
 from __future__ import unicode_literals
 
+from unittest.case import skipIf
 from django.conf import settings
-from django.utils.unittest.case import skipIf
 from fts_daemon.models import EventoDeContacto
 from fts_daemon.poll_daemon.campana_tracker import CampanaTracker, \
     NoMasContactosEnCampana, CampanaNoEnEjecucion, \

@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 import logging
 import random
 
+from unittest.case import skipUnless
 from django.test.utils import override_settings
-from django.utils.unittest.case import skipUnless
 from fts_daemon.models import EventoDeContacto
 from fts_tests.tests.utiles import EventoDeContactoAssertUtilesMixin
 from fts_web.models import BaseDatosContacto

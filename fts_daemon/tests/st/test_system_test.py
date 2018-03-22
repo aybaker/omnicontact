@@ -9,10 +9,10 @@ from __future__ import unicode_literals
 import logging
 import os
 
+from unittest.case import skipUnless
 from django.conf import settings
 from django.test.runner import DiscoverRunner
 from django.test.testcases import LiveServerTestCase
-from django.utils.unittest.case import skipUnless
 from django.test.utils import override_settings
 import subprocess
 import time

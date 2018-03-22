@@ -5,8 +5,8 @@ from __future__ import unicode_literals
 
 import logging
 
+from unittest.case import skipUnless
 from django.db import connection
-from django.utils.unittest.case import skipUnless
 from fts_daemon.fastagi_daemon_views import create_urls, create_regex, \
     fin_err_t, get_view, insert_evento_de_contacto, UrlNoMatcheaNingunaVista
 from fts_daemon.models import EventoDeContacto
