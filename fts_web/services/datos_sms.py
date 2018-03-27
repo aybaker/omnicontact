@@ -21,7 +21,7 @@ class FtsWebContactoSmsManager():
     # ESTADOS de envio de sms
     ESTADO_ENVIO_NO_PROCESADO = 0
     ESTADO_ENVIO_ENVIADO = 1
-    ESTADO_ENVIO_SIN_CONFIRMACION= 2
+    ESTADO_ENVIO_SIN_CONFIRMACION = 2
     ESTADO_ENVIO_ERROR_ENVIO = -1
     ESTADO_ENVIO_NO_HAY_MODEM = - 2
 
@@ -69,7 +69,6 @@ class FtsWebContactoSmsManager():
         with log_timing(logger,
             "update destino tardo %s seg"):
             cursor.execute(sql)
-
 
     def _alter_table_fts_web_contacto(self, campana_sms_id):
         """
@@ -285,7 +284,7 @@ class EstadisticasContactoReporteSms():
         nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
 
         cursor = connection.cursor()
-        sql = """SELECT c.id, \"SenderNumber\",  c.sms_enviado_fecha,
+        sql = """SELECT DISTINCT c.id, \"SenderNumber\",  c.sms_enviado_fecha,
             \"UpdatedInDB\",  \"TextDecoded\"
             FROM  {0} c INNER JOIN inbox
             ON \"SenderNumber\" like concat('%',
@@ -314,7 +313,7 @@ class EstadisticasContactoReporteSms():
         nombre_tabla = "fts_web_contacto_{0}".format(int(campana_sms_id))
 
         cursor = connection.cursor()
-        sql = """SELECT c.id, \"SenderNumber\",  c.sms_enviado_fecha,
+        sql = """SELECT DISTINCT c.id, \"SenderNumber\",  c.sms_enviado_fecha,
             \"UpdatedInDB\",  \"TextDecoded\"
             FROM  {0} c INNER JOIN inbox
             ON \"SenderNumber\" like concat('%%',
