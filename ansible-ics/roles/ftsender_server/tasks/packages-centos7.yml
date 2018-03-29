@@ -17,7 +17,7 @@
 
 - name: Install Development tools
   command: "yum -y groupinstall core base \"Development Tools\""
-  tags: issabel
+
 
 - name: Install epel-release
   yum: name=epel-release state=present
@@ -27,7 +27,7 @@
   with_items:
       - systemctl stop firewalld
       - systemctl disable firewalld
-  tags: issabel
+
 
 - name: Install basic packages
   yum: name={{item}} state=present
@@ -89,16 +89,14 @@
     - asterisk
     - yum
 
-#- name: Reboot the server for kernel update
-#  shell: sleep 2 && shutdown -r now "Ansible updates triggered"
-#  async: 1
-#  poll: 0
-#  become: true
-#  ignore_errors: true
+- name: Reboot the server for kernel update
+  shell: sleep 2 && shutdown -r now "Ansible updates triggered"
+  async: 1
+  poll: 0
+  become: true
+  ignore_errors: true
 
-#- name: Wait for the server to finish rebooting
-#  become: yes
-#  become_user: ftsender
-#  become:me
-#  local_action: wait_for host="{{ ics_ip }}" delay=15 state=started port={{ ssh_port }} timeout=600
-#  when: ansible_os_family == "Sangoma" or ansible_os_family == "RedHat"
+- name: Wait for the server to finish rebooting
+  become: no
+  local_action: wait_for host="{{ ics_ip }}" delay=15 state=started port={{ ssh_port }} timeout=600
+  when: ansible_os_family == "Sangoma" or ansible_os_family == "RedHat"
