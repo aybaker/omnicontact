@@ -59,7 +59,7 @@ case "$1" in
         echo
         ;;
   status)
-        echo -n "Asterisk 11 - Llamadas en curso:"
+        echo -n "Asterisk 13 - Llamadas en curso:"
         su -l -s /bin/bash -c "$CMD -x 'core show calls'" $USER
         RETVAL=$?
         if [ $RETVAL -eq 0 ]

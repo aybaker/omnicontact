@@ -282,11 +282,11 @@
     - docker
 
 #----------------------------------------------------------------------
-# Start / reload
+# Start / reload / chkconfig on
 #----------------------------------------------------------------------
 
 - name: Start Asterisk (only if installed)
-  service: name=asterisk state=started
+  service: name=asterisk state=started enabled=yes
   ignore_errors: True
   register: asterisk_started
   when: ansible_os_family == "RedHat" and asterisk_installed|succeeded
