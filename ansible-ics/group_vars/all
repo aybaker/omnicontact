@@ -47,8 +47,8 @@ RPM_REPO_POSTGRESQL: https://download.postgresql.org/pub/repos/yum/9.6/redhat/rh
 # URL to download Asterisk sources
 #DOWNLOAD_ASTERISK_URL: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-13.9.0.tar.gz
 DOWNLOAD_ASTERISK_TARGZ_SHA256: 728db9e4ef34e3f0382c77e5eaa8780b52655377a0db395274667b73cf3a6a1d.
-dahdi_linux: http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz
-libpri: http://downloads.asterisk.org/pub/telephony/libpri/libpri-current.tar.gz
+dahdi_linux: http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-2.11.1+2.11.1.tar.gz
+libpri: http://downloads.asterisk.org/pub/telephony/libpri/libpri-1.6.0.tar.gz
 asterisk_v13: http://downloads.asterisk.org/pub/telephony/asterisk/old-releases/asterisk-13.18.3.tar.gz
 jansson: https://github.com/akheron/jansson/archive/v2.7.tar.gz
 asterisk_centos: https://github.com/meduketto/iksemel/archive/master.zip
