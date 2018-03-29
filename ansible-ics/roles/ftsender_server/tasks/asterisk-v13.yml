@@ -113,7 +113,7 @@
           - contrib/scripts/install_prereq install
           - ./configure --prefix=/opt/asterisk-13 --with-externals-cache=/tmp/downloads --libdir=/opt/asterisk-13/lib64
 
-- shell: "contrib/scripts/get_mp3_source.sh chdir=/usr/src/{{ dirsrc.stdout_lines[0] }}"
+- shell: "contrib/scripts/get_mp3_source.sh chdir=/usr/src/asterisk-13.18.3"
   register: command_result
   ignore_errors: yes
 
@@ -149,7 +149,7 @@
 - name: Upload Asterisk init script
   template: >
     src=etc/init.d/asterisk-13-ftsender
-    dest=/etc/init.d/asterisk-13-ftsender
+    dest=/etc/init.d/asterisk
     owner=root group=root mode=0755
   when: ansible_os_family == "RedHat"
   tags:
