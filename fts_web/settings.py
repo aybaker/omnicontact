@@ -535,7 +535,7 @@ UWSGI_CACHE_FALLBACK = True
 
 ## Si lo desactivamos, los comandos ejecutados con 'manage.py'
 ## fallan! (porque no son ejecutados en uWSGI, doh)
-## y por lo tanto, syncdb, migrate, etc. no funcionan.
+## y por lo tanto, migrate, etc. no funcionan.
 
 # ~~~~~ Customizators
 

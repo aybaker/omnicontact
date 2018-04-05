@@ -148,18 +148,6 @@
     - update_settings
     - docker
 
-- name: Run Django syncdb
-  django_manage: >
-      command=syncdb
-      app_path=/home/ftsender/deploy/app
-      settings=fts_web.settings
-      virtualenv=/home/ftsender/deploy/virtualenv
-  environment:
-    PYTHONPATH: '/home/ftsender/deploy/ftsender:/home/ftsender/deploy/local'
-  tags:
-    - deploy
-    - docker
-
 - name: Run Django migrations
   django_manage: >
       command=migrate

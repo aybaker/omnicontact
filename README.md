@@ -92,7 +92,6 @@ Crear usuario y BD de Postgresql:
 
 Sync de BD:
 
-    $ ./manage.py syncdb
     $ ./manage.py migrate
 
 Además, deberá ejecutar los archivos \*.sql del directorio /fts\_web/sql/plpython/,
