@@ -594,6 +594,8 @@ class ActuacionCampanaDeleteView(CheckEstadoCampanaMixin, DeleteView):
 
 class ConfirmaCampanaMixin(object):
 
+    fields = '__all__'  # FIXME: HACK-MIGRACION-DJANGO-1.9
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
 
