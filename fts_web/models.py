@@ -1195,7 +1195,12 @@ class CampanaManager(BaseCampanaYCampanaSmsManager):
         queryset = self.filter(
             fecha_fin=now_ref.date(),
             estado__in=estados
-        ).select_related('actuaciones')
+        )
+
+        # # select_related() en 'reverse relationship'
+        # # - era NO-OP en Django < 1.8
+        # # - genera error en Django >= 1.8
+        # queryset = queryset.select_related('actuaciones')
 
         for campana in queryset:
             actuaciones_para_hoy = [actuacion
