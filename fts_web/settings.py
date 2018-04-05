@@ -163,7 +163,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'fts_web',
     'fts_daemon',
-    'south',
     'crispy_forms',
     'bootstrap3_datetime',
 )

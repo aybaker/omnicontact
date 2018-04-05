@@ -8,13 +8,13 @@ import datetime
 import os
 import tempfile
 
+from unittest.case import skipUnless, skipIf
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.utils import ProgrammingError
 from django.test.client import Client
 from django.test.utils import override_settings
-from django.utils.unittest.case import skipUnless, skipIf
 from fts_daemon.models import EventoDeContacto
 from fts_daemon.services import depurador_de_campana
 from fts_daemon.services.depurador_de_campana import DepuradorDeCampanaWorkflow

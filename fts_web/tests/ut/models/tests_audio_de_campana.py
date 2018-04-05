@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import datetime
 
 from django.db import IntegrityError
-from django.utils.unittest.case import skipIf
+from unittest.case import skipIf
 from fts_web.models import (AudioDeCampana)
 
 from fts_web.tests.utiles import FTSenderBaseTest

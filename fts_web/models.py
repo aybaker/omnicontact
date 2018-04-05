@@ -1978,7 +1978,7 @@ class CampanaSms(AbstractCampana):
     template_mensaje = models.TextField()
     template_mensaje_opcional = models.TextField(null=True, blank=True)
     template_mensaje_alternativo = models.TextField(null=True, blank=True)
-    tiene_respuesta = models.BooleanField()
+    tiene_respuesta = models.BooleanField(default=False)
     identificador_campana_sms = models.PositiveIntegerField(unique=True)
 
     class Meta:
