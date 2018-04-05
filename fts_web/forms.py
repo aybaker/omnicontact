@@ -38,6 +38,7 @@ class DerivacionExternaForm(forms.ModelForm):
 
     class Meta:
         model = DerivacionExterna
+        fields = ['nombre', 'tipo_derivacion', 'dial_string']
 
 
 # =============================================================================
@@ -83,6 +84,7 @@ class GrupoAtencionForm(forms.ModelForm):
 
     class Meta:
         model = GrupoAtencion
+        fields = ['nombre', 'timeout', 'ring_strategy']
 
 
 # =============================================================================
@@ -571,6 +573,7 @@ class CalificacionForm(forms.ModelForm):
 
     class Meta:
         model = Calificacion
+        fields = ['nombre', 'campana']
 
 
 # =============================================================================
@@ -606,6 +609,7 @@ class OpcionForm(forms.ModelForm):
 
     class Meta:
         model = Opcion
+        fields = ['digito', 'accion', 'grupo_atencion', 'derivacion_externa', 'calificacion', 'campana']
 
     def clean(self):
         cleaned_data = super(OpcionForm, self).clean()
@@ -639,6 +643,7 @@ class OpcionSmsForm(forms.ModelForm):
 
     class Meta:
         model = OpcionSms
+        fields = ['respuesta', 'respuesta_descripcion', 'campana_sms']
 
 
 # =============================================================================
@@ -672,6 +677,7 @@ class ActuacionForm(forms.ModelForm):
 
     class Meta:
         model = Actuacion
+        fields = ['dia_semanal', 'hora_desde', 'hora_hasta', 'campana']
 
 
 class ActuacionSmsForm(forms.ModelForm):
@@ -701,6 +707,7 @@ class ActuacionSmsForm(forms.ModelForm):
 
     class Meta:
         model = ActuacionSms
+        fields = ['dia_semanal', 'hora_desde', 'hora_hasta', 'campana_sms']
 
 
 # =============================================================================
