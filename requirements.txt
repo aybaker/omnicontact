@@ -9,7 +9,7 @@ Django==1.9.13
 psycopg2==2.5.3
 pytz==2014.4
 ## Crispy forms
-django-crispy-forms==1.4.0
+django-crispy-forms==1.5.2
 ## pygal
 lxml==3.3.5
 pygal==1.4.6
