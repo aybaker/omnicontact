@@ -158,7 +158,7 @@ LOGGING = {
     'handlers': {
         'null': {
             'level': 'DEBUG',
-            'class': 'django.utils.log.NullHandler',
+            'class': 'logging.NullHandler',
         },
         'console': {
             'level': 'DEBUG',
@@ -198,7 +198,7 @@ if 'FTS_DEBUG' in os.environ:
     LOGGING['loggers']['']['level'] = 'DEBUG'
 
 if 'FTS_DISABLE_LOGGING' in os.environ:
-    LOGGING['handlers']['console']['class'] = 'django.utils.log.NullHandler'
+    LOGGING['handlers']['console']['class'] = 'logging.NullHandler'
 
 FTS_DUMP_HTTP_AMI_RESPONSES = 'FTS_DUMP_HTTP_AMI_RESPONSES' in os.environ
 
