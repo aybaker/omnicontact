@@ -5,8 +5,7 @@ wsgiref==0.1.2
 #   pip install git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba
 #
 ## Django
-Django==1.6.5
-South==1.0
+Django==1.9.13
 psycopg2==2.5.3
 pytz==2014.4
 ## Crispy forms
