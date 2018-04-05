@@ -10,8 +10,8 @@ import random
 
 from django.conf import settings
 from django.http.response import HttpResponse, HttpResponseServerError
+from django.template import engines
 from django.template.context import Context
-from django.template.loader import get_template_from_string
 from fts_daemon.asterisk_ami_http import AmiStatusTracker
 from fts_daemon.models import EventoDeContacto
 
@@ -28,9 +28,17 @@ def _read(filename):
         return f.read()
 
 
+def _get_template_from_string(template_code):
+    """
+    Esta funcion fue introducida para reemplazar a "get_template_from_string()" de Django
+    """
+    template = engines['django'].from_string(template_code)
+    return template
+
+
 def _custom_status():
     # Local/{contact_id}-{numero}@FTS_local_campana_{campana_id}-xxx
-    template = get_template_from_string(_read("mxml-status-con-llamadas"
+    template = _get_template_from_string(_read("mxml-status-con-llamadas"
         "-en-local-channel-TEMPLATE.xml"))
     ctx = Context(dict(custom_status_values=settings.CUSTOM_STATUS_VALUES))
     return template.render(ctx)
