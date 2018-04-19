@@ -77,14 +77,11 @@ if 'USE_PG' in os.environ:
     FTS_PROGRAMAR_CAMPANA_FUNC = "_programar_campana_postgresql"
 
 CACHES = {
-    'default': {
-        'BACKEND': 'redis_cache.cache.RedisCache',
-        'LOCATION': '127.0.0.1:6379:1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
-            # 'CONNECTION_POOL_KWARGS': {'max_connections': 100}
-            # 'SOCKET_TIMEOUT': 5,  # in seconds
-            # 'IGNORE_EXCEPTIONS': True,
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
 }
