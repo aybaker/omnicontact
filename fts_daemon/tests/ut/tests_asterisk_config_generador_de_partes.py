@@ -95,7 +95,7 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
             pk=1, orden=1, campana=campana,
             audio_asterisk='test/audio/for-asterisk.wav')
 
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         # -----
 
@@ -126,7 +126,7 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
             pk=1, orden=1, campana=campana,
             archivo_de_audio=archivo_de_audio)
 
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         # -----
 
@@ -186,7 +186,7 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="TELEFONO")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         # -----
 
@@ -215,7 +215,7 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="FECHA")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         # -----
 
@@ -244,7 +244,7 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="HORA")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         # -----
 
@@ -281,11 +281,11 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="FECHA")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
-        opcion = Opcion(digito=0, campana=campana,
+        opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.DERIVAR_GRUPO_ATENCION)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -314,17 +314,17 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="FECHA")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         derivacion_externa = DerivacionExterna(pk=1, tipo_derivacion=DerivacionExterna.TIPO_DERIVACION_DIAL,
                                                nombre="derivacion_dial",
                                                dial_string="SIP/proveedor/5001"
                                                )
 
-        opcion = Opcion(digito=0, campana=campana,
+        opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
                         derivacion_externa=derivacion_externa)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -353,17 +353,17 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="FECHA")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         derivacion_externa = DerivacionExterna(pk=1, tipo_derivacion=DerivacionExterna.TIPO_DERIVACION_GOTO,
                                                nombre="derivacion_goto",
                                                dial_string="SIP/proveedor/5001"
                                                )
 
-        opcion = Opcion(digito=0, campana=campana,
+        opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
                         derivacion_externa=derivacion_externa)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -392,11 +392,11 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="FECHA")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
-        opcion = Opcion(digito=0, campana=campana,
+        opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.REPETIR)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -425,11 +425,11 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="FECHA")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
-        opcion = Opcion(digito=0, campana=campana,
+        opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.VOICEMAIL)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -458,11 +458,11 @@ class GeneradorDePedazoDeDialplanFactoryTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="FECHA")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
-        opcion = Opcion(digito=0, campana=campana,
+        opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.CALIFICAR)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -671,7 +671,7 @@ class GeneradorParaTtsHoraTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="HORA")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         # -----
 
@@ -714,7 +714,7 @@ class GeneradorParaTtsFechaTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="FECHA")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         # -----
 
@@ -756,7 +756,7 @@ class GeneradorParaTtsUsandoGoogleTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="TELEFONO")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         # -----
 
@@ -801,7 +801,7 @@ class GeneradorParaTtsUsandoSwiftTest(FTSenderBaseTest):
 
         audio_de_campana = AudioDeCampana(pk=1, orden=1, campana=campana,
                                           tts="TELEFONO")
-        campana.audios_de_campana = [audio_de_campana]
+        campana.audios_de_campana.add(audio_de_campana, bulk=False)
 
         # -----
 
@@ -863,9 +863,9 @@ class GeneradorParaOpcionVoicemailTest(FTSenderBaseTest):
                           cantidad_canales=1, cantidad_intentos=1,
                           segundos_ring=10)
 
-        opcion = Opcion(digito=0, campana=campana,
+        opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.VOICEMAIL)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -900,7 +900,7 @@ class GeneradorParaOpcionCalificarTest(FTSenderBaseTest):
         calificacion = Calificacion(pk=1, nombre="TEST", campana=campana)
         opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.CALIFICAR, calificacion=calificacion)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -936,10 +936,10 @@ class GeneradorParaOpcionGrupoAtencionTest(FTSenderBaseTest):
         grupo_atencion = GrupoAtencion(nombre="TEST", timeout=1,
                                        ring_strategy=GrupoAtencion.RINGALL)
         grupo_atencion.save()
-        opcion = Opcion(digito=0, campana=campana,
+        opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.DERIVAR_GRUPO_ATENCION,
                         grupo_atencion=grupo_atencion)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -979,7 +979,7 @@ class GeneradorParaOpcionDerivacionExternaDialTest(FTSenderBaseTest):
         opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
                         derivacion_externa=derivacion_externa)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -1021,7 +1021,7 @@ class GeneradorParaOpcionDerivacionExternaGotoTest(FTSenderBaseTest):
         opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.DERIVAR_DERIVACION_EXTERNA,
                         derivacion_externa=derivacion_externa)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -1056,8 +1056,8 @@ class GeneradorParaOpcionRepetirTest(FTSenderBaseTest):
                           cantidad_canales=1, cantidad_intentos=1,
                           segundos_ring=10)
 
-        opcion = Opcion(digito=0, campana=campana, accion=Opcion.REPETIR)
-        campana.opciones = [opcion]
+        opcion = Opcion(pk=1, digito=0, campana=campana, accion=Opcion.REPETIR)
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -1146,10 +1146,10 @@ class GeneradorParaQueueTest(FTSenderBaseTest):
         grupo_atencion = GrupoAtencion(nombre="TEST", timeout=1,
                                        ring_strategy=GrupoAtencion.RINGALL)
         grupo_atencion.save()
-        opcion = Opcion(digito=0, campana=campana,
+        opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.DERIVAR_GRUPO_ATENCION,
                         grupo_atencion=grupo_atencion)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 
@@ -1185,10 +1185,10 @@ class GeneradorParaMemberTest(FTSenderBaseTest):
         grupo_atencion.save()
         agente = AgenteGrupoAtencion(numero_interno="1234",
                                      grupo_atencion=grupo_atencion)
-        opcion = Opcion(digito=0, campana=campana,
+        opcion = Opcion(pk=1, digito=0, campana=campana,
                         accion=Opcion.DERIVAR_GRUPO_ATENCION,
                         grupo_atencion=grupo_atencion)
-        campana.opciones = [opcion]
+        campana.opciones.add(opcion, bulk=False)
 
         # -----
 

@@ -146,9 +146,9 @@ class CreateDialplanTest(FTSenderBaseTest):
             metadata.save()
             campana.bd_contacto = bd_contacto
 
-            campana.audios_de_campana = [
+            campana.audios_de_campana.add(
                 AudioDeCampana(pk=i, orden=1, campana=campana,
-                               tts="TELEFONO")]
+                               tts="TELEFONO"), bulk=False)
 
             campanas.append(campana)
 
@@ -197,9 +197,9 @@ class CreateDialplanTest(FTSenderBaseTest):
             metadata.save()
             campana.bd_contacto = bd_contacto
 
-            campana.audios_de_campana = [
+            campana.audios_de_campana.add(
                 AudioDeCampana(pk=i, orden=1, campana=campana,
-                               tts="TELEFONO")]
+                               tts="TELEFONO"), bulk=False)
 
             campanas.append(campana)
 
@@ -254,12 +254,12 @@ class CreateDialplanTest(FTSenderBaseTest):
             metadata.save()
             campana.bd_contacto = bd_contacto
 
-            campana.audios_de_campana = [
+            campana.audios_de_campana.add(
                 AudioDeCampana(pk=i, orden=1, campana=campana,
-                               tts="TELEFONO")]
+                               tts="TELEFONO"), bulk=False)
 
-            campana.opciones = [Opcion(digito=0, accion=Opcion.REPETIR,
-                                       campana=campana)]
+            campana.opciones.add(Opcion(pk=1, digito=0, accion=Opcion.REPETIR,
+                                       campana=campana), bulk=False)
 
             campanas.append(campana)
 
@@ -309,16 +309,16 @@ class CreateDialplanTest(FTSenderBaseTest):
             metadata.save()
             campana.bd_contacto = bd_contacto
 
-            campana.audios_de_campana = [
+            campana.audios_de_campana.add(
                 AudioDeCampana(pk=i, orden=1, campana=campana,
-                               tts="TELEFONO")]
+                               tts="TELEFONO"), bulk=False)
 
             calificacion = Calificacion(pk=i, nombre="CALIF", campana=campana)
             calificacion.save()
 
-            campana.opciones = [Opcion(
-                digito=0, accion=Opcion.CALIFICAR, calificacion=calificacion,
-                campana=campana)]
+            campana.opciones.add(Opcion(
+                pk=1, digito=0, accion=Opcion.CALIFICAR, calificacion=calificacion,
+                campana=campana), bulk=False)
 
             campanas.append(campana)
 
@@ -367,9 +367,9 @@ class CreateDialplanTest(FTSenderBaseTest):
             metadata.save()
             campana.bd_contacto = bd_contacto
 
-            campana.audios_de_campana = [
+            campana.audios_de_campana.add(
                 AudioDeCampana(pk=i, orden=1, campana=campana,
-                               tts="TELEFONO")]
+                               tts="TELEFONO"), bulk=False)
 
             campanas.append(campana)
 
