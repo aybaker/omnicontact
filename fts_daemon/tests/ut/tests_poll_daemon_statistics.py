@@ -4,7 +4,7 @@
 
 from __future__ import unicode_literals
 
-from django.core.cache import get_cache
+from django.core.cache import caches
 from fts_daemon.poll_daemon.statistics import StatisticsService
 from fts_web.tests.utiles import FTSenderBaseTest
 import logging as _logging
@@ -19,7 +19,7 @@ class StatisticsServiceTests(FTSenderBaseTest):
 
     def test_publish_statistics_calls_set(self):
         """Testea que publish_statistics() llama a cache.set()"""
-        cache = Mock(get_cache('default'))
+        cache = Mock(caches['default'])
 
         # -----
 
@@ -31,7 +31,7 @@ class StatisticsServiceTests(FTSenderBaseTest):
     def test_get_statistics_calls_get(self):
         """Testea que get_statistics() llama a cache.get()"""
         stats = {1: 2}
-        cache = Mock(get_cache('default'))
+        cache = Mock(caches['default'])
         cache.get = Mock(return_value=stats)
 
         # -----
@@ -44,7 +44,7 @@ class StatisticsServiceTests(FTSenderBaseTest):
 
     def test_shoud_update_returns_true(self):
         """Testea que shoud_update() devuelva True"""
-        cache = Mock(get_cache('default'))
+        cache = Mock(caches['default'])
         # -----
 
         ss = StatisticsService(cache=cache)
@@ -52,7 +52,7 @@ class StatisticsServiceTests(FTSenderBaseTest):
 
     def test_shoud_update_returns_false(self):
         """Testea que shoud_update() devuelva False"""
-        cache = Mock(get_cache('default'))
+        cache = Mock(caches['default'])
         # -----
 
         ss = StatisticsService(cache=cache)

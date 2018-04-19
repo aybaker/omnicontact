@@ -9,7 +9,7 @@ import logging as _logging
 import time
 
 from django.conf import settings
-from django.core.cache import get_cache
+from django.core.cache import caches
 
 from fts_daemon import llamador_contacto
 from fts_daemon import tasks
@@ -65,7 +65,7 @@ class RoundRobinTracker(object):
             self._campana_call_status)
 
         self._statistics_service = StatisticsService(
-            cache=get_cache('default')
+            cache=caches['default']
         )
 
         self._running_status = running_status or main_utils.RunningStatus()

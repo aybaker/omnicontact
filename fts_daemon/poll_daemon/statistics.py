@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 
 import datetime
 
-# from django.core.cache import cache
 from django.utils import timezone
 import logging as _logging
 

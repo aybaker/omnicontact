@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.cache import get_cache
+from django.core.cache import caches
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView
@@ -15,7 +15,7 @@ import logging as logging_
 logger = logging_.getLogger(__name__)
 
 
-statistics_service = StatisticsService(cache=get_cache('default'))
+statistics_service = StatisticsService(cache=caches['default'])
 
 
 def _update_context_with_statistics(context):
