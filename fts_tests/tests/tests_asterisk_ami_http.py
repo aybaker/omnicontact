@@ -7,11 +7,11 @@ from __future__ import unicode_literals
 import os
 import pprint
 import uuid
+import unittest
 
 from django.conf import settings
 from django.test.testcases import LiveServerTestCase
 from django.test.utils import override_settings
-from django.utils import unittest
 from fts_daemon.asterisk_ami_http import AsteriskHttpClient, \
     AsteriskHttpAuthenticationFailedError, \
     AsteriskHttpResponseWithError, get_response_on_first_element, \
