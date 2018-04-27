@@ -54,6 +54,8 @@ kombu==3.0.21
 ordereddict==1.1
 redis==2.10.6
 ## datetime picker
-django-bootstrap3-datetimepicker==2.2.3
+#django-bootstrap3-datetimepicker==2.2.3
+#django-bootstrap3-datetimepicker==2.3 # No funciona via pip
+-e git://github.com/nkunihiko/django-bootstrap3-datetimepicker@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django-bootstrap3-datetimepicker
 # django-redis & reqs.
 django-redis==4.8.0
