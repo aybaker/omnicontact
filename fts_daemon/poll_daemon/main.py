@@ -11,11 +11,8 @@ import signal
 
 import logging as _logging
 
+import django
 from django.conf import settings
-
-from fts_daemon import locks
-from fts_daemon import main_utils
-from fts_daemon.poll_daemon.scheduler import Llamador
 
 # Seteamos nombre, sino al ser ejecutado via uWSGI
 #  el logger se llamara '__main__'
@@ -32,7 +29,15 @@ def _dump_settings():
 
 
 def main(max_loop=0, initial_wait=0.0):
+    django.setup()
+    
     logger.info("Iniciando poll daemon")
+
+    # Realizamos *import* aqui porque necesitamos que ANTES
+    #  se haya llamado a *django.setup()*
+    from fts_daemon import locks
+    from fts_daemon import main_utils
+    from fts_daemon.poll_daemon.scheduler import Llamador
 
     logger.info("Dump de configuracion")
     _dump_settings()
