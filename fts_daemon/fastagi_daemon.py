@@ -8,13 +8,16 @@ Created on Mar 31, 2014
 
 from __future__ import unicode_literals
 
-from django.conf import settings
-from fts_daemon import fastagi_daemon_views
-from fts_daemon.fastagi_daemon_views import UrlNoMatcheaNingunaVista
 import logging as _logging
+
+import django
+from django.conf import settings
+
 from psycopg2 import pool
+
 from starpy import fastagi
 from starpy.fastagi import FastAGIProtocol, FastAGIFactory
+
 from twisted.internet import reactor
 from twisted.python import log
 
@@ -140,4 +143,9 @@ def main():
     reactor.run()  # @UndefinedVariable
 
 if __name__ == '__main__':
+    django.setup()
+
+    from fts_daemon import fastagi_daemon_views
+    from fts_daemon.fastagi_daemon_views import UrlNoMatcheaNingunaVista
+
     main()
