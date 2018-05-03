@@ -594,6 +594,8 @@ class AmiStatusTracker(object):
             # tranquilos, tambien mostramos los que SI se parsearon...
             for item in no_parseados:
                 logger.info("NO parseado: %s", item)
+            for item in parseados:
+                logger.info("SI parseado: %s", item)
 
         campanas = collections.defaultdict(lambda: list())
         for key in parseados:
