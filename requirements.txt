@@ -45,7 +45,7 @@ pep8==1.5.7
 ## mock
 mock==1.0.1
 ## celery + redis
-amqp==1.4.5
+amqp==1.4.9
 anyjson==0.3.3
 billiard==3.3.0.18
 celery==3.1.12
