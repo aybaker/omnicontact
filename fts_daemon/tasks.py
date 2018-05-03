@@ -11,6 +11,18 @@ from __future__ import unicode_literals
 import logging
 import time
 
+# Este es un workaround para asegurarnos de que django.setup() fue llamado
+# La solucion real es migrar a una version mas reciente de Celery,
+#  o ejecutar django.setup() a travez de alguna SIGNAL de Celery.
+import django
+from django.apps import apps
+from django.core import exceptions
+
+try:
+    apps.check_apps_ready()
+except exceptions.AppRegistryNotReady:
+    django.setup()
+
 from fts_daemon import fts_celery_daemon
 from fts_daemon import locks
 from fts_daemon.services.depurador_de_campana import (
