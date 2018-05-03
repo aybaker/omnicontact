@@ -21,6 +21,13 @@ from starpy.fastagi import FastAGIProtocol, FastAGIFactory
 from twisted.internet import reactor
 from twisted.python import log
 
+try:
+    # FIXME: Necesario para que se haga el import cuando se ejecutan los tests
+    from fts_daemon import fastagi_daemon_views
+    from fts_daemon.fastagi_daemon_views import UrlNoMatcheaNingunaVista
+except:
+    pass
+
 
 # Import settings & models to force setup of Django
 CONN_POOL = None
