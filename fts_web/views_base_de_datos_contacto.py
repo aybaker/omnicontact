@@ -104,9 +104,7 @@ class DefineBaseDatosContactoView(UpdateView):
     model = BaseDatosContacto
     context_object_name = 'base_datos_contacto'
 
-    fields = '__all__'  # FIXME: HACK-MIGRACION-DJANGO-1.9
-
-    # @@@@@@@@@@@@@@@@@@@@
+    fields = []
 
     def dispatch(self, request, *args, **kwargs):
         self.base_datos_contacto = \
