@@ -92,7 +92,7 @@
   tags: db
 
 - include: celery.yml
-
+  tags: celery
 #- include: gammu.yml
 
 - include: deploy.yml
