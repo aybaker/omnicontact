@@ -21,12 +21,23 @@ from starpy.fastagi import FastAGIProtocol, FastAGIFactory
 from twisted.internet import reactor
 from twisted.python import log
 
+# -----[ django.setup() workaround ]-----
+# Este es un workaround para asegurarnos de que django.setup() sea llamado
+#   antes de realizar el import de models.
+# La solución final es modificar este daemon para que
+#   el setup de Django correctamente
+import django
+from django.apps import apps
+from django.core import exceptions
+
 try:
-    # FIXME: Necesario para que se haga el import cuando se ejecutan los tests
-    from fts_daemon import fastagi_daemon_views
-    from fts_daemon.fastagi_daemon_views import UrlNoMatcheaNingunaVista
-except:
-    pass
+    apps.check_apps_ready()
+except exceptions.AppRegistryNotReady:
+    django.setup()
+# -----[ django.setup() workaround ]-----
+
+from fts_daemon import fastagi_daemon_views
+from fts_daemon.fastagi_daemon_views import UrlNoMatcheaNingunaVista
 
 
 # Import settings & models to force setup of Django
@@ -149,10 +160,6 @@ def main():
     logger.info("Lanzando 'reactor.run()'")
     reactor.run()  # @UndefinedVariable
 
+
 if __name__ == '__main__':
-    django.setup()
-
-    from fts_daemon import fastagi_daemon_views
-    from fts_daemon.fastagi_daemon_views import UrlNoMatcheaNingunaVista
-
     main()

@@ -11,9 +11,11 @@ from __future__ import unicode_literals
 import logging
 import time
 
-# Este es un workaround para asegurarnos de que django.setup() fue llamado
-# La solucion real es migrar a una version mas reciente de Celery,
-#  o ejecutar django.setup() a travez de alguna SIGNAL de Celery.
+# -----[ django.setup() workaround ]-----
+# Este es un workaround para asegurarnos de que django.setup() sea llamado
+#   antes de realizar el import de models.
+# La solución final es actualizar a una versión de Celery que realice
+#   el setup de Django correctamente
 import django
 from django.apps import apps
 from django.core import exceptions
@@ -22,6 +24,7 @@ try:
     apps.check_apps_ready()
 except exceptions.AppRegistryNotReady:
     django.setup()
+# -----[ django.setup() workaround ]-----
 
 from fts_daemon import fts_celery_daemon
 from fts_daemon import locks
