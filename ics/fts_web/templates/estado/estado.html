@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_js %}
+    <script type="text/javascript" src="{% static 'fts_web/js/svg.jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'fts_web/js/pygal-tooltips.js' %}"></script>
+
+<script type="text/javascript">
+    var refreshDaemonStatus = function() {
+        $("#daemon_status").load("{% url 'daemon_status' %}");
+    }
+
+    $(document).ready(function() {
+        refreshDaemonStatus();
+        setInterval(function() {
+            window.location.reload(true)
+        }, 10000);
+        setInterval(refreshDaemonStatus, 900);
+    });
+</script>
+
+{% endblock %}
+<!--  -->
+
+{% block content %}
+
+    <div id="daemon_status">
+        {% include "estado/daemon_status.html" %}
+    </div>
+
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Supervisión: Campañas en Ejecución</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div>  
+               
+                {% for campana in campanas_ejecucion %}
+                    {% with graficos_estadisticas=campana.hack__graficos_estadisticas %}
+                        <div class="col-sm-6 col-md-6 col-lg-4">
+                            <table class="table table-bordered">
+                                <tbody>                            
+                                    <tr class="fts-table-bg">
+                                        <td width="65%">                          
+                                            <h4 class="text-primary">{{ campana.nombre }}</h4>
+                                        </td>
+                                        <td>
+                                            <h6>
+                                                <p>{{ campana.fecha_inicio|date:"d/m/Y" }} - {{ campana.fecha_fin|date:"d/m/Y" }}</p>
+                                                <p>
+                                                    {{ campana.obtener_actuacion_actual.get_dia_semanal_display }}: 
+                                                    {{ campana.obtener_actuacion_actual.hora_desde|time:"H:i" }} -
+                                                    {{ campana.obtener_actuacion_actual.hora_hasta|time:"H:i" }} 
+                                                </p>  
+                                            </h6>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2">
+                                            <h5><small>Porcentaje de opciones seleccionadas. <a href="{% url 'detalle_estado_opciones' campana.pk %}" target="_blank">Detalle Opciones</a></small></h5>
+                                            <div class="graficos-avances">
+                                                <figure>
+                                                    {{ graficos_estadisticas.torta_opcion_x_porcentaje.render|safe }}
+                                                </figure> 
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td colspan="2">
+                                            <h5><small>Avance de la campana.</small></h5>
+                                            <div class="col-lg-1 no-padding-left">
+                                                    <span class="badge">{{ graficos_estadisticas.estadisticas.porcentaje_avance|floatformat:'0'  }}%</span>
+                                            </div>
+                                            <div class="col-lg-11">
+                                                <div class="progress">
+                                                    <div class="progress-bar progress-bar-primary" style="width: {{ graficos_estadisticas.estadisticas.porcentaje_avance|floatformat:'0' }}%"></div>
+                                                </div>
+                                            </div>
+                                            <!-- <span class="label label-success">Contestadas</span> <span class="label label-warning">No Contestadas</span> -->
+                                        </td>           
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>                        
+                        </div>
+                    {% endwith %}
+                {% empty %} 
+                    <div class="col-lg-12">                  
+                        <p class="text-center text-danger">
+                            <em>No se encontraron Campañas.</em>
+                        </p>
+                    </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}

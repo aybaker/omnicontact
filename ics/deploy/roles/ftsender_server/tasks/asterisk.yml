@@ -1,0 +1,245 @@
+---
+
+- name: Create asterisk group
+  sudo: yes
+  group: name=asterisk state=present system=yes
+  when: fts_distribution == "centos6"
+  tags:
+    - asterisk
+    - docker
+    - docker-image
+
+- name: Create asterisk user 
+  sudo: yes
+  user: >
+    name=asterisk
+    group=asterisk
+    home=/home/asterisk
+    state=present
+    system=yes
+  when: fts_distribution == "centos6"
+  tags:
+    - asterisk
+    - docker
+    - docker-image
+
+- name: Create Asterisk directory (to install Asterisk)
+  sudo: yes
+  file: path=/opt/asterisk-11 state=directory owner=asterisk mode=0755
+  when: fts_distribution == "centos6"
+  tags:
+    - asterisk
+    - docker
+    - docker-image
+
+- name: Download Asterisk sources
+  sudo: yes
+  sudo_user: asterisk
+  get_url: >
+    url={{ DOWNLOAD_ASTERISK_URL }}
+    dest=/home/asterisk/{{ DOWNLOAD_ASTERISK_FILENAME }}
+    sha256sum={{ DOWNLOAD_ASTERISK_TARGZ_SHA256 }}
+  when: fts_distribution == "centos6"
+  tags:
+    - asterisk
+    - docker
+    - docker-image
+
+- name: Check if Asterisk is installed 
+  command: test -f /opt/asterisk-11/sbin/asterisk
+  register: asterisk_installed
+  ignore_errors: True
+  when: fts_distribution == "centos6"
+  tags:
+    - asterisk
+    - docker
+    - docker-image
+
+- name: Upload Asterisk build script 
+  when: asterisk_installed|failed
+  sudo: yes
+  template: >
+    src=bin/build_asterisk.sh
+    dest=/home/asterisk/
+    owner=asterisk group=asterisk mode=0755
+  when: fts_distribution == "centos6"
+  tags:
+    - asterisk
+    - docker
+    - docker-image
+
+- name: Run Asterisk build script 
+  sudo: yes
+  sudo_user: asterisk
+  command: /home/asterisk/build_asterisk.sh
+  when: fts_distribution == "centos6" and asterisk_installed|failed
+  register: asterisk_installed
+  tags:
+    - asterisk
+    - docker
+    - docker-image
+
+- name: Upload Asterisk init script
+  template: >
+    src=etc/init.d/asterisk-11-ftsender
+    dest=/etc/init.d/asterisk-11-ftsender
+    owner=root group=root mode=0755
+  sudo: yes
+  when: fts_distribution == "centos6"
+  tags:
+    - asterisk
+    - docker
+    - docker-image
+
+- name: Register Asterisk service
+  service: name=asterisk-11-ftsender enabled=yes
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+    - docker
+    - docker-image
+
+#----------------------------------------------------------------------
+# extensions.conf
+#----------------------------------------------------------------------
+
+- name: Modify Asterisk extensions.conf
+  lineinfile: >
+    state=present
+    dest=/opt/asterisk-11/etc/asterisk/extensions.conf
+    regexp="^#include\s+{{dj_sett_FTS_DIALPLAN_FILENAME}}\s*"
+    insertafter=EOF
+    line="#include {{dj_sett_FTS_DIALPLAN_FILENAME}}"
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+    - docker
+
+#----------------------------------------------------------------------
+# manager.conf
+#----------------------------------------------------------------------
+
+- name: Modify Asterisk manager.conf - general/enabled/yes
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    section=general
+    option=enabled
+    value=yes
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+    - docker
+
+- name: Modify Asterisk manager.conf - general/webenabled/yes
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    section=general
+    option=webenabled
+    value=yes
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+    - docker
+
+- name: Modify Asterisk manager.conf - manager/user/secret
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    section={{ dj_sett_ASTERISK_USERNAME }}
+    option=secret
+    value={{ dj_sett_ASTERISK_PASSWORD }}
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+    - docker
+
+- name: Modify Asterisk manager.conf - manager/user/read
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    section={{ dj_sett_ASTERISK_USERNAME }}
+    option=read
+    value=system,call,log,verbose,command,agent,user,originate
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+    - docker
+
+- name: Modify Asterisk manager.conf - manager/user/write
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/manager.conf
+    section={{ dj_sett_ASTERISK_USERNAME }}
+    option=write
+    value=system,call,log,verbose,command,agent,user,originate
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+    - docker
+
+#----------------------------------------------------------------------
+# http.conf
+#----------------------------------------------------------------------
+
+- name: Modify Asterisk http.conf - general/enabled/yes
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/http.conf
+    section=general
+    option=enabled
+    value=yes
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+    - docker
+
+- name: Modify Asterisk http.conf - general/bindaddr/ASTERISK_AMI_HTTP_BIND
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/http.conf
+    section=general
+    option=bindaddr
+    value={{ ASTERISK_AMI_HTTP_BIND }}
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+    - docker
+
+- name: Modify Asterisk http.conf - general/bindport/ASTERISK_AMI_HTTP_PORT
+  ini_file: >
+    dest=/opt/asterisk-11/etc/asterisk/http.conf
+    section=general
+    option=bindport
+    value={{ ASTERISK_AMI_HTTP_PORT }}
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  sudo: yes
+  tags:
+    - asterisk
+    - docker
+
+#----------------------------------------------------------------------
+# Start / reload
+#----------------------------------------------------------------------
+
+- name: Start Asterisk (only if installed)
+  sudo: yes
+  service: name=asterisk-11-ftsender state=started
+  ignore_errors: True
+  register: asterisk_started
+  when: fts_distribution == "centos6" and asterisk_installed|success
+  tags:
+    - asterisk
+    - docker
+
+- name: Reload Asterisk (only if 'start' failed)
+  sudo: yes
+  service: name=asterisk-11-ftsender state=reloaded
+  ignore_errors: True
+  when: fts_distribution == "centos6" and asterisk_started|failed
+  tags:
+    - asterisk
+    - docker

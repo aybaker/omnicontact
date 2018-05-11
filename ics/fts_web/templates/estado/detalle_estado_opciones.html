@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_js %}
+    <script type="text/javascript">
+        setInterval(function(){window.location.reload(true)},10000);
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Supervisión: Detalle de Opciones Seleccionadas</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12"> 
+                <table class="table">
+                    <tbody>
+                        <tr class="fts-table-bg">
+                            <td width="45%"> 
+                                <h3 class="text-primary">
+                                    {{ campana.nombre }}
+                                </h3>
+                            </td>
+                            <td>
+                                <h5>
+                                    <b>Desde: </b>{{ campana.fecha_inicio|date:"d/m/Y" }}
+                                </h5>
+                            </td>
+                            <td>
+                                <h5>
+                                    <b>Hasta: </b>{{ campana.fecha_fin|date:"d/m/Y" }}
+                                </h5>
+                            </td>
+                            
+                            <td>
+                                <h5>
+                                    <b>Base Datos: </b>
+                                    {{ campana.bd_contacto }} 
+                                    ({{ graficos_estadisticas.estadisticas.total_contactos }} Contactos)
+                                </h5>
+                            </td>                        
+                        </tr>
+                    </tbody>
+                </table>
+
+                {% for detalle_opcion in detalle_opciones %}
+                    {% if detalle_opcion.0.accion >= 0 %}
+                        <h3>
+                        <span class="text-primary">#{{ detalle_opcion.0.digito }}</span>
+                        {% if detalle_opcion.0.calificacion %}
+                            <small>
+                                ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.calificacion.nombre }})
+                            </small>
+                        {% elif detalle_opcion.0.grupo_atencion %}
+                            <small>
+                                ({{ detalle_opcion.0.get_accion_display }}: {{ detalle_opcion.0.grupo_atencion.nombre }})
+                            </small>
+                        {% else %}
+                            <small>({{ detalle_opcion.0.get_accion_display }})</small>
+                        {% endif %}
+                        </h3>
+
+                        <table class="table table-bordered">
+                            <thead>
+                            {% for nombre_columna in nombres_columnas %}
+                                <th>{{ nombre_columna }}</th>
+                            {% endfor %}  
+                            </thead>
+                            <tbody>
+                                {% for datos_contacto in detalle_opcion.1 %}
+                                    <tr>
+                                        {% for dato_contacto in datos_contacto %}
+                                            <td>{{ dato_contacto }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

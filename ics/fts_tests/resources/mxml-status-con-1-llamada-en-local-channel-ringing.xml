@@ -1,0 +1,24 @@
+<ajax-response>
+	<response type='object' id='unknown'>
+		<generic response='Success' message='Channel status will follow' />
+	</response>
+	<response type='object' id='unknown'>
+		<generic event='Status' privilege='Call'
+			channel='Local/2923389-319751355727335-1@FTS_local_campana_86-00000003;2'
+			calleridnum='&lt;unknown&gt;' calleridname='&lt;unknown&gt;'
+			connectedlinenum='&lt;unknown&gt;' connectedlinename='&lt;unknown&gt;'
+			accountcode='' channelstate='4' channelstatedesc='Ring'
+			context='FTS_local_campana_86' extension='2923389-319751355727335'
+			priority='7' seconds='0' uniqueid='1399480320.10' />
+	</response>
+	<response type='object' id='unknown'>
+		<generic event='Status' privilege='Call'
+			channel='Local/2923389-319751355727335-1@FTS_local_campana_86-00000003;1'
+			calleridnum='&lt;unknown&gt;' calleridname='&lt;unknown&gt;'
+			connectedlinenum='&lt;unknown&gt;' connectedlinename='&lt;unknown&gt;'
+			account='' state='Down' uniqueid='1399480320.9' />
+	</response>
+	<response type='object' id='unknown'>
+		<generic event='StatusComplete' items='2' />
+	</response>
+</ajax-response>

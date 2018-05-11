@@ -1,0 +1,171 @@
+{% load static %}
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block title %} FTSender Web {% endblock %}</title>
+
+    <!-- Bootstrap's  -->
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap3/css/bootstrap-theme.min.css' %}"> 
+    <link rel="stylesheet" href="{% static 'fts_web/css/main.css' %}">
+
+    
+     <!-- JS -->
+    <script src="{% static 'fts_web/js/jquery-1.10.2.min.js' %}"></script>
+    <script src="{% static 'fts_web/js/jquery-ui-1.10.4.custom.min.js' %}"></script>
+    <script src="{% static 'bootstrap3/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $(".modal_proceso_grande").click(function (){
+                $('#modal_proceso_grande').modal();
+            });
+        });   
+    </script>
+
+    {{ form.media }}
+
+    {% block head_js %}
+    {% endblock %}
+
+</head>
+<body ng-controller="GlobalController">
+    {% if user.is_authenticated %}
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container-fluid col-lg-12">
+                <div class="navbar-header col-lg-2">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                    </button>
+                    <a class="navbar-brand" href="{% url 'index' %}">
+                         <img src="{% static 'fts_web/img/logo_freetech_blanco.png' %}">
+                    </a>
+                </div>
+
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="{% url 'deslogueo' %}" title="Deslogueo">
+                                <span class="glyphicon glyphicon-off"></span>
+                            </a>
+                        </li>
+                    </ul>
+                
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="{% url 'lista_base_datos_contacto' %}">Base Datos Contactos</a>
+                        </li>
+                        <li role="presentation" class="dropdown">
+						    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+						      Campañas <span class="caret"></span>
+						    </a>
+						    <ul class="dropdown-menu" role="menu">
+						    	<li>
+                            		<a href="{% url 'lista_campana' %}">Campañas Telefónicas</a>
+                        		</li>
+                        		<li>
+                            		<a href="{% url 'lista_template' %}">Templates de Campañas Telefónicas</a>
+                        		</li>
+                        		<li class="divider"></li>
+                        		<li>
+                            		<a href="{% url 'lista_campana_sms' %}">Campañas SMS</a>
+                        		</li>
+						    </ul>
+						</li>
+                        <li>
+                            <a href="{% url 'lista_derivacion' %}">Derivación</a>
+                        </li>
+                        <li role="presentation" class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+						      Reportes <span class="caret"></span>
+						    </a>
+                            <ul class="dropdown-menu" role="menu">
+						    	<li>
+                                    <a href="{% url 'lista_campana_reportes' %}">Reportes Campañas Telefónicas</a>
+                        		</li>
+
+                        		<li>
+                            		<a href="{% url 'lista_campana_sms_reportes' %}">Reportes Campañas SMS</a>
+                        		</li>
+						    </ul>
+                        </li>
+
+                        <li role="presentation" class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+						      Supervision <span class="caret"></span>
+						    </a>
+                            <ul class="dropdown-menu" role="menu">
+						    	<li>
+                                    <a href="{% url 'lista_campana_por_estados' %}">Supervision Campañas Telefónicas</a>
+                        		</li>
+
+                        		<li>
+                            		<a href="{% url 'lista_campana_sms_por_estados' %}">Supervision Campañas SMS</a>
+                        		</li>
+						    </ul>
+                        </li>
+                        <li>
+                            <a href="{% url 'busqueda_de_llamadas' %}">Búsqueda Llamadas</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'lista_archivo_audio' %}">Audios</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'acerca' %}">Acerca</a>
+                        </li>
+                    </ul> 
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12 main">          
+                    {% for message in messages %}
+                        <div class="alert alert-dismissable {{ message.tags }}">
+                           <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                           {{ message|safe }}
+                        </div>
+                    {% endfor %}
+
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modal_proceso_grande" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header fts-bg-naranja-gradiente">
+                        <h4 class="modal-title" id="myModalLabel">
+                        <span class="glyphicon glyphicon-time"></span> Operación en Progreso.
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <h4>Por favor, aguarde un momento mientas se procesan los datos. Esta operación puede demorar algunos minutos. <strong>Gracias.</strong></h4>
+
+                        <div class="load">
+                            <img src="{% static 'fts_web/img/load.gif' %}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        {% block logueo %}
+        {% endblock %} 
+    {% endif %}
+
+    {% block bottom_js %}    
+    {% endblock %}
+</body>
+</html>
+{% if testing_mode %}
+<!-- SELENIUM-REDER-OK-{{ testing_mode }} -->
+{% endif %}

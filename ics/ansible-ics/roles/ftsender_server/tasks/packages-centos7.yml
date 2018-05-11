@@ -1,0 +1,102 @@
+---
+
+- name: Disable Selinux
+  command: "{{ item }}"
+  with_items:
+      - sed -i 's/\(^SELINUX=\).*/\SELINUX=disabled/' /etc/sysconfig/selinux
+      - sed -i 's/\(^SELINUX=\).*/\SELINUX=disabled/' /etc/selinux/config
+  tags:
+    - issabel
+    - yum
+
+- name: Update/upgrade of centos
+  yum: name='*' state=latest update_cache=yes
+  tags:
+    - issabel
+    - yum
+
+- name: Install Development tools
+  command: "yum -y groupinstall core base \"Development Tools\""
+
+
+- name: Install epel-release
+  yum: name=epel-release state=present
+
+- name: Stop freepbx firewall
+  shell: "{{ item }}"
+  with_items:
+      - systemctl stop firewalld
+      - systemctl disable firewalld
+
+
+- name: Install basic packages
+  yum: name={{item}} state=present
+  with_items:
+    - libselinux-python
+    - python-psycopg2
+    - python-virtualenv
+    - git
+    - python
+    - rsync
+    - libxslt-devel
+    - python-devel
+    - ntp
+    - supervisor
+    - git
+  tags:
+    - yum
+    - issabel
+
+- name: Install packages for required services
+  yum: name={{item}} state=installed
+  with_items:
+    - nginx
+    - munin
+    - munin-node
+    - redis
+    - sox
+  tags:
+    - yum
+    - issabel
+
+- name: Install of postgresql 9.6
+  yum: "name={{ RPM_REPO_POSTGRESQL }} state=present validate_certs=no "
+  tags:
+    - yum
+    - issabel
+- yum: name=postgresql96* state=present
+  tags:
+    - issabel
+    - yum
+
+- name: Install packages for buliding Asterisk
+  yum: name={{item}} state=present
+  with_items:
+    - libselinux-python
+    - make
+    - wget
+    - openssl-devel
+    - ncurses-devel
+    - newt-devel
+    - libxml2-devel
+    - kernel-devel
+    - gcc
+    - gcc-c++
+    - texinfo
+    - sqlite-devel
+    - libuuid-devel
+  tags:
+    - asterisk
+    - yum
+
+- name: Reboot the server for kernel update
+  shell: sleep 2 && shutdown -r now "Ansible updates triggered"
+  async: 1
+  poll: 0
+  become: true
+  ignore_errors: true
+
+- name: Wait for the server to finish rebooting
+  become: no
+  local_action: wait_for host="{{ ics_ip }}" delay=15 state=started port={{ ssh_port }} timeout=600
+  when: ansible_os_family == "Sangoma" or ansible_os_family == "RedHat"

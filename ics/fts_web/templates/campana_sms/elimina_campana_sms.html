@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            {% if es_template %}
+                <h4>Template</h4>
+            {% else %}
+                <h4>Campaña SMS</h4>
+            {% endif %}
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-8">
+                <form method="post">{% csrf_token %}
+                    {% if es_template %}
+                        <h4>Template <strong>{{ object.campana_sms.nombre }}</strong></h4>
+                        <h4>¿Esta seguro que desea eliminar este Template? </h4> 
+                    {% else %}
+                        <h4>Campaña <strong>{{ object.campana_sms.nombre }}</strong></h4>
+                        <h4>¿Esta seguro que desea eliminar esta Campaña SMS? </h4>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <span class="glyphicon glyphicon-remove"></span> Eliminar
+                    </button>
+                    {% if es_template %}
+                        <a href="{% url 'lista_template' %}">Cancelar</a>
+                    {% else %}
+                        <a href="{% url 'lista_campana_sms' %}">Cancelar</a>
+                    {% endif %}
+                   
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

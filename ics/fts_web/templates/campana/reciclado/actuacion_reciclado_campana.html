@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Reciclado Campaña: Actuación</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+        <ul class="nav nav-tabs">
+                <li class="disabled"><a>1- Tipo Reciclado</a></li>
+                <li><a href="{% url 'redefinicion_reciclado_campana' campana.pk %}">2- Redefinición</a></li>
+                <li class="active"><a>3- Actuación</a></li>
+                <li class="disabled"><a>4- Confirmar Campaña</a></li>
+            </ul>
+            <br>
+            <form role="form" method="post">
+            <div class="col-lg-4">
+                {% csrf_token %}                
+                   
+                <h4>Nueva Actuación</h4>
+                {% crispy form %} 
+            </div>
+            <div class="col-lg-6">
+                {% if campana %}
+                    <h4>Actuaciones</h4>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <th>Día</th>
+                                <th>Hora Desde</th>
+                                <th>Hora Hasta</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for actuacion in campana.actuaciones.all %}
+                                <tr>
+                                    <td>
+                                        {% if actuacion in actuaciones_validas %}
+                                            <span class="text-success">{{ actuacion.get_dia_semanal_display }}</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ actuacion.get_dia_semanal_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ actuacion.hora_desde }} Hs.</td>
+                                    <td>{{ actuacion.hora_hasta }} Hs.</td>
+                                    <td>
+                                        <a href="{% url 'actuacion_reciclado_campana_elimina' campana.pk actuacion.pk %}"> Eliminar</a>
+                                    </td>       
+                                </tr>
+                             {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Actuaciones creadas.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+            <div class="col-lg-12">
+                <br>
+                <button type="submit" id="id_guardar" class="btn btn-success btn-lg">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    Agregar Actuación
+                </button>
+                {% if actuaciones_validas %}
+                    <a href="{% url 'confirma_reciclado_campana' campana.pk %}" class="btn btn-default pull-right" role="button">
+                    Continuar <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a> 
+                {% endif %}
+            </div>
+            </form>        
+        </div>
+    </div>
+{% endblock %}

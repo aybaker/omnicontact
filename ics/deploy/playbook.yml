@@ -1,0 +1,9 @@
+---
+- hosts: ftsender
+  # Siempre 'gather_facts' ya q' lo usaoms en varios 'when'
+  # gather_facts: '{{ lookup("env","DO_CHECKS") }}'
+  roles:
+    - ftsender_server
+  remote_user: ftsender
+  vars_files:
+    - "roles/ftsender_server/defaults/vars-{{fts_distribution}}.yml"

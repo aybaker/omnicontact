@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_js %}
+    <script type="text/javascript">
+        $(function(){
+            $(".btn-submit").click(function (){
+                var campana_sms_id = $(this).attr("id");
+                var action = $(this).attr("name");
+                submit_form(campana_sms_id, action);
+            })
+
+            function submit_form(campana_sms_id, action){
+                $("#campana_sms_id").val(campana_sms_id);
+                $("#form_estados_campanas").attr("action", action);
+                $("#form_estados_campanas").submit();
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Campañas SMS</h4>
+            <div class="inline pull-right">
+                <a href="{% url 'nueva_campana_sms' %}">
+                    <button type="button" class="btn btn-info btn-sm fts-bg-gris-osc-gradiente">
+                        <span class="glyphicon glyphicon-plus"></span> Nueva Campaña SMS
+                    </button>
+                </a>
+            </div>
+
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <form id="form_estados_campanas" role="form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="campana_sms_id" name="campana_sms_id">
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr class="fts-table-bg">                                
+                            <th width="45%">Campañas Confirmadas</th>                    
+                            <th width="15%">Estado</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for campana in confirmadas %}
+                                <tr >
+                                    <td width="45%">                          
+                                        <a href="{% url 'detalle_campana_sms' campana.id %}">{{ campana.nombre }}</a>
+                                    </td>
+                                    <td>
+                                        {{ campana.get_estado_display }}
+                                    </td>
+                                    <td>
+                                        <button type="button" id="{{ campana.id }}" name="{% url 'estado_pausa_campana_sms' %}" class="btn btn-warning btn-sm btn-submit">
+                                            <span class="glyphicon glyphicon-pause"></span>
+                                            Pausar
+                                        </button>
+                                        <a href="{% url 'tipo_reciclado_campana_sms' campana.pk %}">
+                                            <button type="button" class="btn btn-primary btn-sm">
+                                                <span class="glyphicon glyphicon-retweet"></span>
+                                                Reciclar
+                                            </button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Campañas SMS.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr class="fts-table-bg">
+                            <th width="45%">Campañas Pausadas</th>
+                            <th width="15%">Estado</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for campana in pausadas %}
+                                <tr >
+                                    <td width="45%">
+                                        <a href="{% url 'detalle_campana_sms' campana.id %}">{{ campana.nombre }}</a>
+                                    </td>
+                                    <td>
+                                        {{ campana.get_estado_display }}
+                                    </td>
+
+                                    <td>
+                                        <button type="button" id="{{ campana.id }}" name="{% url 'estado_activa_campana_sms' %}" class="btn btn-success btn-sm btn-submit">
+                                            <span class="glyphicon glyphicon-play"></span>
+                                            Activar
+                                        </button>
+                                        <a href="{% url 'tipo_reciclado_campana_sms' campana.pk %}">
+                                            <button type="button" class="btn btn-primary btn-sm">
+                                                <span class="glyphicon glyphicon-retweet"></span>
+                                                Reciclar
+                                            </button>
+                                        </a>
+                                        <a href="{% url 'campana_sms_elimina' campana.pk %}">
+                                            <button type="button" class="btn btn-danger btn-sm">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                                Eliminar
+                                            </button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron Campañas SMS.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </form>                               
+            </div>
+        </div>
+    </div>
+{% endblock %}

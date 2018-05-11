@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block head_js %}  
+    <script src="{% static 'fts_web/js/jquery.formset.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Nuevo Grupo de Atención</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-4">
+                <form role="form" method="post">
+                    {% crispy form %} 
+
+                    {{ formset_agente_grupo_atencion.management_form|crispy }}
+                    <table id="formset_agente_grupo_atencion">       
+                        <thead>
+                            <th>Agentes</th>                               
+                            <th></th>                                
+                        </thead>
+                        <tbody>                                       
+                            {% for form in formset_agente_grupo_atencion %}
+                                <tr class="hero-unit">
+                                    <td>
+                                        <div class="control-group">
+                                            <div class="controls">
+                                                {{ form.numero_interno|as_crispy_field:'bootstrap3' }}
+                                            </div>
+                                        </div>
+                                    </td>                            
+                                    <td>
+                                    {% if forloop.counter > 1 %}
+                                       {{ form.DELETE }} Eliminar
+                                    {% endif %}
+                                    </td>                                 
+                                </tr>    
+                                {{ form.id }}
+                                {{ form.grupo_atencion }}                                          
+                            {% endfor %}
+                        </tbody>
+                     </table>
+                     
+                    <br>
+
+                    <button type="submit" class="btn btn-success btn-lg">
+                        Guardar Grupo de Atención
+                    </button>
+                </form>           
+            </div>
+        </div>
+    </div>
+{% endblock %}

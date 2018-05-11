@@ -1,0 +1,61 @@
+## reqs. instalados por virtualenv/pip
+wsgiref==0.1.2
+#
+# Asterisk: starpy
+#   pip install git+git://github.com/asterisk/starpy.git@408f2636d8eb879c787073dccf147cc5fe734cba
+#
+## Django
+Django==1.9.13
+psycopg2==2.5.3
+pytz==2014.4
+## Crispy forms
+django-crispy-forms==1.5.2
+## pygal
+lxml==3.3.5
+pygal==1.4.6
+## Twisted
+Twisted==13.2.0
+zope.interface==4.1.1
+## Requests
+requests==2.3.0
+## xlrd
+xlrd==0.9.3
+## uwsgi
+# django-uwsgi-cache==0.2 # ya no podemos usarlo para cache
+uWSGI==2.0.6
+## selenium
+selenium==2.40.0
+## coverage
+coverage==3.7.1
+## ansible
+Jinja2==2.7.3
+MarkupSafe==0.23
+PyYAML==3.11
+ansible==1.6.6
+ecdsa==0.11
+paramiko==1.14.0
+pycrypto==2.6.1
+## Sphinx
+Pygments==1.6
+Sphinx==1.2.2
+docutils==0.11
+sphinx-rtd-theme==0.1.6
+## pep8
+pep8==1.5.7
+## mock
+mock==1.0.1
+## celery + redis
+amqp==1.4.9
+anyjson==0.3.3
+billiard==3.3.0.18
+celery==3.1.12
+importlib==1.0.3
+kombu==3.0.30
+ordereddict==1.1
+redis==2.10.6
+## datetime picker
+#django-bootstrap3-datetimepicker==2.2.3
+#django-bootstrap3-datetimepicker==2.3 # No funciona via pip
+-e git://github.com/nkunihiko/django-bootstrap3-datetimepicker@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django-bootstrap3-datetimepicker
+# django-redis & reqs.
+django-redis==4.8.0

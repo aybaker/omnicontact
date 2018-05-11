@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Derivación</h4>
+            <div class="inline pull-right">
+                <a href="{% url 'nuevo_grupo_atencion' %}">
+                    <button type="button" class="btn btn-info btn-sm fts-bg-gris-osc-gradiente">
+                        <span class="glyphicon glyphicon-plus"></span> Nuevo Grupo Atención
+                    </button>
+                </a>
+                <a href="{% url 'nueva_derivacion_externa' %}">
+                    <button type="button" class="btn btn-info btn-sm fts-bg-gris-osc-gradiente">
+                        <span class="glyphicon glyphicon-plus"></span> Nueva Derivación Externa
+                    </button>
+                </a>
+            </div>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-6">                                   
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="fts-table-bg">                                
+                            <th colspan="5">Grupo de Atención</th>
+                        </tr>
+                      <tr class="fts-table-bg">                                
+                        <th>Nombre</th>
+                        <th>Ring Strategy</th>
+                        <th>Timeout</th>
+                        <th>Agentes</th>
+                        <th>Eliminar</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for grupo_atencion in grupos_atencion %}
+                            <tr>
+                                <td>                          
+                                     <a href="{% url 'edita_grupo_atencion' grupo_atencion.pk %}">
+                                     {{ grupo_atencion.nombre }}
+                                     </a>
+                                </td>
+                                <td>
+                                    {{ grupo_atencion.get_ring_strategy_display }}
+                                </td>
+                                <td>
+                                    {{ grupo_atencion.timeout }}
+                                </td>
+                                <td>
+                                    {{ grupo_atencion.get_cantidad_agentes }}
+                                </td>
+                                <td>
+                                    {% if grupo_atencion.puede_borrarse %}
+                                        <a href="{% url 'grupo_atencion_elimina' grupo_atencion.pk %}">
+                                            <button type="button" class="btn btn-danger btn-sm">
+                                                <span class="glyphicon glyphicon-remove"></span> Eliminar
+                                            </button>
+                                        </a>
+                                    {% else %}
+                                         <span class="glyphicon glyphicon-exclamation-sign"></span> En uso
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron Grupos de Atención creados.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+             <div class="col-lg-6">                                   
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="fts-table-bg">                                
+                            <th colspan="4">Derivacion Externa</th>
+                        </tr>
+                        <tr class="fts-table-bg">                                
+                            <th>Nombre</th>
+                            <th>Tipo Derivacion</th>
+                            <th>Dial String</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for derivacion_externa in derivaciones_externa %}
+                            <tr>
+                                <td>                          
+                                     <a href="{% url 'edita_derivacion_externa' derivacion_externa.pk %}">
+                                     {{ derivacion_externa.nombre }}
+                                     </a>
+                                </td>
+                                <td>
+                                    {{ derivacion_externa.get_tipo_derivacion_display }}
+                                </td>
+                                <td>
+                                    {{ derivacion_externa.dial_string }}
+                                </td>
+                                <td>
+                                    {% if derivacion_externa.puede_borrarse %}
+                                        <a href="{% url 'derivacion_externa_elimina' derivacion_externa.pk %}">
+                                            <button type="button" class="btn btn-danger btn-sm">
+                                                <span class="glyphicon glyphicon-remove"></span> Eliminar
+                                            </button>
+                                        </a>
+                                    {% else %}
+                                         <span class="glyphicon glyphicon-exclamation-sign"></span> En uso
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron Derivaciones Externas creadas.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- <div>
+                <a href="{% url 'nuevo_grupo_atencion' %}">
+                    <button type="button" class="btn btn-primary btn-sm">
+                        <span class="glyphicon glyphicon-plus"></span> Nuevo Grupo Atención
+                    </button>
+                </a>
+            </div> -->
+        </div>
+    </div>
+{% endblock %}

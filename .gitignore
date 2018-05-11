@@ -8,3 +8,22 @@ virtualenv/
 *.pyc
 *~
 /.coverage
+# ----- <ics>
+/ics/virtualenv
+settings_local.py
+/db.sqlite3
+/.settings/org.eclipse.core.resources.prefs
+/ics/media_root
+/virtualenv26
+/ics/fts_web_settings_local.py
+/ics/pydev_manage.py
+/ics/.coverage
+/ics/docs/_build
+/ics/build
+/ics/deploy/hosts-virtual-pruebas
+/ics/deploy/docker/authorized_keys
+/ics/fts_web_settings_local_customizations.py
+/ics/dev/static_root
+/ics/deploy/virtualenv-fig
+.pydevproject
+# ----- </ics>

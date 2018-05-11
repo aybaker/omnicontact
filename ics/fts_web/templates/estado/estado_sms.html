@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_js %}
+    <script type="text/javascript" src="{% static 'fts_web/js/svg.jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'fts_web/js/pygal-tooltips.js' %}"></script>
+
+<script type="text/javascript">
+
+
+</script>
+
+{% endblock %}
+<!--  -->
+
+{% block content %}
+
+
+
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Supervisión: Campañas de SMS en Ejecución</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div>  
+               
+                {% for campana_sms in campanas_ejecucion %}
+                    {% with graficos_estadisticas=campana_sms.hack__graficos_estadisticas %}
+                        <div class="col-sm-6 col-md-6 col-lg-4">
+                            <table class="table table-bordered table-hover">
+                      <!--  <thead>
+                            <tr class="fts-table-bg">
+                                <th>estado</th>
+                                <th>cantidad</th>
+                            </tr>
+                        </thead>-->
+                                <tbody>
+                                    <tr class="fts-table-bg">
+                                        <td width="65%">
+                                            <h4 class="text-primary">{{ campana_sms.nombre }}</h4>
+                                        </td>
+                                        <td>
+                                            <h6>
+                                                <p>{{ campana_sms.fecha_inicio|date:"d/m/Y" }} - {{ campana_sms.fecha_fin|date:"d/m/Y" }}</p>
+                                                <p>
+                                                    {{ campana_sms.obtener_actuacion_actual.get_dia_semanal_display }}:
+                                                    {{ campana_sms.obtener_actuacion_actual.hora_desde|time:"H:i" }} -
+                                                    {{ campana_sms.obtener_actuacion_actual.hora_hasta|time:"H:i" }}
+                                                </p>
+                                            </h6>
+                                        </td>
+                                    </tr>
+                            <tr>
+                                <td>Enviado OK</td>
+                                <td>{{graficos_estadisticas.total_enviado}}</td>
+                            </tr>
+                            <tr>
+                                <td>Error en el envio</td>
+                                <td>{{graficos_estadisticas.total_error_envio}}</td>
+                            </tr>
+                            <tr>
+                                <td>No procesados</td>
+                                <td>{{graficos_estadisticas.total_no_procesados}}</td>
+                            </tr>
+                            <tr>
+                                <td>Enviados sin confirmación</td>
+                                <td>{{graficos_estadisticas.total_sin_confirmacion}}</td>
+                            </tr>
+                        </tbody>
+                            </table>
+                        </div>
+                    {% endwith %}
+                {% empty %} 
+                    <div class="col-lg-12">                  
+                        <p class="text-center text-danger">
+                            <em>No se encontraron Campañas SMS activas.</em>
+                        </p>
+                    </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}

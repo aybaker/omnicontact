@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Actuación</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-8">
+                <form method="post">{% csrf_token %}                  
+                    <h4>Campaña <strong>{{ object.campana_sms.nombre }}</strong></h4>
+
+                    <h4>¿Esta seguro que desea eliminar la Actuación:  
+                        <strong>
+                            {{ object.get_dia_semanal_display }}:
+                            {{ object.hora_desde }} -
+                            {{ object.hora_hasta }}
+                        </strong>?</h4>
+
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <span class="glyphicon glyphicon-remove"></span> Eliminar
+                    </button>                
+                    <a href="{% url 'actuacion_sms_campana_sms' object.campana_sms.pk %}">Cancelar</a>   
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

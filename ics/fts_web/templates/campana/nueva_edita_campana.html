@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}      
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">
+            {% if es_template %}
+                <h4 class="inline">Nuevo Template de Campaña: Datos Básicos</h4>
+            {% else %}
+                <h4 class="inline">Nueva Campaña: Datos Básicos</h4>
+            {% endif %}
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                <li class="active"><a>1- Datos Básicos</a></li>
+                <li class="disabled"><a>2- Audio</a></li>
+                <li class="disabled"><a>3- Calificaciones</a></li>
+                <li class="disabled"><a>4- Opciones</a></li>
+                <li class="disabled"><a>5- Actuación</a></li>
+                <li class="disabled"><a>6- Confirmar</a></li>
+            </ul>
+            <br>          
+            <form role="form" method="post" >
+                <div class="col-lg-4">                
+                    {% crispy form %}                                           
+
+                    {% if campana.audio_original %}
+                        <div>
+                            <h4>Audio de la Campaña</h4>
+                            <audio src="{{ campana.audio_original.url }}" controls></audio>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-lg-12">
+                    <br>
+                    <button type="submit" id="id_guardar" class="btn btn-success btn-lg">
+                        Guardar Datos Básicos y Continuar
+                    </button>
+                </div>
+            </form>           
+        </div>
+    </div>
+{% endblock %}

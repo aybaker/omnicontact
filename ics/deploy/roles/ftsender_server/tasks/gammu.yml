@@ -1,0 +1,72 @@
+---
+
+- name: Create Gammu directory (to install Gammu)
+  sudo: yes
+  file: path=/opt/gammu state=directory owner=ftsender mode=0755
+  when: fts_distribution == "centos6"
+  tags:
+    - gammu
+
+- name: Download Gammu sources
+  sudo: yes
+  sudo_user: ftsender
+  get_url: >
+    url={{ DOWNLOAD_GAMMU_URL }}
+    dest=/opt/gammu/{{ DOWNLOAD_GAMMU_FILENAME }}
+    sha256sum={{ DOWNLOAD_GAMMU_TARGZ_SHA256 }}
+  when: fts_distribution == "centos6"
+  tags:
+    - gammu
+
+- name: Check if Gammu is installed 
+  command: test -f /usr/local/bin/gammu
+  register: gammu_installed
+  ignore_errors: True
+  when: fts_distribution == "centos6"
+  tags:
+    - gammu
+
+- name: Upload Gammu build script 
+  sudo: yes
+  template: >
+    src=bin/build_gammu.sh
+    dest=/opt/gammu/
+    owner=ftsender mode=0755
+  when: fts_distribution == "centos6" and gammu_installed|failed
+  tags:
+    - gammu
+
+- name: Run Gammu build script 
+  sudo: yes
+  sudo_user: ftsender
+  command: /opt/gammu/build_gammu.sh
+  when: fts_distribution == "centos6" and gammu_installed|failed
+  register: gammu_installed
+  tags:
+    - gammu
+
+- name: Upload gammu.smsdrc
+  template: src={{item}} dest=/etc/ mode=0755
+  sudo: yes
+  with_items:
+    - etc/gammu/gammu-smsdrc
+    - etc/gammu/gammu-smsdrc1
+    - etc/gammu/gammu-smsdrc2
+    - etc/gammu/gammu-smsdrc3
+    - etc/gammu/gammu-smsdrc4
+    - etc/gammu/gammu-smsdrc5
+    - etc/gammu/gammu-smsdrc6
+    - etc/gammu/gammu-smsdrc7
+    - etc/gammu/gammu-smsdrc8
+    - etc/gammu/gammu-smsdrc9
+  tags:
+    - gammu    
+
+- name: Upload .gammurc
+  sudo: yes
+  template: >
+    src=etc/gammu/gammurc
+    dest=/root/.gammurc
+    owner=root mode=0755
+  tags:
+    - gammu

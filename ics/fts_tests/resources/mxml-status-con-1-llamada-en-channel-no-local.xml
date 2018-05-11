@@ -1,0 +1,16 @@
+<ajax-response>
+	<response type='object' id='unknown'>
+		<generic response='Success' message='Channel status will follow' />
+	</response>
+	<response type='object' id='unknown'>
+		<generic event='Status' privilege='Call' channel='IAX2/asterisk-a-309'
+			calleridnum='2933997-1000000001-1' calleridname='&lt;unknown&gt;'
+			connectedlinenum='&lt;unknown&gt;' connectedlinename='&lt;unknown&gt;'
+			accountcode='' channelstate='6' channelstatedesc='Up' context='campania_156'
+			extension='fts-2933997-1000000001-1' priority='9' seconds='3'
+			uniqueid='1400959422.81' />
+	</response>
+	<response type='object' id='unknown'>
+		<generic event='StatusComplete' items='1' />
+	</response>
+</ajax-response>

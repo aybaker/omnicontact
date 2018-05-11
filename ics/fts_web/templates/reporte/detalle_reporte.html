@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Detalle Reporte</h4>
+            <div class="clear-fix"></div>
+        </div>
+
+
+        {% with graficos_estadisticas=campana.hack__graficos_estadisticas %}
+            <div class="panel-body">
+                <div class="col-lg-12"> 
+                    <table class="table">
+                        <tbody>
+                            <tr class="fts-table-bg">
+                                <td width="45%"> 
+                                    <h3 class="text-primary">
+                                        {{ campana.nombre }}
+                                    </h3>
+                                </td>
+                                <td>
+                                    <h5>
+                                        <b>Desde: </b>{{ campana.fecha_inicio|date:"d/m/Y" }}
+                                    </h5>
+                                </td>
+                                <td>
+                                    <h5>
+                                        <b>Hasta: </b>{{ campana.fecha_fin|date:"d/m/Y" }}
+                                    </h5>
+                                </td>
+                                
+                                <td>
+                                    <h5>
+                                        <b>Base Datos: </b>
+                                        {{ campana.bd_contacto }} 
+                                        ({{ graficos_estadisticas.estadisticas.total_contactos }} Contactos)
+                                    </h5>
+                                </td>
+                                <td><h5><a href="{% url 'exporta_campana_reporte' campana.id %}">Exportar (CSV)</a></h5></td>                        
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <td colspan="2">
+                                    <h4>Totales generales.</h4>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td  width="50%">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <td><h5>Cantidad Total Atendidos</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_atentidos }}</span></h5></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><h5>Cantidad Total No Atendidos</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_no_atentidos }}</span></h5></td>
+                                            </tr>
+
+                                             <tr>
+                                                <td><h5>Cantidad Total Sin Llamar</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_no_llamados }}</span></h5></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td width="50%" align="center">
+                                    <div class="graficos-avances">
+                                        <figure>
+                                            {{ graficos_estadisticas.torta_general.render|safe }}
+                                        </figure> 
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <td colspan="2">
+                                    <h4>Total de veces seleccionada cada opción.</h4>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td width="50%">
+                                    <table class="table table-bordered table-hover">
+                                        <tbody>
+
+                                            {% for opcion_campana in campana.opciones.all %}
+                                                <tr>
+                                                    <td><h5>#{{ opcion_campana.digito }}</h5></td>
+                                                    <td><h5>{{ opcion_campana.get_accion_display }}</h5></td>
+                                                    <td>
+                                                    {% if opcion_campana.grupo_atencion %}
+                                                         Grupo Atención: <strong>{{ opcion_campana.grupo_atencion }}</strong>
+                                                    {% elif opcion_campana.calificacion %}
+                                                        Calificación: <strong>{{ opcion_campana.calificacion }}</strong>
+                                                    {% elif opcion_campana.derivacion_externa %}
+                                        				Derivación Externa: <strong>{{ opcion_campana.derivacion_externa }}</strong>
+                                                    {% endif %}
+                                                    </td>
+                                                    <td width="10%" align="right">
+                                                        <h5>
+                                                            <span class="label label-primary">
+                                                                {% for opcion, cantidad in graficos_estadisticas.estadisticas.opcion_x_cantidad.items %}
+                                                                    {% if opcion == opcion_campana.digito %}
+                                                                        {{ cantidad }}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </span>
+                                                        </h5>
+                                                    </td>
+                                                </tr>
+                                            {% empty %}
+                                                <tr>
+                                                    <td colspan="3">
+                                                        <p class="text-center text-danger">
+                                                            <em>No se encontraron Opciones creadas.</em>
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-bordered table-hover">
+                                        <tbody>
+                                            {% for opcion_invalida, cantidad in graficos_estadisticas.estadisticas.opcion_invalida_x_cantidad.items %}
+                                                <tr>
+                                                    <td><h5>#{{ opcion_invalida }} (Inválida)</h5></td>
+                                                    <td width="10%" align="right">
+                                                        <h5>
+                                                            <span class="label label-primary">
+                                                                {{ cantidad }}
+                                                            </span>
+                                                        </h5>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                         </tbody>
+                                    </table>
+                                </td>
+                                <td width="50%" align="center">
+                                    <div class="graficos-avances">
+                                        <figure>
+                                            {{ graficos_estadisticas.torta_opcion_x_porcentaje.render|safe }}
+                                        </figure> 
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <td colspan="2">
+                                    <h4>Cantidad de llamadas atentidas en cada intento.</h4>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td width="50%">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            {% for intentos, cantidad in graficos_estadisticas.estadisticas.total_atendidos_intentos.items %}
+                                                <tr>
+                                                    <td><h5>{{ intentos }} Intentos</h5></td>
+                                                    <td width="10%" align="right"><h5><span class="label label-primary">{{ cantidad }}</span></h5></td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td width="50%" align="center">
+                                    <div class="graficos-avances">
+                                        <figure>
+                                            {{ graficos_estadisticas.barra_atendidos_intentos.render|safe }}
+                                        </figure> 
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                     <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <td colspan="2">
+                                    <h4>Mensaje escuchado.</h4>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td width="50%">
+                                    <table class="table table-bordered">
+                                        <tbody>                                           
+                                            <tr>
+                                                <td><h5>Cantidad Llamadas SI escucharon todo el mensaje.</h5></td>
+                                                <td align="right">
+                                                    <h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.si_escucharon_todo_el_mensaje }}</span></h5>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><h5>Cantidad Llamadas NO escucharon todo el mensaje.</h5></td>
+                                                <td align="right">
+                                                    <h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.no_escucharon_todo_el_mensaje }}</span></h5>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td width="50%" align="center">
+                                    <div class="graficos-avances">
+                                        <figure>
+                                            <embed type="image/svg+xml" src="{% url 'grafico_de_duracion_de_llamada' campana.pk %}" width="550" height="400"/>
+                                        </figure>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <td colspan="2">
+                                    <h4>Totales no atendidos.</h4>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td  width="50%">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <td><h5>Cantidad Total Ocupados</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_ocupados }}</span></h5></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><h5>Cantidad Total No Constestados</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_no_constestados }}</span></h5></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h5>Cantidad Total canal no disponible</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_canal_no_disponible }}</span></h5></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h5>Cantidad Total congestion</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_congestion }}</span></h5></td>
+                                            </tr>
+                                             <!--<tr>
+                                                <td><h5>Cantidad Total Sin Llamar</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_no_llamados }}</span></h5></td>
+                                            </tr>-->
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td width="50%" align="center">
+                                    <div class="graficos-avances">
+                                        <figure>
+                                            {{ graficos_estadisticas.torta_no_atendidos.render|safe }}
+                                        </figure> 
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <td colspan="2">
+                                    <h4>Totales atendidos.</h4>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td  width="50%">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <td><h5>Cantidad Total Humanos</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_humanos }}</span></h5></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><h5>Cantidad Total Contestador</h5></td>
+                                                <td align="right"><h5><span class="label label-primary">{{ graficos_estadisticas.estadisticas.total_contestador }}</span></h5></td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td width="50%" align="center">
+                                    <div class="graficos-avances">
+                                        <figure>
+                                            {{ graficos_estadisticas.torta_atendidos.render|safe }}
+                                        </figure> 
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        {% endwith %}
+    </div>
+{% endblock %}

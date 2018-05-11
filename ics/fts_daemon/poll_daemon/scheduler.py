@@ -1,0 +1,578 @@
+# -*- coding: utf-8 -*-
+"""
+
+"""
+
+from __future__ import unicode_literals
+
+import logging as _logging
+import time
+
+from django.conf import settings
+from django.core.cache import caches
+
+from fts_daemon import llamador_contacto
+from fts_daemon import tasks
+from fts_daemon.poll_daemon.call_status import CampanaCallStatus, \
+    AsteriskCallStatus
+from fts_daemon.poll_daemon.campana_tracker import CampanaNoEnEjecucion, \
+    NoMasContactosEnCampana, LimiteDeCanalesAlcanzadoError, \
+    TodosLosContactosPendientesEstanEnCursoError, DatosParaRealizarLlamada
+from fts_daemon.poll_daemon.originate_throttler import OriginateThrottler
+from fts_daemon.poll_daemon.statistics import StatisticsService
+from fts_daemon import main_utils
+
+from fts_web.errors import FTSOptimisticLockingError
+
+
+logger = _logging.getLogger(__name__)
+
+BANEO_NO_MAS_CONTACTOS = "BANEO_NO_MAS_CONTACTOS"
+"""Cuando se detecta que una campaña no posee mas contactos
+para procesar, se la banea con esta 'razon'"""
+
+BANEO_TODOS_LOS_PENDIENTES_EN_CURSO = "BANEO_TLPEN"
+"""Cuando la campaña posee contactos pendientes, pero
+todos estos contactos ya están en curso, se las banea
+con esta 'razon'"""
+
+
+class CantidadMaximaDeIteracionesSuperada(Exception):
+    pass
+
+
+class ContinueOnOuterWhile(Exception):
+    """Excepcion utilizada para romper un bucle"""
+    pass
+
+
+# FIXME: renombra a RoundRobinScheduler
+class RoundRobinTracker(object):
+    """Con la ayuda de CampanaTracker, devuelve contactos a realizar
+    de a una campaña por vez, teniendo en cuenta los límites configurados
+    en las campañas.
+    """
+
+    def __init__(self, running_status=None):
+        """Crea instancia de RoundRobinTracker"""
+
+        self._originate_throttler = OriginateThrottler()
+        """Administrador de limites de originates por segundo"""
+
+        self._campana_call_status = CampanaCallStatus()
+
+        self._asterisk_call_status = AsteriskCallStatus(
+            self._campana_call_status)
+
+        self._statistics_service = StatisticsService(
+            cache=caches['default']
+        )
+
+        self._running_status = running_status or main_utils.RunningStatus()
+
+        self.max_iterations = None
+        """Cantidad de interaciones maxima que debe realizar ``generator()``.
+        Si vale ``None``, no se realiza ningun control.
+        Sino, al alcanzar esa cantidad de iteraciones, generator() hace
+        return"""
+
+    @property
+    def originate_throttler(self):
+        return self._originate_throttler
+
+    def publish_statistics(self, sleeping=False, force=False):
+        """Publica las estadisticas, si corresponde."""
+
+        if force or self._statistics_service.shoud_update():
+            logger.debug("publish_statistics(): publicando estadisticas")
+            # y continuamos...
+        else:
+            logger.debug("publish_statistics(): no hace falta. Ignorando.")
+            return
+
+        stats = {}
+        stats['llamadas_en_curso'] = self._campana_call_status.\
+            get_count_llamadas()
+        stats['campanas_en_ejecucion'] = self._campana_call_status.\
+            count_trackers_activos
+        stats['running'] = True
+        stats['sleeping'] = sleeping
+
+        self._statistics_service.publish_statistics(stats)
+
+    def _finalizar_y_programar_depuracion(self, campana):
+        """Finaliza la campaña, y lanza tarea asíncrona para depurarla"""
+        try:
+            campana.finalizar()
+        except FTSOptimisticLockingError:
+            logger.warn("Se detecto FTSOptimisticLockingError. "
+                        "Ignoraremos este error, y NO se programara "
+                        "la depurcion", exc_info=True)
+            return
+
+        tasks.esperar_y_depurar_campana_async(campana.id)
+
+    #
+    # Eventos
+    #
+
+    def onCampanaNoEnEjecucion(self, campana):
+        """Ejecutado por generator() cuando se detecta
+        CampanaNoEnEjecucion. Esto implica algunas de las siguientes
+        situaciones:
+        1. la campana que se estaba por ejecutar, NO debio tenerse en cuenta
+           (posible bug?)
+        2. justo se ha vencido (por fecha de fin de la campaña,
+           u hora de actuacion)
+        3. simplemente alguien ha pausado la campaña
+
+        Banea a la campana
+        """
+        self._campana_call_status.banear_campana(campana)
+        logger.debug("onCampanaNoEnEjecucion: %s", campana.id)
+
+    def onNoMasContactosEnCampana(self, campana):
+        """Ejecutado por generator() cuando se detecta
+        NoMasContactosEnCampana. Esto implica que la campana que se
+        estaba teniendo en cuenta en realidad no posee contactos
+        a procesar.
+
+        Esta situacion puede parecer inicialmente parecida a
+        `TodosLosContactosPendientesEstanEnCurso`, pero NO.
+        `TLCPEEC` implica que no se pueden procesar los pendientes.
+        `NoMasContactosEnCampana` implica que la campaña ya no
+        posee pendientes, está terminada.
+
+        Banea a la campana
+        """
+        logger.debug("onNoMasContactosEnCampana() para la campana %s.",
+            campana.id)
+        self._campana_call_status.banear_campana(campana,
+            reason=BANEO_NO_MAS_CONTACTOS)
+
+        self._finalizar_y_programar_depuracion(campana)
+
+    def onLimiteDeCanalesAlcanzadoError(self, campana):
+        """Ejecutado por generator() cuando se detecta
+        LimiteDeCanalesAlcanzadoError.
+
+        Esto NO deberia suceder, ya que las campañas que están
+        al limite no son procesadas.
+        """
+        logger.debug("onLimiteDeCanalesAlcanzadoError() para la campana %s",
+            campana.id)
+
+    def onNoSeDevolvioContactoEnRoundActual(self):
+        """Ejecutado por generator() cuando se corrió el loop, pero no se
+        devolvio ningun contacto.
+
+        Esto no deberia suceder, pero hay algunos corner cases, por ejemplo,
+        la actuacion o la campaña se vencieron justo mientras se estaban
+        por procesar.
+        """
+
+    def onLimiteDeOriginatePorSegundosError(self, to_sleep):
+        """Ejecutado por generator() cuando detecta que hay que realizar
+        una espera, debido a que se alcanzo el limite de ORIGINATEs por
+        segundos.
+
+        Esto no deberia suceder, pero hay algunos corner cases, por ejemplo,
+        la actuacion o la campaña se vencieron justo mientras se estaban
+        por procesar.
+        """
+        logger.info("onLimiteDeOriginatePorSegundosError(): hará falta "
+            "esperar %s seg. para no superar el limite "
+            "de ORIGINATEs por segundo", to_sleep)
+
+    def onTodosLosContactosPendientesEstanEnCursoError(self, campana):
+        """Ejecutado por generator() cuando detecta que, aunque hay contactos
+        pendientes, éstos ya están con llamadas en curso actualmente, y por
+        lo tanto, no podemos volver a intentarlos.
+        """
+        logger.info("onTodosLosContactosPendientesEstanEnCursoError(): "
+            "todos los contactos pendientes de la campana %s poseen "
+            "llamadas en curso. Se baneara la campana.", campana.id)
+
+        self._campana_call_status.banear_campana(campana,
+            reason=BANEO_TODOS_LOS_PENDIENTES_EN_CURSO)
+
+        #
+        # ACTUALIZADO: ahora hemos refactorizado muchas cosas. El
+        # siguiente comentario ya no es válido. Lo dejamos por un
+        # tiempo SOLO COMO REFERENCIA.
+        #
+        #
+        #
+        ## ----- Versión corta
+        ##
+        ##  - ESTO ESTA MAL! No deberiamos eliminar la campaña, y
+        ##    deberiamos refactorizar el manejo del baneo
+        ##
+        ## ----- Versión larga
+        ##
+        ## En vez eliminar campaña del tracker, el control de baneo
+        ## debería moverse al loop() de generator(), así las campañas baneadas
+        ## no son ignoradas por los otros metodos (^1), y permitimos que
+        ## se actualice el 'status' de estas campañas.
+        ##
+        ## (^1) sobre todo, ahora necesitamos que refrescar_channel_status()
+        ##      NO ignore las campañas baneadas por
+        ##      BANEO_TODOS_LOS_PENDIENTES_EN_CURSO, todo lo contrario!
+        ##      Necesitamos que lo antes posible se actualice el status
+        ##      para intentar los contactos pendientes.
+        #
+        #        try:
+        #            del self.trackers_campana[campana]
+        #        except KeyError:
+        #            pass
+
+    def onLimiteGlobalDeCanalesAlcanzadoError(self):
+        """Ejecutado por generator() cuando se detecta
+        que la cantidad de canales utilizado ha llegado al limite.
+
+        El limite esta configurado a travez de settings, con la variable
+        FTS_LIMITE_GLOBAL_DE_CANALES.
+
+        Este evento no debe confundirse con onLimiteDeCanalesAlcanzadoError(),
+        este ultimo se produce cuando se alcaza el limite para una campaña
+        en particular!
+        """
+        logger.debug("onLimiteGlobalDeCanalesAlcanzadoError(): limite "
+            "alcanzado")
+
+    def onTodasLasCampanasAlLimite(self):
+        """Ejecutado por generator() cuando se detecta que todas las campañas
+        estan al limite de su ejecucion.
+        """
+        logger.debug("onTodasLasCampanasAlLimite(): todas las campanas"
+            " estan al limite")
+
+    def real_sleep(self, espera):
+        """Metodo que realiza la espera real Si ``espera`` es < 0,
+        no hace nada
+        """
+        if not self._running_status.should_continue_running:
+            logger.info("real_sleep(): no esperaremos porque 'should_continue_running' es False")
+            return
+
+        espera = float(espera)
+        if espera > 0.0:
+            # TODO: si esto tarda mucho, puede hacer que la espera
+            # sea mayor que la requerida
+            self.publish_statistics(sleeping=True, force=True)
+            time.sleep(espera)
+            self.publish_statistics(sleeping=False, force=True)
+
+    def sleep(self, espera):
+        """Produce espera de (al menos) ``espera`` segundos. Mientras
+        espera, ejecuta ciertos procesos que no conviene ejecutar mientras
+        se procesan llamadas.
+        """
+        # TODO: usar time.clock() u alternativa
+
+        # Ahora que usamos Celery, en realidad no tenemos nada
+        # que hacer aqui, solo esperar. Quiza sea mejor elimintar
+        # este metodo, o unificarlo con real_sleep()
+        self.real_sleep(espera)
+
+    def generator(self):
+        """Devuelve los datos de contacto a contactar, de a una
+        campaña por vez.
+
+        :returns: DatosParaRealizarLlamada
+        """
+
+        iter_num = 0
+
+        while True:
+
+            # Chequeamos 'running_status.should_continue_running'.
+            # Esto deberia hacerse en todos los loops...
+            if not self._running_status.should_continue_running:
+                logger.info("Se ha detectado should_continue_running = False. "
+                            "Se detendra la ejecucion del loop.")
+                return
+
+            if self.max_iterations is not None:
+                if iter_num >= self.max_iterations:
+                    raise CantidadMaximaDeIteracionesSuperada("Se supero la "
+                        "cantidad maxima de iteraciones: {0}".format(
+                            self.max_iterations))
+                iter_num += 1
+
+            # Publicamos estadisticas si corresponde
+            self.publish_statistics(sleeping=False)
+
+            #==================================================================
+            # [1] Actualizamos trackers de campaña
+            #==================================================================
+
+            # Obtiene las campañas que pueden ser procesadas
+            # Si no hay campañas, espseramos y reiniciamos.
+            trackers_activos = \
+                self._campana_call_status.obtener_trackers_para_procesar()
+
+            #==================================================================
+            # [2] Refrescamos status de conexiones
+            # ANTES: lo haciamos despues de chequear si hay trackers activos
+            # AHORA: lo hacemos ANTES, porque sino, cuando ya no hay campañas
+            #  no se actualiza nunca, y se exportan estadisticas erroneas
+            #==================================================================
+
+            # Este refresco tambien se hace en el loop, en sleep(), etc.
+            # Usamos `refrescar_channel_status_si_es_posible()` para que se
+            # refresque AUN cuando ninguna campaña este al limite
+            self._asterisk_call_status.\
+                refrescar_channel_status_si_es_posible()
+
+            # FTS-174 [TD] [CORNER CASE] Sobrepaso de limites si AMI/HTTP falla
+
+            #==================================================================
+            # [1] Actualizamos trackers de campaña (continuacion...)
+            #==================================================================
+            if not bool(trackers_activos):
+                # No hay trabajo! Esperamos y hacemos `continue`
+                # +------------------------------------------------------------
+                # | Los eventos que deberian despertar este 'sleep' son:
+                # | 1. campaña des-pausada
+                # | 2. campaña entra en curso (por fecha u hora de actuacion)
+                # | 3. campaña creada
+                # +------------------------------------------------------------
+                logger.debug("No hay trabajo. Esperamos %s segs. y luego "
+                    "hacemos continue (reiniciamos ROUND)",
+                    settings.FTS_DAEMON_SLEEP_SIN_TRABAJO)
+                self.sleep(settings.FTS_DAEMON_SLEEP_SIN_TRABAJO)
+
+                # No importa q' no se refresque el status via ami, total,
+                #    no hay trabajo!
+                # TODO: esto es asi porque, todavia, no exponemos el status
+                #  a la web!
+                continue
+
+            # Si TODAS las campañas han llegado al límite, no tiene sentido
+            # hacer un busy wait... mejor esperamos
+            # +----------------------------------------------------------------
+            # | Los eventos que deberian despertar este 'sleep' son:
+            # | 1. se ha finalizado la llamada de cualquiera de las
+            # |    campañas q' habian llegado al limite
+            # +----------------------------------------------------------------
+
+            if self._campana_call_status.todas_las_campanas_al_limite():
+                self.onTodasLasCampanasAlLimite()
+                logger.info("Todas las campañas han llegado al límite. "
+                    "Esperamos %s segs. y reiniciamos round",
+                    settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
+
+                self.sleep(settings.FTS_DAEMON_SLEEP_LIMITE_DE_CANALES)
+                # Reiniciamos con la esperaza de que se actualizan trackers
+                # y status
+                continue
+
+            # Si se ha alcanzado el limite global de campañas, tampoco tiene
+            # sentido hacer un busy wait
+            # +----------------------------------------------------------------
+            # | Los eventos que deberian despertar este 'sleep' son:
+            # | 1. se ha liberado un canal
+            # +----------------------------------------------------------------
+
+            # ATENCION: esta misma logica (o muy parecida) se usa en el loop
+            if self._campana_call_status.limite_global_de_canales_alcanzado():
+                logger.debug("Se ha alcanzado el limite global de canales. "
+                    "Esperamos %s segs. y reiniciamos round",
+                    settings.FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES)
+                self.onLimiteGlobalDeCanalesAlcanzadoError()
+                self.real_sleep(settings.\
+                    FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES)
+                # Reiniciamos para ver si se actualizan trackers y status
+                continue
+
+            ##
+            ## Procesamos...
+            ##
+
+            loop__contactos_procesados = 0
+            loop__TLCPEECE_detectado = False
+            loop__limite_de_campana_alcanzado = False
+            loop__campana_ignorada_x_limite_global = False
+
+            # Trabajamos en copia, por si hace falta modificarse
+            for tracker_campana in trackers_activos:
+
+                # Chequeamos 'running_status.should_continue_running'.
+                # Esto deberia hacerse en todos los loops...
+                if not self._running_status.should_continue_running:
+                    logger.info("Se ha detectado should_continue_running = False. "
+                                "Se detendra la ejecucion del loop.")
+                    return
+
+                # Publicamos estadisticas si corresponde
+                self.publish_statistics(sleeping=False)
+
+                # Si la campana esta al limite, la ignoramos
+                if tracker_campana.limite_alcanzado():
+                    logger.debug("Ignorando campana %s porque esta al limite",
+                        tracker_campana.campana.id)
+                    loop__limite_de_campana_alcanzado = True
+                    continue
+
+                #==============================================================
+                # Chequeamos limite global de llamadas en curso
+                #==============================================================
+
+                if self._campana_call_status.\
+                    limite_global_de_canales_alcanzado():
+
+                    self.onLimiteGlobalDeCanalesAlcanzadoError()
+                    loop__esperas_por_limite_global = 0
+
+                    try:
+                        # Esperamos un poco, con la intensión de que se
+                        # desocupe algun canal.
+                        # De este while se sale de 2 formas:
+                        # 1) luego de varias iteraciones, si no pasa nada,
+                        #    salimos y continuamos con otra campaña,
+                        #    para esto usamos ContinueOnOuterWhile()
+                        # 2) se detecto que hay canales libres, se sale
+                        #    con un break del loop, y continuamos el
+                        #    procesamiento normal de la campaña
+                        while True:
+
+                            # Chequeamos 'running_status.should_continue_running'.
+                            # Esto deberia hacerse en todos los loops...
+                            if not self._running_status.should_continue_running:
+                                logger.info("Se ha detectado should_continue_running = False. "
+                                            "Se detendra la ejecucion del loop.")
+                                return
+
+                            loop__esperas_por_limite_global += 1
+                            # Somos más agresivos, usamos 'si_es_posible'
+                            self._asterisk_call_status.\
+                                refrescar_channel_status_si_es_posible()
+
+                            # Condicion de corte
+                            if not self._campana_call_status.\
+                                limite_global_de_canales_alcanzado():
+                                break  # break 'while True'
+
+                            # Condicion de corte
+                            if loop__esperas_por_limite_global >= 10:
+                                raise ContinueOnOuterWhile()
+
+                            # Esperamos...
+                            self.real_sleep(settings.\
+                                FTS_ESPERA_POR_LIMITE_GLOBAL_DE_CANALES)
+
+                        # Salimos del whlie (loop) sin excepcion!
+                        # Implica que hay canales libres :-)
+                        logger.info("generator(): ya no excedemos el "
+                            "limite global de canales, continuamos...")
+
+                    except ContinueOnOuterWhile:
+                        loop__campana_ignorada_x_limite_global = True
+                        logger.warn("generator(): luego de %s loops, todavia"
+                            "no podemos continuar porque se ha alcanzado"
+                            "el limite global de canales. Continuamos "
+                            "con campana siguiente",
+                            loop__esperas_por_limite_global)
+                        continue
+
+                #==============================================================
+                # Chequeamos limite de llamadas por segundo
+                #==============================================================
+                time_to_sleep = self._originate_throttler.time_to_sleep()
+                if time_to_sleep > 0.0:
+                    self.onLimiteDeOriginatePorSegundosError(time_to_sleep)
+                    self.real_sleep(time_to_sleep)
+                    # TODO: podriamos actualizar el status
+                    # para aprovechar este tiempo de espera
+
+                try:
+                    yield tracker_campana.next()
+                    loop__contactos_procesados += 1
+                except TodosLosContactosPendientesEstanEnCursoError:
+                    logger.debug(
+                        "TodosLosContactosPendientesEstanEnCursoError",
+                        exc_info=True)
+                    self.onTodosLosContactosPendientesEstanEnCursoError(
+                        tracker_campana.campana)
+                    loop__TLCPEECE_detectado = True
+                except CampanaNoEnEjecucion:
+                    self.onCampanaNoEnEjecucion(tracker_campana.campana)
+                except NoMasContactosEnCampana:
+                    # Esta excepcion es generada cuando la campaña esta
+                    # en curso (el estado), pero ya no tiene pendientes
+                    self.onNoMasContactosEnCampana(tracker_campana.campana)
+                except LimiteDeCanalesAlcanzadoError:
+                    # ESTO NO DEBERIA SUCEDER! No debio ejecutarse
+                    # tracker.next() si la campaña estaba al limite
+                    logger.exception("Se detecto "
+                        "LimiteDeCanalesAlcanzadoError al procesar la campana "
+                        "{0}, pero nunca debio intentarse obtener un contacto "
+                        "de esta campana si estaba al limite".format(
+                            tracker_campana.campana.id))
+                    self.onLimiteDeCanalesAlcanzadoError(
+                        tracker_campana.campana)
+
+            # Si se detecta 'TodosLosContactosPendientesEstanEnCursoError',
+            # o se ignoro campaña porque llegó al límite de llamadas,
+            # y hay una sola campaña en ejecucion, entonces puede
+            # suceder q' no se haya procesado ningun contacto
+            if loop__contactos_procesados == 0:
+                causas_ok = any([
+                    loop__TLCPEECE_detectado,
+                    loop__limite_de_campana_alcanzado,
+                    loop__campana_ignorada_x_limite_global,
+                ])
+                if not causas_ok:
+                    # Si no se detecto ninguna causa que pueda generar
+                    # que no se produzca el procesamineto de ningun
+                    # contacto, logueamos un warn()
+                    logger.warn("No se ha devuelto ningun contacto en el "
+                        "ROUND actual")
+                    self.onNoSeDevolvioContactoEnRoundActual()
+
+
+class Llamador(object):
+    """Utiliza RoundRobinTracker para obtener números a contactar,
+    y realiza los llamados.
+    """
+
+    def __init__(self, running_status):
+        self.running_status = running_status
+        self.rr_tracker = RoundRobinTracker(running_status=self.running_status)
+
+    def procesar_contacto(self, datos_para_realizar_llamada):
+        return llamador_contacto.procesar_contacto(datos_para_realizar_llamada)
+
+    def run(self, max_loops=0):
+        """Inicia el llamador"""
+        current_loop = 1
+
+        for datos_para_realizar_llamada in self.rr_tracker.generator():
+
+            if not self.running_status.should_continue_running:
+                logger.info("Llamador.run(): should_continue_running es False. Exit!")
+                return
+
+            assert isinstance(datos_para_realizar_llamada,
+                              DatosParaRealizarLlamada)
+
+            logger.debug("Llamador.run(): campana: %s - id_contacto: %s "
+                         "- numero: %s - intento: %s",
+                         datos_para_realizar_llamada.campana.id,
+                         datos_para_realizar_llamada.id_contacto,
+                         datos_para_realizar_llamada.telefono,
+                         datos_para_realizar_llamada.intentos)
+
+            originate_ok = self.procesar_contacto(datos_para_realizar_llamada)
+
+            self.rr_tracker.originate_throttler.set_originate(originate_ok)
+
+            if not self.running_status.should_continue_running:
+                logger.info("Llamador.run(): should_continue_running es False. Exit!")
+                return
+
+            current_loop += 1
+            if max_loops > 0 and current_loop > max_loops:
+                logger.info("Llamador.run(): max_loops alcanzado. Exit!")
+                return

@@ -1,0 +1,195 @@
+---
+
+#----------------------------------------------------------------------
+# Checks
+#----------------------------------------------------------------------
+
+- name: Check - Repositorio EPEL 
+  command: test -f /etc/yum.repos.d/epel.repo
+  register: epel_installed
+  ignore_errors: True
+  tags:
+    - yum
+
+- name: Check - Repositorio PostgreSql 9.3 
+  command: test -f /etc/yum.repos.d/pgdg-93-centos.repo
+  register: repo_pg_installed
+  ignore_errors: True
+  tags:
+    - yum
+
+#----------------------------------------------------------------------
+# Instalacion de Repos
+#----------------------------------------------------------------------
+
+- name: Instala Repositorio EPEL
+  sudo: yes
+  yum: name={{ RPM_REPO_EPEL }} state=present
+  when: epel_installed|failed and (
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
+    )
+  tags:
+    - yum
+
+- name: Instala Repositorio PostgreSql 9.3
+  sudo: yes
+  yum: name={{ RPM_REPO_POSTGRESQL }} state=present
+  when: repo_pg_installed|failed and (
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
+    )
+  tags:
+    - yum
+
+#----------------------------------------------------------------------
+# Ahora largamos instalacion de paquetes
+#----------------------------------------------------------------------
+
+- name: Install Development tools
+  sudo: yes
+  yum: name="@Development tools" state=present
+  tags:
+    - yum
+    - docker-image
+
+- name: Install basic packages
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - libselinux-python
+    - python-psycopg2
+    - python-virtualenv
+    - rsync
+    - libxslt-devel
+    - python-devel
+    - ntp
+    - supervisor
+    - python-soaplib
+    - python-suds
+  tags:
+    - yum
+    - docker-image
+
+- name: Install basic packages only on CentOS 6
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - ntpdate
+  when: (
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
+    )
+  tags:
+    - yum
+    - docker-image
+
+- name: Install packages for required services
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - nginx
+    - munin
+    - munin-node
+    - redis
+    - sox
+  tags:
+    - yum
+    - docker-image
+
+- name: Install PostgreSql 9.3
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - postgresql93
+    - postgresql93-contrib
+    - postgresql93-server
+    - postgresql93-devel
+    - postgresql93-plpython
+  when: (
+    fts_distribution == "centos6" or
+    fts_distribution == "elastix3"
+    )
+  tags:
+    - yum
+    - docker-image
+
+- name: Install PostgreSql 9.1
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - postgresql91
+    - postgresql91-contrib
+    - postgresql91-server
+    - postgresql91-devel
+    - postgresql91-plpython
+  when: (
+    fts_distribution == "elastix2"
+    )
+  tags:
+    - yum
+    - docker-image
+
+- name: Install packages for buliding Asterisk
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - make
+    - wget
+    - openssl-devel
+    - ncurses-devel
+    - newt-devel
+    - libxml2-devel
+    - kernel-devel
+    - gcc
+    - gcc-c++
+    - sqlite-devel
+    - libuuid-devel
+  when: fts_distribution == "centos6"
+  tags:
+    - asterisk
+    - yum
+    - docker-image
+
+- name: Install Python 2.6 and git
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - git
+    - python26
+    - python26-virtualenv
+    - python26-devel
+  when: (
+    fts_distribution == "elastix2"
+    )
+  tags:
+    - yum
+    - docker-image
+
+- name: Install basic packages for gammusms
+  sudo: yes
+  yum: name={{item}} state=installed
+  with_items:
+    - tcl
+    - libusb
+    - libusb-devel
+    - libusb1
+    - libusb1-devel 
+    - usbutils
+    - libdbi-dbd-sqlite
+    - libdbi-dbd-pgsql
+    - libdbi-devel
+    - libdbi-drivers
+    - httpd
+    - php
+    - php-pgsql
+    - python-psycopg2
+    - mailx
+    - postgresql-contrib
+    - bluez-libs
+    - bluez-libs-devel
+    - cmake
+  when: fts_distribution == "centos6"
+  tags:
+    - yum
+    - gammu

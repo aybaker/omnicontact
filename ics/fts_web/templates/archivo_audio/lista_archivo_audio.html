@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Audios</h4>
+            <div class="inline pull-right">
+                <a href="{% url 'nuevo_archivo_audio' %}">
+                    <button type="button" class="btn btn-info btn-sm fts-bg-gris-osc-gradiente">
+                        <span class="glyphicon glyphicon-plus"></span> Nuevo Audio
+                    </button>
+                </a>
+            </div>
+
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <table class="table table-bordered">
+                    <thead>
+                      <tr class="fts-table-bg">                                
+                        <th width="90%">Descripción</th>                    
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for audio in audios %}
+                            <tr >
+                                <td>                          
+                                    <a href="{% url 'edita_archivo_audio' audio.id %}">{{ audio.descripcion }}</a>
+                                </td>
+                                <td>
+                                   <a href="{% url 'elimina_archivo_audio' audio.pk %}" class="btn btn-danger btn-sm">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                        Eliminar
+                                    </a>  
+                                </td>                        
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <p class="text-center text-danger">
+                                        <em>No se encontraron Audios.</em>
+                                    </p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>                              
+            </div>
+        </div>
+    </div>
+{% endblock %}

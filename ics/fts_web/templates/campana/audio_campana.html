@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block head_js %}
+    <script type="text/javascript">
+        $(function(){
+
+            /* Maneja las acciones de la selección de audios.*/
+            $("#id_archivo_de_audio").change(function() {
+                if( $("#id_archivo_de_audio").val()) {
+                    $("#id_tts").attr('disabled', true);
+                } else {
+                    $("#id_tts").removeAttr('disabled');
+                }
+            });
+
+            $("#id_check_audio_original").change(function() {
+                if($(this).is(":checked")) {
+                    $("#id_audio_original").removeAttr('disabled');
+
+                    $("#id_archivo_de_audio option:selected").attr("selected", false);
+                    $("#id_archivo_de_audio").attr('disabled', true);
+
+                    $("#id_tts option:selected").attr("selected", false);
+                    $("#id_tts").attr('disabled', true);
+
+                    $("#id_check_tts_mensaje").attr('disabled', true);
+
+;                }else {
+                    $("#id_audio_original").attr('disabled', true);
+                    $("#id_audio_original").val('');
+
+                    $("#id_archivo_de_audio").removeAttr('disabled');
+                    $("#id_tts").removeAttr('disabled');
+                    $("#id_check_tts_mensaje").removeAttr('disabled');
+
+                }
+            });
+
+            $("#id_tts").change(function() {
+                if( $("#id_tts").val()) {
+                    $("#id_archivo_de_audio option:selected").attr("selected", false);
+                    $("#id_archivo_de_audio").attr('disabled', true);
+                } else {
+                    $("#id_archivo_de_audio").removeAttr('disabled');
+                }
+            });
+
+            $("#id_check_tts_mensaje").change(function() {
+                if($(this).is(":checked")) {
+                    $('#id_variables').removeAttr('disabled');
+                    $('#id_tts_mensaje').removeAttr('disabled', true);
+
+                    $("#id_archivo_de_audio option:selected").attr("selected", false);
+                    $("#id_archivo_de_audio").attr('disabled', true);
+
+                    $("#id_tts option:selected").attr("selected", false);
+                    $("#id_tts").attr('disabled', true);
+
+                    $("#id_check_audio_original").attr('disabled', true);
+
+;                }else {
+                    $("#id_variables option:selected").attr("selected", false);
+                    $('#id_variables').attr('disabled', true);
+                    $('#id_tts_mensaje').attr('disabled', true);
+                    $('#id_tts_mensaje').val('');
+
+                    $("#id_archivo_de_audio").removeAttr('disabled');
+                    $("#id_tts").removeAttr('disabled');
+                    $("#id_check_audio_original").removeAttr('disabled');
+                }
+            });
+            /**/
+
+            /* Maneja el submit del ordenamiento.*/
+            $(".orden").click(function (){
+                var sentido_orden = $(this).attr('data-sentido-orden');
+
+                $("#id_sentido_orden").val(sentido_orden);
+
+                var url = $(this).attr('data-url');
+                $("#form-orden-audios").attr('action', url);
+                $("#form-orden-audios").submit();
+            });
+            /**/
+
+            $("#id_variables").click(function (){
+		var variable =  " ${" + $("#id_variables option:selected").val() + "}";
+		var texto = $("#id_tts_mensaje").val();
+
+		$("#id_tts_mensaje").val(texto + variable);
+	});
+        });
+    </script>
+{% endblock %}
+
+{% block content %}      
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">
+            {% if es_template %}
+                <h4 class="inline">Nuevo Template de Campaña: Audio</h4>
+            {% else %}
+                <h4 class="inline">Nueva Campaña: Audio</h4>
+            {% endif %}                
+            
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                {% if es_template %}
+                    <li ><a href="{% url 'datos_basicos_template' campana.pk %}">1- Datos Básicos</a></li>
+                {% else %}
+                    <li ><a href="{% url 'datos_basicos_campana' campana.pk %}">1- Datos Básicos</a></li>
+                {% endif %}
+                <li class="active"><a>2- Audio</a></li>
+                <li class="disabled"><a>3- Calificaciones</a></li>
+                <li class="disabled"><a>4- Opciones</a></li>
+                <li class="disabled"><a>5- Actuación</a></li>
+                <li class="disabled"><a>6- Confirmar</a></li>
+            </ul>
+            <br>
+            
+           <form role="form" method="post" enctype="multipart/form-data" >
+                <div class="col-lg-4">                
+                    {% csrf_token %}                         
+                    <h4>Agregar Audios</h4>
+                    {% crispy form %} 
+                </div>
+                <div class="col-lg-6">
+                    {% if campana %}
+                        <h4>Audios de Campaña</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr class="fts-table-bg">
+                                    <th colspan="6">Audio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for audio_de_campana in campana.audios_de_campana.all %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge va-top mg-top-5">{{ forloop.counter }}</span> 
+                                        </td>
+                                        <td>
+                                            {% if audio_de_campana.audio_original %}
+                                                <strong>{{ audio_de_campana.audio_descripcion }}</strong>
+                                            {% elif  audio_de_campana.archivo_de_audio %}
+                                                <strong>{{ audio_de_campana.archivo_de_audio.descripcion }}</strong>
+                                            {% elif audio_de_campana.tts_mensaje %}
+                                                <strong>TTS MENSAJE:</strong>
+                                            {% else %}
+                                                <strong>TTS:</strong>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                                {% if audio_de_campana.audio_original %}
+                                                    <audio src="{{ audio_de_campana.audio_original.url }}" controls></audio>
+                                                {% elif  audio_de_campana.archivo_de_audio %}
+                                                    <audio src="{{ audio_de_campana.archivo_de_audio.audio_original.url }}" controls></audio>
+                                                {% elif audio_de_campana.tts_mensaje %}
+                                                    {{ audio_de_campana.tts_mensaje }}
+                                                {% else %}
+                                                    {{ audio_de_campana.tts }}
+                                                {% endif %}
+                                        </td>
+                                        <td  class="va-middle bdleft-none">        
+                                            {% if es_template %}
+                                                
+                                                <a href="{% url 'audios_template_elimina' campana.pk audio_de_campana.pk %}"> 
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                                </a>
+
+                                            {% else %}
+                                                
+                                                <a href="{% url 'audios_campana_elimina' campana.pk audio_de_campana.pk %}">
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                                </a>
+
+                                            {% endif %}  
+                                        </td>
+                                        <td>
+                                            {% if not forloop.last %}
+                                                {% if es_template %}
+                                                    <button data-url="{% url 'audio_template_orden' campana.pk audio_de_campana.pk %}" data-sentido-orden="{{ ORDEN_SENTIDO_DOWN }}" type="button" class="btn btn-default btn-xs orden">
+
+                                                       <span class="glyphicon glyphicon-chevron-down"></span>
+                                                    </button>
+                                                {% else %}
+                                                    <button data-url="{% url 'audio_campana_orden' campana.pk audio_de_campana.pk %}" data-sentido-orden="{{ ORDEN_SENTIDO_DOWN }}" type="button" class="btn btn-default btn-xs orden">
+
+                                                       <span class="glyphicon glyphicon-chevron-down"></span>
+                                                    </button>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>  
+                                            {% if not forloop.first %}
+                                                {% if es_template %}
+                                                    <button data-url="{% url 'audio_template_orden' campana.pk audio_de_campana.pk %}" data-sentido-orden="{{ ORDEN_SENTIDO_UP }}" type="button" class="btn btn-default btn-xs orden">
+                                                        <span class="glyphicon glyphicon-chevron-up"></span>
+                                                    </button>
+                                                {% else %}
+                                                     <button data-url="{% url 'audio_campana_orden' campana.pk audio_de_campana.pk %}" data-sentido-orden="{{ ORDEN_SENTIDO_UP }}" type="button" class="btn btn-default btn-xs orden">
+                                                    <span class="glyphicon glyphicon-chevron-up"></span>
+                                                </button>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                 {% empty %}
+                                    <tr>
+                                        <td> 
+                                            <p class="text-center text-danger">
+                                                <em>No se encontraron Audios de Campaña creados.</em>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+                <div class="col-lg-12">
+                    <br>
+                    {% if es_template %}
+                        <a href="{% url 'calificacion_template' campana.pk %}" class="btn btn-default pull-right" role="button">
+                            Continuar <span class="glyphicon glyphicon-chevron-right"></span>
+                        </a> 
+                    {% else %}
+                        <a href="{% url 'calificacion_campana' campana.pk %}" class="btn btn-default pull-right" role="button">
+                            Continuar <span class="glyphicon glyphicon-chevron-right"></span>
+                        </a>                        
+                    {% endif %}
+                    <button type="submit" id="id_guardar" class="btn btn-success btn-lg modal_proceso_grande">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Agregar Audio
+                    </button>
+                    
+                </div>
+            </form>
+            <form role="form" method="post" action="" id="form-orden-audios">
+                {% crispy form_orden_audios %}
+            </form>
+        </div>
+    </div>
+{% endblock %}

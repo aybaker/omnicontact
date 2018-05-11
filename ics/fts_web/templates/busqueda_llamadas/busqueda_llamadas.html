@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="panel fts-border-verde">
+        <!-- Default panel contents -->
+        <div class="panel-heading fts-bg-verde-gradiente">                
+            <h4 class="inline">Búsqueda de Llamadas de un número de teléfono</h4>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="panel-body">
+        <form role="form" method="post" enctype="multipart/form-data" >
+            {% csrf_token %}                         
+            <div class="col-lg-4">
+                {% crispy form %}
+                 <button type="submit" id="id_guardar" class="btn btn-primary btn-lg modal_proceso_grande">
+                    <span class="glyphicon glyphicon-search"></span>
+                    Buscar Llamadas
+                </button>
+            </div>
+             <div class="col-lg-8">
+
+                <h4>Listado de Llamadas</h4>
+
+                {% if sin_resultado %}
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <th>Sin Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                <tr>
+                                    <td> 
+                                        <p class="text-center text-danger">
+                                            <em>No se encontraron llamadas para el número de teléfono ingresado.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                        </tbody>
+                    </table>
+                {% else %}
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="fts-table-bg">
+                                <th>Fecha / Hora</th>
+                                <th>Teléfono</th>
+                                <th>Duración en segundos</th>                                
+                                <th>Opciones seleccionadas</th>
+                                <th>Campaña</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detalle_de_llamada in listado_de_llamadas %}
+                                <tr>
+                                    <td> {{ detalle_de_llamada.duracion_de_llamada.fecha_hora_llamada|date:"d/m/Y H:i" }} </td>
+                                    <td> {{ detalle_de_llamada.duracion_de_llamada.numero_telefono }} </td>
+                                    <td> {{ detalle_de_llamada.duracion_de_llamada.duracion_en_segundos }} </td>
+                                    <td> 
+                                        {% for opcion_seleccionada in detalle_de_llamada.opciones_seleccionadas %}
+                                            {% if forloop.last %}
+                                                {{ opcion_seleccionada.get_descripcion_de_opcion }}
+                                            {% else %}
+                                                {{ opcion_seleccionada.get_descripcion_de_opcion }} -
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td> 
+                                        <a href="{% url 'detalle_campana' detalle_de_llamada.duracion_de_llamada.campana.id %}">
+                                            {{ detalle_de_llamada.duracion_de_llamada.campana }}
+                                        </a>
+                                    </td>
+                                </tr>                            
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </form>
+        </div>
+    </div>
+{% endblock %}
