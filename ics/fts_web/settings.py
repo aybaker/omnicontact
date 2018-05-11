@@ -111,7 +111,7 @@ FTS_FDCD_INITIAL_WAIT = 20.0
 Default: 20.0 (inicia ejecucion del loop despues de 20 segundos)
 """
 
-FTS_NOMBRE_TABLA_CDR = 'cdr'
+FTS_NOMBRE_TABLA_CDR = 'fts_cdr'
 """
 Nombre personalizado de la tabla  CDR de Asterisk.
 """

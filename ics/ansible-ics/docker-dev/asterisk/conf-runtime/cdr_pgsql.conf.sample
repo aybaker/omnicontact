@@ -18,6 +18,6 @@ dbname=fts
 ; usuario/pass con el q' se accede a la BD
 user=fts
 password=fts
-table=cdr
+table=fts_cdr
 encoding=UTF8
 timezone=UTC

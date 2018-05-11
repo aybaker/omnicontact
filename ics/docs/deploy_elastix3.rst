@@ -180,7 +180,7 @@ de manera que contenga los parametros de conexion:
     dbname=ftsender
     user=ftsender
     password=<PASSWORD>
-    table=cdr
+    table=fts_cdr
     encoding=UTF8
     timezone=UTC
 

@@ -17,7 +17,7 @@ def generate_runsqls():
 
     return [
         migrations.RunSQL("""
-        CREATE TABLE cdr (
+        CREATE TABLE fts_cdr (
             calldate timestamp without time zone NOT NULL,
             clid character varying(80) NOT NULL,
             src character varying(80) NOT NULL,
