@@ -912,10 +912,6 @@ urlpatterns = [
 
 urlpatterns += [url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}), ]
 
-from fts_web import urls as ics_urls
-
-urlpatterns += ics_urls.urlpatterns
-
 if settings.DJANGO_DEBUG_TOOLBAR:
     #     # static files (images, css, javascript, etc.)
     #     urlpatterns += patterns('',
