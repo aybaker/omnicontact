@@ -18,7 +18,8 @@ from fts_web import views
 admin.autodiscover()
 
 
-urlpatterns = patterns('',
+urlpatterns = [
+
     url(r'^$',
         login_required(views.IndexListView.as_view()),
         name='index',
@@ -449,7 +450,7 @@ urlpatterns = patterns('',
     #==========================================================================
     url(r'^ftsenderweb/', include(admin.site.urls)),
 
-)
+]
 
 if settings.DEBUG and settings.FTS_ENHANCED_URLS:
     urlpatterns += static(
@@ -458,7 +459,7 @@ if settings.DEBUG and settings.FTS_ENHANCED_URLS:
     )
 
 if settings.FTS_TESTING_MODE:
-    urlpatterns += patterns('',
+    urlpatterns += [
         url(r'^asterisk-ami-http/simulador', 'fts_tests.views.simulador'),
         url(r'^asterisk-ami-http/(?P<code>.+)/mxml', 'fts_tests.views.mxml'),
-    )
+    ]
