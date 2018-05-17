@@ -45,36 +45,39 @@ FTS_ENHANCED_URLS = True
 
 # SECRET_KEY = 'xxx'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, '/opt/fts-dev/media_root')
-if not os.path.exists(MEDIA_ROOT):
-    print ""
-    print ""
-    print ""
-    print ""
-    print "********** <ERROR> ****************************************"
-    print ""
-    print " No se encontro el directorio para MEDIA_ROOT: {0}".format(
-        MEDIA_ROOT)
-    print "   $ sudo mkdir -p {0}".format(MEDIA_ROOT)
-    print "   $ sudo chown $UID {0}".format(MEDIA_ROOT)
-    print ""
-    print "********** </ERROR> ****************************************"
-    print ""
-    print ""
-    print ""
-    print ""
+# MEDIA_ROOT = os.path.join(BASE_DIR, '/opt/fts-dev/media_root')
+# if not os.path.exists(MEDIA_ROOT):
+#     print ""
+#     print ""
+#     print ""
+#     print ""
+#     print "********** <ERROR> ****************************************"
+#     print ""
+#     print " No se encontro el directorio para MEDIA_ROOT: {0}".format(
+#         MEDIA_ROOT)
+#     print "   $ sudo mkdir -p {0}".format(MEDIA_ROOT)
+#     print "   $ sudo chown $UID {0}".format(MEDIA_ROOT)
+#     print ""
+#     print "********** </ERROR> ****************************************"
+#     print ""
+#     print ""
+#     print ""
+#     print ""
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'dev', 'static_root')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'dev', 'static_root')
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
-if 'USE_PG' in os.environ:
-    FTS_PROGRAMAR_CAMPANA_FUNC = "_programar_campana_postgresql"
+# if 'USE_PG' in os.environ:
+#     FTS_PROGRAMAR_CAMPANA_FUNC = "_programar_campana_postgresql"
+
+# Ya que en OML solo usamos PgSql, la seteamos directamente
+FTS_PROGRAMAR_CAMPANA_FUNC = "_programar_campana_postgresql"
 
 CACHES = {
     "default": {
@@ -88,27 +91,27 @@ CACHES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
-INTERNAL_IPS = (
-    "127.0.0.1",
-)
+# INTERNAL_IPS = (
+#     "127.0.0.1",
+# )
 
+# # ASTERISK = {
+# #     'USERNAME': 'asterisk',
+# #     'PASSWORD': 'asterisk',
+# #     'HTTP_AMI_URL': 'http://127.0.0.1:1',
+# #     'DIAL_URL': 'IAX2/xxx/${NumberToCall}'
+# # }
+#
+# #
+# # Para conectarse a Asterisk@Docker
+# #  - TODO: DIAL_URL
+# #
 # ASTERISK = {
-#     'USERNAME': 'asterisk',
-#     'PASSWORD': 'asterisk',
-#     'HTTP_AMI_URL': 'http://127.0.0.1:1',
-#     'DIAL_URL': 'IAX2/xxx/${NumberToCall}'
+#     'USERNAME': 'admin',
+#     'PASSWORD': 'admin',
+#     'HTTP_AMI_URL': 'http://172.17.42.1:7088',
+#     'DIAL_URL': "IAX2/127.0.0.1/${NumberToCall}",
 # }
-
-#
-# Para conectarse a Asterisk@Docker
-#  - TODO: DIAL_URL
-#
-ASTERISK = {
-    'USERNAME': 'admin',
-    'PASSWORD': 'admin',
-    'HTTP_AMI_URL': 'http://172.17.42.1:7088',
-    'DIAL_URL': "IAX2/127.0.0.1/${NumberToCall}",
-}
 
 # Para usar Asterisk@Docker
 FTS_DIALPLAN_FILENAME = os.path.join(BASE_DIR,
@@ -141,61 +144,61 @@ FTS_FDCD_INITIAL_WAIT = 0.5
 
 FTS_BASE_DATO_CONTACTO_DUMP_PATH = "/tmp/"
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': ('%(asctime)-15s [%(levelname)7s] '
-                '%(name)20s - %(message)s')
-        },
-    },
-    'filters': {
-    },
-    'handlers': {
-        'null': {
-            'level': 'DEBUG',
-            'class': 'logging.NullHandler',
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
-    },
-    'loggers': {
-        '': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'south': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'django.db.backends': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'requests': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-        },
-        'AMI': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-        },
-        'FastAGI': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-        }
-    }
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': ('%(asctime)-15s [%(levelname)7s] '
+#                 '%(name)20s - %(message)s')
+#         },
+#     },
+#     'filters': {
+#     },
+#     'handlers': {
+#         'null': {
+#             'level': 'DEBUG',
+#             'class': 'logging.NullHandler',
+#         },
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose'
+#         },
+#     },
+#     'loggers': {
+#         '': {
+#             'handlers': ['console'],
+#             'level': 'INFO',
+#         },
+#         'south': {
+#             'handlers': ['console'],
+#             'level': 'INFO',
+#         },
+#         'django.db.backends': {
+#             'handlers': ['console'],
+#             'level': 'INFO',
+#         },
+#         'requests': {
+#             'handlers': ['console'],
+#             'level': 'WARNING',
+#         },
+#         'AMI': {
+#             'handlers': ['console'],
+#             'level': 'WARNING',
+#         },
+#         'FastAGI': {
+#             'handlers': ['console'],
+#             'level': 'WARNING',
+#         }
+#     }
+# }
 
-if 'FTS_DEBUG' in os.environ:
-    LOGGING['loggers']['']['level'] = 'DEBUG'
-
-if 'FTS_DISABLE_LOGGING' in os.environ:
-    LOGGING['handlers']['console']['class'] = 'logging.NullHandler'
+# if 'FTS_DEBUG' in os.environ:
+#     LOGGING['loggers']['']['level'] = 'DEBUG'
+#
+# if 'FTS_DISABLE_LOGGING' in os.environ:
+#     LOGGING['handlers']['console']['class'] = 'logging.NullHandler'
 
 FTS_DUMP_HTTP_AMI_RESPONSES = 'FTS_DUMP_HTTP_AMI_RESPONSES' in os.environ
 
