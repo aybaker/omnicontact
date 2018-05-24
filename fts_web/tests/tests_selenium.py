@@ -64,7 +64,7 @@ if 'SKIP_SELENIUM' not in os.environ:
         def test_render_base_datos_contacto(self):
 
             # Renderizamos pagina de creacion
-            url = reverse('nueva_base_datos_contacto')
+            url = reverse('nueva_base_datos_contacto_fts')
             self.render_y_chequear(url)
 
             #Creamos 4 bases de datos.

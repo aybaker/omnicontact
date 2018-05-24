@@ -74,7 +74,7 @@ urlpatterns = [
     ),
     url(r'^base_datos_contacto/nueva/$',
         login_required(views.BaseDatosContactoCreateView.as_view()),
-        name='nueva_base_datos_contacto',
+        name='nueva_base_datos_contacto_fts',
     ),
     url(r'^base_datos_contacto/(?P<pk>\d+)/validacion/$',
         login_required(views.DefineBaseDatosContactoView.as_view()),

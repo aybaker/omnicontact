@@ -38,7 +38,7 @@ class BaseDatosContactoListView(ListView):
     Lista de Contactos.
     """
 
-    template_name = 'base_datos_contacto/lista_base_datos_contacto.html'
+    template_name = 'base_datos_contacto/lista_base_datos_contacto_fts.html'
     context_object_name = 'bases_datos_contacto'
     model = BaseDatosContacto
 
@@ -54,7 +54,7 @@ class BaseDatosContactoCreateView(CreateView):
     hasta que se procese su definición.
     """
 
-    template_name = 'base_datos_contacto/nueva_edita_base_datos_contacto.html'
+    template_name = 'base_datos_contacto/nueva_edita_base_datos_contacto_fts.html'
     model = BaseDatosContacto
     context_object_name = 'base_datos_contacto'
     form_class = BaseDatosContactoForm
@@ -225,7 +225,7 @@ class DefineBaseDatosContactoView(UpdateView):
                 form_nombre_columnas=form_nombre_columnas,
                 form_primer_linea_encabezado=form_primer_linea_encabezado))
 
-        return redirect(reverse('nueva_base_datos_contacto'))
+        return redirect(reverse('nueva_base_datos_contacto_fts'))
 
     def form_invalid(self, estructura_archivo, form_columna_telefono,
                      form_datos_extras, form_nombre_columnas,
@@ -381,7 +381,7 @@ class DefineBaseDatosContactoView(UpdateView):
                                          form_datos_extras,
                                          form_nombre_columnas,
                                          form_primer_linea_encabezado)
-        return redirect(reverse('nueva_base_datos_contacto'))
+        return redirect(reverse('nueva_base_datos_contacto_fts'))
 
     def get_success_url(self):
         return reverse('lista_base_datos_contacto_fts')
