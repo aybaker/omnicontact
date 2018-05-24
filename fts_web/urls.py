@@ -401,7 +401,7 @@ urlpatterns = [
     #==========================================================================
     url(r'^audios/$',
         login_required(views.ArchivoAudioListView.as_view()),
-        name='lista_archivo_audio',
+        name='lista_archivo_audio_fts',
     ),
     url(r'^audios/nuevo/$',
         login_required(views.ArchivoAudioCreateView.as_view()),

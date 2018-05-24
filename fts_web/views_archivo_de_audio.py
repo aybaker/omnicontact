@@ -23,7 +23,7 @@ class ArchivoAudioListView(ListView):
     Esta vista lista los archivos de audios.
     """
 
-    template_name = 'archivo_audio/lista_archivo_audio.html'
+    template_name = 'archivo_audio/lista_archivo_audio_fts.html'
     context_object_name = 'audios'
     model = ArchivoDeAudio
     queryset = ArchivoDeAudio.objects.all()
@@ -77,7 +77,7 @@ class ArchivoAudioCreateView(CreateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('lista_archivo_audio')
+        return reverse('lista_archivo_audio_fts')
 
 
 class ArchivoAudioUpdateView(UpdateView):
@@ -132,7 +132,7 @@ class ArchivoAudioUpdateView(UpdateView):
         return redirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse('lista_archivo_audio')
+        return reverse('lista_archivo_audio_fts')
 
 
 class ArchivoAudioDeleteView(DeleteView):
@@ -163,4 +163,4 @@ class ArchivoAudioDeleteView(DeleteView):
         return HttpResponseRedirect(success_url)
 
     def get_success_url(self):
-        return reverse('lista_archivo_audio')
+        return reverse('lista_archivo_audio_fts')
