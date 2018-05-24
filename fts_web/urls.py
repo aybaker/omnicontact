@@ -30,7 +30,7 @@ urlpatterns = [
     #==========================================================================
     url(r'^acerca/$',
         login_required(views.AcercaTemplateView.as_view()),
-        name='acerca',
+        name='acerca_fts',
     ),
 
     #==========================================================================

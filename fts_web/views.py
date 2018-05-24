@@ -43,7 +43,7 @@ class AcercaTemplateView(TemplateView):
     Esta vista es para generar el Acerca de la app.
     """
 
-    template_name = 'acerca/acerca.html'
+    template_name = 'acerca_fts/acerca.html'
     context_object_name = 'acerca'
 
     def get_context_data(self, **kwargs):
