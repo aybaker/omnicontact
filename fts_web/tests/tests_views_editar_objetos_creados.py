@@ -175,7 +175,7 @@ class CampanaEliminaTest(FTSenderBaseTest):
 
     def test_eliminacion_campana(self):
         VISTAS = [
-            ('campana_elimina', [self.campana.id]),
+            ('campana_elimina_fts', [self.campana.id]),
         ]
 
         for vista, args in VISTAS:

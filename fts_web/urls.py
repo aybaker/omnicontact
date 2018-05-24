@@ -276,7 +276,7 @@ urlpatterns = [
     ),
     url(r'^campana/(?P<pk_campana>\d+)/elimina/$',
         login_required(views.CampanaDeleteView.as_view()),
-        name='campana_elimina',
+        name='campana_elimina_fts',
     ),
     url(r'^campana/(?P<pk_campana>\d+)/datos_basicos/$',
         login_required(views.CampanaUpdateView.as_view()),
