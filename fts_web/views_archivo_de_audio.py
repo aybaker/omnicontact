@@ -142,7 +142,7 @@ class ArchivoAudioDeleteView(DeleteView):
     """
 
     model = ArchivoDeAudio
-    template_name = 'archivo_audio/elimina_archivo_audio.html'
+    template_name = 'archivo_audio/elimina_archivo_audio_fts.html'
     queryset = ArchivoDeAudio.objects.all()
 
     def delete(self, request, *args, **kwargs):
