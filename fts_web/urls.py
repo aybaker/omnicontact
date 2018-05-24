@@ -378,7 +378,7 @@ urlpatterns = [
     ),
     url(r'^campana/(?P<pk>\d+)/exporta/$',
         login_required(views.ExportaReporteCampanaView.as_view()),
-        name='exporta_campana_reporte',
+        name='exporta_campana_reporte_fts',
     ),
 
     # Nuevas url de gráficos de reportes

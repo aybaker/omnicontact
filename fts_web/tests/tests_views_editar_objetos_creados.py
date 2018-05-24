@@ -541,7 +541,7 @@ class ExportaReporteCampanaTest(FTSenderBaseTest):
     def test_exporta_reporte_campana(self):
 
         VISTAS = [
-            ('exporta_campana_reporte', [self.campana.id]),
+            ('exporta_campana_reporte_fts', [self.campana.id]),
         ]
         for vista, args in VISTAS:
             url = reverse(vista, args=args)
