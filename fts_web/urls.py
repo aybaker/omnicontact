@@ -70,7 +70,7 @@ urlpatterns = [
     #==========================================================================
     url(r'^base_datos_contacto/$',
         login_required(views.BaseDatosContactoListView.as_view()),
-        name='lista_base_datos_contacto',
+        name='lista_base_datos_contacto_fts',
     ),
     url(r'^base_datos_contacto/nueva/$',
         login_required(views.BaseDatosContactoCreateView.as_view()),

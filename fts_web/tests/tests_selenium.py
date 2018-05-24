@@ -77,7 +77,7 @@ if 'SKIP_SELENIUM' not in os.environ:
             base_datos_contactos[1].define()
 
             # Renderizamos pagina de listado
-            url = reverse('lista_base_datos_contacto')
+            url = reverse('lista_base_datos_contacto_fts')
             self.render_y_chequear(url)
 
             #Testeamos que se hayan listado las 2 definidas, y no

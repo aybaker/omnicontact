@@ -333,7 +333,7 @@ class DefineBaseDatosContactoView(UpdateView):
                 messages.ERROR,
                 message,
             )
-            return redirect(reverse('lista_base_datos_contacto'))
+            return redirect(reverse('lista_base_datos_contacto_fts'))
         else:
             creacion_base_datos.define_base_dato_contacto(self.object)
 
@@ -384,7 +384,7 @@ class DefineBaseDatosContactoView(UpdateView):
         return redirect(reverse('nueva_base_datos_contacto'))
 
     def get_success_url(self):
-        return reverse('lista_base_datos_contacto')
+        return reverse('lista_base_datos_contacto_fts')
 
 
 class DepuraBaseDatosContactoView(DeleteView):
@@ -444,5 +444,5 @@ class DepuraBaseDatosContactoView(DeleteView):
 
     def get_success_url(self):
         return reverse(
-            'lista_base_datos_contacto',
+            'lista_base_datos_contacto_fts',
         )
