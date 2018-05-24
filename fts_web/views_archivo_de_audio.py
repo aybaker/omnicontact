@@ -34,7 +34,7 @@ class ArchivoAudioCreateView(CreateView):
     Esta vista crea un objeto ArchivoDeAudio.
     """
 
-    template_name = 'archivo_audio/nuevo_edita_archivo_audio.html'
+    template_name = 'archivo_audio/nuevo_edita_archivo_audio_fts.html'
     model = ArchivoDeAudio
     form_class = ArchivoAudioForm
 
@@ -85,7 +85,7 @@ class ArchivoAudioUpdateView(UpdateView):
     Esta vista edita un objeto ArchivoDeAudio.
     """
 
-    template_name = 'archivo_audio/nuevo_edita_archivo_audio.html'
+    template_name = 'archivo_audio/nuevo_edita_archivo_audio_fts.html'
     model = ArchivoDeAudio
     form_class = ArchivoAudioForm
 

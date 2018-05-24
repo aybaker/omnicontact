@@ -409,7 +409,7 @@ urlpatterns = [
     ),
     url(r'^audios/(?P<pk>\d+)/$',
         login_required(views.ArchivoAudioUpdateView.as_view()),
-        name='edita_archivo_audio',
+        name='edita_archivo_audio_fts',
     ),
     url(r'^audios/(?P<pk>\d+)/elimina/$',
         login_required(views.ArchivoAudioDeleteView.as_view()),

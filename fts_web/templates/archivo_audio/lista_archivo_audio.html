@@ -30,7 +30,7 @@
                         {% for audio in audios %}
                             <tr >
                                 <td>                          
-                                    <a href="{% url 'edita_archivo_audio' audio.id %}">{{ audio.descripcion }}</a>
+                                    <a href="{% url 'edita_archivo_audio_fts' audio.id %}">{{ audio.descripcion }}</a>
                                 </td>
                                 <td>
                                    <a href="{% url 'elimina_archivo_audio' audio.pk %}" class="btn btn-danger btn-sm">
