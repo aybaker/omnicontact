@@ -85,7 +85,7 @@ class BaseDatosContactoCreateView(CreateView):
 
     def get_success_url(self):
         return reverse(
-            'define_base_datos_contacto',
+            'define_base_datos_contacto_fts',
             kwargs={"pk": self.object.pk})
 
 
@@ -100,7 +100,7 @@ class DefineBaseDatosContactoView(UpdateView):
     BaseDatosContacto para que esté disponible.
     """
 
-    template_name = 'base_datos_contacto/define_base_datos_contacto.html'
+    template_name = 'base_datos_contacto/define_base_datos_contacto_fts.html'
     model = BaseDatosContacto
     context_object_name = 'base_datos_contacto'
 

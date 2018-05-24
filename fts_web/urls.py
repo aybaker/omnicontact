@@ -78,7 +78,7 @@ urlpatterns = [
     ),
     url(r'^base_datos_contacto/(?P<pk>\d+)/validacion/$',
         login_required(views.DefineBaseDatosContactoView.as_view()),
-        name='define_base_datos_contacto',
+        name='define_base_datos_contacto_fts',
     ),
     url(r'^base_datos_contacto/(?P<pk>\d+)/depurar/$',
         login_required(views.DepuraBaseDatosContactoView.as_view()),

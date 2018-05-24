@@ -429,7 +429,7 @@ class CrearBaseDeDatosContactosTest(FTSenderBaseTest):
     def test_creacion_base_datos_contacto(self):
 
         VISTAS = [
-            ('define_base_datos_contacto', [self.base_datos_contacto.id]),
+            ('define_base_datos_contacto_fts', [self.base_datos_contacto.id]),
         ]
 
         self.base_datos_contacto.estado = \
