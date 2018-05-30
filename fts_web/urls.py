@@ -22,7 +22,7 @@ urlpatterns = [
 
     url(r'^$',
         login_required(views.IndexListView.as_view()),
-        name='index',
+        name='index_fts',
     ),
 
     #==========================================================================

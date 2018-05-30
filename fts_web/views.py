@@ -118,7 +118,7 @@ class IndexListView(ListView):
     Muestra la campana sms y la capana ivr las activas.
     """
 
-    template_name = 'index.html'
+    template_name = 'index_fts.html'
     context_object_name = 'campanas'
     model = Campana
 
