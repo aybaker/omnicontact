@@ -185,7 +185,7 @@ class DetalleCampanView(DetailView):
     """
     Muestra el detalle de la campaña.
     """
-    template_name = 'campana/detalle_campana.html'
+    template_name = 'campana/detalle_campana_fts.html'
     context_object_name = 'campana'
     pk_url_kwarg = 'pk_campana'
     model = Campana
