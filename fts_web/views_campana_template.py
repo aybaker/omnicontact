@@ -101,7 +101,7 @@ class TemplateCreateView(TemplateMixin, CreateView):
     Redirecciona a crear las opciones para esta
     Campana.
     """
-    template_name = 'campana/nueva_edita_campana.html'
+    template_name = 'campana/nueva_edita_campana_fts.html'
     model = Campana
     context_object_name = 'campana'
     form_class = TemplateForm
@@ -126,7 +126,7 @@ class TemplateaUpdateView(CheckEstadoTemplateMixin, TemplateEnDefinicionMixin,
     Esta vista actualiza un objeto Campana-->Template.
     """
 
-    template_name = 'campana/nueva_edita_campana.html'
+    template_name = 'campana/nueva_edita_campana_fts.html'
     model = Campana
     context_object_name = 'campana'
     form_class = TemplateForm
