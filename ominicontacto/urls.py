@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('ominicontacto_app.urls')),
     url(r'^', include('reciclado_app.urls')),
-    url(r'^', include('fts_web.urls')),
+    url(r'^ics/', include('fts_web.urls')),
     url(r'^accounts/logout/$', auth_views.logout,
         {'next_page': '/accounts/login/'}, name="logout"),
 
