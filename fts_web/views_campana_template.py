@@ -43,7 +43,7 @@ class TemplateListView(TemplateMixin, ListView):
     Esta vista lista los objetos Capanas-->Templates activos.
     """
 
-    template_name = 'template/lista_template.html'
+    template_name = 'template/lista_template_fts.html'
     context_object_name = 'campanas'
     model = Campana
 
