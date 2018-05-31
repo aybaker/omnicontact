@@ -13,12 +13,13 @@ import uuid
 import shutil
 import json
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase, TransactionTestCase
 from django.test.runner import DiscoverRunner
 from django.conf import settings
 
 from ominicontacto_app.models import (
-    User, AgenteProfile, Grupo, SupervisorProfile, Contacto,
+    AgenteProfile, Grupo, SupervisorProfile, Contacto,
     BaseDatosContacto, NombreCalificacion, Campana, Queue, OpcionCalificacion,
     ActuacionVigente, ReglasIncidencia, CalificacionCliente, WombatLog
 )
@@ -81,7 +82,7 @@ class OMLTestUtilsMixin(object):
 
     def crear_user_agente(self):
         """Crea un user"""
-        user = User.objects.create_user(
+        user = get_user_model().objects.create_user(
             username='user_test_agente',
             email='user_agente@gmail.com',
             password='admin123',
@@ -93,7 +94,7 @@ class OMLTestUtilsMixin(object):
 
     def crear_user_supervisor(self):
         """Crea un user"""
-        user = User.objects.create_user(
+        user = get_user_model().objects.create_user(
             username='user_test_supervisor',
             email='user_supervisor@gmail.com',
             password='admin123',

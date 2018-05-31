@@ -6,10 +6,9 @@ Tests de vistas
 
 from __future__ import unicode_literals
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.files import File
 from django.core.urlresolvers import reverse
-
 
 from fts_web.models import Campana, BaseDatosContacto
 from fts_web.tests.utiles import FTSenderBaseTest
@@ -21,7 +20,7 @@ class CampanaCrearTest(FTSenderBaseTest):
     """
 
     def setUp(self):
-        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.user = get_user_model().objects.create_user('user', 'user@e.com', 'user')
         self.assertTrue(self.client.login(username='user', password='user'))
         self.campana = self.crear_campana()
         self.crea_calificaciones(self.campana)
@@ -123,7 +122,7 @@ class CampanaDetalleOpcionesTest(FTSenderBaseTest):
     """
 
     def setUp(self):
-        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.user = get_user_model().objects.create_user('user', 'user@e.com', 'user')
         self.assertTrue(self.client.login(username='user', password='user'))
         self.campana = self.crear_campana()
         self.campana.activar()
@@ -163,7 +162,7 @@ class CampanaEliminaTest(FTSenderBaseTest):
     se encuentra en el estado indicado.
     """
     def setUp(self):
-        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.user = get_user_model().objects.create_user('user', 'user@e.com', 'user')
         self.assertTrue(self.client.login(username='user', password='user'))
         self.campana = self.crear_campana()
         self.campana.estado = Campana.ESTADO_DEPURADA
@@ -205,7 +204,7 @@ class TemplateDeCampanaCrearTest(FTSenderBaseTest):
     ser utilizadas con templates de campañas ya definidas
     """
     def setUp(self):
-        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.user = get_user_model().objects.create_user('user', 'user@e.com', 'user')
         self.assertTrue(self.client.login(username='user', password='user'))
         self.campana = self.crear_campana()
         self.campana.estado = Campana.ESTADO_TEMPLATE_EN_DEFINICION
@@ -295,7 +294,7 @@ class TemplateDeCampanaEliminaTest(FTSenderBaseTest):
     se encuentra en el estado indicado.
     """
     def setUp(self):
-        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.user = get_user_model().objects.create_user('user', 'user@e.com', 'user')
         self.assertTrue(self.client.login(username='user', password='user'))
         self.campana = self.crear_campana()
         self.campana.estado = Campana.ESTADO_TEMPLATE_ACTIVO
@@ -366,7 +365,7 @@ class ReciclarCampanaTest(FTSenderBaseTest):
     """
 
     def setUp(self):
-        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.user = get_user_model().objects.create_user('user', 'user@e.com', 'user')
         self.assertTrue(self.client.login(username='user', password='user'))
 
         self.campana = self.crear_campana()
@@ -418,7 +417,7 @@ class CrearBaseDeDatosContactosTest(FTSenderBaseTest):
     ser utilizadas con bd de contactos ya definidas
     """
     def setUp(self):
-        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.user = get_user_model().objects.create_user('user', 'user@e.com', 'user')
         self.assertTrue(self.client.login(username='user', password='user'))
 
         self.base_datos_contacto = self.crear_base_datos_contacto()
@@ -487,7 +486,7 @@ class ReporteCampanaTest(FTSenderBaseTest):
     """
 
     def setUp(self):
-        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.user = get_user_model().objects.create_user('user', 'user@e.com', 'user')
         self.assertTrue(self.client.login(username='user', password='user'))
         self.campana = self.crear_campana()
         self.campana.activar()
@@ -529,7 +528,7 @@ class ExportaReporteCampanaTest(FTSenderBaseTest):
     """
 
     def setUp(self):
-        self.user = User.objects.create_user('user', 'user@e.com', 'user')
+        self.user = get_user_model().objects.create_user('user', 'user@e.com', 'user')
         self.assertTrue(self.client.login(username='user', password='user'))
         self.campana = self.crear_campana()
         self.campana.activar()
