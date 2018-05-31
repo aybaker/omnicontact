@@ -78,3 +78,6 @@ django-redis==4.8.0
 #> django-bootstrap3-datetimepicker==2.2.3
 #> django-bootstrap3-datetimepicker==2.3 # No funciona via pip
 -e git://github.com/nkunihiko/django-bootstrap3-datetimepicker@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django-bootstrap3-datetimepicker
+
+-e git://github.com/asterisk/starpy@408f2636d8eb879c787073dccf147cc5fe734cba#egg=starpy
+
