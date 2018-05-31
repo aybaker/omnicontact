@@ -55,7 +55,7 @@
 #----------------------------------------------------------------------
 
 - name: Start FTSender services (except FastAGI daemon)
-  shell: python -u {{ install_prefix }}bin/start-ftsender-daemons-for-deploy.py 2>&1
+  shell: "python -u {{ install_prefix }}bin/start-ftsender-daemons-for-deploy.py 2>&1"
   ignore_errors: no
 
 #----------------------------------------------------------------------
@@ -63,7 +63,7 @@
 #----------------------------------------------------------------------
 
 - name: Run ftsdaemon_checks
-  command: {{ install_prefix }}bin/manage.sh ftsdaemon_checks
+  shell: "{{ install_prefix }}bin/manage.sh ftsdaemon_checks"
   register: ftsdaemon_checks_output
   ignore_errors: True
 
@@ -76,7 +76,7 @@
 #----------------------------------------------------------------------
 
 - name: Upload /etc/rc.local
-  command: {{ install_prefix }}/bin/upload_etc_rclocal.sh
+  shell: "{{ install_prefix }}/bin/upload_etc_rclocal.sh"
   tags:
     - deploy
     - quick_deploy
