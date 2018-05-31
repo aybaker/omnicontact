@@ -161,6 +161,10 @@
 # extensions.conf
 #----------------------------------------------------------------------
 
+#### FIX ME
+
+
+
 - name: Modify Asterisk extensions.conf
   lineinfile: >
     state=present

@@ -1,5 +1,109 @@
 ---
 
+#----------------------------------------------------------
+#--- Upload and execution of ICS scripts
+#----------------------------------------------------------
+- name: Upload ICS scripts to deploy/bin
+  template: src=ics-bin/{{ item }} dest={{ install_prefix }}bin mode=0755
+  with_items:
+    - db_update_plpython_stored_proc.sh
+    - stop-ftsender-daemons-for-deploy.py
+    - start-ftsender-daemons-for-deploy.py
+    - upload_etc_rclocal.sh
+
+- name: Stop FTSender services (except FastAGI daemon)
+  shell: python -u /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.py 2>&1
+  ignore_errors: yes
+
+- name: Install stored procedures
+  shell: >
+    {{ install_prefix }}bin/db_update_plpython_stored_proc.sh
+    {{ install_prefix }}ominicontacto/fts_web/sql/plpython/*.sql
+    {{ install_prefix }}ominicontacto/fts_web/sql/plpgsql/update_timestamp.sql
+
+#----------------------------------------------------------------------
+# Setup supervisor
+#----------------------------------------------------------------------
+
+- name: Upload Supervisor config file
+  template: src=templates/supervisord.conf dest=/etc/supervisord.conf
+  become: true
+  become_method: sudo
+
+- name: Create /var/tmp/supervisor.sock file
+  file: path=/var/tmp/supervisor.sock state=touch mode=755
+  become: true
+  become_method: sudo
+
+- name: Start supervisor service
+  service: name=supervisord state=started enabled=yes
+  become: true
+  become_method: sudo
+
+- name: Reload supervisor service
+  shell: supervisorctl reload
+  become: true
+  become_method: sudo
+
+- name: Flush handlers - reload de supervisor
+  meta: flush_handlers
+  become: true
+  become_method: sudo
+
+#----------------------------------------------------------------------
+# Con supervisor configurado, hacemos reload
+#----------------------------------------------------------------------
+
+- name: Start FTSender services (except FastAGI daemon)
+  shell: python -u {{ install_prefix }}bin/start-ftsender-daemons-for-deploy.py 2>&1
+  ignore_errors: no
+
+#----------------------------------------------------------------------
+# Checks
+#----------------------------------------------------------------------
+
+- name: Run ftsdaemon_checks
+  command: {{ install_prefix }}bin/manage.sh ftsdaemon_checks
+  register: ftsdaemon_checks_output
+  ignore_errors: True
+
+- name: Print output of ftsdaemon_checks
+  debug: msg="{{ ftsdaemon_checks_output.stdout }}"
+  when: ftsdaemon_checks_output|failed
+
+#----------------------------------------------------------------------
+# Deploy sms
+#----------------------------------------------------------------------
+
+- name: Upload /etc/rc.local
+  command: {{ install_prefix }}/bin/upload_etc_rclocal.sh
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+  ignore_errors: True
+
+- name: Upload built (rsync to /apidinstar)
+  # Copies xxx/app to /home/ftsender/deploy/apidinstar (/apidinstar on dest is implicit)
+  synchronize: >
+    src={{ BUILD_API_DINSTAR }}
+    dest=/home/ftsender/deploy
+    delete=yes checksum=yes times=no
+  tags:
+    - deploy
+    - quick_deploy
+    - docker
+
+#- name: Change permissions to directory dinstar
+#  shell: chmod -R 777 /home/ftsender/deploy/apidinstar/dinstar/
+#  when: ansible_os_family == "RedHat"
+#  tags:
+
+#----------------------------------------------------------------------
+# Sigo con omnileads
+#----------------------------------------------------------------------
+
 - name: Upload nginx.conf configuration
   template: src=templates/nginx.conf.j2 dest=/etc/nginx/nginx.conf
   when: ansible_os_family == "Sangoma" or ansible_os_family == "RedHat"
@@ -11,18 +115,6 @@
   when: ansible_os_family == "Sangoma" or ansible_os_family == "RedHat"
   become: true
   become_method: sudo
-
-#- name: Copy of the ominicontacto nginx configuration
-#  copy: "src={{ install_prefix }}ominicontacto/nginx/ominicontacto-twohosts.conf dest=/etc/nginx/conf.d/ remote_src=yes"
-#  when: ansible_os_family == "Debian"
-#- shell: "mv /etc/nginx/conf.d/ominicontacto-twohosts.conf /etc/nginx/conf.d/ominicontacto.conf"
-#  when: ansible_os_family == "Debian"
-
-#- name: Copy of the ominicontacto nginx configuration
-#  copy: "src={{ install_prefix }}ominicontacto/nginx/ominicontacto-onehost.conf dest=/etc/nginx/conf.d/ remote_src=yes"
-#  when: ansible_os_family == "RedHat" or ansible_os_family == "Sangoma"
-#- shell: "mv /etc/nginx/conf.d/ominicontacto-onehost.conf /etc/nginx/conf.d/ominicontacto.conf"
-#  when: ansible_os_family == "RedHat" or ansible_os_family == "Sangoma"
 
 - name: Create of ominicontacto.conf
   template: src=templates/ominicontacto.conf.j2 dest=/etc/nginx/conf.d/ominicontacto.conf

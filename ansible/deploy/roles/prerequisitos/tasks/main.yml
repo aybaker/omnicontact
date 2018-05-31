@@ -39,6 +39,8 @@
 
 - include: installations.yml
 
+- include: ntp.yml
+
 - include: setup_mariadb.yml
   when: ansible_os_family == "RedHat"
 

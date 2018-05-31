@@ -17,7 +17,8 @@
   with_items:
           - "{{ install_prefix }}"
           - "{{ install_prefix }}.pip"
-          - "{{ install_prefix }}ominicontacto/"
+          - "{{ install_prefix }}ominicontacto"
+          - "{{ install_prefix }}apidinstar"
           - "{{ install_prefix }}local"
           - "{{ install_prefix }}conf"
           - "{{ install_prefix }}wombat-json"
@@ -26,8 +27,19 @@
           - "{{ install_prefix }}media_root/reporte_campana"
           - "{{ install_prefix }}static"
           - "{{ install_prefix }}log"
+          - /var/spool/dwgp/incoming/
+          - /var/spool/dwgp/send/
+          - /var/spool/dwgp/ussd_incoming/
+          - /var/spool/dwgp/ussd_send
   when: desarrollo == 0
 
+- name: Create directories for DB dumps
+  file: "path={{item}} state=directory owner={{ usuario }} group=postgres mode=0770"
+  with_items:
+    - "{{ install_prefix }}dumps_bd_contacto"
+  tags:
+    - deploy
+    - docker
 
 #----------------------------------------------------------------------
 # pip / virtualenv
@@ -102,6 +114,29 @@
     virtualenv={{ install_prefix }}virtualenv
   when: ansible_os_family == "Debian"
 
+#----------------------------------------------------------------------
+# StarPy
+#----------------------------------------------------------------------
+
+- name: Check - StarPy instalado
+  shell: find {{ install_prefix }}virtualenv -name starpy | grep -q starpy
+  register: starpy_installed
+  ignore_errors: True
+  tags:
+    - virtualenv
+    - docker
+
+- name: Install starpy
+  pip: name={{ STARPY_PIP_URL }} virtualenv={{ install_prefix }}virtualenv
+  when: starpy_installed|failed
+  tags:
+    - virtualenv
+    - docker
+
+#----------------------------------------------------------------------
+# Upload of oml_settings_local.py
+#----------------------------------------------------------------------
+
 - name: Upload oml_settings_local.py
   template: "src=templates/oml_settings_local_debian.py dest={{ install_prefix }}local"
   when: ansible_os_family == "Debian"
@@ -116,9 +151,28 @@
   file: state=link src={{ install_prefix }}local/oml_settings_local.py dest={{ install_prefix }}ominicontacto/oml_settings_local.py owner={{ usuario }} force=true
   when: ansible_os_family == "Sangoma" or ansible_os_family == "RedHat"
 
-#- name: Change owner and group of ominicontacto
-#  file: "path={{ item }} owner={{ usuario }} group={{ usuario }} recurse=yes"
-#  with_items:
-#    - "{{ install_prefix }}ominicontacto"
-#    - "{{ install_prefix }}"
+#----------------------------------------------------------------------
+# Upload of ics_settings_local.py
+#----------------------------------------------------------------------
 
+- name: Upload ics_settings_local.py
+  template: src=ics_settings_local.py dest={{ install_prefix }}local
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
+- name: Create ics_settings_local_customizations.py if doesnt exists
+  file: >
+    state=touch
+    dest={{ install_prefix}}local/ics_settings_local_customizations.py
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+
+- name: Creation of simbolic link of ics_settings_local.py
+  file: state=link src={{ install_prefix }}local/ics_settings_local.py dest={{ install_prefix }}ominicontacto/ics_settings_local.py owner={{ usuario }} force=true
+  when: ansible_os_family == "Sangoma" or ansible_os_family == "RedHat"

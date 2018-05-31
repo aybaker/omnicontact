@@ -39,11 +39,15 @@
        - subversion
        - kernel-devel
        - git
+       - ntp
+       - supervisor
        - crontabs
        - cronie
        - cronie-anacron
        - wget
        - vim
+       - munin
+       - munin-node
        - uuid-devel
        - sqlite-devel
        - net-tools

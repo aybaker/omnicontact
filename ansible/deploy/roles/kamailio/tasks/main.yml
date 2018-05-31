@@ -39,8 +39,8 @@
 - include: kamailio.yml
   tags: kamailio
 
-- include: postgresusers.yml
-  tags: ['postgresusers','kamailio']
+- include: postgres.yml
+  tags: ['postgres','kamailio']
 
 - include: kamailio-as-service.yml
   tags: kamailio
