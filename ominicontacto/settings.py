@@ -718,6 +718,21 @@ FTS_SMS_UTILIZADO = 'modem'
 
 
 
+# ==============================================================================
+# Import de `ics_settings_local` (EX: `fts_web_settings_local`)
+# ==============================================================================
+
+try:
+    from ics_settings_local import *
+except ImportError as e:
+    print "# "
+    print "# ERROR"
+    print "# "
+    print "#   No se pudo importar el modulo"
+    print "#       `ics_settings_local`"
+    print "#       (antes se llamaba `fts_web_settings_local`)"
+    print "# "
+    raise Exception("No se pudo importar 'ics_settings_local' (antes se llamaba 'fts_web_settings_local')")
 
 
 # ==============================================================================
