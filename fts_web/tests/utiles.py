@@ -11,29 +11,30 @@ desarrollo de los tests.
 from __future__ import unicode_literals
 
 import datetime
+import json
 import logging
 import os
 import random
+import shutil
 import uuid
 
 from django.db import connection
 from django.conf import settings
 from django.test import TestCase
-from django.test.runner import DiscoverRunner
 from django.test.testcases import LiveServerTestCase, TransactionTestCase
 from fts_daemon.models import EventoDeContacto
 from fts_web.models import GrupoAtencion, Calificacion, AgenteGrupoAtencion, \
     Contacto, BaseDatosContacto, Campana, Opcion, Actuacion, \
     DerivacionExterna, AudioDeCampana, CampanaSms, ActuacionSms
-import shutil
-import json
+
+from ominicontacto_app.tests.utiles import ManagedModelTestRunner
 
 
 EV_FINALIZADOR = EventoDeContacto.objects.\
     get_eventos_finalizadores()[0]
 
 
-class FTSenderDiscoverRunner(DiscoverRunner):
+class FTSenderDiscoverRunner(ManagedModelTestRunner):
     """
     Test runner para FTSender
     """

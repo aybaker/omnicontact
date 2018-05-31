@@ -147,7 +147,13 @@ MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'ominicontacto_app.User'
 
-TEST_RUNNER = "ominicontacto_app.tests.utiles.ManagedModelTestRunner"
+# TEST_RUNNER = "ominicontacto_app.tests.utiles.ManagedModelTestRunner"
+TEST_RUNNER = "fts_web.tests.utiles.FTSenderDiscoverRunner"
+"""
+FTSenderDiscoverRunner hereda de 'ominicontacto_app.tests.utiles.ManagedModelTestRunner', por eso
+podemos usarlo sin problemas
+"""
+
 OML_TESTING_MODE = False
 
 LOGIN_REDIRECT_URL = 'index'
@@ -449,8 +455,6 @@ AUDIOS_PARA_MESES = [
 #==============================================================================
 # ***ICS*** -> Django
 #==============================================================================
-
-#TEST_RUNNER = "fts_web.tests.utiles.FTSenderDiscoverRunner"
 
 MIDDLEWARE_CLASSES += [
     'fts_web.middleware.ReportErrorMiddleware',
