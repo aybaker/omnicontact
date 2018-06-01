@@ -241,6 +241,7 @@ ASTERISK = {
     'USERNAME': None,  # Usuario para AMI
     'PASSWORD': None,  # Password para usuario para AMI
     'HTTP_AMI_URL': None,
+    'DIAL_URL': None,
     # URL usado por Daemon p/acceder a Asterisk AMI via HTTP
     # Ej:
     #    "http://1.2.3.4:7088"

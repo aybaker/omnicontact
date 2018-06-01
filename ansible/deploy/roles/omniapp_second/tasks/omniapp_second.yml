@@ -4,7 +4,7 @@
 #--- Upload and execution of ICS scripts
 #----------------------------------------------------------
 - name: Upload ICS scripts to deploy/bin
-  template: src=ics-bin/{{ item }} dest={{ install_prefix }}bin mode=0755
+  template: src=bin/{{ item }} dest={{ install_prefix }}bin mode=0755
   with_items:
     - db_update_plpython_stored_proc.sh
     - stop-ftsender-daemons-for-deploy.py

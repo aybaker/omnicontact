@@ -16,7 +16,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: queue_log; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_log; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE queue_log (
@@ -34,10 +34,10 @@ CREATE TABLE queue_log (
 );
 
 
-ALTER TABLE queue_log OWNER TO kamailio;
+ALTER TABLE queue_log OWNER TO omnileads;
 
 --
--- Name: queue_log_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: queue_log_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE queue_log_id_seq
@@ -48,24 +48,24 @@ CREATE SEQUENCE queue_log_id_seq
     CACHE 1;
 
 
-ALTER TABLE queue_log_id_seq OWNER TO kamailio;
+ALTER TABLE queue_log_id_seq OWNER TO omnileads;
 
 --
--- Name: queue_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: queue_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE queue_log_id_seq OWNED BY queue_log.id;
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY queue_log ALTER COLUMN id SET DEFAULT nextval('queue_log_id_seq'::regclass);
 
 
 --
--- Name: queue_log_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_log_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY queue_log
