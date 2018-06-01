@@ -6,17 +6,17 @@
   become_method: sudo
 
 - name: Copy postgresql-fts.conf
-  template: src=templates/postgresql-oml.conf dest=/var/lib/pgsql/{{ pgsql_version }}/data/
+  template: src=templates/postgresql-oml.conf dest=/var/lib/pgsql/9.6/data/
   become: true
   become_method: sudo
 
 - name: Include postgresql-oml.conf in postgresql.conf
   lineinfile: >
     state=present
-    dest=/var/lib/pgsql/{{ pgsql_version }}/data/postgresql.conf
-    regexp="^include\s+'/var/lib/pgsql/{{ pgsql_version }}/data/postgresql-oml.conf'"
+    dest=/var/lib/pgsql/9.6/data/postgresql.conf
+    regexp="^include\s+'/var/lib/pgsql/9.6/data/postgresql-oml.conf'"
     insertafter=EOF
-    line="include '/var/lib/pgsql/{{ pgsql_version }}/data/postgresql-oml.conf'"
+    line="include '/var/lib/pgsql/9.6/data/postgresql-oml.conf'"
   # TODO: reload (si cambio el archivo)
   become: true
   become_method: sudo
@@ -38,7 +38,7 @@
   become_method: sudo
   become_user: postgres
 
-- name: Create kamailio database
+- name: Create omnileads database
   shell: createdb -O omnileads omnileads
   become: yes
   become_method: sudo

@@ -19,6 +19,18 @@
   become: true
   become_method: sudo
 
+- name: Download of epel-release repo
+  command: "{{ item }}"
+  with_items:
+      - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  register: command_result
+  failed_when:
+    - "'transferencia fallida' in command_result.stderr"
+    - "'failed' in command_result.stderr"
+  become: true
+  become_method: sudo
+- meta: clear_host_errors
+
 - name: Install of dependencies
   yum: name={{ item }} state=present
   with_items:
@@ -56,20 +68,6 @@
        - texinfo
   become: true
   become_method: sudo
-
-
-- name: Download of epel-release repo
-  command: "{{ item }}"
-  with_items:
-      - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-  register: command_result
-  failed_when:
-    - "'transferencia fallida' in command_result.stderr"
-    - "'failed' in command_result.stderr"
-
-  become: true
-  become_method: sudo
-- meta: clear_host_errors
 
 - name: Download of webtatic repo
   get_url: url=https://mirror.webtatic.com/yum/el7/webtatic-release.rpm dest=/root/ validate_certs=no

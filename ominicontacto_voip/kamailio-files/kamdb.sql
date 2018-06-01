@@ -626,7 +626,7 @@ COMMENT ON EXTENSION plpythonu IS 'PL/PythonU untrusted procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- Name: concat(text, text); Type: FUNCTION; Schema: public; Owner: kamailio
+-- Name: concat(text, text); Type: FUNCTION; Schema: public; Owner: omnileads
 --
 
 CREATE FUNCTION concat(text, text) RETURNS text
@@ -634,10 +634,10 @@ CREATE FUNCTION concat(text, text) RETURNS text
     AS $_$SELECT $1 || $2;$_$;
 
 
-ALTER FUNCTION public.concat(text, text) OWNER TO kamailio;
+ALTER FUNCTION public.concat(text, text) OWNER TO omnileads;
 
 --
--- Name: rand(); Type: FUNCTION; Schema: public; Owner: kamailio
+-- Name: rand(); Type: FUNCTION; Schema: public; Owner: omnileads
 --
 
 CREATE FUNCTION rand() RETURNS double precision
@@ -645,14 +645,14 @@ CREATE FUNCTION rand() RETURNS double precision
     AS $$SELECT random();$$;
 
 
-ALTER FUNCTION public.rand() OWNER TO kamailio;
+ALTER FUNCTION public.rand() OWNER TO omnileads;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: acc; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: acc; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE acc (
@@ -667,10 +667,10 @@ CREATE TABLE acc (
 );
 
 
-ALTER TABLE public.acc OWNER TO kamailio;
+ALTER TABLE public.acc OWNER TO omnileads;
 
 --
--- Name: acc_cdrs; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: acc_cdrs; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE acc_cdrs (
@@ -681,10 +681,10 @@ CREATE TABLE acc_cdrs (
 );
 
 
-ALTER TABLE public.acc_cdrs OWNER TO kamailio;
+ALTER TABLE public.acc_cdrs OWNER TO omnileads;
 
 --
--- Name: acc_cdrs_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: acc_cdrs_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE acc_cdrs_id_seq
@@ -695,17 +695,17 @@ CREATE SEQUENCE acc_cdrs_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.acc_cdrs_id_seq OWNER TO kamailio;
+ALTER TABLE public.acc_cdrs_id_seq OWNER TO omnileads;
 
 --
--- Name: acc_cdrs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: acc_cdrs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE acc_cdrs_id_seq OWNED BY acc_cdrs.id;
 
 
 --
--- Name: acc_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: acc_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE acc_id_seq
@@ -716,17 +716,17 @@ CREATE SEQUENCE acc_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.acc_id_seq OWNER TO kamailio;
+ALTER TABLE public.acc_id_seq OWNER TO omnileads;
 
 --
--- Name: acc_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: acc_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE acc_id_seq OWNED BY acc.id;
 
 
 --
--- Name: active_watchers; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: active_watchers; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE active_watchers (
@@ -760,10 +760,10 @@ CREATE TABLE active_watchers (
 );
 
 
-ALTER TABLE public.active_watchers OWNER TO kamailio;
+ALTER TABLE public.active_watchers OWNER TO omnileads;
 
 --
--- Name: active_watchers_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: active_watchers_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE active_watchers_id_seq
@@ -774,17 +774,17 @@ CREATE SEQUENCE active_watchers_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.active_watchers_id_seq OWNER TO kamailio;
+ALTER TABLE public.active_watchers_id_seq OWNER TO omnileads;
 
 --
--- Name: active_watchers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: active_watchers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE active_watchers_id_seq OWNED BY active_watchers.id;
 
 
 --
--- Name: address; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: address; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE address (
@@ -797,10 +797,10 @@ CREATE TABLE address (
 );
 
 
-ALTER TABLE public.address OWNER TO kamailio;
+ALTER TABLE public.address OWNER TO omnileads;
 
 --
--- Name: address_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: address_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE address_id_seq
@@ -811,17 +811,17 @@ CREATE SEQUENCE address_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.address_id_seq OWNER TO kamailio;
+ALTER TABLE public.address_id_seq OWNER TO omnileads;
 
 --
--- Name: address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE address_id_seq OWNED BY address.id;
 
 
 --
--- Name: aliases; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: aliases; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE aliases (
@@ -851,10 +851,10 @@ CREATE TABLE aliases (
 );
 
 
-ALTER TABLE public.aliases OWNER TO kamailio;
+ALTER TABLE public.aliases OWNER TO omnileads;
 
 --
--- Name: aliases_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: aliases_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE aliases_id_seq
@@ -865,17 +865,17 @@ CREATE SEQUENCE aliases_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.aliases_id_seq OWNER TO kamailio;
+ALTER TABLE public.aliases_id_seq OWNER TO omnileads;
 
 --
--- Name: aliases_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: aliases_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE aliases_id_seq OWNED BY aliases.id;
 
 
 --
--- Name: auth_group; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_group; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE auth_group (
@@ -884,10 +884,10 @@ CREATE TABLE auth_group (
 );
 
 
-ALTER TABLE public.auth_group OWNER TO kamailio;
+ALTER TABLE public.auth_group OWNER TO omnileads;
 
 --
--- Name: auth_group_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: auth_group_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE auth_group_id_seq
@@ -898,17 +898,17 @@ CREATE SEQUENCE auth_group_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_group_id_seq OWNER TO kamailio;
+ALTER TABLE public.auth_group_id_seq OWNER TO omnileads;
 
 --
--- Name: auth_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: auth_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE auth_group_id_seq OWNED BY auth_group.id;
 
 
 --
--- Name: auth_group_permissions; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_group_permissions; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE auth_group_permissions (
@@ -918,10 +918,10 @@ CREATE TABLE auth_group_permissions (
 );
 
 
-ALTER TABLE public.auth_group_permissions OWNER TO kamailio;
+ALTER TABLE public.auth_group_permissions OWNER TO omnileads;
 
 --
--- Name: auth_group_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE auth_group_permissions_id_seq
@@ -932,17 +932,17 @@ CREATE SEQUENCE auth_group_permissions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_group_permissions_id_seq OWNER TO kamailio;
+ALTER TABLE public.auth_group_permissions_id_seq OWNER TO omnileads;
 
 --
--- Name: auth_group_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE auth_group_permissions_id_seq OWNED BY auth_group_permissions.id;
 
 
 --
--- Name: auth_permission; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_permission; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE auth_permission (
@@ -953,10 +953,10 @@ CREATE TABLE auth_permission (
 );
 
 
-ALTER TABLE public.auth_permission OWNER TO kamailio;
+ALTER TABLE public.auth_permission OWNER TO omnileads;
 
 --
--- Name: auth_permission_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: auth_permission_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE auth_permission_id_seq
@@ -967,17 +967,17 @@ CREATE SEQUENCE auth_permission_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_permission_id_seq OWNER TO kamailio;
+ALTER TABLE public.auth_permission_id_seq OWNER TO omnileads;
 
 --
--- Name: auth_permission_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: auth_permission_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE auth_permission_id_seq OWNED BY auth_permission.id;
 
 
 --
--- Name: carrier_name; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: carrier_name; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE carrier_name (
@@ -986,10 +986,10 @@ CREATE TABLE carrier_name (
 );
 
 
-ALTER TABLE public.carrier_name OWNER TO kamailio;
+ALTER TABLE public.carrier_name OWNER TO omnileads;
 
 --
--- Name: carrier_name_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: carrier_name_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE carrier_name_id_seq
@@ -1000,17 +1000,17 @@ CREATE SEQUENCE carrier_name_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.carrier_name_id_seq OWNER TO kamailio;
+ALTER TABLE public.carrier_name_id_seq OWNER TO omnileads;
 
 --
--- Name: carrier_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: carrier_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE carrier_name_id_seq OWNED BY carrier_name.id;
 
 
 --
--- Name: carrierfailureroute; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: carrierfailureroute; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE carrierfailureroute (
@@ -1027,10 +1027,10 @@ CREATE TABLE carrierfailureroute (
 );
 
 
-ALTER TABLE public.carrierfailureroute OWNER TO kamailio;
+ALTER TABLE public.carrierfailureroute OWNER TO omnileads;
 
 --
--- Name: carrierfailureroute_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: carrierfailureroute_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE carrierfailureroute_id_seq
@@ -1041,17 +1041,17 @@ CREATE SEQUENCE carrierfailureroute_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.carrierfailureroute_id_seq OWNER TO kamailio;
+ALTER TABLE public.carrierfailureroute_id_seq OWNER TO omnileads;
 
 --
--- Name: carrierfailureroute_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: carrierfailureroute_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE carrierfailureroute_id_seq OWNED BY carrierfailureroute.id;
 
 
 --
--- Name: carrierroute; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: carrierroute; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE carrierroute (
@@ -1070,10 +1070,10 @@ CREATE TABLE carrierroute (
 );
 
 
-ALTER TABLE public.carrierroute OWNER TO kamailio;
+ALTER TABLE public.carrierroute OWNER TO omnileads;
 
 --
--- Name: carrierroute_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: carrierroute_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE carrierroute_id_seq
@@ -1084,17 +1084,17 @@ CREATE SEQUENCE carrierroute_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.carrierroute_id_seq OWNER TO kamailio;
+ALTER TABLE public.carrierroute_id_seq OWNER TO omnileads;
 
 --
--- Name: carrierroute_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: carrierroute_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE carrierroute_id_seq OWNED BY carrierroute.id;
 
 
 --
--- Name: cpl; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: cpl; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE cpl (
@@ -1106,10 +1106,10 @@ CREATE TABLE cpl (
 );
 
 
-ALTER TABLE public.cpl OWNER TO kamailio;
+ALTER TABLE public.cpl OWNER TO omnileads;
 
 --
--- Name: cpl_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: cpl_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE cpl_id_seq
@@ -1120,17 +1120,17 @@ CREATE SEQUENCE cpl_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cpl_id_seq OWNER TO kamailio;
+ALTER TABLE public.cpl_id_seq OWNER TO omnileads;
 
 --
--- Name: cpl_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: cpl_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE cpl_id_seq OWNED BY cpl.id;
 
 
 --
--- Name: dbaliases; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dbaliases; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE dbaliases (
@@ -1142,10 +1142,10 @@ CREATE TABLE dbaliases (
 );
 
 
-ALTER TABLE public.dbaliases OWNER TO kamailio;
+ALTER TABLE public.dbaliases OWNER TO omnileads;
 
 --
--- Name: dbaliases_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: dbaliases_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE dbaliases_id_seq
@@ -1156,17 +1156,17 @@ CREATE SEQUENCE dbaliases_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.dbaliases_id_seq OWNER TO kamailio;
+ALTER TABLE public.dbaliases_id_seq OWNER TO omnileads;
 
 --
--- Name: dbaliases_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: dbaliases_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE dbaliases_id_seq OWNED BY dbaliases.id;
 
 
 --
--- Name: dialog; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dialog; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE dialog (
@@ -1197,10 +1197,10 @@ CREATE TABLE dialog (
 );
 
 
-ALTER TABLE public.dialog OWNER TO kamailio;
+ALTER TABLE public.dialog OWNER TO omnileads;
 
 --
--- Name: dialog_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: dialog_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE dialog_id_seq
@@ -1211,17 +1211,17 @@ CREATE SEQUENCE dialog_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.dialog_id_seq OWNER TO kamailio;
+ALTER TABLE public.dialog_id_seq OWNER TO omnileads;
 
 --
--- Name: dialog_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: dialog_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE dialog_id_seq OWNED BY dialog.id;
 
 
 --
--- Name: dialog_vars; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dialog_vars; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE dialog_vars (
@@ -1233,10 +1233,10 @@ CREATE TABLE dialog_vars (
 );
 
 
-ALTER TABLE public.dialog_vars OWNER TO kamailio;
+ALTER TABLE public.dialog_vars OWNER TO omnileads;
 
 --
--- Name: dialog_vars_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: dialog_vars_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE dialog_vars_id_seq
@@ -1247,17 +1247,17 @@ CREATE SEQUENCE dialog_vars_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.dialog_vars_id_seq OWNER TO kamailio;
+ALTER TABLE public.dialog_vars_id_seq OWNER TO omnileads;
 
 --
--- Name: dialog_vars_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: dialog_vars_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE dialog_vars_id_seq OWNED BY dialog_vars.id;
 
 
 --
--- Name: dialplan; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dialplan; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE dialplan (
@@ -1273,10 +1273,10 @@ CREATE TABLE dialplan (
 );
 
 
-ALTER TABLE public.dialplan OWNER TO kamailio;
+ALTER TABLE public.dialplan OWNER TO omnileads;
 
 --
--- Name: dialplan_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: dialplan_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE dialplan_id_seq
@@ -1287,17 +1287,17 @@ CREATE SEQUENCE dialplan_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.dialplan_id_seq OWNER TO kamailio;
+ALTER TABLE public.dialplan_id_seq OWNER TO omnileads;
 
 --
--- Name: dialplan_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: dialplan_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE dialplan_id_seq OWNED BY dialplan.id;
 
 
 --
--- Name: dispatcher; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dispatcher; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE dispatcher (
@@ -1311,10 +1311,10 @@ CREATE TABLE dispatcher (
 );
 
 
-ALTER TABLE public.dispatcher OWNER TO kamailio;
+ALTER TABLE public.dispatcher OWNER TO omnileads;
 
 --
--- Name: dispatcher_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: dispatcher_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE dispatcher_id_seq
@@ -1325,17 +1325,17 @@ CREATE SEQUENCE dispatcher_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.dispatcher_id_seq OWNER TO kamailio;
+ALTER TABLE public.dispatcher_id_seq OWNER TO omnileads;
 
 --
--- Name: dispatcher_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: dispatcher_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE dispatcher_id_seq OWNED BY dispatcher.id;
 
 
 --
--- Name: django_admin_log; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: django_admin_log; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE django_admin_log (
@@ -1351,10 +1351,10 @@ CREATE TABLE django_admin_log (
 );
 
 
-ALTER TABLE public.django_admin_log OWNER TO kamailio;
+ALTER TABLE public.django_admin_log OWNER TO omnileads;
 
 --
--- Name: django_admin_log_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: django_admin_log_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE django_admin_log_id_seq
@@ -1365,17 +1365,17 @@ CREATE SEQUENCE django_admin_log_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.django_admin_log_id_seq OWNER TO kamailio;
+ALTER TABLE public.django_admin_log_id_seq OWNER TO omnileads;
 
 --
--- Name: django_admin_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: django_admin_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE django_admin_log_id_seq OWNED BY django_admin_log.id;
 
 
 --
--- Name: django_content_type; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: django_content_type; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE django_content_type (
@@ -1385,10 +1385,10 @@ CREATE TABLE django_content_type (
 );
 
 
-ALTER TABLE public.django_content_type OWNER TO kamailio;
+ALTER TABLE public.django_content_type OWNER TO omnileads;
 
 --
--- Name: django_content_type_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: django_content_type_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE django_content_type_id_seq
@@ -1399,17 +1399,17 @@ CREATE SEQUENCE django_content_type_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.django_content_type_id_seq OWNER TO kamailio;
+ALTER TABLE public.django_content_type_id_seq OWNER TO omnileads;
 
 --
--- Name: django_content_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: django_content_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE django_content_type_id_seq OWNED BY django_content_type.id;
 
 
 --
--- Name: django_migrations; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: django_migrations; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE django_migrations (
@@ -1420,10 +1420,10 @@ CREATE TABLE django_migrations (
 );
 
 
-ALTER TABLE public.django_migrations OWNER TO kamailio;
+ALTER TABLE public.django_migrations OWNER TO omnileads;
 
 --
--- Name: django_migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: django_migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE django_migrations_id_seq
@@ -1434,17 +1434,17 @@ CREATE SEQUENCE django_migrations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.django_migrations_id_seq OWNER TO kamailio;
+ALTER TABLE public.django_migrations_id_seq OWNER TO omnileads;
 
 --
--- Name: django_migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: django_migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE django_migrations_id_seq OWNED BY django_migrations.id;
 
 
 --
--- Name: domain; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domain; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE domain (
@@ -1455,10 +1455,10 @@ CREATE TABLE domain (
 );
 
 
-ALTER TABLE public.domain OWNER TO kamailio;
+ALTER TABLE public.domain OWNER TO omnileads;
 
 --
--- Name: domain_attrs; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domain_attrs; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE domain_attrs (
@@ -1471,10 +1471,10 @@ CREATE TABLE domain_attrs (
 );
 
 
-ALTER TABLE public.domain_attrs OWNER TO kamailio;
+ALTER TABLE public.domain_attrs OWNER TO omnileads;
 
 --
--- Name: domain_attrs_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: domain_attrs_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE domain_attrs_id_seq
@@ -1485,17 +1485,17 @@ CREATE SEQUENCE domain_attrs_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.domain_attrs_id_seq OWNER TO kamailio;
+ALTER TABLE public.domain_attrs_id_seq OWNER TO omnileads;
 
 --
--- Name: domain_attrs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: domain_attrs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE domain_attrs_id_seq OWNED BY domain_attrs.id;
 
 
 --
--- Name: domain_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: domain_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE domain_id_seq
@@ -1506,17 +1506,17 @@ CREATE SEQUENCE domain_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.domain_id_seq OWNER TO kamailio;
+ALTER TABLE public.domain_id_seq OWNER TO omnileads;
 
 --
--- Name: domain_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: domain_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE domain_id_seq OWNED BY domain.id;
 
 
 --
--- Name: domain_name; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domain_name; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE domain_name (
@@ -1525,10 +1525,10 @@ CREATE TABLE domain_name (
 );
 
 
-ALTER TABLE public.domain_name OWNER TO kamailio;
+ALTER TABLE public.domain_name OWNER TO omnileads;
 
 --
--- Name: domain_name_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: domain_name_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE domain_name_id_seq
@@ -1539,17 +1539,17 @@ CREATE SEQUENCE domain_name_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.domain_name_id_seq OWNER TO kamailio;
+ALTER TABLE public.domain_name_id_seq OWNER TO omnileads;
 
 --
--- Name: domain_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: domain_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE domain_name_id_seq OWNED BY domain_name.id;
 
 
 --
--- Name: domainpolicy; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domainpolicy; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE domainpolicy (
@@ -1562,10 +1562,10 @@ CREATE TABLE domainpolicy (
 );
 
 
-ALTER TABLE public.domainpolicy OWNER TO kamailio;
+ALTER TABLE public.domainpolicy OWNER TO omnileads;
 
 --
--- Name: domainpolicy_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: domainpolicy_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE domainpolicy_id_seq
@@ -1576,17 +1576,17 @@ CREATE SEQUENCE domainpolicy_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.domainpolicy_id_seq OWNER TO kamailio;
+ALTER TABLE public.domainpolicy_id_seq OWNER TO omnileads;
 
 --
--- Name: domainpolicy_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: domainpolicy_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE domainpolicy_id_seq OWNED BY domainpolicy.id;
 
 
 --
--- Name: dr_gateways; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dr_gateways; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE dr_gateways (
@@ -1600,10 +1600,10 @@ CREATE TABLE dr_gateways (
 );
 
 
-ALTER TABLE public.dr_gateways OWNER TO kamailio;
+ALTER TABLE public.dr_gateways OWNER TO omnileads;
 
 --
--- Name: dr_gateways_gwid_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: dr_gateways_gwid_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE dr_gateways_gwid_seq
@@ -1614,17 +1614,17 @@ CREATE SEQUENCE dr_gateways_gwid_seq
     CACHE 1;
 
 
-ALTER TABLE public.dr_gateways_gwid_seq OWNER TO kamailio;
+ALTER TABLE public.dr_gateways_gwid_seq OWNER TO omnileads;
 
 --
--- Name: dr_gateways_gwid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: dr_gateways_gwid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE dr_gateways_gwid_seq OWNED BY dr_gateways.gwid;
 
 
 --
--- Name: dr_groups; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dr_groups; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE dr_groups (
@@ -1636,10 +1636,10 @@ CREATE TABLE dr_groups (
 );
 
 
-ALTER TABLE public.dr_groups OWNER TO kamailio;
+ALTER TABLE public.dr_groups OWNER TO omnileads;
 
 --
--- Name: dr_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: dr_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE dr_groups_id_seq
@@ -1650,17 +1650,17 @@ CREATE SEQUENCE dr_groups_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.dr_groups_id_seq OWNER TO kamailio;
+ALTER TABLE public.dr_groups_id_seq OWNER TO omnileads;
 
 --
--- Name: dr_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: dr_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE dr_groups_id_seq OWNED BY dr_groups.id;
 
 
 --
--- Name: dr_gw_lists; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dr_gw_lists; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE dr_gw_lists (
@@ -1670,10 +1670,10 @@ CREATE TABLE dr_gw_lists (
 );
 
 
-ALTER TABLE public.dr_gw_lists OWNER TO kamailio;
+ALTER TABLE public.dr_gw_lists OWNER TO omnileads;
 
 --
--- Name: dr_gw_lists_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: dr_gw_lists_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE dr_gw_lists_id_seq
@@ -1684,17 +1684,17 @@ CREATE SEQUENCE dr_gw_lists_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.dr_gw_lists_id_seq OWNER TO kamailio;
+ALTER TABLE public.dr_gw_lists_id_seq OWNER TO omnileads;
 
 --
--- Name: dr_gw_lists_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: dr_gw_lists_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE dr_gw_lists_id_seq OWNED BY dr_gw_lists.id;
 
 
 --
--- Name: dr_rules; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dr_rules; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE dr_rules (
@@ -1709,10 +1709,10 @@ CREATE TABLE dr_rules (
 );
 
 
-ALTER TABLE public.dr_rules OWNER TO kamailio;
+ALTER TABLE public.dr_rules OWNER TO omnileads;
 
 --
--- Name: dr_rules_ruleid_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: dr_rules_ruleid_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE dr_rules_ruleid_seq
@@ -1723,17 +1723,17 @@ CREATE SEQUENCE dr_rules_ruleid_seq
     CACHE 1;
 
 
-ALTER TABLE public.dr_rules_ruleid_seq OWNER TO kamailio;
+ALTER TABLE public.dr_rules_ruleid_seq OWNER TO omnileads;
 
 --
--- Name: dr_rules_ruleid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: dr_rules_ruleid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE dr_rules_ruleid_seq OWNED BY dr_rules.ruleid;
 
 
 --
--- Name: globalblacklist; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: globalblacklist; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE globalblacklist (
@@ -1744,10 +1744,10 @@ CREATE TABLE globalblacklist (
 );
 
 
-ALTER TABLE public.globalblacklist OWNER TO kamailio;
+ALTER TABLE public.globalblacklist OWNER TO omnileads;
 
 --
--- Name: globalblacklist_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: globalblacklist_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE globalblacklist_id_seq
@@ -1758,17 +1758,17 @@ CREATE SEQUENCE globalblacklist_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.globalblacklist_id_seq OWNER TO kamailio;
+ALTER TABLE public.globalblacklist_id_seq OWNER TO omnileads;
 
 --
--- Name: globalblacklist_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: globalblacklist_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE globalblacklist_id_seq OWNED BY globalblacklist.id;
 
 
 --
--- Name: grp; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: grp; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE grp (
@@ -1780,10 +1780,10 @@ CREATE TABLE grp (
 );
 
 
-ALTER TABLE public.grp OWNER TO kamailio;
+ALTER TABLE public.grp OWNER TO omnileads;
 
 --
--- Name: grp_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: grp_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE grp_id_seq
@@ -1794,17 +1794,17 @@ CREATE SEQUENCE grp_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.grp_id_seq OWNER TO kamailio;
+ALTER TABLE public.grp_id_seq OWNER TO omnileads;
 
 --
--- Name: grp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: grp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE grp_id_seq OWNED BY grp.id;
 
 
 --
--- Name: htable; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: htable; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE htable (
@@ -1817,10 +1817,10 @@ CREATE TABLE htable (
 );
 
 
-ALTER TABLE public.htable OWNER TO kamailio;
+ALTER TABLE public.htable OWNER TO omnileads;
 
 --
--- Name: htable_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: htable_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE htable_id_seq
@@ -1831,17 +1831,17 @@ CREATE SEQUENCE htable_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.htable_id_seq OWNER TO kamailio;
+ALTER TABLE public.htable_id_seq OWNER TO omnileads;
 
 --
--- Name: htable_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: htable_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE htable_id_seq OWNED BY htable.id;
 
 
 --
--- Name: imc_members; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: imc_members; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE imc_members (
@@ -1853,10 +1853,10 @@ CREATE TABLE imc_members (
 );
 
 
-ALTER TABLE public.imc_members OWNER TO kamailio;
+ALTER TABLE public.imc_members OWNER TO omnileads;
 
 --
--- Name: imc_members_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: imc_members_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE imc_members_id_seq
@@ -1867,17 +1867,17 @@ CREATE SEQUENCE imc_members_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.imc_members_id_seq OWNER TO kamailio;
+ALTER TABLE public.imc_members_id_seq OWNER TO omnileads;
 
 --
--- Name: imc_members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: imc_members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE imc_members_id_seq OWNED BY imc_members.id;
 
 
 --
--- Name: imc_rooms; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: imc_rooms; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE imc_rooms (
@@ -1888,10 +1888,10 @@ CREATE TABLE imc_rooms (
 );
 
 
-ALTER TABLE public.imc_rooms OWNER TO kamailio;
+ALTER TABLE public.imc_rooms OWNER TO omnileads;
 
 --
--- Name: imc_rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: imc_rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE imc_rooms_id_seq
@@ -1902,17 +1902,17 @@ CREATE SEQUENCE imc_rooms_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.imc_rooms_id_seq OWNER TO kamailio;
+ALTER TABLE public.imc_rooms_id_seq OWNER TO omnileads;
 
 --
--- Name: imc_rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: imc_rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE imc_rooms_id_seq OWNED BY imc_rooms.id;
 
 
 --
--- Name: lcr_gw; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: lcr_gw; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE lcr_gw (
@@ -1933,10 +1933,10 @@ CREATE TABLE lcr_gw (
 );
 
 
-ALTER TABLE public.lcr_gw OWNER TO kamailio;
+ALTER TABLE public.lcr_gw OWNER TO omnileads;
 
 --
--- Name: lcr_gw_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: lcr_gw_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE lcr_gw_id_seq
@@ -1947,17 +1947,17 @@ CREATE SEQUENCE lcr_gw_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.lcr_gw_id_seq OWNER TO kamailio;
+ALTER TABLE public.lcr_gw_id_seq OWNER TO omnileads;
 
 --
--- Name: lcr_gw_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: lcr_gw_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE lcr_gw_id_seq OWNED BY lcr_gw.id;
 
 
 --
--- Name: lcr_rule; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: lcr_rule; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE lcr_rule (
@@ -1971,10 +1971,10 @@ CREATE TABLE lcr_rule (
 );
 
 
-ALTER TABLE public.lcr_rule OWNER TO kamailio;
+ALTER TABLE public.lcr_rule OWNER TO omnileads;
 
 --
--- Name: lcr_rule_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: lcr_rule_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE lcr_rule_id_seq
@@ -1985,17 +1985,17 @@ CREATE SEQUENCE lcr_rule_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.lcr_rule_id_seq OWNER TO kamailio;
+ALTER TABLE public.lcr_rule_id_seq OWNER TO omnileads;
 
 --
--- Name: lcr_rule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: lcr_rule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE lcr_rule_id_seq OWNED BY lcr_rule.id;
 
 
 --
--- Name: lcr_rule_target; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: lcr_rule_target; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE lcr_rule_target (
@@ -2008,10 +2008,10 @@ CREATE TABLE lcr_rule_target (
 );
 
 
-ALTER TABLE public.lcr_rule_target OWNER TO kamailio;
+ALTER TABLE public.lcr_rule_target OWNER TO omnileads;
 
 --
--- Name: lcr_rule_target_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: lcr_rule_target_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE lcr_rule_target_id_seq
@@ -2022,17 +2022,17 @@ CREATE SEQUENCE lcr_rule_target_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.lcr_rule_target_id_seq OWNER TO kamailio;
+ALTER TABLE public.lcr_rule_target_id_seq OWNER TO omnileads;
 
 --
--- Name: lcr_rule_target_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: lcr_rule_target_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE lcr_rule_target_id_seq OWNED BY lcr_rule_target.id;
 
 
 --
--- Name: location; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: location; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE location (
@@ -2062,10 +2062,10 @@ CREATE TABLE location (
 );
 
 
-ALTER TABLE public.location OWNER TO kamailio;
+ALTER TABLE public.location OWNER TO omnileads;
 
 --
--- Name: location_attrs; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: location_attrs; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE location_attrs (
@@ -2080,10 +2080,10 @@ CREATE TABLE location_attrs (
 );
 
 
-ALTER TABLE public.location_attrs OWNER TO kamailio;
+ALTER TABLE public.location_attrs OWNER TO omnileads;
 
 --
--- Name: location_attrs_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: location_attrs_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE location_attrs_id_seq
@@ -2094,17 +2094,17 @@ CREATE SEQUENCE location_attrs_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.location_attrs_id_seq OWNER TO kamailio;
+ALTER TABLE public.location_attrs_id_seq OWNER TO omnileads;
 
 --
--- Name: location_attrs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: location_attrs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE location_attrs_id_seq OWNED BY location_attrs.id;
 
 
 --
--- Name: location_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: location_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE location_id_seq
@@ -2115,17 +2115,17 @@ CREATE SEQUENCE location_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.location_id_seq OWNER TO kamailio;
+ALTER TABLE public.location_id_seq OWNER TO omnileads;
 
 --
--- Name: location_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: location_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE location_id_seq OWNED BY location.id;
 
 
 --
--- Name: mensaje_enviado; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mensaje_enviado; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE mensaje_enviado (
@@ -2139,10 +2139,10 @@ CREATE TABLE mensaje_enviado (
 );
 
 
-ALTER TABLE public.mensaje_enviado OWNER TO kamailio;
+ALTER TABLE public.mensaje_enviado OWNER TO omnileads;
 
 --
--- Name: mensaje_enviado_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: mensaje_enviado_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE mensaje_enviado_id_seq
@@ -2153,17 +2153,17 @@ CREATE SEQUENCE mensaje_enviado_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.mensaje_enviado_id_seq OWNER TO kamailio;
+ALTER TABLE public.mensaje_enviado_id_seq OWNER TO omnileads;
 
 --
--- Name: mensaje_enviado_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: mensaje_enviado_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE mensaje_enviado_id_seq OWNED BY mensaje_enviado.id;
 
 
 --
--- Name: mensaje_recibido; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mensaje_recibido; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE mensaje_recibido (
@@ -2178,10 +2178,10 @@ CREATE TABLE mensaje_recibido (
 );
 
 
-ALTER TABLE public.mensaje_recibido OWNER TO kamailio;
+ALTER TABLE public.mensaje_recibido OWNER TO omnileads;
 
 --
--- Name: mensaje_recibido_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: mensaje_recibido_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE mensaje_recibido_id_seq
@@ -2192,17 +2192,17 @@ CREATE SEQUENCE mensaje_recibido_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.mensaje_recibido_id_seq OWNER TO kamailio;
+ALTER TABLE public.mensaje_recibido_id_seq OWNER TO omnileads;
 
 --
--- Name: mensaje_recibido_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: mensaje_recibido_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE mensaje_recibido_id_seq OWNED BY mensaje_recibido.id;
 
 
 --
--- Name: missed_calls; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: missed_calls; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE missed_calls (
@@ -2217,10 +2217,10 @@ CREATE TABLE missed_calls (
 );
 
 
-ALTER TABLE public.missed_calls OWNER TO kamailio;
+ALTER TABLE public.missed_calls OWNER TO omnileads;
 
 --
--- Name: missed_calls_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: missed_calls_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE missed_calls_id_seq
@@ -2231,17 +2231,17 @@ CREATE SEQUENCE missed_calls_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.missed_calls_id_seq OWNER TO kamailio;
+ALTER TABLE public.missed_calls_id_seq OWNER TO omnileads;
 
 --
--- Name: missed_calls_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: missed_calls_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE missed_calls_id_seq OWNED BY missed_calls.id;
 
 
 --
--- Name: mohqcalls; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mohqcalls; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE mohqcalls (
@@ -2255,10 +2255,10 @@ CREATE TABLE mohqcalls (
 );
 
 
-ALTER TABLE public.mohqcalls OWNER TO kamailio;
+ALTER TABLE public.mohqcalls OWNER TO omnileads;
 
 --
--- Name: mohqcalls_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: mohqcalls_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE mohqcalls_id_seq
@@ -2269,17 +2269,17 @@ CREATE SEQUENCE mohqcalls_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.mohqcalls_id_seq OWNER TO kamailio;
+ALTER TABLE public.mohqcalls_id_seq OWNER TO omnileads;
 
 --
--- Name: mohqcalls_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: mohqcalls_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE mohqcalls_id_seq OWNED BY mohqcalls.id;
 
 
 --
--- Name: mohqueues; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mohqueues; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE mohqueues (
@@ -2292,10 +2292,10 @@ CREATE TABLE mohqueues (
 );
 
 
-ALTER TABLE public.mohqueues OWNER TO kamailio;
+ALTER TABLE public.mohqueues OWNER TO omnileads;
 
 --
--- Name: mohqueues_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: mohqueues_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE mohqueues_id_seq
@@ -2306,17 +2306,17 @@ CREATE SEQUENCE mohqueues_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.mohqueues_id_seq OWNER TO kamailio;
+ALTER TABLE public.mohqueues_id_seq OWNER TO omnileads;
 
 --
--- Name: mohqueues_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: mohqueues_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE mohqueues_id_seq OWNED BY mohqueues.id;
 
 
 --
--- Name: mtree; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mtree; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE mtree (
@@ -2326,10 +2326,10 @@ CREATE TABLE mtree (
 );
 
 
-ALTER TABLE public.mtree OWNER TO kamailio;
+ALTER TABLE public.mtree OWNER TO omnileads;
 
 --
--- Name: mtree_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: mtree_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE mtree_id_seq
@@ -2340,17 +2340,17 @@ CREATE SEQUENCE mtree_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.mtree_id_seq OWNER TO kamailio;
+ALTER TABLE public.mtree_id_seq OWNER TO omnileads;
 
 --
--- Name: mtree_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: mtree_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE mtree_id_seq OWNED BY mtree.id;
 
 
 --
--- Name: mtrees; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mtrees; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE mtrees (
@@ -2361,10 +2361,10 @@ CREATE TABLE mtrees (
 );
 
 
-ALTER TABLE public.mtrees OWNER TO kamailio;
+ALTER TABLE public.mtrees OWNER TO omnileads;
 
 --
--- Name: mtrees_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: mtrees_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE mtrees_id_seq
@@ -2375,17 +2375,17 @@ CREATE SEQUENCE mtrees_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.mtrees_id_seq OWNER TO kamailio;
+ALTER TABLE public.mtrees_id_seq OWNER TO omnileads;
 
 --
--- Name: mtrees_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: mtrees_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE mtrees_id_seq OWNED BY mtrees.id;
 
 
 --
--- Name: ominicontacto_app_agenda; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenda; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_agenda (
@@ -2403,10 +2403,10 @@ CREATE TABLE ominicontacto_app_agenda (
 );
 
 
-ALTER TABLE public.ominicontacto_app_agenda OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_agenda OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_agenda_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_agenda_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_agenda_id_seq
@@ -2417,17 +2417,17 @@ CREATE SEQUENCE ominicontacto_app_agenda_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_agenda_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_agenda_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_agenda_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_agenda_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_agenda_id_seq OWNED BY ominicontacto_app_agenda.id;
 
 
 --
--- Name: ominicontacto_app_agenteprofile; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenteprofile; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_agenteprofile (
@@ -2441,10 +2441,10 @@ CREATE TABLE ominicontacto_app_agenteprofile (
 );
 
 
-ALTER TABLE public.ominicontacto_app_agenteprofile OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_agenteprofile OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_agenteprofile_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_agenteprofile_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_agenteprofile_id_seq
@@ -2455,17 +2455,17 @@ CREATE SEQUENCE ominicontacto_app_agenteprofile_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_agenteprofile_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_agenteprofile_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_agenteprofile_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_agenteprofile_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_agenteprofile_id_seq OWNED BY ominicontacto_app_agenteprofile.id;
 
 
 --
--- Name: ominicontacto_app_agenteprofile_modulos; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenteprofile_modulos; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_agenteprofile_modulos (
@@ -2475,10 +2475,10 @@ CREATE TABLE ominicontacto_app_agenteprofile_modulos (
 );
 
 
-ALTER TABLE public.ominicontacto_app_agenteprofile_modulos OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_agenteprofile_modulos OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_agenteprofile_modulos_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_agenteprofile_modulos_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_agenteprofile_modulos_id_seq
@@ -2489,17 +2489,17 @@ CREATE SEQUENCE ominicontacto_app_agenteprofile_modulos_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_agenteprofile_modulos_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_agenteprofile_modulos_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_agenteprofile_modulos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_agenteprofile_modulos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_agenteprofile_modulos_id_seq OWNED BY ominicontacto_app_agenteprofile_modulos.id;
 
 
 --
--- Name: ominicontacto_app_basedatoscontacto; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_basedatoscontacto; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_basedatoscontacto (
@@ -2518,10 +2518,10 @@ CREATE TABLE ominicontacto_app_basedatoscontacto (
 );
 
 
-ALTER TABLE public.ominicontacto_app_basedatoscontacto OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_basedatoscontacto OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_basedatoscontacto_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_basedatoscontacto_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_basedatoscontacto_id_seq
@@ -2532,17 +2532,17 @@ CREATE SEQUENCE ominicontacto_app_basedatoscontacto_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_basedatoscontacto_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_basedatoscontacto_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_basedatoscontacto_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_basedatoscontacto_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_basedatoscontacto_id_seq OWNED BY ominicontacto_app_basedatoscontacto.id;
 
 
 --
--- Name: ominicontacto_app_calificacion; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacion; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_calificacion (
@@ -2551,10 +2551,10 @@ CREATE TABLE ominicontacto_app_calificacion (
 );
 
 
-ALTER TABLE public.ominicontacto_app_calificacion OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_calificacion OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_calificacion_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacion_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_calificacion_id_seq
@@ -2565,17 +2565,17 @@ CREATE SEQUENCE ominicontacto_app_calificacion_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_calificacion_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_calificacion_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_calificacion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_calificacion_id_seq OWNED BY ominicontacto_app_calificacion.id;
 
 
 --
--- Name: ominicontacto_app_calificacioncampana; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncampana; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_calificacioncampana (
@@ -2584,10 +2584,10 @@ CREATE TABLE ominicontacto_app_calificacioncampana (
 );
 
 
-ALTER TABLE public.ominicontacto_app_calificacioncampana OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_calificacioncampana OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_calificacioncampana_calificacion; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncampana_calificacion; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_calificacioncampana_calificacion (
@@ -2597,10 +2597,10 @@ CREATE TABLE ominicontacto_app_calificacioncampana_calificacion (
 );
 
 
-ALTER TABLE public.ominicontacto_app_calificacioncampana_calificacion OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_calificacioncampana_calificacion OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_calificacioncampana_calificacion_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacioncampana_calificacion_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_calificacioncampana_calificacion_id_seq
@@ -2611,17 +2611,17 @@ CREATE SEQUENCE ominicontacto_app_calificacioncampana_calificacion_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_calificacioncampana_calificacion_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_calificacioncampana_calificacion_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_calificacioncampana_calificacion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacioncampana_calificacion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_calificacioncampana_calificacion_id_seq OWNED BY ominicontacto_app_calificacioncampana_calificacion.id;
 
 
 --
--- Name: ominicontacto_app_calificacioncampana_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacioncampana_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_calificacioncampana_id_seq
@@ -2632,17 +2632,17 @@ CREATE SEQUENCE ominicontacto_app_calificacioncampana_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_calificacioncampana_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_calificacioncampana_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_calificacioncampana_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacioncampana_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_calificacioncampana_id_seq OWNED BY ominicontacto_app_calificacioncampana.id;
 
 
 --
--- Name: ominicontacto_app_calificacioncliente; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncliente; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_calificacioncliente (
@@ -2658,10 +2658,10 @@ CREATE TABLE ominicontacto_app_calificacioncliente (
 );
 
 
-ALTER TABLE public.ominicontacto_app_calificacioncliente OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_calificacioncliente OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_calificacioncliente_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacioncliente_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_calificacioncliente_id_seq
@@ -2672,17 +2672,17 @@ CREATE SEQUENCE ominicontacto_app_calificacioncliente_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_calificacioncliente_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_calificacioncliente_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_calificacioncliente_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacioncliente_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_calificacioncliente_id_seq OWNED BY ominicontacto_app_calificacioncliente.id;
 
 
 --
--- Name: ominicontacto_app_campana; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_campana; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_campana (
@@ -2700,10 +2700,10 @@ CREATE TABLE ominicontacto_app_campana (
 );
 
 
-ALTER TABLE public.ominicontacto_app_campana OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_campana OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_campana_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_campana_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_campana_id_seq
@@ -2714,17 +2714,17 @@ CREATE SEQUENCE ominicontacto_app_campana_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_campana_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_campana_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_campana_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_campana_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_campana_id_seq OWNED BY ominicontacto_app_campana.id;
 
 
 --
--- Name: ominicontacto_app_chat; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_chat; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_chat (
@@ -2735,10 +2735,10 @@ CREATE TABLE ominicontacto_app_chat (
 );
 
 
-ALTER TABLE public.ominicontacto_app_chat OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_chat OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_chat_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_chat_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_chat_id_seq
@@ -2749,17 +2749,17 @@ CREATE SEQUENCE ominicontacto_app_chat_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_chat_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_chat_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_chat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_chat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_chat_id_seq OWNED BY ominicontacto_app_chat.id;
 
 
 --
--- Name: ominicontacto_app_contacto; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_contacto; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_contacto (
@@ -2770,10 +2770,10 @@ CREATE TABLE ominicontacto_app_contacto (
 );
 
 
-ALTER TABLE public.ominicontacto_app_contacto OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_contacto OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_contacto_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_contacto_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_contacto_id_seq
@@ -2784,17 +2784,17 @@ CREATE SEQUENCE ominicontacto_app_contacto_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_contacto_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_contacto_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_contacto_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_contacto_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_contacto_id_seq OWNED BY ominicontacto_app_contacto.id;
 
 
 --
--- Name: ominicontacto_app_duraciondellamada; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_duraciondellamada; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_duraciondellamada (
@@ -2808,10 +2808,10 @@ CREATE TABLE ominicontacto_app_duraciondellamada (
 );
 
 
-ALTER TABLE public.ominicontacto_app_duraciondellamada OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_duraciondellamada OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_duraciondellamada_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_duraciondellamada_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_duraciondellamada_id_seq
@@ -2822,17 +2822,17 @@ CREATE SEQUENCE ominicontacto_app_duraciondellamada_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_duraciondellamada_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_duraciondellamada_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_duraciondellamada_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_duraciondellamada_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_duraciondellamada_id_seq OWNED BY ominicontacto_app_duraciondellamada.id;
 
 
 --
--- Name: ominicontacto_app_fieldformulario; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_fieldformulario; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_fieldformulario (
@@ -2848,10 +2848,10 @@ CREATE TABLE ominicontacto_app_fieldformulario (
 );
 
 
-ALTER TABLE public.ominicontacto_app_fieldformulario OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_fieldformulario OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_fieldformulario_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_fieldformulario_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_fieldformulario_id_seq
@@ -2862,17 +2862,17 @@ CREATE SEQUENCE ominicontacto_app_fieldformulario_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_fieldformulario_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_fieldformulario_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_fieldformulario_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_fieldformulario_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_fieldformulario_id_seq OWNED BY ominicontacto_app_fieldformulario.id;
 
 
 --
--- Name: ominicontacto_app_formulario; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_formulario; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_formulario (
@@ -2882,10 +2882,10 @@ CREATE TABLE ominicontacto_app_formulario (
 );
 
 
-ALTER TABLE public.ominicontacto_app_formulario OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_formulario OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_formulario_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_formulario_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_formulario_id_seq
@@ -2896,17 +2896,17 @@ CREATE SEQUENCE ominicontacto_app_formulario_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_formulario_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_formulario_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_formulario_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_formulario_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_formulario_id_seq OWNED BY ominicontacto_app_formulario.id;
 
 
 --
--- Name: ominicontacto_app_grabacion; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_grabacion; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_grabacion (
@@ -2922,10 +2922,10 @@ CREATE TABLE ominicontacto_app_grabacion (
 );
 
 
-ALTER TABLE public.ominicontacto_app_grabacion OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_grabacion OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_grabacion_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_grabacion_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_grabacion_id_seq
@@ -2936,17 +2936,17 @@ CREATE SEQUENCE ominicontacto_app_grabacion_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_grabacion_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_grabacion_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_grabacion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_grabacion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_grabacion_id_seq OWNED BY ominicontacto_app_grabacion.id;
 
 
 --
--- Name: ominicontacto_app_grupo; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_grupo; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_grupo (
@@ -2959,10 +2959,10 @@ CREATE TABLE ominicontacto_app_grupo (
 );
 
 
-ALTER TABLE public.ominicontacto_app_grupo OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_grupo OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_grupo_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_grupo_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_grupo_id_seq
@@ -2973,17 +2973,17 @@ CREATE SEQUENCE ominicontacto_app_grupo_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_grupo_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_grupo_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_grupo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_grupo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_grupo_id_seq OWNED BY ominicontacto_app_grupo.id;
 
 
 --
--- Name: ominicontacto_app_mensajechat; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_mensajechat; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_mensajechat (
@@ -2996,10 +2996,10 @@ CREATE TABLE ominicontacto_app_mensajechat (
 );
 
 
-ALTER TABLE public.ominicontacto_app_mensajechat OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_mensajechat OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_mensajechat_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_mensajechat_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_mensajechat_id_seq
@@ -3010,17 +3010,17 @@ CREATE SEQUENCE ominicontacto_app_mensajechat_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_mensajechat_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_mensajechat_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_mensajechat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_mensajechat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_mensajechat_id_seq OWNED BY ominicontacto_app_mensajechat.id;
 
 
 --
--- Name: ominicontacto_app_metadatacliente; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_metadatacliente; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_metadatacliente (
@@ -3033,10 +3033,10 @@ CREATE TABLE ominicontacto_app_metadatacliente (
 );
 
 
-ALTER TABLE public.ominicontacto_app_metadatacliente OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_metadatacliente OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_metadatacliente_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_metadatacliente_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_metadatacliente_id_seq
@@ -3047,17 +3047,17 @@ CREATE SEQUENCE ominicontacto_app_metadatacliente_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_metadatacliente_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_metadatacliente_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_metadatacliente_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_metadatacliente_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_metadatacliente_id_seq OWNED BY ominicontacto_app_metadatacliente.id;
 
 
 --
--- Name: ominicontacto_app_modulo; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_modulo; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_modulo (
@@ -3066,10 +3066,10 @@ CREATE TABLE ominicontacto_app_modulo (
 );
 
 
-ALTER TABLE public.ominicontacto_app_modulo OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_modulo OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_modulo_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_modulo_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_modulo_id_seq
@@ -3080,17 +3080,17 @@ CREATE SEQUENCE ominicontacto_app_modulo_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_modulo_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_modulo_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_modulo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_modulo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_modulo_id_seq OWNED BY ominicontacto_app_modulo.id;
 
 
 --
--- Name: ominicontacto_app_pausa; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_pausa; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_pausa (
@@ -3099,10 +3099,10 @@ CREATE TABLE ominicontacto_app_pausa (
 );
 
 
-ALTER TABLE public.ominicontacto_app_pausa OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_pausa OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_pausa_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_pausa_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_pausa_id_seq
@@ -3113,17 +3113,17 @@ CREATE SEQUENCE ominicontacto_app_pausa_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_pausa_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_pausa_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_pausa_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_pausa_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_pausa_id_seq OWNED BY ominicontacto_app_pausa.id;
 
 
 --
--- Name: ominicontacto_app_queuelog; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_queuelog; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_queuelog (
@@ -3143,10 +3143,10 @@ CREATE TABLE ominicontacto_app_queuelog (
 );
 
 
-ALTER TABLE public.ominicontacto_app_queuelog OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_queuelog OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_queuelog_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_queuelog_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_queuelog_id_seq
@@ -3157,17 +3157,17 @@ CREATE SEQUENCE ominicontacto_app_queuelog_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_queuelog_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_queuelog_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_queuelog_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_queuelog_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_queuelog_id_seq OWNED BY ominicontacto_app_queuelog.id;
 
 
 --
--- Name: ominicontacto_app_user; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_user (
@@ -3188,10 +3188,10 @@ CREATE TABLE ominicontacto_app_user (
 );
 
 
-ALTER TABLE public.ominicontacto_app_user OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_user OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_user_groups; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_groups; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_user_groups (
@@ -3201,10 +3201,10 @@ CREATE TABLE ominicontacto_app_user_groups (
 );
 
 
-ALTER TABLE public.ominicontacto_app_user_groups OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_user_groups OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_user_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_user_groups_id_seq
@@ -3215,17 +3215,17 @@ CREATE SEQUENCE ominicontacto_app_user_groups_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_user_groups_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_user_groups_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_user_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_user_groups_id_seq OWNED BY ominicontacto_app_user_groups.id;
 
 
 --
--- Name: ominicontacto_app_user_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_user_id_seq
@@ -3236,17 +3236,17 @@ CREATE SEQUENCE ominicontacto_app_user_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_user_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_user_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_user_id_seq OWNED BY ominicontacto_app_user.id;
 
 
 --
--- Name: ominicontacto_app_user_user_permissions; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_user_permissions; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_user_user_permissions (
@@ -3256,10 +3256,10 @@ CREATE TABLE ominicontacto_app_user_user_permissions (
 );
 
 
-ALTER TABLE public.ominicontacto_app_user_user_permissions OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_user_user_permissions OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_user_user_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_user_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_user_user_permissions_id_seq
@@ -3270,17 +3270,17 @@ CREATE SEQUENCE ominicontacto_app_user_user_permissions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_user_user_permissions_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_user_user_permissions_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_user_user_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_user_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_user_user_permissions_id_seq OWNED BY ominicontacto_app_user_user_permissions.id;
 
 
 --
--- Name: ominicontacto_app_wombatlog; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_wombatlog; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE ominicontacto_app_wombatlog (
@@ -3297,10 +3297,10 @@ CREATE TABLE ominicontacto_app_wombatlog (
 );
 
 
-ALTER TABLE public.ominicontacto_app_wombatlog OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_wombatlog OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_wombatlog_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_wombatlog_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE ominicontacto_app_wombatlog_id_seq
@@ -3311,17 +3311,17 @@ CREATE SEQUENCE ominicontacto_app_wombatlog_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ominicontacto_app_wombatlog_id_seq OWNER TO kamailio;
+ALTER TABLE public.ominicontacto_app_wombatlog_id_seq OWNER TO omnileads;
 
 --
--- Name: ominicontacto_app_wombatlog_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_wombatlog_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE ominicontacto_app_wombatlog_id_seq OWNED BY ominicontacto_app_wombatlog.id;
 
 
 --
--- Name: pdt; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pdt; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE pdt (
@@ -3332,10 +3332,10 @@ CREATE TABLE pdt (
 );
 
 
-ALTER TABLE public.pdt OWNER TO kamailio;
+ALTER TABLE public.pdt OWNER TO omnileads;
 
 --
--- Name: pdt_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: pdt_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE pdt_id_seq
@@ -3346,17 +3346,17 @@ CREATE SEQUENCE pdt_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.pdt_id_seq OWNER TO kamailio;
+ALTER TABLE public.pdt_id_seq OWNER TO omnileads;
 
 --
--- Name: pdt_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: pdt_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE pdt_id_seq OWNED BY pdt.id;
 
 
 --
--- Name: pl_pipes; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pl_pipes; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE pl_pipes (
@@ -3367,10 +3367,10 @@ CREATE TABLE pl_pipes (
 );
 
 
-ALTER TABLE public.pl_pipes OWNER TO kamailio;
+ALTER TABLE public.pl_pipes OWNER TO omnileads;
 
 --
--- Name: pl_pipes_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: pl_pipes_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE pl_pipes_id_seq
@@ -3381,17 +3381,17 @@ CREATE SEQUENCE pl_pipes_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.pl_pipes_id_seq OWNER TO kamailio;
+ALTER TABLE public.pl_pipes_id_seq OWNER TO omnileads;
 
 --
--- Name: pl_pipes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: pl_pipes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE pl_pipes_id_seq OWNED BY pl_pipes.id;
 
 
 --
--- Name: presentity; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: presentity; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE presentity (
@@ -3408,10 +3408,10 @@ CREATE TABLE presentity (
 );
 
 
-ALTER TABLE public.presentity OWNER TO kamailio;
+ALTER TABLE public.presentity OWNER TO omnileads;
 
 --
--- Name: presentity_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: presentity_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE presentity_id_seq
@@ -3422,17 +3422,17 @@ CREATE SEQUENCE presentity_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.presentity_id_seq OWNER TO kamailio;
+ALTER TABLE public.presentity_id_seq OWNER TO omnileads;
 
 --
--- Name: presentity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: presentity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE presentity_id_seq OWNED BY presentity.id;
 
 
 --
--- Name: pua; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pua; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE pua (
@@ -3458,10 +3458,10 @@ CREATE TABLE pua (
 );
 
 
-ALTER TABLE public.pua OWNER TO kamailio;
+ALTER TABLE public.pua OWNER TO omnileads;
 
 --
--- Name: pua_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: pua_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE pua_id_seq
@@ -3472,17 +3472,17 @@ CREATE SEQUENCE pua_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.pua_id_seq OWNER TO kamailio;
+ALTER TABLE public.pua_id_seq OWNER TO omnileads;
 
 --
--- Name: pua_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: pua_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE pua_id_seq OWNED BY pua.id;
 
 
 --
--- Name: purplemap; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: purplemap; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE purplemap (
@@ -3494,10 +3494,10 @@ CREATE TABLE purplemap (
 );
 
 
-ALTER TABLE public.purplemap OWNER TO kamailio;
+ALTER TABLE public.purplemap OWNER TO omnileads;
 
 --
--- Name: purplemap_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: purplemap_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE purplemap_id_seq
@@ -3508,17 +3508,17 @@ CREATE SEQUENCE purplemap_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.purplemap_id_seq OWNER TO kamailio;
+ALTER TABLE public.purplemap_id_seq OWNER TO omnileads;
 
 --
--- Name: purplemap_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: purplemap_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE purplemap_id_seq OWNED BY purplemap.id;
 
 
 --
--- Name: queue_member_table; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_member_table; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE queue_member_table (
@@ -3532,10 +3532,10 @@ CREATE TABLE queue_member_table (
 );
 
 
-ALTER TABLE public.queue_member_table OWNER TO kamailio;
+ALTER TABLE public.queue_member_table OWNER TO omnileads;
 
 --
--- Name: queue_member_table_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: queue_member_table_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE queue_member_table_id_seq
@@ -3546,17 +3546,17 @@ CREATE SEQUENCE queue_member_table_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.queue_member_table_id_seq OWNER TO kamailio;
+ALTER TABLE public.queue_member_table_id_seq OWNER TO omnileads;
 
 --
--- Name: queue_member_table_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: queue_member_table_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE queue_member_table_id_seq OWNED BY queue_member_table.id;
 
 
 --
--- Name: queue_table; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_table; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE queue_table (
@@ -3606,10 +3606,10 @@ CREATE TABLE queue_table (
 );
 
 
-ALTER TABLE public.queue_table OWNER TO kamailio;
+ALTER TABLE public.queue_table OWNER TO omnileads;
 
 --
--- Name: re_grp; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: re_grp; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE re_grp (
@@ -3619,10 +3619,10 @@ CREATE TABLE re_grp (
 );
 
 
-ALTER TABLE public.re_grp OWNER TO kamailio;
+ALTER TABLE public.re_grp OWNER TO omnileads;
 
 --
--- Name: re_grp_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: re_grp_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE re_grp_id_seq
@@ -3633,17 +3633,17 @@ CREATE SEQUENCE re_grp_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.re_grp_id_seq OWNER TO kamailio;
+ALTER TABLE public.re_grp_id_seq OWNER TO omnileads;
 
 --
--- Name: re_grp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: re_grp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE re_grp_id_seq OWNED BY re_grp.id;
 
 
 --
--- Name: rls_presentity; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_presentity; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE rls_presentity (
@@ -3659,10 +3659,10 @@ CREATE TABLE rls_presentity (
 );
 
 
-ALTER TABLE public.rls_presentity OWNER TO kamailio;
+ALTER TABLE public.rls_presentity OWNER TO omnileads;
 
 --
--- Name: rls_presentity_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: rls_presentity_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE rls_presentity_id_seq
@@ -3673,17 +3673,17 @@ CREATE SEQUENCE rls_presentity_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.rls_presentity_id_seq OWNER TO kamailio;
+ALTER TABLE public.rls_presentity_id_seq OWNER TO omnileads;
 
 --
--- Name: rls_presentity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: rls_presentity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE rls_presentity_id_seq OWNED BY rls_presentity.id;
 
 
 --
--- Name: rls_watchers; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_watchers; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE rls_watchers (
@@ -3714,10 +3714,10 @@ CREATE TABLE rls_watchers (
 );
 
 
-ALTER TABLE public.rls_watchers OWNER TO kamailio;
+ALTER TABLE public.rls_watchers OWNER TO omnileads;
 
 --
--- Name: rls_watchers_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: rls_watchers_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE rls_watchers_id_seq
@@ -3728,17 +3728,17 @@ CREATE SEQUENCE rls_watchers_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.rls_watchers_id_seq OWNER TO kamailio;
+ALTER TABLE public.rls_watchers_id_seq OWNER TO omnileads;
 
 --
--- Name: rls_watchers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: rls_watchers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE rls_watchers_id_seq OWNED BY rls_watchers.id;
 
 
 --
--- Name: rtpproxy; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rtpproxy; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE rtpproxy (
@@ -3751,10 +3751,10 @@ CREATE TABLE rtpproxy (
 );
 
 
-ALTER TABLE public.rtpproxy OWNER TO kamailio;
+ALTER TABLE public.rtpproxy OWNER TO omnileads;
 
 --
--- Name: rtpproxy_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: rtpproxy_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE rtpproxy_id_seq
@@ -3765,17 +3765,17 @@ CREATE SEQUENCE rtpproxy_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.rtpproxy_id_seq OWNER TO kamailio;
+ALTER TABLE public.rtpproxy_id_seq OWNER TO omnileads;
 
 --
--- Name: rtpproxy_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: rtpproxy_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE rtpproxy_id_seq OWNED BY rtpproxy.id;
 
 
 --
--- Name: sca_subscriptions; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sca_subscriptions; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE sca_subscriptions (
@@ -3795,10 +3795,10 @@ CREATE TABLE sca_subscriptions (
 );
 
 
-ALTER TABLE public.sca_subscriptions OWNER TO kamailio;
+ALTER TABLE public.sca_subscriptions OWNER TO omnileads;
 
 --
--- Name: sca_subscriptions_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: sca_subscriptions_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE sca_subscriptions_id_seq
@@ -3809,17 +3809,17 @@ CREATE SEQUENCE sca_subscriptions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.sca_subscriptions_id_seq OWNER TO kamailio;
+ALTER TABLE public.sca_subscriptions_id_seq OWNER TO omnileads;
 
 --
--- Name: sca_subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: sca_subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE sca_subscriptions_id_seq OWNED BY sca_subscriptions.id;
 
 
 --
--- Name: silo; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: silo; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE silo (
@@ -3839,10 +3839,10 @@ CREATE TABLE silo (
 );
 
 
-ALTER TABLE public.silo OWNER TO kamailio;
+ALTER TABLE public.silo OWNER TO omnileads;
 
 --
--- Name: silo_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: silo_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE silo_id_seq
@@ -3853,17 +3853,17 @@ CREATE SEQUENCE silo_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.silo_id_seq OWNER TO kamailio;
+ALTER TABLE public.silo_id_seq OWNER TO omnileads;
 
 --
--- Name: silo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: silo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE silo_id_seq OWNED BY silo.id;
 
 
 --
--- Name: sip_trace; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sip_trace; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE sip_trace (
@@ -3883,10 +3883,10 @@ CREATE TABLE sip_trace (
 );
 
 
-ALTER TABLE public.sip_trace OWNER TO kamailio;
+ALTER TABLE public.sip_trace OWNER TO omnileads;
 
 --
--- Name: sip_trace_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: sip_trace_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE sip_trace_id_seq
@@ -3897,17 +3897,17 @@ CREATE SEQUENCE sip_trace_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.sip_trace_id_seq OWNER TO kamailio;
+ALTER TABLE public.sip_trace_id_seq OWNER TO omnileads;
 
 --
--- Name: sip_trace_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: sip_trace_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE sip_trace_id_seq OWNED BY sip_trace.id;
 
 
 --
--- Name: speed_dial; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: speed_dial; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE speed_dial (
@@ -3923,10 +3923,10 @@ CREATE TABLE speed_dial (
 );
 
 
-ALTER TABLE public.speed_dial OWNER TO kamailio;
+ALTER TABLE public.speed_dial OWNER TO omnileads;
 
 --
--- Name: speed_dial_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: speed_dial_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE speed_dial_id_seq
@@ -3937,17 +3937,17 @@ CREATE SEQUENCE speed_dial_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.speed_dial_id_seq OWNER TO kamailio;
+ALTER TABLE public.speed_dial_id_seq OWNER TO omnileads;
 
 --
--- Name: speed_dial_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: speed_dial_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE speed_dial_id_seq OWNED BY speed_dial.id;
 
 
 --
--- Name: subscriber; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: subscriber; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE subscriber (
@@ -3962,10 +3962,10 @@ CREATE TABLE subscriber (
 );
 
 
-ALTER TABLE public.subscriber OWNER TO kamailio;
+ALTER TABLE public.subscriber OWNER TO omnileads;
 
 --
--- Name: subscriber_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: subscriber_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE subscriber_id_seq
@@ -3976,17 +3976,17 @@ CREATE SEQUENCE subscriber_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.subscriber_id_seq OWNER TO kamailio;
+ALTER TABLE public.subscriber_id_seq OWNER TO omnileads;
 
 --
--- Name: subscriber_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: subscriber_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE subscriber_id_seq OWNED BY subscriber.id;
 
 
 --
--- Name: topos_d; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: topos_d; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE topos_d (
@@ -4017,10 +4017,10 @@ CREATE TABLE topos_d (
 );
 
 
-ALTER TABLE public.topos_d OWNER TO kamailio;
+ALTER TABLE public.topos_d OWNER TO omnileads;
 
 --
--- Name: topos_d_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: topos_d_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE topos_d_id_seq
@@ -4031,17 +4031,17 @@ CREATE SEQUENCE topos_d_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.topos_d_id_seq OWNER TO kamailio;
+ALTER TABLE public.topos_d_id_seq OWNER TO omnileads;
 
 --
--- Name: topos_d_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: topos_d_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE topos_d_id_seq OWNED BY topos_d.id;
 
 
 --
--- Name: topos_t; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: topos_t; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE topos_t (
@@ -4073,10 +4073,10 @@ CREATE TABLE topos_t (
 );
 
 
-ALTER TABLE public.topos_t OWNER TO kamailio;
+ALTER TABLE public.topos_t OWNER TO omnileads;
 
 --
--- Name: topos_t_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: topos_t_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE topos_t_id_seq
@@ -4087,17 +4087,17 @@ CREATE SEQUENCE topos_t_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.topos_t_id_seq OWNER TO kamailio;
+ALTER TABLE public.topos_t_id_seq OWNER TO omnileads;
 
 --
--- Name: topos_t_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: topos_t_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE topos_t_id_seq OWNED BY topos_t.id;
 
 
 --
--- Name: trusted; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: trusted; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE trusted (
@@ -4111,10 +4111,10 @@ CREATE TABLE trusted (
 );
 
 
-ALTER TABLE public.trusted OWNER TO kamailio;
+ALTER TABLE public.trusted OWNER TO omnileads;
 
 --
--- Name: trusted_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: trusted_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE trusted_id_seq
@@ -4125,17 +4125,17 @@ CREATE SEQUENCE trusted_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.trusted_id_seq OWNER TO kamailio;
+ALTER TABLE public.trusted_id_seq OWNER TO omnileads;
 
 --
--- Name: trusted_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: trusted_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE trusted_id_seq OWNED BY trusted.id;
 
 
 --
--- Name: uacreg; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: uacreg; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE uacreg (
@@ -4155,10 +4155,10 @@ CREATE TABLE uacreg (
 );
 
 
-ALTER TABLE public.uacreg OWNER TO kamailio;
+ALTER TABLE public.uacreg OWNER TO omnileads;
 
 --
--- Name: uacreg_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: uacreg_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE uacreg_id_seq
@@ -4169,17 +4169,17 @@ CREATE SEQUENCE uacreg_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.uacreg_id_seq OWNER TO kamailio;
+ALTER TABLE public.uacreg_id_seq OWNER TO omnileads;
 
 --
--- Name: uacreg_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: uacreg_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE uacreg_id_seq OWNED BY uacreg.id;
 
 
 --
--- Name: uri; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: uri; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE uri (
@@ -4191,10 +4191,10 @@ CREATE TABLE uri (
 );
 
 
-ALTER TABLE public.uri OWNER TO kamailio;
+ALTER TABLE public.uri OWNER TO omnileads;
 
 --
--- Name: uri_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: uri_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE uri_id_seq
@@ -4205,17 +4205,17 @@ CREATE SEQUENCE uri_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.uri_id_seq OWNER TO kamailio;
+ALTER TABLE public.uri_id_seq OWNER TO omnileads;
 
 --
--- Name: uri_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: uri_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE uri_id_seq OWNED BY uri.id;
 
 
 --
--- Name: userblacklist; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: userblacklist; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE userblacklist (
@@ -4227,10 +4227,10 @@ CREATE TABLE userblacklist (
 );
 
 
-ALTER TABLE public.userblacklist OWNER TO kamailio;
+ALTER TABLE public.userblacklist OWNER TO omnileads;
 
 --
--- Name: userblacklist_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: userblacklist_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE userblacklist_id_seq
@@ -4241,17 +4241,17 @@ CREATE SEQUENCE userblacklist_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.userblacklist_id_seq OWNER TO kamailio;
+ALTER TABLE public.userblacklist_id_seq OWNER TO omnileads;
 
 --
--- Name: userblacklist_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: userblacklist_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE userblacklist_id_seq OWNED BY userblacklist.id;
 
 
 --
--- Name: usr_preferences; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: usr_preferences; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE usr_preferences (
@@ -4266,10 +4266,10 @@ CREATE TABLE usr_preferences (
 );
 
 
-ALTER TABLE public.usr_preferences OWNER TO kamailio;
+ALTER TABLE public.usr_preferences OWNER TO omnileads;
 
 --
--- Name: usr_preferences_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: usr_preferences_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE usr_preferences_id_seq
@@ -4280,17 +4280,17 @@ CREATE SEQUENCE usr_preferences_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.usr_preferences_id_seq OWNER TO kamailio;
+ALTER TABLE public.usr_preferences_id_seq OWNER TO omnileads;
 
 --
--- Name: usr_preferences_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: usr_preferences_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE usr_preferences_id_seq OWNED BY usr_preferences.id;
 
 
 --
--- Name: version; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: version; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE version (
@@ -4299,10 +4299,10 @@ CREATE TABLE version (
 );
 
 
-ALTER TABLE public.version OWNER TO kamailio;
+ALTER TABLE public.version OWNER TO omnileads;
 
 --
--- Name: watchers; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: watchers; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE watchers (
@@ -4317,10 +4317,10 @@ CREATE TABLE watchers (
 );
 
 
-ALTER TABLE public.watchers OWNER TO kamailio;
+ALTER TABLE public.watchers OWNER TO omnileads;
 
 --
--- Name: watchers_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: watchers_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE watchers_id_seq
@@ -4331,17 +4331,17 @@ CREATE SEQUENCE watchers_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.watchers_id_seq OWNER TO kamailio;
+ALTER TABLE public.watchers_id_seq OWNER TO omnileads;
 
 --
--- Name: watchers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: watchers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE watchers_id_seq OWNED BY watchers.id;
 
 
 --
--- Name: xcap; Type: TABLE; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: xcap; Type: TABLE; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE TABLE xcap (
@@ -4357,10 +4357,10 @@ CREATE TABLE xcap (
 );
 
 
-ALTER TABLE public.xcap OWNER TO kamailio;
+ALTER TABLE public.xcap OWNER TO omnileads;
 
 --
--- Name: xcap_id_seq; Type: SEQUENCE; Schema: public; Owner: kamailio
+-- Name: xcap_id_seq; Type: SEQUENCE; Schema: public; Owner: omnileads
 --
 
 CREATE SEQUENCE xcap_id_seq
@@ -4371,675 +4371,675 @@ CREATE SEQUENCE xcap_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.xcap_id_seq OWNER TO kamailio;
+ALTER TABLE public.xcap_id_seq OWNER TO omnileads;
 
 --
--- Name: xcap_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: kamailio
+-- Name: xcap_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: omnileads
 --
 
 ALTER SEQUENCE xcap_id_seq OWNED BY xcap.id;
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY acc ALTER COLUMN id SET DEFAULT nextval('acc_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY acc_cdrs ALTER COLUMN id SET DEFAULT nextval('acc_cdrs_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY active_watchers ALTER COLUMN id SET DEFAULT nextval('active_watchers_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY address ALTER COLUMN id SET DEFAULT nextval('address_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY aliases ALTER COLUMN id SET DEFAULT nextval('aliases_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY auth_group ALTER COLUMN id SET DEFAULT nextval('auth_group_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY auth_group_permissions ALTER COLUMN id SET DEFAULT nextval('auth_group_permissions_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY auth_permission ALTER COLUMN id SET DEFAULT nextval('auth_permission_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY carrier_name ALTER COLUMN id SET DEFAULT nextval('carrier_name_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY carrierfailureroute ALTER COLUMN id SET DEFAULT nextval('carrierfailureroute_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY carrierroute ALTER COLUMN id SET DEFAULT nextval('carrierroute_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY cpl ALTER COLUMN id SET DEFAULT nextval('cpl_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY dbaliases ALTER COLUMN id SET DEFAULT nextval('dbaliases_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY dialog ALTER COLUMN id SET DEFAULT nextval('dialog_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY dialog_vars ALTER COLUMN id SET DEFAULT nextval('dialog_vars_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY dialplan ALTER COLUMN id SET DEFAULT nextval('dialplan_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY dispatcher ALTER COLUMN id SET DEFAULT nextval('dispatcher_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY django_admin_log ALTER COLUMN id SET DEFAULT nextval('django_admin_log_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY django_content_type ALTER COLUMN id SET DEFAULT nextval('django_content_type_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY django_migrations ALTER COLUMN id SET DEFAULT nextval('django_migrations_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY domain ALTER COLUMN id SET DEFAULT nextval('domain_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY domain_attrs ALTER COLUMN id SET DEFAULT nextval('domain_attrs_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY domain_name ALTER COLUMN id SET DEFAULT nextval('domain_name_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY domainpolicy ALTER COLUMN id SET DEFAULT nextval('domainpolicy_id_seq'::regclass);
 
 
 --
--- Name: gwid; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: gwid; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY dr_gateways ALTER COLUMN gwid SET DEFAULT nextval('dr_gateways_gwid_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY dr_groups ALTER COLUMN id SET DEFAULT nextval('dr_groups_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY dr_gw_lists ALTER COLUMN id SET DEFAULT nextval('dr_gw_lists_id_seq'::regclass);
 
 
 --
--- Name: ruleid; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: ruleid; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY dr_rules ALTER COLUMN ruleid SET DEFAULT nextval('dr_rules_ruleid_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY globalblacklist ALTER COLUMN id SET DEFAULT nextval('globalblacklist_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY grp ALTER COLUMN id SET DEFAULT nextval('grp_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY htable ALTER COLUMN id SET DEFAULT nextval('htable_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY imc_members ALTER COLUMN id SET DEFAULT nextval('imc_members_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY imc_rooms ALTER COLUMN id SET DEFAULT nextval('imc_rooms_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY lcr_gw ALTER COLUMN id SET DEFAULT nextval('lcr_gw_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY lcr_rule ALTER COLUMN id SET DEFAULT nextval('lcr_rule_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY lcr_rule_target ALTER COLUMN id SET DEFAULT nextval('lcr_rule_target_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY location ALTER COLUMN id SET DEFAULT nextval('location_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY location_attrs ALTER COLUMN id SET DEFAULT nextval('location_attrs_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY mensaje_enviado ALTER COLUMN id SET DEFAULT nextval('mensaje_enviado_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY mensaje_recibido ALTER COLUMN id SET DEFAULT nextval('mensaje_recibido_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY missed_calls ALTER COLUMN id SET DEFAULT nextval('missed_calls_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY mohqcalls ALTER COLUMN id SET DEFAULT nextval('mohqcalls_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY mohqueues ALTER COLUMN id SET DEFAULT nextval('mohqueues_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY mtree ALTER COLUMN id SET DEFAULT nextval('mtree_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY mtrees ALTER COLUMN id SET DEFAULT nextval('mtrees_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenda ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_agenda_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_agenteprofile_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile_modulos ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_agenteprofile_modulos_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_basedatoscontacto ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_basedatoscontacto_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacion ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_calificacion_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncampana ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_calificacioncampana_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncampana_calificacion ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_calificacioncampana_calificacion_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncliente ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_calificacioncliente_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_campana ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_campana_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_chat ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_chat_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_contacto ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_contacto_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_duraciondellamada ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_duraciondellamada_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_fieldformulario ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_fieldformulario_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_formulario ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_formulario_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_grabacion ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_grabacion_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_grupo ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_grupo_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_mensajechat ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_mensajechat_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_metadatacliente ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_metadatacliente_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_modulo ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_modulo_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_pausa ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_pausa_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_queuelog ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_queuelog_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_user ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_user_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_user_groups ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_user_groups_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_user_user_permissions ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_user_user_permissions_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_wombatlog ALTER COLUMN id SET DEFAULT nextval('ominicontacto_app_wombatlog_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY pdt ALTER COLUMN id SET DEFAULT nextval('pdt_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY pl_pipes ALTER COLUMN id SET DEFAULT nextval('pl_pipes_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY presentity ALTER COLUMN id SET DEFAULT nextval('presentity_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY pua ALTER COLUMN id SET DEFAULT nextval('pua_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY purplemap ALTER COLUMN id SET DEFAULT nextval('purplemap_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY queue_member_table ALTER COLUMN id SET DEFAULT nextval('queue_member_table_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY re_grp ALTER COLUMN id SET DEFAULT nextval('re_grp_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY rls_presentity ALTER COLUMN id SET DEFAULT nextval('rls_presentity_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY rls_watchers ALTER COLUMN id SET DEFAULT nextval('rls_watchers_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY rtpproxy ALTER COLUMN id SET DEFAULT nextval('rtpproxy_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY sca_subscriptions ALTER COLUMN id SET DEFAULT nextval('sca_subscriptions_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY silo ALTER COLUMN id SET DEFAULT nextval('silo_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY sip_trace ALTER COLUMN id SET DEFAULT nextval('sip_trace_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY speed_dial ALTER COLUMN id SET DEFAULT nextval('speed_dial_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY subscriber ALTER COLUMN id SET DEFAULT nextval('subscriber_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY topos_d ALTER COLUMN id SET DEFAULT nextval('topos_d_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY topos_t ALTER COLUMN id SET DEFAULT nextval('topos_t_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY trusted ALTER COLUMN id SET DEFAULT nextval('trusted_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY uacreg ALTER COLUMN id SET DEFAULT nextval('uacreg_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY uri ALTER COLUMN id SET DEFAULT nextval('uri_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY userblacklist ALTER COLUMN id SET DEFAULT nextval('userblacklist_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY usr_preferences ALTER COLUMN id SET DEFAULT nextval('usr_preferences_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY watchers ALTER COLUMN id SET DEFAULT nextval('watchers_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: kamailio
+-- Name: id; Type: DEFAULT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY xcap ALTER COLUMN id SET DEFAULT nextval('xcap_id_seq'::regclass);
 
 
 --
--- Data for Name: acc; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: acc; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY acc (id, method, from_tag, to_tag, callid, sip_code, sip_reason, "time") FROM stdin;
@@ -5047,7 +5047,7 @@ COPY acc (id, method, from_tag, to_tag, callid, sip_code, sip_reason, "time") FR
 
 
 --
--- Data for Name: acc_cdrs; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: acc_cdrs; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY acc_cdrs (id, start_time, end_time, duration) FROM stdin;
@@ -5055,21 +5055,21 @@ COPY acc_cdrs (id, start_time, end_time, duration) FROM stdin;
 
 
 --
--- Name: acc_cdrs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: acc_cdrs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('acc_cdrs_id_seq', 1, false);
 
 
 --
--- Name: acc_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: acc_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('acc_id_seq', 1, false);
 
 
 --
--- Data for Name: active_watchers; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: active_watchers; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY active_watchers (id, presentity_uri, watcher_username, watcher_domain, to_user, to_domain, event, event_id, to_tag, from_tag, callid, local_cseq, remote_cseq, contact, record_route, expires, status, reason, version, socket_info, local_contact, from_user, from_domain, updated, updated_winfo, flags, user_agent) FROM stdin;
@@ -5077,14 +5077,14 @@ COPY active_watchers (id, presentity_uri, watcher_username, watcher_domain, to_u
 
 
 --
--- Name: active_watchers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: active_watchers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('active_watchers_id_seq', 1, false);
 
 
 --
--- Data for Name: address; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: address; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY address (id, grp, ip_addr, mask, port, tag) FROM stdin;
@@ -5092,14 +5092,14 @@ COPY address (id, grp, ip_addr, mask, port, tag) FROM stdin;
 
 
 --
--- Name: address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('address_id_seq', 1, false);
 
 
 --
--- Data for Name: aliases; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: aliases; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY aliases (id, ruid, username, domain, contact, received, path, expires, q, callid, cseq, last_modified, flags, cflags, user_agent, socket, methods, instance, reg_id, server_id, connection_id, keepalive, partition) FROM stdin;
@@ -5107,14 +5107,14 @@ COPY aliases (id, ruid, username, domain, contact, received, path, expires, q, c
 
 
 --
--- Name: aliases_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: aliases_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('aliases_id_seq', 1, false);
 
 
 --
--- Data for Name: auth_group; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: auth_group; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY auth_group (id, name) FROM stdin;
@@ -5122,14 +5122,14 @@ COPY auth_group (id, name) FROM stdin;
 
 
 --
--- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('auth_group_id_seq', 1, false);
 
 
 --
--- Data for Name: auth_group_permissions; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: auth_group_permissions; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY auth_group_permissions (id, group_id, permission_id) FROM stdin;
@@ -5137,14 +5137,14 @@ COPY auth_group_permissions (id, group_id, permission_id) FROM stdin;
 
 
 --
--- Name: auth_group_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: auth_group_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('auth_group_permissions_id_seq', 1, false);
 
 
 --
--- Data for Name: auth_permission; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: auth_permission; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
@@ -5152,14 +5152,14 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 
 
 --
--- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('auth_permission_id_seq', 1, false);
 
 
 --
--- Data for Name: carrier_name; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: carrier_name; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY carrier_name (id, carrier) FROM stdin;
@@ -5167,14 +5167,14 @@ COPY carrier_name (id, carrier) FROM stdin;
 
 
 --
--- Name: carrier_name_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: carrier_name_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('carrier_name_id_seq', 1, false);
 
 
 --
--- Data for Name: carrierfailureroute; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: carrierfailureroute; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY carrierfailureroute (id, carrier, domain, scan_prefix, host_name, reply_code, flags, mask, next_domain, description) FROM stdin;
@@ -5182,14 +5182,14 @@ COPY carrierfailureroute (id, carrier, domain, scan_prefix, host_name, reply_cod
 
 
 --
--- Name: carrierfailureroute_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: carrierfailureroute_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('carrierfailureroute_id_seq', 1, false);
 
 
 --
--- Data for Name: carrierroute; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: carrierroute; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY carrierroute (id, carrier, domain, scan_prefix, flags, mask, prob, strip, rewrite_host, rewrite_prefix, rewrite_suffix, description) FROM stdin;
@@ -5197,14 +5197,14 @@ COPY carrierroute (id, carrier, domain, scan_prefix, flags, mask, prob, strip, r
 
 
 --
--- Name: carrierroute_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: carrierroute_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('carrierroute_id_seq', 1, false);
 
 
 --
--- Data for Name: cpl; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: cpl; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY cpl (id, username, domain, cpl_xml, cpl_bin) FROM stdin;
@@ -5212,14 +5212,14 @@ COPY cpl (id, username, domain, cpl_xml, cpl_bin) FROM stdin;
 
 
 --
--- Name: cpl_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: cpl_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('cpl_id_seq', 1, false);
 
 
 --
--- Data for Name: dbaliases; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: dbaliases; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY dbaliases (id, alias_username, alias_domain, username, domain) FROM stdin;
@@ -5227,14 +5227,14 @@ COPY dbaliases (id, alias_username, alias_domain, username, domain) FROM stdin;
 
 
 --
--- Name: dbaliases_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: dbaliases_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('dbaliases_id_seq', 1, false);
 
 
 --
--- Data for Name: dialog; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: dialog; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY dialog (id, hash_entry, hash_id, callid, from_uri, from_tag, to_uri, to_tag, caller_cseq, callee_cseq, caller_route_set, callee_route_set, caller_contact, callee_contact, caller_sock, callee_sock, state, start_time, timeout, sflags, iflags, toroute_name, req_uri, xdata) FROM stdin;
@@ -5242,14 +5242,14 @@ COPY dialog (id, hash_entry, hash_id, callid, from_uri, from_tag, to_uri, to_tag
 
 
 --
--- Name: dialog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: dialog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('dialog_id_seq', 1, false);
 
 
 --
--- Data for Name: dialog_vars; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: dialog_vars; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY dialog_vars (id, hash_entry, hash_id, dialog_key, dialog_value) FROM stdin;
@@ -5257,14 +5257,14 @@ COPY dialog_vars (id, hash_entry, hash_id, dialog_key, dialog_value) FROM stdin;
 
 
 --
--- Name: dialog_vars_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: dialog_vars_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('dialog_vars_id_seq', 1, false);
 
 
 --
--- Data for Name: dialplan; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: dialplan; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY dialplan (id, dpid, pr, match_op, match_exp, match_len, subst_exp, repl_exp, attrs) FROM stdin;
@@ -5272,14 +5272,14 @@ COPY dialplan (id, dpid, pr, match_op, match_exp, match_len, subst_exp, repl_exp
 
 
 --
--- Name: dialplan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: dialplan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('dialplan_id_seq', 1, false);
 
 
 --
--- Data for Name: dispatcher; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: dispatcher; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY dispatcher (id, setid, destination, flags, priority, attrs, description) FROM stdin;
@@ -5287,14 +5287,14 @@ COPY dispatcher (id, setid, destination, flags, priority, attrs, description) FR
 
 
 --
--- Name: dispatcher_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: dispatcher_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('dispatcher_id_seq', 1, false);
 
 
 --
--- Data for Name: django_admin_log; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: django_admin_log; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY django_admin_log (id, action_time, object_id, object_repr, action_flag, change_message, content_type_id, user_id) FROM stdin;
@@ -5302,14 +5302,14 @@ COPY django_admin_log (id, action_time, object_id, object_repr, action_flag, cha
 
 
 --
--- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('django_admin_log_id_seq', 1, false);
 
 
 --
--- Data for Name: django_content_type; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: django_content_type; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY django_content_type (id, app_label, model) FROM stdin;
@@ -5317,14 +5317,14 @@ COPY django_content_type (id, app_label, model) FROM stdin;
 
 
 --
--- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('django_content_type_id_seq', 1, false);
 
 
 --
--- Data for Name: django_migrations; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: django_migrations; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY django_migrations (id, app, name, applied) FROM stdin;
@@ -5410,14 +5410,14 @@ COPY django_migrations (id, app, name, applied) FROM stdin;
 
 
 --
--- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('django_migrations_id_seq', 78, true);
 
 
 --
--- Data for Name: domain; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: domain; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY domain (id, domain, did, last_modified) FROM stdin;
@@ -5425,7 +5425,7 @@ COPY domain (id, domain, did, last_modified) FROM stdin;
 
 
 --
--- Data for Name: domain_attrs; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: domain_attrs; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY domain_attrs (id, did, name, type, value, last_modified) FROM stdin;
@@ -5433,21 +5433,21 @@ COPY domain_attrs (id, did, name, type, value, last_modified) FROM stdin;
 
 
 --
--- Name: domain_attrs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: domain_attrs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('domain_attrs_id_seq', 1, false);
 
 
 --
--- Name: domain_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: domain_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('domain_id_seq', 1, false);
 
 
 --
--- Data for Name: domain_name; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: domain_name; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY domain_name (id, domain) FROM stdin;
@@ -5455,14 +5455,14 @@ COPY domain_name (id, domain) FROM stdin;
 
 
 --
--- Name: domain_name_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: domain_name_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('domain_name_id_seq', 1, false);
 
 
 --
--- Data for Name: domainpolicy; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: domainpolicy; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY domainpolicy (id, rule, type, att, val, description) FROM stdin;
@@ -5470,14 +5470,14 @@ COPY domainpolicy (id, rule, type, att, val, description) FROM stdin;
 
 
 --
--- Name: domainpolicy_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: domainpolicy_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('domainpolicy_id_seq', 1, false);
 
 
 --
--- Data for Name: dr_gateways; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: dr_gateways; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY dr_gateways (gwid, type, address, strip, pri_prefix, attrs, description) FROM stdin;
@@ -5485,14 +5485,14 @@ COPY dr_gateways (gwid, type, address, strip, pri_prefix, attrs, description) FR
 
 
 --
--- Name: dr_gateways_gwid_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: dr_gateways_gwid_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('dr_gateways_gwid_seq', 1, false);
 
 
 --
--- Data for Name: dr_groups; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: dr_groups; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY dr_groups (id, username, domain, groupid, description) FROM stdin;
@@ -5500,14 +5500,14 @@ COPY dr_groups (id, username, domain, groupid, description) FROM stdin;
 
 
 --
--- Name: dr_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: dr_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('dr_groups_id_seq', 1, false);
 
 
 --
--- Data for Name: dr_gw_lists; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: dr_gw_lists; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY dr_gw_lists (id, gwlist, description) FROM stdin;
@@ -5515,14 +5515,14 @@ COPY dr_gw_lists (id, gwlist, description) FROM stdin;
 
 
 --
--- Name: dr_gw_lists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: dr_gw_lists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('dr_gw_lists_id_seq', 1, false);
 
 
 --
--- Data for Name: dr_rules; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: dr_rules; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY dr_rules (ruleid, groupid, prefix, timerec, priority, routeid, gwlist, description) FROM stdin;
@@ -5530,14 +5530,14 @@ COPY dr_rules (ruleid, groupid, prefix, timerec, priority, routeid, gwlist, desc
 
 
 --
--- Name: dr_rules_ruleid_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: dr_rules_ruleid_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('dr_rules_ruleid_seq', 1, false);
 
 
 --
--- Data for Name: globalblacklist; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: globalblacklist; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY globalblacklist (id, prefix, whitelist, description) FROM stdin;
@@ -5545,14 +5545,14 @@ COPY globalblacklist (id, prefix, whitelist, description) FROM stdin;
 
 
 --
--- Name: globalblacklist_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: globalblacklist_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('globalblacklist_id_seq', 1, false);
 
 
 --
--- Data for Name: grp; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: grp; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY grp (id, username, domain, grp, last_modified) FROM stdin;
@@ -5560,14 +5560,14 @@ COPY grp (id, username, domain, grp, last_modified) FROM stdin;
 
 
 --
--- Name: grp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: grp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('grp_id_seq', 1, false);
 
 
 --
--- Data for Name: htable; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: htable; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY htable (id, key_name, key_type, value_type, key_value, expires) FROM stdin;
@@ -5575,14 +5575,14 @@ COPY htable (id, key_name, key_type, value_type, key_value, expires) FROM stdin;
 
 
 --
--- Name: htable_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: htable_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('htable_id_seq', 1, false);
 
 
 --
--- Data for Name: imc_members; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: imc_members; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY imc_members (id, username, domain, room, flag) FROM stdin;
@@ -5590,14 +5590,14 @@ COPY imc_members (id, username, domain, room, flag) FROM stdin;
 
 
 --
--- Name: imc_members_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: imc_members_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('imc_members_id_seq', 1, false);
 
 
 --
--- Data for Name: imc_rooms; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: imc_rooms; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY imc_rooms (id, name, domain, flag) FROM stdin;
@@ -5605,14 +5605,14 @@ COPY imc_rooms (id, name, domain, flag) FROM stdin;
 
 
 --
--- Name: imc_rooms_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: imc_rooms_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('imc_rooms_id_seq', 1, false);
 
 
 --
--- Data for Name: lcr_gw; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: lcr_gw; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY lcr_gw (id, lcr_id, gw_name, ip_addr, hostname, port, params, uri_scheme, transport, strip, prefix, tag, flags, defunct) FROM stdin;
@@ -5620,14 +5620,14 @@ COPY lcr_gw (id, lcr_id, gw_name, ip_addr, hostname, port, params, uri_scheme, t
 
 
 --
--- Name: lcr_gw_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: lcr_gw_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('lcr_gw_id_seq', 1, false);
 
 
 --
--- Data for Name: lcr_rule; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: lcr_rule; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY lcr_rule (id, lcr_id, prefix, from_uri, request_uri, stopper, enabled) FROM stdin;
@@ -5635,14 +5635,14 @@ COPY lcr_rule (id, lcr_id, prefix, from_uri, request_uri, stopper, enabled) FROM
 
 
 --
--- Name: lcr_rule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: lcr_rule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('lcr_rule_id_seq', 1, false);
 
 
 --
--- Data for Name: lcr_rule_target; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: lcr_rule_target; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY lcr_rule_target (id, lcr_id, rule_id, gw_id, priority, weight) FROM stdin;
@@ -5650,14 +5650,14 @@ COPY lcr_rule_target (id, lcr_id, rule_id, gw_id, priority, weight) FROM stdin;
 
 
 --
--- Name: lcr_rule_target_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: lcr_rule_target_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('lcr_rule_target_id_seq', 1, false);
 
 
 --
--- Data for Name: location; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: location; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY location (id, ruid, username, domain, contact, received, path, expires, q, callid, cseq, last_modified, flags, cflags, user_agent, socket, methods, instance, reg_id, server_id, connection_id, keepalive, partition) FROM stdin;
@@ -5665,7 +5665,7 @@ COPY location (id, ruid, username, domain, contact, received, path, expires, q, 
 
 
 --
--- Data for Name: location_attrs; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: location_attrs; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY location_attrs (id, ruid, username, domain, aname, atype, avalue, last_modified) FROM stdin;
@@ -5673,21 +5673,21 @@ COPY location_attrs (id, ruid, username, domain, aname, atype, avalue, last_modi
 
 
 --
--- Name: location_attrs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: location_attrs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('location_attrs_id_seq', 1, false);
 
 
 --
--- Name: location_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: location_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('location_id_seq', 1, false);
 
 
 --
--- Data for Name: mensaje_enviado; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: mensaje_enviado; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY mensaje_enviado (id, remitente, destinatario, "timestamp", content, result, agente_id) FROM stdin;
@@ -5695,14 +5695,14 @@ COPY mensaje_enviado (id, remitente, destinatario, "timestamp", content, result,
 
 
 --
--- Name: mensaje_enviado_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: mensaje_enviado_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('mensaje_enviado_id_seq', 1, false);
 
 
 --
--- Data for Name: mensaje_recibido; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: mensaje_recibido; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY mensaje_recibido (id, remitente, destinatario, "timestamp", timezone, encoding, content, es_leido) FROM stdin;
@@ -5710,14 +5710,14 @@ COPY mensaje_recibido (id, remitente, destinatario, "timestamp", timezone, encod
 
 
 --
--- Name: mensaje_recibido_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: mensaje_recibido_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('mensaje_recibido_id_seq', 1, false);
 
 
 --
--- Data for Name: missed_calls; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: missed_calls; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY missed_calls (id, method, from_tag, to_tag, callid, sip_code, sip_reason, "time") FROM stdin;
@@ -5725,14 +5725,14 @@ COPY missed_calls (id, method, from_tag, to_tag, callid, sip_code, sip_reason, "
 
 
 --
--- Name: missed_calls_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: missed_calls_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('missed_calls_id_seq', 1, false);
 
 
 --
--- Data for Name: mohqcalls; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: mohqcalls; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY mohqcalls (id, mohq_id, call_id, call_status, call_from, call_contact, call_time) FROM stdin;
@@ -5740,14 +5740,14 @@ COPY mohqcalls (id, mohq_id, call_id, call_status, call_from, call_contact, call
 
 
 --
--- Name: mohqcalls_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: mohqcalls_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('mohqcalls_id_seq', 1, false);
 
 
 --
--- Data for Name: mohqueues; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: mohqueues; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY mohqueues (id, name, uri, mohdir, mohfile, debug) FROM stdin;
@@ -5755,14 +5755,14 @@ COPY mohqueues (id, name, uri, mohdir, mohfile, debug) FROM stdin;
 
 
 --
--- Name: mohqueues_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: mohqueues_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('mohqueues_id_seq', 1, false);
 
 
 --
--- Data for Name: mtree; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: mtree; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY mtree (id, tprefix, tvalue) FROM stdin;
@@ -5770,14 +5770,14 @@ COPY mtree (id, tprefix, tvalue) FROM stdin;
 
 
 --
--- Name: mtree_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: mtree_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('mtree_id_seq', 1, false);
 
 
 --
--- Data for Name: mtrees; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: mtrees; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY mtrees (id, tname, tprefix, tvalue) FROM stdin;
@@ -5785,14 +5785,14 @@ COPY mtrees (id, tname, tprefix, tvalue) FROM stdin;
 
 
 --
--- Name: mtrees_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: mtrees_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('mtrees_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_agenda; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_agenda; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_agenda (id, es_personal, fecha, hora, es_smart, medio_comunicacion, telefono, email, descripcion, agente_id) FROM stdin;
@@ -5800,14 +5800,14 @@ COPY ominicontacto_app_agenda (id, es_personal, fecha, hora, es_smart, medio_com
 
 
 --
--- Name: ominicontacto_app_agenda_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_agenda_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_agenda_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_agenteprofile; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_agenteprofile; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_agenteprofile (id, sip_extension, sip_password, grupo_id, user_id, estado) FROM stdin;
@@ -5815,14 +5815,14 @@ COPY ominicontacto_app_agenteprofile (id, sip_extension, sip_password, grupo_id,
 
 
 --
--- Name: ominicontacto_app_agenteprofile_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_agenteprofile_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_agenteprofile_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_agenteprofile_modulos; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_agenteprofile_modulos; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_agenteprofile_modulos (id, agenteprofile_id, modulo_id) FROM stdin;
@@ -5830,14 +5830,14 @@ COPY ominicontacto_app_agenteprofile_modulos (id, agenteprofile_id, modulo_id) F
 
 
 --
--- Name: ominicontacto_app_agenteprofile_modulos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_agenteprofile_modulos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_agenteprofile_modulos_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_basedatoscontacto; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_basedatoscontacto; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_basedatoscontacto (id, nombre, fecha_alta, archivo_importacion, nombre_archivo_importacion, metadata, sin_definir, cantidad_contactos, estado, oculto) FROM stdin;
@@ -5845,14 +5845,14 @@ COPY ominicontacto_app_basedatoscontacto (id, nombre, fecha_alta, archivo_import
 
 
 --
--- Name: ominicontacto_app_basedatoscontacto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_basedatoscontacto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_basedatoscontacto_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_calificacion; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_calificacion; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_calificacion (id, nombre) FROM stdin;
@@ -5860,14 +5860,14 @@ COPY ominicontacto_app_calificacion (id, nombre) FROM stdin;
 
 
 --
--- Name: ominicontacto_app_calificacion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_calificacion_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_calificacioncampana; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_calificacioncampana; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_calificacioncampana (id, nombre) FROM stdin;
@@ -5875,7 +5875,7 @@ COPY ominicontacto_app_calificacioncampana (id, nombre) FROM stdin;
 
 
 --
--- Data for Name: ominicontacto_app_calificacioncampana_calificacion; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_calificacioncampana_calificacion; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_calificacioncampana_calificacion (id, calificacioncampana_id, calificacion_id) FROM stdin;
@@ -5883,21 +5883,21 @@ COPY ominicontacto_app_calificacioncampana_calificacion (id, calificacioncampana
 
 
 --
--- Name: ominicontacto_app_calificacioncampana_calificacion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacioncampana_calificacion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_calificacioncampana_calificacion_id_seq', 1, false);
 
 
 --
--- Name: ominicontacto_app_calificacioncampana_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacioncampana_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_calificacioncampana_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_calificacioncliente; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_calificacioncliente; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_calificacioncliente (id, es_venta, calificacion_id, campana_id, contacto_id, fecha, agente_id, observaciones, wombat_id) FROM stdin;
@@ -5905,14 +5905,14 @@ COPY ominicontacto_app_calificacioncliente (id, es_venta, calificacion_id, campa
 
 
 --
--- Name: ominicontacto_app_calificacioncliente_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_calificacioncliente_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_calificacioncliente_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_campana; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_campana; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_campana (id, estado, nombre, fecha_inicio, fecha_fin, bd_contacto_id, calificacion_campana_id, formulario_id, campaign_id_wombat, oculto) FROM stdin;
@@ -5920,14 +5920,14 @@ COPY ominicontacto_app_campana (id, estado, nombre, fecha_inicio, fecha_fin, bd_
 
 
 --
--- Name: ominicontacto_app_campana_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_campana_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_campana_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_chat; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_chat; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_chat (id, fecha_hora_chat, agente_id, user_id) FROM stdin;
@@ -5935,14 +5935,14 @@ COPY ominicontacto_app_chat (id, fecha_hora_chat, agente_id, user_id) FROM stdin
 
 
 --
--- Name: ominicontacto_app_chat_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_chat_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_chat_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_contacto; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_contacto; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_contacto (id, datos, bd_contacto_id, telefono) FROM stdin;
@@ -5950,14 +5950,14 @@ COPY ominicontacto_app_contacto (id, datos, bd_contacto_id, telefono) FROM stdin
 
 
 --
--- Name: ominicontacto_app_contacto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_contacto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_contacto_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_duraciondellamada; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_duraciondellamada; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_duraciondellamada (id, numero_telefono, fecha_hora_llamada, tipo_llamada, duracion, agente_id) FROM stdin;
@@ -5965,14 +5965,14 @@ COPY ominicontacto_app_duraciondellamada (id, numero_telefono, fecha_hora_llamad
 
 
 --
--- Name: ominicontacto_app_duraciondellamada_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_duraciondellamada_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_duraciondellamada_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_fieldformulario; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_fieldformulario; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_fieldformulario (id, nombre_campo, orden, tipo, formulario_id, values_select, is_required) FROM stdin;
@@ -5980,14 +5980,14 @@ COPY ominicontacto_app_fieldformulario (id, nombre_campo, orden, tipo, formulari
 
 
 --
--- Name: ominicontacto_app_fieldformulario_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_fieldformulario_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_fieldformulario_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_formulario; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_formulario; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_formulario (id, nombre, descripcion) FROM stdin;
@@ -5995,14 +5995,14 @@ COPY ominicontacto_app_formulario (id, nombre, descripcion) FROM stdin;
 
 
 --
--- Name: ominicontacto_app_formulario_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_formulario_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_formulario_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_grabacion; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_grabacion; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_grabacion (id, fecha, tipo_llamada, id_cliente, tel_cliente, grabacion, sip_agente, campana_id) FROM stdin;
@@ -6010,14 +6010,14 @@ COPY ominicontacto_app_grabacion (id, fecha, tipo_llamada, id_cliente, tel_clien
 
 
 --
--- Name: ominicontacto_app_grabacion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_grabacion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_grabacion_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_grupo; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_grupo; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_grupo (id, nombre, auto_attend_dialer, auto_attend_ics, auto_attend_inbound, auto_pause) FROM stdin;
@@ -6025,14 +6025,14 @@ COPY ominicontacto_app_grupo (id, nombre, auto_attend_dialer, auto_attend_ics, a
 
 
 --
--- Name: ominicontacto_app_grupo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_grupo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_grupo_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_mensajechat; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_mensajechat; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_mensajechat (id, mensaje, fecha_hora, chat_id, sender_id, to_id) FROM stdin;
@@ -6040,14 +6040,14 @@ COPY ominicontacto_app_mensajechat (id, mensaje, fecha_hora, chat_id, sender_id,
 
 
 --
--- Name: ominicontacto_app_mensajechat_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_mensajechat_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_mensajechat_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_metadatacliente; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_metadatacliente; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_metadatacliente (id, metadata, agente_id, campana_id, contacto_id, fecha) FROM stdin;
@@ -6055,14 +6055,14 @@ COPY ominicontacto_app_metadatacliente (id, metadata, agente_id, campana_id, con
 
 
 --
--- Name: ominicontacto_app_metadatacliente_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_metadatacliente_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_metadatacliente_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_modulo; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_modulo; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_modulo (id, nombre) FROM stdin;
@@ -6070,14 +6070,14 @@ COPY ominicontacto_app_modulo (id, nombre) FROM stdin;
 
 
 --
--- Name: ominicontacto_app_modulo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_modulo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_modulo_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_pausa; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_pausa; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_pausa (id, nombre) FROM stdin;
@@ -6085,14 +6085,14 @@ COPY ominicontacto_app_pausa (id, nombre) FROM stdin;
 
 
 --
--- Name: ominicontacto_app_pausa_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_pausa_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_pausa_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_queuelog; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_queuelog; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_queuelog (id, "time", callid, queuename, campana_id, agent, agent_id, event, data1, data2, data3, data4, data5) FROM stdin;
@@ -6100,14 +6100,14 @@ COPY ominicontacto_app_queuelog (id, "time", callid, queuename, campana_id, agen
 
 
 --
--- Name: ominicontacto_app_queuelog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_queuelog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_queuelog_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_user; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_user; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined, is_agente, is_customer, is_supervisor) FROM stdin;
@@ -6115,7 +6115,7 @@ COPY ominicontacto_app_user (id, password, last_login, is_superuser, username, f
 
 
 --
--- Data for Name: ominicontacto_app_user_groups; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_user_groups; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_user_groups (id, user_id, group_id) FROM stdin;
@@ -6123,21 +6123,21 @@ COPY ominicontacto_app_user_groups (id, user_id, group_id) FROM stdin;
 
 
 --
--- Name: ominicontacto_app_user_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_user_groups_id_seq', 1, false);
 
 
 --
--- Name: ominicontacto_app_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_user_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_user_user_permissions; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_user_user_permissions; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_user_user_permissions (id, user_id, permission_id) FROM stdin;
@@ -6145,14 +6145,14 @@ COPY ominicontacto_app_user_user_permissions (id, user_id, permission_id) FROM s
 
 
 --
--- Name: ominicontacto_app_user_user_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_user_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_user_user_permissions_id_seq', 1, false);
 
 
 --
--- Data for Name: ominicontacto_app_wombatlog; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: ominicontacto_app_wombatlog; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY ominicontacto_app_wombatlog (id, telefono, estado, calificacion, timeout, metadata, fecha_hora, agente_id, campana_id, contacto_id) FROM stdin;
@@ -6160,14 +6160,14 @@ COPY ominicontacto_app_wombatlog (id, telefono, estado, calificacion, timeout, m
 
 
 --
--- Name: ominicontacto_app_wombatlog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_wombatlog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('ominicontacto_app_wombatlog_id_seq', 1, false);
 
 
 --
--- Data for Name: pdt; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: pdt; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY pdt (id, sdomain, prefix, domain) FROM stdin;
@@ -6175,14 +6175,14 @@ COPY pdt (id, sdomain, prefix, domain) FROM stdin;
 
 
 --
--- Name: pdt_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: pdt_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('pdt_id_seq', 1, false);
 
 
 --
--- Data for Name: pl_pipes; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: pl_pipes; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY pl_pipes (id, pipeid, algorithm, plimit) FROM stdin;
@@ -6190,14 +6190,14 @@ COPY pl_pipes (id, pipeid, algorithm, plimit) FROM stdin;
 
 
 --
--- Name: pl_pipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: pl_pipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('pl_pipes_id_seq', 1, false);
 
 
 --
--- Data for Name: presentity; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: presentity; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY presentity (id, username, domain, event, etag, expires, received_time, body, sender, priority) FROM stdin;
@@ -6205,14 +6205,14 @@ COPY presentity (id, username, domain, event, etag, expires, received_time, body
 
 
 --
--- Name: presentity_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: presentity_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('presentity_id_seq', 1, false);
 
 
 --
--- Data for Name: pua; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: pua; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY pua (id, pres_uri, pres_id, event, expires, desired_expires, flag, etag, tuple_id, watcher_uri, call_id, to_tag, from_tag, cseq, record_route, contact, remote_contact, version, extra_headers) FROM stdin;
@@ -6220,14 +6220,14 @@ COPY pua (id, pres_uri, pres_id, event, expires, desired_expires, flag, etag, tu
 
 
 --
--- Name: pua_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: pua_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('pua_id_seq', 1, false);
 
 
 --
--- Data for Name: purplemap; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: purplemap; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY purplemap (id, sip_user, ext_user, ext_prot, ext_pass) FROM stdin;
@@ -6235,14 +6235,14 @@ COPY purplemap (id, sip_user, ext_user, ext_prot, ext_pass) FROM stdin;
 
 
 --
--- Name: purplemap_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: purplemap_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('purplemap_id_seq', 1, false);
 
 
 --
--- Data for Name: queue_member_table; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: queue_member_table; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY queue_member_table (id, membername, interface, penalty, paused, member_id, queue_name) FROM stdin;
@@ -6250,14 +6250,14 @@ COPY queue_member_table (id, membername, interface, penalty, paused, member_id, 
 
 
 --
--- Name: queue_member_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: queue_member_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('queue_member_table_id_seq', 1, false);
 
 
 --
--- Data for Name: queue_table; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: queue_table; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY queue_table (name, timeout, retry, maxlen, wrapuptime, servicelevel, strategy, eventmemberstatus, eventwhencalled, weight, ringinuse, setinterfacevar, musiconhold, announce, context, monitor_join, monitor_format, queue_youarenext, queue_thereare, queue_callswaiting, queue_holdtime, queue_minutes, queue_seconds, queue_lessthan, queue_thankyou, queue_reporthold, announce_frequency, announce_round_seconds, announce_holdtime, joinempty, leavewhenempty, reportholdtime, memberdelay, timeoutrestart, type, wait, queue_asterisk, auto_grabacion, campana_id, ep_id_wombat) FROM stdin;
@@ -6265,7 +6265,7 @@ COPY queue_table (name, timeout, retry, maxlen, wrapuptime, servicelevel, strate
 
 
 --
--- Data for Name: re_grp; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: re_grp; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY re_grp (id, reg_exp, group_id) FROM stdin;
@@ -6273,14 +6273,14 @@ COPY re_grp (id, reg_exp, group_id) FROM stdin;
 
 
 --
--- Name: re_grp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: re_grp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('re_grp_id_seq', 1, false);
 
 
 --
--- Data for Name: rls_presentity; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: rls_presentity; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY rls_presentity (id, rlsubs_did, resource_uri, content_type, presence_state, expires, updated, auth_state, reason) FROM stdin;
@@ -6288,14 +6288,14 @@ COPY rls_presentity (id, rlsubs_did, resource_uri, content_type, presence_state,
 
 
 --
--- Name: rls_presentity_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: rls_presentity_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('rls_presentity_id_seq', 1, false);
 
 
 --
--- Data for Name: rls_watchers; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: rls_watchers; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY rls_watchers (id, presentity_uri, to_user, to_domain, watcher_username, watcher_domain, event, event_id, to_tag, from_tag, callid, local_cseq, remote_cseq, contact, record_route, expires, status, reason, version, socket_info, local_contact, from_user, from_domain, updated) FROM stdin;
@@ -6303,14 +6303,14 @@ COPY rls_watchers (id, presentity_uri, to_user, to_domain, watcher_username, wat
 
 
 --
--- Name: rls_watchers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: rls_watchers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('rls_watchers_id_seq', 1, false);
 
 
 --
--- Data for Name: rtpproxy; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: rtpproxy; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY rtpproxy (id, setid, url, flags, weight, description) FROM stdin;
@@ -6318,14 +6318,14 @@ COPY rtpproxy (id, setid, url, flags, weight, description) FROM stdin;
 
 
 --
--- Name: rtpproxy_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: rtpproxy_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('rtpproxy_id_seq', 1, false);
 
 
 --
--- Data for Name: sca_subscriptions; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: sca_subscriptions; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY sca_subscriptions (id, subscriber, aor, event, expires, state, app_idx, call_id, from_tag, to_tag, record_route, notify_cseq, subscribe_cseq) FROM stdin;
@@ -6333,14 +6333,14 @@ COPY sca_subscriptions (id, subscriber, aor, event, expires, state, app_idx, cal
 
 
 --
--- Name: sca_subscriptions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: sca_subscriptions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('sca_subscriptions_id_seq', 1, false);
 
 
 --
--- Data for Name: silo; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: silo; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY silo (id, src_addr, dst_addr, username, domain, inc_time, exp_time, snd_time, ctype, body, extra_hdrs, callid, status) FROM stdin;
@@ -6348,14 +6348,14 @@ COPY silo (id, src_addr, dst_addr, username, domain, inc_time, exp_time, snd_tim
 
 
 --
--- Name: silo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: silo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('silo_id_seq', 1, false);
 
 
 --
--- Data for Name: sip_trace; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: sip_trace; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY sip_trace (id, time_stamp, time_us, callid, traced_user, msg, method, status, fromip, toip, fromtag, totag, direction) FROM stdin;
@@ -6363,14 +6363,14 @@ COPY sip_trace (id, time_stamp, time_us, callid, traced_user, msg, method, statu
 
 
 --
--- Name: sip_trace_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: sip_trace_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('sip_trace_id_seq', 1, false);
 
 
 --
--- Data for Name: speed_dial; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: speed_dial; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY speed_dial (id, username, domain, sd_username, sd_domain, new_uri, fname, lname, description) FROM stdin;
@@ -6378,14 +6378,14 @@ COPY speed_dial (id, username, domain, sd_username, sd_domain, new_uri, fname, l
 
 
 --
--- Name: speed_dial_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: speed_dial_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('speed_dial_id_seq', 1, false);
 
 
 --
--- Data for Name: subscriber; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: subscriber; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY subscriber (id, username, domain, password, email_address, ha1, ha1b, rpid) FROM stdin;
@@ -6393,14 +6393,14 @@ COPY subscriber (id, username, domain, password, email_address, ha1, ha1b, rpid)
 
 
 --
--- Name: subscriber_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: subscriber_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('subscriber_id_seq', 1, false);
 
 
 --
--- Data for Name: topos_d; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: topos_d; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY topos_d (id, rectime, s_method, s_cseq, a_callid, a_uuid, b_uuid, a_contact, b_contact, as_contact, bs_contact, a_tag, b_tag, a_rr, b_rr, s_rr, iflags, a_uri, b_uri, r_uri, a_srcaddr, b_srcaddr, a_socket, b_socket) FROM stdin;
@@ -6408,14 +6408,14 @@ COPY topos_d (id, rectime, s_method, s_cseq, a_callid, a_uuid, b_uuid, a_contact
 
 
 --
--- Name: topos_d_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: topos_d_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('topos_d_id_seq', 1, false);
 
 
 --
--- Data for Name: topos_t; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: topos_t; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY topos_t (id, rectime, s_method, s_cseq, a_callid, a_uuid, b_uuid, direction, x_via, x_vbranch, x_rr, y_rr, s_rr, x_uri, a_contact, b_contact, as_contact, bs_contact, x_tag, a_tag, b_tag, a_srcaddr, b_srcaddr, a_socket, b_socket) FROM stdin;
@@ -6423,14 +6423,14 @@ COPY topos_t (id, rectime, s_method, s_cseq, a_callid, a_uuid, b_uuid, direction
 
 
 --
--- Name: topos_t_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: topos_t_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('topos_t_id_seq', 1, false);
 
 
 --
--- Data for Name: trusted; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: trusted; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY trusted (id, src_ip, proto, from_pattern, ruri_pattern, tag, priority) FROM stdin;
@@ -6438,14 +6438,14 @@ COPY trusted (id, src_ip, proto, from_pattern, ruri_pattern, tag, priority) FROM
 
 
 --
--- Name: trusted_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: trusted_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('trusted_id_seq', 1, false);
 
 
 --
--- Data for Name: uacreg; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: uacreg; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY uacreg (id, l_uuid, l_username, l_domain, r_username, r_domain, realm, auth_username, auth_password, auth_proxy, expires, flags, reg_delay) FROM stdin;
@@ -6453,14 +6453,14 @@ COPY uacreg (id, l_uuid, l_username, l_domain, r_username, r_domain, realm, auth
 
 
 --
--- Name: uacreg_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: uacreg_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('uacreg_id_seq', 1, false);
 
 
 --
--- Data for Name: uri; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: uri; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY uri (id, username, domain, uri_user, last_modified) FROM stdin;
@@ -6468,14 +6468,14 @@ COPY uri (id, username, domain, uri_user, last_modified) FROM stdin;
 
 
 --
--- Name: uri_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: uri_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('uri_id_seq', 1, false);
 
 
 --
--- Data for Name: userblacklist; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: userblacklist; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY userblacklist (id, username, domain, prefix, whitelist) FROM stdin;
@@ -6483,14 +6483,14 @@ COPY userblacklist (id, username, domain, prefix, whitelist) FROM stdin;
 
 
 --
--- Name: userblacklist_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: userblacklist_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('userblacklist_id_seq', 1, false);
 
 
 --
--- Data for Name: usr_preferences; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: usr_preferences; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY usr_preferences (id, uuid, username, domain, attribute, type, value, last_modified) FROM stdin;
@@ -6498,14 +6498,14 @@ COPY usr_preferences (id, uuid, username, domain, attribute, type, value, last_m
 
 
 --
--- Name: usr_preferences_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: usr_preferences_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('usr_preferences_id_seq', 1, false);
 
 
 --
--- Data for Name: version; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: version; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY version (table_name, table_version) FROM stdin;
@@ -6574,7 +6574,7 @@ rtpproxy	1
 
 
 --
--- Data for Name: watchers; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: watchers; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY watchers (id, presentity_uri, watcher_username, watcher_domain, event, status, reason, inserted_time) FROM stdin;
@@ -6582,14 +6582,14 @@ COPY watchers (id, presentity_uri, watcher_username, watcher_domain, event, stat
 
 
 --
--- Name: watchers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: watchers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('watchers_id_seq', 1, false);
 
 
 --
--- Data for Name: xcap; Type: TABLE DATA; Schema: public; Owner: kamailio
+-- Data for Name: xcap; Type: TABLE DATA; Schema: public; Owner: omnileads
 --
 
 COPY xcap (id, username, domain, doc, doc_type, etag, source, doc_uri, port) FROM stdin;
@@ -6597,14 +6597,14 @@ COPY xcap (id, username, domain, doc, doc_type, etag, source, doc_uri, port) FRO
 
 
 --
--- Name: xcap_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kamailio
+-- Name: xcap_id_seq; Type: SEQUENCE SET; Schema: public; Owner: omnileads
 --
 
 SELECT pg_catalog.setval('xcap_id_seq', 1, false);
 
 
 --
--- Name: acc_cdrs_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: acc_cdrs_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY acc_cdrs
@@ -6612,7 +6612,7 @@ ALTER TABLE ONLY acc_cdrs
 
 
 --
--- Name: acc_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: acc_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY acc
@@ -6620,7 +6620,7 @@ ALTER TABLE ONLY acc
 
 
 --
--- Name: active_watchers_active_watchers_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: active_watchers_active_watchers_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY active_watchers
@@ -6628,7 +6628,7 @@ ALTER TABLE ONLY active_watchers
 
 
 --
--- Name: active_watchers_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: active_watchers_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY active_watchers
@@ -6636,7 +6636,7 @@ ALTER TABLE ONLY active_watchers
 
 
 --
--- Name: address_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: address_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY address
@@ -6644,7 +6644,7 @@ ALTER TABLE ONLY address
 
 
 --
--- Name: aliases_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: aliases_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY aliases
@@ -6652,7 +6652,7 @@ ALTER TABLE ONLY aliases
 
 
 --
--- Name: aliases_ruid_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: aliases_ruid_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY aliases
@@ -6660,7 +6660,7 @@ ALTER TABLE ONLY aliases
 
 
 --
--- Name: auth_group_name_key; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_group_name_key; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_group
@@ -6668,7 +6668,7 @@ ALTER TABLE ONLY auth_group
 
 
 --
--- Name: auth_group_permissions_group_id_0cd325b0_uniq; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_group_permissions_group_id_0cd325b0_uniq; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_group_permissions
@@ -6676,7 +6676,7 @@ ALTER TABLE ONLY auth_group_permissions
 
 
 --
--- Name: auth_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_group_permissions
@@ -6684,7 +6684,7 @@ ALTER TABLE ONLY auth_group_permissions
 
 
 --
--- Name: auth_group_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_group_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_group
@@ -6692,7 +6692,7 @@ ALTER TABLE ONLY auth_group
 
 
 --
--- Name: auth_permission_content_type_id_01ab375a_uniq; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_permission_content_type_id_01ab375a_uniq; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_permission
@@ -6700,7 +6700,7 @@ ALTER TABLE ONLY auth_permission
 
 
 --
--- Name: auth_permission_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_permission_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY auth_permission
@@ -6708,7 +6708,7 @@ ALTER TABLE ONLY auth_permission
 
 
 --
--- Name: carrier_name_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: carrier_name_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY carrier_name
@@ -6716,7 +6716,7 @@ ALTER TABLE ONLY carrier_name
 
 
 --
--- Name: carrierfailureroute_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: carrierfailureroute_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY carrierfailureroute
@@ -6724,7 +6724,7 @@ ALTER TABLE ONLY carrierfailureroute
 
 
 --
--- Name: carrierroute_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: carrierroute_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY carrierroute
@@ -6732,7 +6732,7 @@ ALTER TABLE ONLY carrierroute
 
 
 --
--- Name: cpl_account_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: cpl_account_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY cpl
@@ -6740,7 +6740,7 @@ ALTER TABLE ONLY cpl
 
 
 --
--- Name: cpl_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: cpl_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY cpl
@@ -6748,7 +6748,7 @@ ALTER TABLE ONLY cpl
 
 
 --
--- Name: dbaliases_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dbaliases_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY dbaliases
@@ -6756,7 +6756,7 @@ ALTER TABLE ONLY dbaliases
 
 
 --
--- Name: dialog_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dialog_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY dialog
@@ -6764,7 +6764,7 @@ ALTER TABLE ONLY dialog
 
 
 --
--- Name: dialog_vars_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dialog_vars_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY dialog_vars
@@ -6772,7 +6772,7 @@ ALTER TABLE ONLY dialog_vars
 
 
 --
--- Name: dialplan_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dialplan_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY dialplan
@@ -6780,7 +6780,7 @@ ALTER TABLE ONLY dialplan
 
 
 --
--- Name: dispatcher_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dispatcher_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY dispatcher
@@ -6788,7 +6788,7 @@ ALTER TABLE ONLY dispatcher
 
 
 --
--- Name: django_admin_log_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: django_admin_log_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY django_admin_log
@@ -6796,7 +6796,7 @@ ALTER TABLE ONLY django_admin_log
 
 
 --
--- Name: django_content_type_app_label_76bd3d3b_uniq; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: django_content_type_app_label_76bd3d3b_uniq; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY django_content_type
@@ -6804,7 +6804,7 @@ ALTER TABLE ONLY django_content_type
 
 
 --
--- Name: django_content_type_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: django_content_type_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY django_content_type
@@ -6812,7 +6812,7 @@ ALTER TABLE ONLY django_content_type
 
 
 --
--- Name: django_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: django_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY django_migrations
@@ -6820,7 +6820,7 @@ ALTER TABLE ONLY django_migrations
 
 
 --
--- Name: domain_attrs_domain_attrs_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domain_attrs_domain_attrs_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY domain_attrs
@@ -6828,7 +6828,7 @@ ALTER TABLE ONLY domain_attrs
 
 
 --
--- Name: domain_attrs_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domain_attrs_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY domain_attrs
@@ -6836,7 +6836,7 @@ ALTER TABLE ONLY domain_attrs
 
 
 --
--- Name: domain_domain_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domain_domain_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY domain
@@ -6844,7 +6844,7 @@ ALTER TABLE ONLY domain
 
 
 --
--- Name: domain_name_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domain_name_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY domain_name
@@ -6852,7 +6852,7 @@ ALTER TABLE ONLY domain_name
 
 
 --
--- Name: domain_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domain_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY domain
@@ -6860,7 +6860,7 @@ ALTER TABLE ONLY domain
 
 
 --
--- Name: domainpolicy_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domainpolicy_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY domainpolicy
@@ -6868,7 +6868,7 @@ ALTER TABLE ONLY domainpolicy
 
 
 --
--- Name: domainpolicy_rav_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domainpolicy_rav_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY domainpolicy
@@ -6876,7 +6876,7 @@ ALTER TABLE ONLY domainpolicy
 
 
 --
--- Name: dr_gateways_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dr_gateways_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY dr_gateways
@@ -6884,7 +6884,7 @@ ALTER TABLE ONLY dr_gateways
 
 
 --
--- Name: dr_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dr_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY dr_groups
@@ -6892,7 +6892,7 @@ ALTER TABLE ONLY dr_groups
 
 
 --
--- Name: dr_gw_lists_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dr_gw_lists_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY dr_gw_lists
@@ -6900,7 +6900,7 @@ ALTER TABLE ONLY dr_gw_lists
 
 
 --
--- Name: dr_rules_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dr_rules_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY dr_rules
@@ -6908,7 +6908,7 @@ ALTER TABLE ONLY dr_rules
 
 
 --
--- Name: globalblacklist_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: globalblacklist_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY globalblacklist
@@ -6916,7 +6916,7 @@ ALTER TABLE ONLY globalblacklist
 
 
 --
--- Name: grp_account_group_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: grp_account_group_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY grp
@@ -6924,7 +6924,7 @@ ALTER TABLE ONLY grp
 
 
 --
--- Name: grp_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: grp_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY grp
@@ -6932,7 +6932,7 @@ ALTER TABLE ONLY grp
 
 
 --
--- Name: htable_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: htable_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY htable
@@ -6940,7 +6940,7 @@ ALTER TABLE ONLY htable
 
 
 --
--- Name: imc_members_account_room_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: imc_members_account_room_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY imc_members
@@ -6948,7 +6948,7 @@ ALTER TABLE ONLY imc_members
 
 
 --
--- Name: imc_members_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: imc_members_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY imc_members
@@ -6956,7 +6956,7 @@ ALTER TABLE ONLY imc_members
 
 
 --
--- Name: imc_rooms_name_domain_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: imc_rooms_name_domain_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY imc_rooms
@@ -6964,7 +6964,7 @@ ALTER TABLE ONLY imc_rooms
 
 
 --
--- Name: imc_rooms_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: imc_rooms_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY imc_rooms
@@ -6972,7 +6972,7 @@ ALTER TABLE ONLY imc_rooms
 
 
 --
--- Name: lcr_gw_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: lcr_gw_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY lcr_gw
@@ -6980,7 +6980,7 @@ ALTER TABLE ONLY lcr_gw
 
 
 --
--- Name: lcr_rule_lcr_id_prefix_from_uri_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: lcr_rule_lcr_id_prefix_from_uri_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY lcr_rule
@@ -6988,7 +6988,7 @@ ALTER TABLE ONLY lcr_rule
 
 
 --
--- Name: lcr_rule_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: lcr_rule_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY lcr_rule
@@ -6996,7 +6996,7 @@ ALTER TABLE ONLY lcr_rule
 
 
 --
--- Name: lcr_rule_target_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: lcr_rule_target_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY lcr_rule_target
@@ -7004,7 +7004,7 @@ ALTER TABLE ONLY lcr_rule_target
 
 
 --
--- Name: lcr_rule_target_rule_id_gw_id_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: lcr_rule_target_rule_id_gw_id_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY lcr_rule_target
@@ -7012,7 +7012,7 @@ ALTER TABLE ONLY lcr_rule_target
 
 
 --
--- Name: location_attrs_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: location_attrs_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY location_attrs
@@ -7020,7 +7020,7 @@ ALTER TABLE ONLY location_attrs
 
 
 --
--- Name: location_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: location_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY location
@@ -7028,7 +7028,7 @@ ALTER TABLE ONLY location
 
 
 --
--- Name: location_ruid_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: location_ruid_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY location
@@ -7036,7 +7036,7 @@ ALTER TABLE ONLY location
 
 
 --
--- Name: mensaje_enviado_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mensaje_enviado_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mensaje_enviado
@@ -7044,7 +7044,7 @@ ALTER TABLE ONLY mensaje_enviado
 
 
 --
--- Name: mensaje_recibido_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mensaje_recibido_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mensaje_recibido
@@ -7052,7 +7052,7 @@ ALTER TABLE ONLY mensaje_recibido
 
 
 --
--- Name: missed_calls_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: missed_calls_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY missed_calls
@@ -7060,7 +7060,7 @@ ALTER TABLE ONLY missed_calls
 
 
 --
--- Name: mohqcalls_mohqcalls_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mohqcalls_mohqcalls_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mohqcalls
@@ -7068,7 +7068,7 @@ ALTER TABLE ONLY mohqcalls
 
 
 --
--- Name: mohqcalls_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mohqcalls_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mohqcalls
@@ -7076,7 +7076,7 @@ ALTER TABLE ONLY mohqcalls
 
 
 --
--- Name: mohqueues_mohqueue_name_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mohqueues_mohqueue_name_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mohqueues
@@ -7084,7 +7084,7 @@ ALTER TABLE ONLY mohqueues
 
 
 --
--- Name: mohqueues_mohqueue_uri_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mohqueues_mohqueue_uri_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mohqueues
@@ -7092,7 +7092,7 @@ ALTER TABLE ONLY mohqueues
 
 
 --
--- Name: mohqueues_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mohqueues_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mohqueues
@@ -7100,7 +7100,7 @@ ALTER TABLE ONLY mohqueues
 
 
 --
--- Name: mtree_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mtree_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mtree
@@ -7108,7 +7108,7 @@ ALTER TABLE ONLY mtree
 
 
 --
--- Name: mtree_tprefix_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mtree_tprefix_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mtree
@@ -7116,7 +7116,7 @@ ALTER TABLE ONLY mtree
 
 
 --
--- Name: mtrees_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mtrees_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mtrees
@@ -7124,7 +7124,7 @@ ALTER TABLE ONLY mtrees
 
 
 --
--- Name: mtrees_tname_tprefix_tvalue_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mtrees_tname_tprefix_tvalue_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY mtrees
@@ -7132,7 +7132,7 @@ ALTER TABLE ONLY mtrees
 
 
 --
--- Name: ominicontacto_app_agenda_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenda_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenda
@@ -7140,7 +7140,7 @@ ALTER TABLE ONLY ominicontacto_app_agenda
 
 
 --
--- Name: ominicontacto_app_agenteprofile__agenteprofile_id_acebf09b_uniq; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenteprofile__agenteprofile_id_acebf09b_uniq; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile_modulos
@@ -7148,7 +7148,7 @@ ALTER TABLE ONLY ominicontacto_app_agenteprofile_modulos
 
 
 --
--- Name: ominicontacto_app_agenteprofile_modulos_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenteprofile_modulos_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile_modulos
@@ -7156,7 +7156,7 @@ ALTER TABLE ONLY ominicontacto_app_agenteprofile_modulos
 
 
 --
--- Name: ominicontacto_app_agenteprofile_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenteprofile_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile
@@ -7164,7 +7164,7 @@ ALTER TABLE ONLY ominicontacto_app_agenteprofile
 
 
 --
--- Name: ominicontacto_app_agenteprofile_sip_extension_key; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenteprofile_sip_extension_key; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile
@@ -7172,7 +7172,7 @@ ALTER TABLE ONLY ominicontacto_app_agenteprofile
 
 
 --
--- Name: ominicontacto_app_agenteprofile_user_id_key; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenteprofile_user_id_key; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile
@@ -7180,7 +7180,7 @@ ALTER TABLE ONLY ominicontacto_app_agenteprofile
 
 
 --
--- Name: ominicontacto_app_basedatoscontacto_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_basedatoscontacto_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_basedatoscontacto
@@ -7188,7 +7188,7 @@ ALTER TABLE ONLY ominicontacto_app_basedatoscontacto
 
 
 --
--- Name: ominicontacto_app_califica_calificacioncampana_id_8a83ac71_uniq; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_califica_calificacioncampana_id_8a83ac71_uniq; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncampana_calificacion
@@ -7196,7 +7196,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncampana_calificacion
 
 
 --
--- Name: ominicontacto_app_calificacion_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacion_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacion
@@ -7204,7 +7204,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacion
 
 
 --
--- Name: ominicontacto_app_calificacioncampana_calificacion_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncampana_calificacion_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncampana_calificacion
@@ -7212,7 +7212,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncampana_calificacion
 
 
 --
--- Name: ominicontacto_app_calificacioncampana_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncampana_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncampana
@@ -7220,7 +7220,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncampana
 
 
 --
--- Name: ominicontacto_app_calificacioncliente_contacto_id_key; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncliente_contacto_id_key; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncliente
@@ -7228,7 +7228,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncliente
 
 
 --
--- Name: ominicontacto_app_calificacioncliente_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncliente_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncliente
@@ -7236,7 +7236,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncliente
 
 
 --
--- Name: ominicontacto_app_campana_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_campana_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_campana
@@ -7244,7 +7244,7 @@ ALTER TABLE ONLY ominicontacto_app_campana
 
 
 --
--- Name: ominicontacto_app_chat_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_chat_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_chat
@@ -7252,7 +7252,7 @@ ALTER TABLE ONLY ominicontacto_app_chat
 
 
 --
--- Name: ominicontacto_app_contacto_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_contacto_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_contacto
@@ -7260,7 +7260,7 @@ ALTER TABLE ONLY ominicontacto_app_contacto
 
 
 --
--- Name: ominicontacto_app_duraciondellamada_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_duraciondellamada_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_duraciondellamada
@@ -7268,7 +7268,7 @@ ALTER TABLE ONLY ominicontacto_app_duraciondellamada
 
 
 --
--- Name: ominicontacto_app_fieldformulario_orden_6218007e_uniq; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_fieldformulario_orden_6218007e_uniq; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_fieldformulario
@@ -7276,7 +7276,7 @@ ALTER TABLE ONLY ominicontacto_app_fieldformulario
 
 
 --
--- Name: ominicontacto_app_fieldformulario_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_fieldformulario_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_fieldformulario
@@ -7284,7 +7284,7 @@ ALTER TABLE ONLY ominicontacto_app_fieldformulario
 
 
 --
--- Name: ominicontacto_app_formulario_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_formulario_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_formulario
@@ -7292,7 +7292,7 @@ ALTER TABLE ONLY ominicontacto_app_formulario
 
 
 --
--- Name: ominicontacto_app_grabacion_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_grabacion_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_grabacion
@@ -7300,7 +7300,7 @@ ALTER TABLE ONLY ominicontacto_app_grabacion
 
 
 --
--- Name: ominicontacto_app_grupo_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_grupo_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_grupo
@@ -7308,7 +7308,7 @@ ALTER TABLE ONLY ominicontacto_app_grupo
 
 
 --
--- Name: ominicontacto_app_mensajechat_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_mensajechat_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_mensajechat
@@ -7316,7 +7316,7 @@ ALTER TABLE ONLY ominicontacto_app_mensajechat
 
 
 --
--- Name: ominicontacto_app_metadatacliente_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_metadatacliente_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_metadatacliente
@@ -7324,7 +7324,7 @@ ALTER TABLE ONLY ominicontacto_app_metadatacliente
 
 
 --
--- Name: ominicontacto_app_modulo_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_modulo_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_modulo
@@ -7332,7 +7332,7 @@ ALTER TABLE ONLY ominicontacto_app_modulo
 
 
 --
--- Name: ominicontacto_app_pausa_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_pausa_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_pausa
@@ -7340,7 +7340,7 @@ ALTER TABLE ONLY ominicontacto_app_pausa
 
 
 --
--- Name: ominicontacto_app_queuelog_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_queuelog_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_queuelog
@@ -7348,7 +7348,7 @@ ALTER TABLE ONLY ominicontacto_app_queuelog
 
 
 --
--- Name: ominicontacto_app_user_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_user_groups
@@ -7356,7 +7356,7 @@ ALTER TABLE ONLY ominicontacto_app_user_groups
 
 
 --
--- Name: ominicontacto_app_user_groups_user_id_9ea58fa3_uniq; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_groups_user_id_9ea58fa3_uniq; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_user_groups
@@ -7364,7 +7364,7 @@ ALTER TABLE ONLY ominicontacto_app_user_groups
 
 
 --
--- Name: ominicontacto_app_user_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_user
@@ -7372,7 +7372,7 @@ ALTER TABLE ONLY ominicontacto_app_user
 
 
 --
--- Name: ominicontacto_app_user_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_user_user_permissions
@@ -7380,7 +7380,7 @@ ALTER TABLE ONLY ominicontacto_app_user_user_permissions
 
 
 --
--- Name: ominicontacto_app_user_user_permissions_user_id_c7a8cf96_uniq; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_user_permissions_user_id_c7a8cf96_uniq; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_user_user_permissions
@@ -7388,7 +7388,7 @@ ALTER TABLE ONLY ominicontacto_app_user_user_permissions
 
 
 --
--- Name: ominicontacto_app_user_username_key; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_username_key; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_user
@@ -7396,7 +7396,7 @@ ALTER TABLE ONLY ominicontacto_app_user
 
 
 --
--- Name: ominicontacto_app_wombatlog_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_wombatlog_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY ominicontacto_app_wombatlog
@@ -7404,7 +7404,7 @@ ALTER TABLE ONLY ominicontacto_app_wombatlog
 
 
 --
--- Name: pdt_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pdt_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY pdt
@@ -7412,7 +7412,7 @@ ALTER TABLE ONLY pdt
 
 
 --
--- Name: pdt_sdomain_prefix_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pdt_sdomain_prefix_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY pdt
@@ -7420,7 +7420,7 @@ ALTER TABLE ONLY pdt
 
 
 --
--- Name: pl_pipes_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pl_pipes_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY pl_pipes
@@ -7428,7 +7428,7 @@ ALTER TABLE ONLY pl_pipes
 
 
 --
--- Name: presentity_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: presentity_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY presentity
@@ -7436,7 +7436,7 @@ ALTER TABLE ONLY presentity
 
 
 --
--- Name: presentity_presentity_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: presentity_presentity_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY presentity
@@ -7444,7 +7444,7 @@ ALTER TABLE ONLY presentity
 
 
 --
--- Name: pua_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pua_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY pua
@@ -7452,7 +7452,7 @@ ALTER TABLE ONLY pua
 
 
 --
--- Name: pua_pua_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pua_pua_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY pua
@@ -7460,7 +7460,7 @@ ALTER TABLE ONLY pua
 
 
 --
--- Name: purplemap_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: purplemap_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY purplemap
@@ -7468,7 +7468,7 @@ ALTER TABLE ONLY purplemap
 
 
 --
--- Name: queue_member_table_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_member_table_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY queue_member_table
@@ -7476,7 +7476,7 @@ ALTER TABLE ONLY queue_member_table
 
 
 --
--- Name: queue_member_table_queue_name_1e319083_uniq; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_member_table_queue_name_1e319083_uniq; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY queue_member_table
@@ -7484,7 +7484,7 @@ ALTER TABLE ONLY queue_member_table
 
 
 --
--- Name: queue_table_campana_id_key; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_table_campana_id_key; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY queue_table
@@ -7492,7 +7492,7 @@ ALTER TABLE ONLY queue_table
 
 
 --
--- Name: queue_table_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_table_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY queue_table
@@ -7500,7 +7500,7 @@ ALTER TABLE ONLY queue_table
 
 
 --
--- Name: queue_table_queue_asterisk_key; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_table_queue_asterisk_key; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY queue_table
@@ -7508,7 +7508,7 @@ ALTER TABLE ONLY queue_table
 
 
 --
--- Name: re_grp_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: re_grp_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY re_grp
@@ -7516,7 +7516,7 @@ ALTER TABLE ONLY re_grp
 
 
 --
--- Name: rls_presentity_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_presentity_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY rls_presentity
@@ -7524,7 +7524,7 @@ ALTER TABLE ONLY rls_presentity
 
 
 --
--- Name: rls_presentity_rls_presentity_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_presentity_rls_presentity_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY rls_presentity
@@ -7532,7 +7532,7 @@ ALTER TABLE ONLY rls_presentity
 
 
 --
--- Name: rls_watchers_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_watchers_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY rls_watchers
@@ -7540,7 +7540,7 @@ ALTER TABLE ONLY rls_watchers
 
 
 --
--- Name: rls_watchers_rls_watcher_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_watchers_rls_watcher_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY rls_watchers
@@ -7548,7 +7548,7 @@ ALTER TABLE ONLY rls_watchers
 
 
 --
--- Name: rtpproxy_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rtpproxy_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY rtpproxy
@@ -7556,7 +7556,7 @@ ALTER TABLE ONLY rtpproxy
 
 
 --
--- Name: sca_subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sca_subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY sca_subscriptions
@@ -7564,7 +7564,7 @@ ALTER TABLE ONLY sca_subscriptions
 
 
 --
--- Name: sca_subscriptions_sca_subscriptions_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sca_subscriptions_sca_subscriptions_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY sca_subscriptions
@@ -7572,7 +7572,7 @@ ALTER TABLE ONLY sca_subscriptions
 
 
 --
--- Name: silo_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: silo_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY silo
@@ -7580,7 +7580,7 @@ ALTER TABLE ONLY silo
 
 
 --
--- Name: sip_trace_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sip_trace_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY sip_trace
@@ -7588,7 +7588,7 @@ ALTER TABLE ONLY sip_trace
 
 
 --
--- Name: speed_dial_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: speed_dial_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY speed_dial
@@ -7596,7 +7596,7 @@ ALTER TABLE ONLY speed_dial
 
 
 --
--- Name: speed_dial_speed_dial_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: speed_dial_speed_dial_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY speed_dial
@@ -7604,7 +7604,7 @@ ALTER TABLE ONLY speed_dial
 
 
 --
--- Name: subscriber_account_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: subscriber_account_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY subscriber
@@ -7612,7 +7612,7 @@ ALTER TABLE ONLY subscriber
 
 
 --
--- Name: subscriber_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: subscriber_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY subscriber
@@ -7620,7 +7620,7 @@ ALTER TABLE ONLY subscriber
 
 
 --
--- Name: topos_d_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: topos_d_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY topos_d
@@ -7628,7 +7628,7 @@ ALTER TABLE ONLY topos_d
 
 
 --
--- Name: topos_t_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: topos_t_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY topos_t
@@ -7636,7 +7636,7 @@ ALTER TABLE ONLY topos_t
 
 
 --
--- Name: trusted_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: trusted_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY trusted
@@ -7644,7 +7644,7 @@ ALTER TABLE ONLY trusted
 
 
 --
--- Name: uacreg_l_uuid_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: uacreg_l_uuid_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY uacreg
@@ -7652,7 +7652,7 @@ ALTER TABLE ONLY uacreg
 
 
 --
--- Name: uacreg_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: uacreg_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY uacreg
@@ -7660,7 +7660,7 @@ ALTER TABLE ONLY uacreg
 
 
 --
--- Name: uri_account_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: uri_account_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY uri
@@ -7668,7 +7668,7 @@ ALTER TABLE ONLY uri
 
 
 --
--- Name: uri_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: uri_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY uri
@@ -7676,7 +7676,7 @@ ALTER TABLE ONLY uri
 
 
 --
--- Name: userblacklist_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: userblacklist_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY userblacklist
@@ -7684,7 +7684,7 @@ ALTER TABLE ONLY userblacklist
 
 
 --
--- Name: usr_preferences_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: usr_preferences_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY usr_preferences
@@ -7692,7 +7692,7 @@ ALTER TABLE ONLY usr_preferences
 
 
 --
--- Name: version_table_name_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: version_table_name_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY version
@@ -7700,7 +7700,7 @@ ALTER TABLE ONLY version
 
 
 --
--- Name: watchers_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: watchers_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY watchers
@@ -7708,7 +7708,7 @@ ALTER TABLE ONLY watchers
 
 
 --
--- Name: watchers_watcher_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: watchers_watcher_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY watchers
@@ -7716,7 +7716,7 @@ ALTER TABLE ONLY watchers
 
 
 --
--- Name: xcap_doc_uri_idx; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: xcap_doc_uri_idx; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY xcap
@@ -7724,7 +7724,7 @@ ALTER TABLE ONLY xcap
 
 
 --
--- Name: xcap_pkey; Type: CONSTRAINT; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: xcap_pkey; Type: CONSTRAINT; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 ALTER TABLE ONLY xcap
@@ -7732,686 +7732,686 @@ ALTER TABLE ONLY xcap
 
 
 --
--- Name: acc_callid_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: acc_callid_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX acc_callid_idx ON acc USING btree (callid);
 
 
 --
--- Name: acc_cdrs_start_time_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: acc_cdrs_start_time_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX acc_cdrs_start_time_idx ON acc_cdrs USING btree (start_time);
 
 
 --
--- Name: active_watchers_active_watchers_expires; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: active_watchers_active_watchers_expires; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX active_watchers_active_watchers_expires ON active_watchers USING btree (expires);
 
 
 --
--- Name: active_watchers_active_watchers_pres; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: active_watchers_active_watchers_pres; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX active_watchers_active_watchers_pres ON active_watchers USING btree (presentity_uri, event);
 
 
 --
--- Name: active_watchers_updated_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: active_watchers_updated_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX active_watchers_updated_idx ON active_watchers USING btree (updated);
 
 
 --
--- Name: active_watchers_updated_winfo_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: active_watchers_updated_winfo_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX active_watchers_updated_winfo_idx ON active_watchers USING btree (updated_winfo, presentity_uri);
 
 
 --
--- Name: aliases_account_contact_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: aliases_account_contact_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX aliases_account_contact_idx ON aliases USING btree (username, domain, contact);
 
 
 --
--- Name: aliases_expires_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: aliases_expires_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX aliases_expires_idx ON aliases USING btree (expires);
 
 
 --
--- Name: auth_group_name_a6ea08ec_like; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_group_name_a6ea08ec_like; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX auth_group_name_a6ea08ec_like ON auth_group USING btree (name varchar_pattern_ops);
 
 
 --
--- Name: auth_group_permissions_0e939a4f; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_group_permissions_0e939a4f; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX auth_group_permissions_0e939a4f ON auth_group_permissions USING btree (group_id);
 
 
 --
--- Name: auth_group_permissions_8373b171; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_group_permissions_8373b171; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX auth_group_permissions_8373b171 ON auth_group_permissions USING btree (permission_id);
 
 
 --
--- Name: auth_permission_417f1b1c; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: auth_permission_417f1b1c; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX auth_permission_417f1b1c ON auth_permission USING btree (content_type_id);
 
 
 --
--- Name: dbaliases_alias_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dbaliases_alias_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX dbaliases_alias_idx ON dbaliases USING btree (alias_username, alias_domain);
 
 
 --
--- Name: dbaliases_alias_user_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dbaliases_alias_user_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX dbaliases_alias_user_idx ON dbaliases USING btree (alias_username);
 
 
 --
--- Name: dbaliases_target_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dbaliases_target_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX dbaliases_target_idx ON dbaliases USING btree (username, domain);
 
 
 --
--- Name: dialog_hash_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dialog_hash_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX dialog_hash_idx ON dialog USING btree (hash_entry, hash_id);
 
 
 --
--- Name: dialog_vars_hash_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: dialog_vars_hash_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX dialog_vars_hash_idx ON dialog_vars USING btree (hash_entry, hash_id);
 
 
 --
--- Name: django_admin_log_417f1b1c; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: django_admin_log_417f1b1c; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX django_admin_log_417f1b1c ON django_admin_log USING btree (content_type_id);
 
 
 --
--- Name: django_admin_log_e8701ad4; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: django_admin_log_e8701ad4; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX django_admin_log_e8701ad4 ON django_admin_log USING btree (user_id);
 
 
 --
--- Name: domainpolicy_rule_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: domainpolicy_rule_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX domainpolicy_rule_idx ON domainpolicy USING btree (rule);
 
 
 --
--- Name: globalblacklist_globalblacklist_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: globalblacklist_globalblacklist_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX globalblacklist_globalblacklist_idx ON globalblacklist USING btree (prefix);
 
 
 --
--- Name: lcr_gw_lcr_id_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: lcr_gw_lcr_id_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX lcr_gw_lcr_id_idx ON lcr_gw USING btree (lcr_id);
 
 
 --
--- Name: lcr_rule_target_lcr_id_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: lcr_rule_target_lcr_id_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX lcr_rule_target_lcr_id_idx ON lcr_rule_target USING btree (lcr_id);
 
 
 --
--- Name: location_account_contact_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: location_account_contact_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX location_account_contact_idx ON location USING btree (username, domain, contact);
 
 
 --
--- Name: location_attrs_account_record_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: location_attrs_account_record_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX location_attrs_account_record_idx ON location_attrs USING btree (username, domain, ruid);
 
 
 --
--- Name: location_attrs_last_modified_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: location_attrs_last_modified_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX location_attrs_last_modified_idx ON location_attrs USING btree (last_modified);
 
 
 --
--- Name: location_connection_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: location_connection_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX location_connection_idx ON location USING btree (server_id, connection_id);
 
 
 --
--- Name: location_expires_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: location_expires_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX location_expires_idx ON location USING btree (expires);
 
 
 --
--- Name: mensaje_enviado_32400660; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: mensaje_enviado_32400660; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX mensaje_enviado_32400660 ON mensaje_enviado USING btree (agente_id);
 
 
 --
--- Name: missed_calls_callid_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: missed_calls_callid_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX missed_calls_callid_idx ON missed_calls USING btree (callid);
 
 
 --
--- Name: ominicontacto_app_agenda_32400660; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenda_32400660; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_agenda_32400660 ON ominicontacto_app_agenda USING btree (agente_id);
 
 
 --
--- Name: ominicontacto_app_agenteprofile_acaeb2d6; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenteprofile_acaeb2d6; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_agenteprofile_acaeb2d6 ON ominicontacto_app_agenteprofile USING btree (grupo_id);
 
 
 --
--- Name: ominicontacto_app_agenteprofile_modulos_7ba91c57; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenteprofile_modulos_7ba91c57; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_agenteprofile_modulos_7ba91c57 ON ominicontacto_app_agenteprofile_modulos USING btree (modulo_id);
 
 
 --
--- Name: ominicontacto_app_agenteprofile_modulos_bfd9a2cb; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_agenteprofile_modulos_bfd9a2cb; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_agenteprofile_modulos_bfd9a2cb ON ominicontacto_app_agenteprofile_modulos USING btree (agenteprofile_id);
 
 
 --
--- Name: ominicontacto_app_calificacioncampana_calificacion_36aa9691; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncampana_calificacion_36aa9691; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_calificacioncampana_calificacion_36aa9691 ON ominicontacto_app_calificacioncampana_calificacion USING btree (calificacion_id);
 
 
 --
--- Name: ominicontacto_app_calificacioncampana_calificacion_7f1db41a; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncampana_calificacion_7f1db41a; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_calificacioncampana_calificacion_7f1db41a ON ominicontacto_app_calificacioncampana_calificacion USING btree (calificacioncampana_id);
 
 
 --
--- Name: ominicontacto_app_calificacioncliente_32400660; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncliente_32400660; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_calificacioncliente_32400660 ON ominicontacto_app_calificacioncliente USING btree (agente_id);
 
 
 --
--- Name: ominicontacto_app_calificacioncliente_36aa9691; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncliente_36aa9691; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_calificacioncliente_36aa9691 ON ominicontacto_app_calificacioncliente USING btree (calificacion_id);
 
 
 --
--- Name: ominicontacto_app_calificacioncliente_66683d76; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_calificacioncliente_66683d76; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_calificacioncliente_66683d76 ON ominicontacto_app_calificacioncliente USING btree (campana_id);
 
 
 --
--- Name: ominicontacto_app_campana_368d6ace; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_campana_368d6ace; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_campana_368d6ace ON ominicontacto_app_campana USING btree (bd_contacto_id);
 
 
 --
--- Name: ominicontacto_app_campana_3fe51010; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_campana_3fe51010; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_campana_3fe51010 ON ominicontacto_app_campana USING btree (formulario_id);
 
 
 --
--- Name: ominicontacto_app_campana_60530197; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_campana_60530197; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_campana_60530197 ON ominicontacto_app_campana USING btree (calificacion_campana_id);
 
 
 --
--- Name: ominicontacto_app_chat_32400660; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_chat_32400660; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_chat_32400660 ON ominicontacto_app_chat USING btree (agente_id);
 
 
 --
--- Name: ominicontacto_app_chat_e8701ad4; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_chat_e8701ad4; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_chat_e8701ad4 ON ominicontacto_app_chat USING btree (user_id);
 
 
 --
--- Name: ominicontacto_app_contacto_368d6ace; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_contacto_368d6ace; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_contacto_368d6ace ON ominicontacto_app_contacto USING btree (bd_contacto_id);
 
 
 --
--- Name: ominicontacto_app_duraciondellamada_32400660; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_duraciondellamada_32400660; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_duraciondellamada_32400660 ON ominicontacto_app_duraciondellamada USING btree (agente_id);
 
 
 --
--- Name: ominicontacto_app_fieldformulario_3fe51010; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_fieldformulario_3fe51010; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_fieldformulario_3fe51010 ON ominicontacto_app_fieldformulario USING btree (formulario_id);
 
 
 --
--- Name: ominicontacto_app_grabacion_campana_id_fdebc53b_uniq; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_grabacion_campana_id_fdebc53b_uniq; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_grabacion_campana_id_fdebc53b_uniq ON ominicontacto_app_grabacion USING btree (campana_id);
 
 
 --
--- Name: ominicontacto_app_mensajechat_924b1846; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_mensajechat_924b1846; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_mensajechat_924b1846 ON ominicontacto_app_mensajechat USING btree (sender_id);
 
 
 --
--- Name: ominicontacto_app_mensajechat_b79bfa8f; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_mensajechat_b79bfa8f; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_mensajechat_b79bfa8f ON ominicontacto_app_mensajechat USING btree (chat_id);
 
 
 --
--- Name: ominicontacto_app_mensajechat_f4b39993; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_mensajechat_f4b39993; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_mensajechat_f4b39993 ON ominicontacto_app_mensajechat USING btree (to_id);
 
 
 --
--- Name: ominicontacto_app_metadatacliente_32400660; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_metadatacliente_32400660; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_metadatacliente_32400660 ON ominicontacto_app_metadatacliente USING btree (agente_id);
 
 
 --
--- Name: ominicontacto_app_metadatacliente_66683d76; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_metadatacliente_66683d76; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_metadatacliente_66683d76 ON ominicontacto_app_metadatacliente USING btree (campana_id);
 
 
 --
--- Name: ominicontacto_app_user_groups_0e939a4f; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_groups_0e939a4f; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_user_groups_0e939a4f ON ominicontacto_app_user_groups USING btree (group_id);
 
 
 --
--- Name: ominicontacto_app_user_groups_e8701ad4; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_groups_e8701ad4; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_user_groups_e8701ad4 ON ominicontacto_app_user_groups USING btree (user_id);
 
 
 --
--- Name: ominicontacto_app_user_user_permissions_8373b171; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_user_permissions_8373b171; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_user_user_permissions_8373b171 ON ominicontacto_app_user_user_permissions USING btree (permission_id);
 
 
 --
--- Name: ominicontacto_app_user_user_permissions_e8701ad4; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_user_permissions_e8701ad4; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_user_user_permissions_e8701ad4 ON ominicontacto_app_user_user_permissions USING btree (user_id);
 
 
 --
--- Name: ominicontacto_app_user_username_3223b7ba_like; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_user_username_3223b7ba_like; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_user_username_3223b7ba_like ON ominicontacto_app_user USING btree (username varchar_pattern_ops);
 
 
 --
--- Name: ominicontacto_app_wombatlog_32400660; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_wombatlog_32400660; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_wombatlog_32400660 ON ominicontacto_app_wombatlog USING btree (agente_id);
 
 
 --
--- Name: ominicontacto_app_wombatlog_66683d76; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_wombatlog_66683d76; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_wombatlog_66683d76 ON ominicontacto_app_wombatlog USING btree (campana_id);
 
 
 --
--- Name: ominicontacto_app_wombatlog_debcd608; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: ominicontacto_app_wombatlog_debcd608; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX ominicontacto_app_wombatlog_debcd608 ON ominicontacto_app_wombatlog USING btree (contacto_id);
 
 
 --
--- Name: presentity_account_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: presentity_account_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX presentity_account_idx ON presentity USING btree (username, domain, event);
 
 
 --
--- Name: presentity_presentity_expires; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: presentity_presentity_expires; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX presentity_presentity_expires ON presentity USING btree (expires);
 
 
 --
--- Name: pua_dialog1_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pua_dialog1_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX pua_dialog1_idx ON pua USING btree (pres_id, pres_uri);
 
 
 --
--- Name: pua_dialog2_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pua_dialog2_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX pua_dialog2_idx ON pua USING btree (call_id, from_tag);
 
 
 --
--- Name: pua_expires_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pua_expires_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX pua_expires_idx ON pua USING btree (expires);
 
 
 --
--- Name: pua_record_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: pua_record_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX pua_record_idx ON pua USING btree (pres_id);
 
 
 --
--- Name: queue_member_table_75249aa1; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_member_table_75249aa1; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX queue_member_table_75249aa1 ON queue_member_table USING btree (queue_name);
 
 
 --
--- Name: queue_member_table_b5c3e75b; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_member_table_b5c3e75b; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX queue_member_table_b5c3e75b ON queue_member_table USING btree (member_id);
 
 
 --
--- Name: queue_member_table_queue_id_996b3794_like; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_member_table_queue_id_996b3794_like; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX queue_member_table_queue_id_996b3794_like ON queue_member_table USING btree (queue_name varchar_pattern_ops);
 
 
 --
--- Name: queue_table_name_495baf91_like; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: queue_table_name_495baf91_like; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX queue_table_name_495baf91_like ON queue_table USING btree (name varchar_pattern_ops);
 
 
 --
--- Name: re_grp_group_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: re_grp_group_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX re_grp_group_idx ON re_grp USING btree (group_id);
 
 
 --
--- Name: rls_presentity_expires_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_presentity_expires_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX rls_presentity_expires_idx ON rls_presentity USING btree (expires);
 
 
 --
--- Name: rls_presentity_rlsubs_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_presentity_rlsubs_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX rls_presentity_rlsubs_idx ON rls_presentity USING btree (rlsubs_did);
 
 
 --
--- Name: rls_presentity_updated_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_presentity_updated_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX rls_presentity_updated_idx ON rls_presentity USING btree (updated);
 
 
 --
--- Name: rls_watchers_rls_watchers_expires; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_watchers_rls_watchers_expires; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX rls_watchers_rls_watchers_expires ON rls_watchers USING btree (expires);
 
 
 --
--- Name: rls_watchers_rls_watchers_update; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_watchers_rls_watchers_update; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX rls_watchers_rls_watchers_update ON rls_watchers USING btree (watcher_username, watcher_domain, event);
 
 
 --
--- Name: rls_watchers_updated_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: rls_watchers_updated_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX rls_watchers_updated_idx ON rls_watchers USING btree (updated);
 
 
 --
--- Name: sca_subscriptions_sca_expires_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sca_subscriptions_sca_expires_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX sca_subscriptions_sca_expires_idx ON sca_subscriptions USING btree (expires);
 
 
 --
--- Name: sca_subscriptions_sca_subscribers_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sca_subscriptions_sca_subscribers_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX sca_subscriptions_sca_subscribers_idx ON sca_subscriptions USING btree (subscriber, event);
 
 
 --
--- Name: silo_account_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: silo_account_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX silo_account_idx ON silo USING btree (username, domain);
 
 
 --
--- Name: sip_trace_callid_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sip_trace_callid_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX sip_trace_callid_idx ON sip_trace USING btree (callid);
 
 
 --
--- Name: sip_trace_date_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sip_trace_date_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX sip_trace_date_idx ON sip_trace USING btree (time_stamp);
 
 
 --
--- Name: sip_trace_fromip_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sip_trace_fromip_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX sip_trace_fromip_idx ON sip_trace USING btree (fromip);
 
 
 --
--- Name: sip_trace_traced_user_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: sip_trace_traced_user_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX sip_trace_traced_user_idx ON sip_trace USING btree (traced_user);
 
 
 --
--- Name: subscriber_username_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: subscriber_username_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX subscriber_username_idx ON subscriber USING btree (username);
 
 
 --
--- Name: topos_d_a_callid_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: topos_d_a_callid_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX topos_d_a_callid_idx ON topos_d USING btree (a_callid);
 
 
 --
--- Name: topos_d_rectime_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: topos_d_rectime_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX topos_d_rectime_idx ON topos_d USING btree (rectime);
 
 
 --
--- Name: topos_t_a_callid_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: topos_t_a_callid_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX topos_t_a_callid_idx ON topos_t USING btree (a_callid);
 
 
 --
--- Name: topos_t_rectime_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: topos_t_rectime_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX topos_t_rectime_idx ON topos_t USING btree (rectime);
 
 
 --
--- Name: trusted_peer_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: trusted_peer_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX trusted_peer_idx ON trusted USING btree (src_ip);
 
 
 --
--- Name: userblacklist_userblacklist_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: userblacklist_userblacklist_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX userblacklist_userblacklist_idx ON userblacklist USING btree (username, domain, prefix);
 
 
 --
--- Name: usr_preferences_ua_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: usr_preferences_ua_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX usr_preferences_ua_idx ON usr_preferences USING btree (uuid, attribute);
 
 
 --
--- Name: usr_preferences_uda_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: usr_preferences_uda_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX usr_preferences_uda_idx ON usr_preferences USING btree (username, domain, attribute);
 
 
 --
--- Name: xcap_account_doc_type_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: xcap_account_doc_type_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX xcap_account_doc_type_idx ON xcap USING btree (username, domain, doc_type);
 
 
 --
--- Name: xcap_account_doc_type_uri_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: xcap_account_doc_type_uri_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX xcap_account_doc_type_uri_idx ON xcap USING btree (username, domain, doc_type, doc_uri);
 
 
 --
--- Name: xcap_account_doc_uri_idx; Type: INDEX; Schema: public; Owner: kamailio; Tablespace: 
+-- Name: xcap_account_doc_uri_idx; Type: INDEX; Schema: public; Owner: omnileads; Tablespace: 
 --
 
 CREATE INDEX xcap_account_doc_uri_idx ON xcap USING btree (username, domain, doc_uri);
 
 
 --
--- Name: D6d2e47c11d2fb8d7243f5dbb136c9e3; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: D6d2e47c11d2fb8d7243f5dbb136c9e3; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_contacto
@@ -8419,7 +8419,7 @@ ALTER TABLE ONLY ominicontacto_app_contacto
 
 
 --
--- Name: D790090bf77bd6ae57bbcd278f80b4bf; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: D790090bf77bd6ae57bbcd278f80b4bf; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_campana
@@ -8427,7 +8427,7 @@ ALTER TABLE ONLY ominicontacto_app_campana
 
 
 --
--- Name: D8da2b3b45492920f6ec709e3b513e07; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: D8da2b3b45492920f6ec709e3b513e07; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile_modulos
@@ -8435,7 +8435,7 @@ ALTER TABLE ONLY ominicontacto_app_agenteprofile_modulos
 
 
 --
--- Name: auth_group_permiss_permission_id_84c5c92e_fk_auth_permission_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: auth_group_permiss_permission_id_84c5c92e_fk_auth_permission_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY auth_group_permissions
@@ -8443,7 +8443,7 @@ ALTER TABLE ONLY auth_group_permissions
 
 
 --
--- Name: auth_group_permissions_group_id_b120cbf9_fk_auth_group_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: auth_group_permissions_group_id_b120cbf9_fk_auth_group_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY auth_group_permissions
@@ -8451,7 +8451,7 @@ ALTER TABLE ONLY auth_group_permissions
 
 
 --
--- Name: auth_permiss_content_type_id_2f476e4b_fk_django_content_type_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: auth_permiss_content_type_id_2f476e4b_fk_django_content_type_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY auth_permission
@@ -8459,7 +8459,7 @@ ALTER TABLE ONLY auth_permission
 
 
 --
--- Name: ca685487dc3a9bf18d5e9e0fd006bf67; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ca685487dc3a9bf18d5e9e0fd006bf67; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_campana
@@ -8467,7 +8467,7 @@ ALTER TABLE ONLY ominicontacto_app_campana
 
 
 --
--- Name: django_admin_content_type_id_c4bce8eb_fk_django_content_type_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: django_admin_content_type_id_c4bce8eb_fk_django_content_type_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY django_admin_log
@@ -8475,7 +8475,7 @@ ALTER TABLE ONLY django_admin_log
 
 
 --
--- Name: django_admin_log_user_id_c564eba6_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: django_admin_log_user_id_c564eba6_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY django_admin_log
@@ -8483,7 +8483,7 @@ ALTER TABLE ONLY django_admin_log
 
 
 --
--- Name: e81ed6bab1cb48461414d88108216e55; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: e81ed6bab1cb48461414d88108216e55; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncampana_calificacion
@@ -8491,7 +8491,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncampana_calificacion
 
 
 --
--- Name: mensaj_agente_id_de9cfeb5_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: mensaj_agente_id_de9cfeb5_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY mensaje_enviado
@@ -8499,7 +8499,7 @@ ALTER TABLE ONLY mensaje_enviado
 
 
 --
--- Name: o_calificacion_id_73b5d2c5_fk_ominicontacto_app_calificacion_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: o_calificacion_id_73b5d2c5_fk_ominicontacto_app_calificacion_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncliente
@@ -8507,7 +8507,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncliente
 
 
 --
--- Name: o_calificacion_id_e56288ab_fk_ominicontacto_app_calificacion_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: o_calificacion_id_e56288ab_fk_ominicontacto_app_calificacion_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncampana_calificacion
@@ -8515,7 +8515,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncampana_calificacion
 
 
 --
--- Name: omini_formulario_id_0184bc8d_fk_ominicontacto_app_formulario_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: omini_formulario_id_0184bc8d_fk_ominicontacto_app_formulario_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_campana
@@ -8523,7 +8523,7 @@ ALTER TABLE ONLY ominicontacto_app_campana
 
 
 --
--- Name: omini_formulario_id_b5355e5d_fk_ominicontacto_app_formulario_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: omini_formulario_id_b5355e5d_fk_ominicontacto_app_formulario_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_fieldformulario
@@ -8531,7 +8531,7 @@ ALTER TABLE ONLY ominicontacto_app_fieldformulario
 
 
 --
--- Name: ominic_agente_id_1070b434_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominic_agente_id_1070b434_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncliente
@@ -8539,7 +8539,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncliente
 
 
 --
--- Name: ominic_agente_id_15e63fce_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominic_agente_id_15e63fce_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_wombatlog
@@ -8547,7 +8547,7 @@ ALTER TABLE ONLY ominicontacto_app_wombatlog
 
 
 --
--- Name: ominic_agente_id_32c1d2d4_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominic_agente_id_32c1d2d4_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_metadatacliente
@@ -8555,7 +8555,7 @@ ALTER TABLE ONLY ominicontacto_app_metadatacliente
 
 
 --
--- Name: ominic_agente_id_341aa330_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominic_agente_id_341aa330_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_duraciondellamada
@@ -8563,7 +8563,7 @@ ALTER TABLE ONLY ominicontacto_app_duraciondellamada
 
 
 --
--- Name: ominic_agente_id_6baadc27_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominic_agente_id_6baadc27_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenda
@@ -8571,7 +8571,7 @@ ALTER TABLE ONLY ominicontacto_app_agenda
 
 
 --
--- Name: ominic_agente_id_b0b74e82_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominic_agente_id_b0b74e82_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_chat
@@ -8579,7 +8579,7 @@ ALTER TABLE ONLY ominicontacto_app_chat
 
 
 --
--- Name: ominicont_contacto_id_7b0281c2_fk_ominicontacto_app_contacto_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicont_contacto_id_7b0281c2_fk_ominicontacto_app_contacto_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_wombatlog
@@ -8587,7 +8587,7 @@ ALTER TABLE ONLY ominicontacto_app_wombatlog
 
 
 --
--- Name: ominicont_contacto_id_8edc7340_fk_ominicontacto_app_contacto_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicont_contacto_id_8edc7340_fk_ominicontacto_app_contacto_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_metadatacliente
@@ -8595,7 +8595,7 @@ ALTER TABLE ONLY ominicontacto_app_metadatacliente
 
 
 --
--- Name: ominicont_contacto_id_e5df4663_fk_ominicontacto_app_contacto_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicont_contacto_id_e5df4663_fk_ominicontacto_app_contacto_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncliente
@@ -8603,7 +8603,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncliente
 
 
 --
--- Name: ominicontac_campana_id_0392f548_fk_ominicontacto_app_campana_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontac_campana_id_0392f548_fk_ominicontacto_app_campana_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_calificacioncliente
@@ -8611,7 +8611,7 @@ ALTER TABLE ONLY ominicontacto_app_calificacioncliente
 
 
 --
--- Name: ominicontac_campana_id_a6c9c717_fk_ominicontacto_app_campana_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontac_campana_id_a6c9c717_fk_ominicontacto_app_campana_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_wombatlog
@@ -8619,7 +8619,7 @@ ALTER TABLE ONLY ominicontacto_app_wombatlog
 
 
 --
--- Name: ominicontac_campana_id_cbd5c9f1_fk_ominicontacto_app_campana_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontac_campana_id_cbd5c9f1_fk_ominicontacto_app_campana_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_metadatacliente
@@ -8627,7 +8627,7 @@ ALTER TABLE ONLY ominicontacto_app_metadatacliente
 
 
 --
--- Name: ominicontac_campana_id_fdebc53b_fk_ominicontacto_app_campana_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontac_campana_id_fdebc53b_fk_ominicontacto_app_campana_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_grabacion
@@ -8635,7 +8635,7 @@ ALTER TABLE ONLY ominicontacto_app_grabacion
 
 
 --
--- Name: ominicontacto_a_grupo_id_474dfc5a_fk_ominicontacto_app_grupo_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_a_grupo_id_474dfc5a_fk_ominicontacto_app_grupo_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile
@@ -8643,7 +8643,7 @@ ALTER TABLE ONLY ominicontacto_app_agenteprofile
 
 
 --
--- Name: ominicontacto_a_sender_id_49a6c90d_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_a_sender_id_49a6c90d_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_mensajechat
@@ -8651,7 +8651,7 @@ ALTER TABLE ONLY ominicontacto_app_mensajechat
 
 
 --
--- Name: ominicontacto_app__permission_id_43f9ab68_fk_auth_permission_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app__permission_id_43f9ab68_fk_auth_permission_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_user_user_permissions
@@ -8659,7 +8659,7 @@ ALTER TABLE ONLY ominicontacto_app_user_user_permissions
 
 
 --
--- Name: ominicontacto_app_chat_id_3845da5b_fk_ominicontacto_app_chat_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_chat_id_3845da5b_fk_ominicontacto_app_chat_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_mensajechat
@@ -8667,7 +8667,7 @@ ALTER TABLE ONLY ominicontacto_app_mensajechat
 
 
 --
--- Name: ominicontacto_app_m_to_id_a5f7aa2c_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_m_to_id_a5f7aa2c_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_mensajechat
@@ -8675,7 +8675,7 @@ ALTER TABLE ONLY ominicontacto_app_mensajechat
 
 
 --
--- Name: ominicontacto_app_user_group_group_id_f47e61a0_fk_auth_group_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_group_group_id_f47e61a0_fk_auth_group_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_user_groups
@@ -8683,7 +8683,7 @@ ALTER TABLE ONLY ominicontacto_app_user_groups
 
 
 --
--- Name: ominicontacto_app_user_id_0e446b03_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_id_0e446b03_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile
@@ -8691,7 +8691,7 @@ ALTER TABLE ONLY ominicontacto_app_agenteprofile
 
 
 --
--- Name: ominicontacto_app_user_id_4412e21b_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_id_4412e21b_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_user_user_permissions
@@ -8699,7 +8699,7 @@ ALTER TABLE ONLY ominicontacto_app_user_user_permissions
 
 
 --
--- Name: ominicontacto_app_user_id_7e593d05_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_id_7e593d05_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_chat
@@ -8707,7 +8707,7 @@ ALTER TABLE ONLY ominicontacto_app_chat
 
 
 --
--- Name: ominicontacto_app_user_id_9520c89f_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_app_user_id_9520c89f_fk_ominicontacto_app_user_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_user_groups
@@ -8715,7 +8715,7 @@ ALTER TABLE ONLY ominicontacto_app_user_groups
 
 
 --
--- Name: ominicontacto_modulo_id_adce0149_fk_ominicontacto_app_modulo_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: ominicontacto_modulo_id_adce0149_fk_ominicontacto_app_modulo_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY ominicontacto_app_agenteprofile_modulos
@@ -8723,7 +8723,7 @@ ALTER TABLE ONLY ominicontacto_app_agenteprofile_modulos
 
 
 --
--- Name: queue__member_id_0e6c0aa5_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: queue__member_id_0e6c0aa5_fk_ominicontacto_app_agenteprofile_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY queue_member_table
@@ -8731,7 +8731,7 @@ ALTER TABLE ONLY queue_member_table
 
 
 --
--- Name: queue_member_table_queue_name_cc6b888a_fk_queue_table_name; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: queue_member_table_queue_name_cc6b888a_fk_queue_table_name; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY queue_member_table
@@ -8739,7 +8739,7 @@ ALTER TABLE ONLY queue_member_table
 
 
 --
--- Name: queue_table_campana_id_be72b1c4_fk_ominicontacto_app_campana_id; Type: FK CONSTRAINT; Schema: public; Owner: kamailio
+-- Name: queue_table_campana_id_be72b1c4_fk_ominicontacto_app_campana_id; Type: FK CONSTRAINT; Schema: public; Owner: omnileads
 --
 
 ALTER TABLE ONLY queue_table
@@ -8757,1143 +8757,1143 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
--- Name: acc; Type: ACL; Schema: public; Owner: kamailio
+-- Name: acc; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE acc FROM PUBLIC;
-REVOKE ALL ON TABLE acc FROM kamailio;
-GRANT ALL ON TABLE acc TO kamailio;
-GRANT SELECT ON TABLE acc TO kamailioro;
+REVOKE ALL ON TABLE acc FROM omnileads;
+GRANT ALL ON TABLE acc TO omnileads;
+GRANT SELECT ON TABLE acc TO omnileadsro;
 
 
 --
--- Name: acc_cdrs; Type: ACL; Schema: public; Owner: kamailio
+-- Name: acc_cdrs; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE acc_cdrs FROM PUBLIC;
-REVOKE ALL ON TABLE acc_cdrs FROM kamailio;
-GRANT ALL ON TABLE acc_cdrs TO kamailio;
-GRANT SELECT ON TABLE acc_cdrs TO kamailioro;
+REVOKE ALL ON TABLE acc_cdrs FROM omnileads;
+GRANT ALL ON TABLE acc_cdrs TO omnileads;
+GRANT SELECT ON TABLE acc_cdrs TO omnileadsro;
 
 
 --
--- Name: acc_cdrs_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: acc_cdrs_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE acc_cdrs_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE acc_cdrs_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE acc_cdrs_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE acc_cdrs_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE acc_cdrs_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE acc_cdrs_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE acc_cdrs_id_seq TO omnileadsro;
 
 
 --
--- Name: acc_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: acc_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE acc_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE acc_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE acc_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE acc_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE acc_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE acc_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE acc_id_seq TO omnileadsro;
 
 
 --
--- Name: active_watchers; Type: ACL; Schema: public; Owner: kamailio
+-- Name: active_watchers; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE active_watchers FROM PUBLIC;
-REVOKE ALL ON TABLE active_watchers FROM kamailio;
-GRANT ALL ON TABLE active_watchers TO kamailio;
-GRANT SELECT ON TABLE active_watchers TO kamailioro;
+REVOKE ALL ON TABLE active_watchers FROM omnileads;
+GRANT ALL ON TABLE active_watchers TO omnileads;
+GRANT SELECT ON TABLE active_watchers TO omnileadsro;
 
 
 --
--- Name: active_watchers_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: active_watchers_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE active_watchers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE active_watchers_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE active_watchers_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE active_watchers_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE active_watchers_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE active_watchers_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE active_watchers_id_seq TO omnileadsro;
 
 
 --
--- Name: address; Type: ACL; Schema: public; Owner: kamailio
+-- Name: address; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE address FROM PUBLIC;
-REVOKE ALL ON TABLE address FROM kamailio;
-GRANT ALL ON TABLE address TO kamailio;
-GRANT SELECT ON TABLE address TO kamailioro;
+REVOKE ALL ON TABLE address FROM omnileads;
+GRANT ALL ON TABLE address TO omnileads;
+GRANT SELECT ON TABLE address TO omnileadsro;
 
 
 --
--- Name: address_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: address_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE address_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE address_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE address_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE address_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE address_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE address_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE address_id_seq TO omnileadsro;
 
 
 --
--- Name: aliases; Type: ACL; Schema: public; Owner: kamailio
+-- Name: aliases; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE aliases FROM PUBLIC;
-REVOKE ALL ON TABLE aliases FROM kamailio;
-GRANT ALL ON TABLE aliases TO kamailio;
-GRANT SELECT ON TABLE aliases TO kamailioro;
+REVOKE ALL ON TABLE aliases FROM omnileads;
+GRANT ALL ON TABLE aliases TO omnileads;
+GRANT SELECT ON TABLE aliases TO omnileadsro;
 
 
 --
--- Name: aliases_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: aliases_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE aliases_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE aliases_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE aliases_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE aliases_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE aliases_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE aliases_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE aliases_id_seq TO omnileadsro;
 
 
 --
--- Name: carrier_name; Type: ACL; Schema: public; Owner: kamailio
+-- Name: carrier_name; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE carrier_name FROM PUBLIC;
-REVOKE ALL ON TABLE carrier_name FROM kamailio;
-GRANT ALL ON TABLE carrier_name TO kamailio;
-GRANT SELECT ON TABLE carrier_name TO kamailioro;
+REVOKE ALL ON TABLE carrier_name FROM omnileads;
+GRANT ALL ON TABLE carrier_name TO omnileads;
+GRANT SELECT ON TABLE carrier_name TO omnileadsro;
 
 
 --
--- Name: carrier_name_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: carrier_name_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE carrier_name_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE carrier_name_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE carrier_name_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE carrier_name_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE carrier_name_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE carrier_name_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE carrier_name_id_seq TO omnileadsro;
 
 
 --
--- Name: carrierfailureroute; Type: ACL; Schema: public; Owner: kamailio
+-- Name: carrierfailureroute; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE carrierfailureroute FROM PUBLIC;
-REVOKE ALL ON TABLE carrierfailureroute FROM kamailio;
-GRANT ALL ON TABLE carrierfailureroute TO kamailio;
-GRANT SELECT ON TABLE carrierfailureroute TO kamailioro;
+REVOKE ALL ON TABLE carrierfailureroute FROM omnileads;
+GRANT ALL ON TABLE carrierfailureroute TO omnileads;
+GRANT SELECT ON TABLE carrierfailureroute TO omnileadsro;
 
 
 --
--- Name: carrierfailureroute_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: carrierfailureroute_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE carrierfailureroute_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE carrierfailureroute_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE carrierfailureroute_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE carrierfailureroute_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE carrierfailureroute_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE carrierfailureroute_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE carrierfailureroute_id_seq TO omnileadsro;
 
 
 --
--- Name: carrierroute; Type: ACL; Schema: public; Owner: kamailio
+-- Name: carrierroute; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE carrierroute FROM PUBLIC;
-REVOKE ALL ON TABLE carrierroute FROM kamailio;
-GRANT ALL ON TABLE carrierroute TO kamailio;
-GRANT SELECT ON TABLE carrierroute TO kamailioro;
+REVOKE ALL ON TABLE carrierroute FROM omnileads;
+GRANT ALL ON TABLE carrierroute TO omnileads;
+GRANT SELECT ON TABLE carrierroute TO omnileadsro;
 
 
 --
--- Name: carrierroute_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: carrierroute_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE carrierroute_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE carrierroute_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE carrierroute_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE carrierroute_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE carrierroute_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE carrierroute_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE carrierroute_id_seq TO omnileadsro;
 
 
 --
--- Name: cpl; Type: ACL; Schema: public; Owner: kamailio
+-- Name: cpl; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE cpl FROM PUBLIC;
-REVOKE ALL ON TABLE cpl FROM kamailio;
-GRANT ALL ON TABLE cpl TO kamailio;
-GRANT SELECT ON TABLE cpl TO kamailioro;
+REVOKE ALL ON TABLE cpl FROM omnileads;
+GRANT ALL ON TABLE cpl TO omnileads;
+GRANT SELECT ON TABLE cpl TO omnileadsro;
 
 
 --
--- Name: cpl_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: cpl_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE cpl_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE cpl_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE cpl_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE cpl_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE cpl_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE cpl_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE cpl_id_seq TO omnileadsro;
 
 
 --
--- Name: dbaliases; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dbaliases; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE dbaliases FROM PUBLIC;
-REVOKE ALL ON TABLE dbaliases FROM kamailio;
-GRANT ALL ON TABLE dbaliases TO kamailio;
-GRANT SELECT ON TABLE dbaliases TO kamailioro;
+REVOKE ALL ON TABLE dbaliases FROM omnileads;
+GRANT ALL ON TABLE dbaliases TO omnileads;
+GRANT SELECT ON TABLE dbaliases TO omnileadsro;
 
 
 --
--- Name: dbaliases_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dbaliases_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE dbaliases_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE dbaliases_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE dbaliases_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE dbaliases_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE dbaliases_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE dbaliases_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE dbaliases_id_seq TO omnileadsro;
 
 
 --
--- Name: dialog; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dialog; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE dialog FROM PUBLIC;
-REVOKE ALL ON TABLE dialog FROM kamailio;
-GRANT ALL ON TABLE dialog TO kamailio;
-GRANT SELECT ON TABLE dialog TO kamailioro;
+REVOKE ALL ON TABLE dialog FROM omnileads;
+GRANT ALL ON TABLE dialog TO omnileads;
+GRANT SELECT ON TABLE dialog TO omnileadsro;
 
 
 --
--- Name: dialog_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dialog_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE dialog_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE dialog_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE dialog_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE dialog_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE dialog_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE dialog_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE dialog_id_seq TO omnileadsro;
 
 
 --
--- Name: dialog_vars; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dialog_vars; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE dialog_vars FROM PUBLIC;
-REVOKE ALL ON TABLE dialog_vars FROM kamailio;
-GRANT ALL ON TABLE dialog_vars TO kamailio;
-GRANT SELECT ON TABLE dialog_vars TO kamailioro;
+REVOKE ALL ON TABLE dialog_vars FROM omnileads;
+GRANT ALL ON TABLE dialog_vars TO omnileads;
+GRANT SELECT ON TABLE dialog_vars TO omnileadsro;
 
 
 --
--- Name: dialog_vars_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dialog_vars_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE dialog_vars_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE dialog_vars_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE dialog_vars_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE dialog_vars_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE dialog_vars_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE dialog_vars_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE dialog_vars_id_seq TO omnileadsro;
 
 
 --
--- Name: dialplan; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dialplan; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE dialplan FROM PUBLIC;
-REVOKE ALL ON TABLE dialplan FROM kamailio;
-GRANT ALL ON TABLE dialplan TO kamailio;
-GRANT SELECT ON TABLE dialplan TO kamailioro;
+REVOKE ALL ON TABLE dialplan FROM omnileads;
+GRANT ALL ON TABLE dialplan TO omnileads;
+GRANT SELECT ON TABLE dialplan TO omnileadsro;
 
 
 --
--- Name: dialplan_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dialplan_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE dialplan_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE dialplan_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE dialplan_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE dialplan_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE dialplan_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE dialplan_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE dialplan_id_seq TO omnileadsro;
 
 
 --
--- Name: dispatcher; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dispatcher; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE dispatcher FROM PUBLIC;
-REVOKE ALL ON TABLE dispatcher FROM kamailio;
-GRANT ALL ON TABLE dispatcher TO kamailio;
-GRANT SELECT ON TABLE dispatcher TO kamailioro;
+REVOKE ALL ON TABLE dispatcher FROM omnileads;
+GRANT ALL ON TABLE dispatcher TO omnileads;
+GRANT SELECT ON TABLE dispatcher TO omnileadsro;
 
 
 --
--- Name: dispatcher_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dispatcher_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE dispatcher_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE dispatcher_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE dispatcher_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE dispatcher_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE dispatcher_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE dispatcher_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE dispatcher_id_seq TO omnileadsro;
 
 
 --
--- Name: domain; Type: ACL; Schema: public; Owner: kamailio
+-- Name: domain; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE domain FROM PUBLIC;
-REVOKE ALL ON TABLE domain FROM kamailio;
-GRANT ALL ON TABLE domain TO kamailio;
-GRANT SELECT ON TABLE domain TO kamailioro;
+REVOKE ALL ON TABLE domain FROM omnileads;
+GRANT ALL ON TABLE domain TO omnileads;
+GRANT SELECT ON TABLE domain TO omnileadsro;
 
 
 --
--- Name: domain_attrs; Type: ACL; Schema: public; Owner: kamailio
+-- Name: domain_attrs; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE domain_attrs FROM PUBLIC;
-REVOKE ALL ON TABLE domain_attrs FROM kamailio;
-GRANT ALL ON TABLE domain_attrs TO kamailio;
-GRANT SELECT ON TABLE domain_attrs TO kamailioro;
+REVOKE ALL ON TABLE domain_attrs FROM omnileads;
+GRANT ALL ON TABLE domain_attrs TO omnileads;
+GRANT SELECT ON TABLE domain_attrs TO omnileadsro;
 
 
 --
--- Name: domain_attrs_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: domain_attrs_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE domain_attrs_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE domain_attrs_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE domain_attrs_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE domain_attrs_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE domain_attrs_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE domain_attrs_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE domain_attrs_id_seq TO omnileadsro;
 
 
 --
--- Name: domain_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: domain_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE domain_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE domain_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE domain_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE domain_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE domain_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE domain_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE domain_id_seq TO omnileadsro;
 
 
 --
--- Name: domain_name; Type: ACL; Schema: public; Owner: kamailio
+-- Name: domain_name; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE domain_name FROM PUBLIC;
-REVOKE ALL ON TABLE domain_name FROM kamailio;
-GRANT ALL ON TABLE domain_name TO kamailio;
-GRANT SELECT ON TABLE domain_name TO kamailioro;
+REVOKE ALL ON TABLE domain_name FROM omnileads;
+GRANT ALL ON TABLE domain_name TO omnileads;
+GRANT SELECT ON TABLE domain_name TO omnileadsro;
 
 
 --
--- Name: domain_name_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: domain_name_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE domain_name_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE domain_name_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE domain_name_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE domain_name_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE domain_name_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE domain_name_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE domain_name_id_seq TO omnileadsro;
 
 
 --
--- Name: domainpolicy; Type: ACL; Schema: public; Owner: kamailio
+-- Name: domainpolicy; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE domainpolicy FROM PUBLIC;
-REVOKE ALL ON TABLE domainpolicy FROM kamailio;
-GRANT ALL ON TABLE domainpolicy TO kamailio;
-GRANT SELECT ON TABLE domainpolicy TO kamailioro;
+REVOKE ALL ON TABLE domainpolicy FROM omnileads;
+GRANT ALL ON TABLE domainpolicy TO omnileads;
+GRANT SELECT ON TABLE domainpolicy TO omnileadsro;
 
 
 --
--- Name: domainpolicy_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: domainpolicy_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE domainpolicy_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE domainpolicy_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE domainpolicy_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE domainpolicy_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE domainpolicy_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE domainpolicy_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE domainpolicy_id_seq TO omnileadsro;
 
 
 --
--- Name: dr_gateways; Type: ACL; Schema: public; Owner: kamailio
+-- Name: dr_gateways; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE dr_gateways FROM PUBLIC;
-REVOKE ALL ON TABLE dr_gateways FROM kamailio;
-GRANT ALL ON TABLE dr_gateways TO kamailio;
-GRANT SELECT ON TABLE dr_gateways TO kamailioro;
+REVOKE ALL ON TABLE dr_gateways FROM omnileads;
+GRANT ALL ON TABLE dr_gateways TO omnileads;
+GRANT SELECT ON TABLE dr_gateways TO omnileadsro;
 
 
 --
--- Name: globalblacklist; Type: ACL; Schema: public; Owner: kamailio
+-- Name: globalblacklist; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE globalblacklist FROM PUBLIC;
-REVOKE ALL ON TABLE globalblacklist FROM kamailio;
-GRANT ALL ON TABLE globalblacklist TO kamailio;
-GRANT SELECT ON TABLE globalblacklist TO kamailioro;
+REVOKE ALL ON TABLE globalblacklist FROM omnileads;
+GRANT ALL ON TABLE globalblacklist TO omnileads;
+GRANT SELECT ON TABLE globalblacklist TO omnileadsro;
 
 
 --
--- Name: globalblacklist_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: globalblacklist_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE globalblacklist_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE globalblacklist_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE globalblacklist_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE globalblacklist_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE globalblacklist_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE globalblacklist_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE globalblacklist_id_seq TO omnileadsro;
 
 
 --
--- Name: grp; Type: ACL; Schema: public; Owner: kamailio
+-- Name: grp; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE grp FROM PUBLIC;
-REVOKE ALL ON TABLE grp FROM kamailio;
-GRANT ALL ON TABLE grp TO kamailio;
-GRANT SELECT ON TABLE grp TO kamailioro;
+REVOKE ALL ON TABLE grp FROM omnileads;
+GRANT ALL ON TABLE grp TO omnileads;
+GRANT SELECT ON TABLE grp TO omnileadsro;
 
 
 --
--- Name: grp_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: grp_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE grp_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE grp_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE grp_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE grp_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE grp_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE grp_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE grp_id_seq TO omnileadsro;
 
 
 --
--- Name: htable; Type: ACL; Schema: public; Owner: kamailio
+-- Name: htable; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE htable FROM PUBLIC;
-REVOKE ALL ON TABLE htable FROM kamailio;
-GRANT ALL ON TABLE htable TO kamailio;
-GRANT SELECT ON TABLE htable TO kamailioro;
+REVOKE ALL ON TABLE htable FROM omnileads;
+GRANT ALL ON TABLE htable TO omnileads;
+GRANT SELECT ON TABLE htable TO omnileadsro;
 
 
 --
--- Name: htable_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: htable_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE htable_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE htable_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE htable_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE htable_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE htable_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE htable_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE htable_id_seq TO omnileadsro;
 
 
 --
--- Name: imc_members; Type: ACL; Schema: public; Owner: kamailio
+-- Name: imc_members; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE imc_members FROM PUBLIC;
-REVOKE ALL ON TABLE imc_members FROM kamailio;
-GRANT ALL ON TABLE imc_members TO kamailio;
-GRANT SELECT ON TABLE imc_members TO kamailioro;
+REVOKE ALL ON TABLE imc_members FROM omnileads;
+GRANT ALL ON TABLE imc_members TO omnileads;
+GRANT SELECT ON TABLE imc_members TO omnileadsro;
 
 
 --
--- Name: imc_members_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: imc_members_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE imc_members_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE imc_members_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE imc_members_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE imc_members_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE imc_members_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE imc_members_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE imc_members_id_seq TO omnileadsro;
 
 
 --
--- Name: imc_rooms; Type: ACL; Schema: public; Owner: kamailio
+-- Name: imc_rooms; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE imc_rooms FROM PUBLIC;
-REVOKE ALL ON TABLE imc_rooms FROM kamailio;
-GRANT ALL ON TABLE imc_rooms TO kamailio;
-GRANT SELECT ON TABLE imc_rooms TO kamailioro;
+REVOKE ALL ON TABLE imc_rooms FROM omnileads;
+GRANT ALL ON TABLE imc_rooms TO omnileads;
+GRANT SELECT ON TABLE imc_rooms TO omnileadsro;
 
 
 --
--- Name: imc_rooms_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: imc_rooms_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE imc_rooms_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE imc_rooms_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE imc_rooms_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE imc_rooms_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE imc_rooms_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE imc_rooms_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE imc_rooms_id_seq TO omnileadsro;
 
 
 --
--- Name: lcr_gw; Type: ACL; Schema: public; Owner: kamailio
+-- Name: lcr_gw; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE lcr_gw FROM PUBLIC;
-REVOKE ALL ON TABLE lcr_gw FROM kamailio;
-GRANT ALL ON TABLE lcr_gw TO kamailio;
-GRANT SELECT ON TABLE lcr_gw TO kamailioro;
+REVOKE ALL ON TABLE lcr_gw FROM omnileads;
+GRANT ALL ON TABLE lcr_gw TO omnileads;
+GRANT SELECT ON TABLE lcr_gw TO omnileadsro;
 
 
 --
--- Name: lcr_gw_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: lcr_gw_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE lcr_gw_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE lcr_gw_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE lcr_gw_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE lcr_gw_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE lcr_gw_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE lcr_gw_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE lcr_gw_id_seq TO omnileadsro;
 
 
 --
--- Name: lcr_rule; Type: ACL; Schema: public; Owner: kamailio
+-- Name: lcr_rule; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE lcr_rule FROM PUBLIC;
-REVOKE ALL ON TABLE lcr_rule FROM kamailio;
-GRANT ALL ON TABLE lcr_rule TO kamailio;
-GRANT SELECT ON TABLE lcr_rule TO kamailioro;
+REVOKE ALL ON TABLE lcr_rule FROM omnileads;
+GRANT ALL ON TABLE lcr_rule TO omnileads;
+GRANT SELECT ON TABLE lcr_rule TO omnileadsro;
 
 
 --
--- Name: lcr_rule_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: lcr_rule_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE lcr_rule_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE lcr_rule_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE lcr_rule_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE lcr_rule_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE lcr_rule_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE lcr_rule_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE lcr_rule_id_seq TO omnileadsro;
 
 
 --
--- Name: lcr_rule_target; Type: ACL; Schema: public; Owner: kamailio
+-- Name: lcr_rule_target; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE lcr_rule_target FROM PUBLIC;
-REVOKE ALL ON TABLE lcr_rule_target FROM kamailio;
-GRANT ALL ON TABLE lcr_rule_target TO kamailio;
-GRANT SELECT ON TABLE lcr_rule_target TO kamailioro;
+REVOKE ALL ON TABLE lcr_rule_target FROM omnileads;
+GRANT ALL ON TABLE lcr_rule_target TO omnileads;
+GRANT SELECT ON TABLE lcr_rule_target TO omnileadsro;
 
 
 --
--- Name: lcr_rule_target_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: lcr_rule_target_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE lcr_rule_target_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE lcr_rule_target_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE lcr_rule_target_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE lcr_rule_target_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE lcr_rule_target_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE lcr_rule_target_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE lcr_rule_target_id_seq TO omnileadsro;
 
 
 --
--- Name: location; Type: ACL; Schema: public; Owner: kamailio
+-- Name: location; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE location FROM PUBLIC;
-REVOKE ALL ON TABLE location FROM kamailio;
-GRANT ALL ON TABLE location TO kamailio;
-GRANT SELECT ON TABLE location TO kamailioro;
+REVOKE ALL ON TABLE location FROM omnileads;
+GRANT ALL ON TABLE location TO omnileads;
+GRANT SELECT ON TABLE location TO omnileadsro;
 
 
 --
--- Name: location_attrs; Type: ACL; Schema: public; Owner: kamailio
+-- Name: location_attrs; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE location_attrs FROM PUBLIC;
-REVOKE ALL ON TABLE location_attrs FROM kamailio;
-GRANT ALL ON TABLE location_attrs TO kamailio;
-GRANT SELECT ON TABLE location_attrs TO kamailioro;
+REVOKE ALL ON TABLE location_attrs FROM omnileads;
+GRANT ALL ON TABLE location_attrs TO omnileads;
+GRANT SELECT ON TABLE location_attrs TO omnileadsro;
 
 
 --
--- Name: location_attrs_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: location_attrs_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE location_attrs_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE location_attrs_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE location_attrs_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE location_attrs_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE location_attrs_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE location_attrs_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE location_attrs_id_seq TO omnileadsro;
 
 
 --
--- Name: location_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: location_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE location_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE location_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE location_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE location_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE location_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE location_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE location_id_seq TO omnileadsro;
 
 
 --
--- Name: missed_calls; Type: ACL; Schema: public; Owner: kamailio
+-- Name: missed_calls; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE missed_calls FROM PUBLIC;
-REVOKE ALL ON TABLE missed_calls FROM kamailio;
-GRANT ALL ON TABLE missed_calls TO kamailio;
-GRANT SELECT ON TABLE missed_calls TO kamailioro;
+REVOKE ALL ON TABLE missed_calls FROM omnileads;
+GRANT ALL ON TABLE missed_calls TO omnileads;
+GRANT SELECT ON TABLE missed_calls TO omnileadsro;
 
 
 --
--- Name: missed_calls_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: missed_calls_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE missed_calls_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE missed_calls_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE missed_calls_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE missed_calls_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE missed_calls_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE missed_calls_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE missed_calls_id_seq TO omnileadsro;
 
 
 --
--- Name: mohqcalls; Type: ACL; Schema: public; Owner: kamailio
+-- Name: mohqcalls; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE mohqcalls FROM PUBLIC;
-REVOKE ALL ON TABLE mohqcalls FROM kamailio;
-GRANT ALL ON TABLE mohqcalls TO kamailio;
-GRANT SELECT ON TABLE mohqcalls TO kamailioro;
+REVOKE ALL ON TABLE mohqcalls FROM omnileads;
+GRANT ALL ON TABLE mohqcalls TO omnileads;
+GRANT SELECT ON TABLE mohqcalls TO omnileadsro;
 
 
 --
--- Name: mohqcalls_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: mohqcalls_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE mohqcalls_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE mohqcalls_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE mohqcalls_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE mohqcalls_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE mohqcalls_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE mohqcalls_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE mohqcalls_id_seq TO omnileadsro;
 
 
 --
--- Name: mohqueues; Type: ACL; Schema: public; Owner: kamailio
+-- Name: mohqueues; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE mohqueues FROM PUBLIC;
-REVOKE ALL ON TABLE mohqueues FROM kamailio;
-GRANT ALL ON TABLE mohqueues TO kamailio;
-GRANT SELECT ON TABLE mohqueues TO kamailioro;
+REVOKE ALL ON TABLE mohqueues FROM omnileads;
+GRANT ALL ON TABLE mohqueues TO omnileads;
+GRANT SELECT ON TABLE mohqueues TO omnileadsro;
 
 
 --
--- Name: mohqueues_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: mohqueues_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE mohqueues_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE mohqueues_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE mohqueues_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE mohqueues_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE mohqueues_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE mohqueues_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE mohqueues_id_seq TO omnileadsro;
 
 
 --
--- Name: mtree; Type: ACL; Schema: public; Owner: kamailio
+-- Name: mtree; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE mtree FROM PUBLIC;
-REVOKE ALL ON TABLE mtree FROM kamailio;
-GRANT ALL ON TABLE mtree TO kamailio;
-GRANT SELECT ON TABLE mtree TO kamailioro;
+REVOKE ALL ON TABLE mtree FROM omnileads;
+GRANT ALL ON TABLE mtree TO omnileads;
+GRANT SELECT ON TABLE mtree TO omnileadsro;
 
 
 --
--- Name: mtree_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: mtree_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE mtree_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE mtree_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE mtree_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE mtree_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE mtree_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE mtree_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE mtree_id_seq TO omnileadsro;
 
 
 --
--- Name: mtrees; Type: ACL; Schema: public; Owner: kamailio
+-- Name: mtrees; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE mtrees FROM PUBLIC;
-REVOKE ALL ON TABLE mtrees FROM kamailio;
-GRANT ALL ON TABLE mtrees TO kamailio;
-GRANT SELECT ON TABLE mtrees TO kamailioro;
+REVOKE ALL ON TABLE mtrees FROM omnileads;
+GRANT ALL ON TABLE mtrees TO omnileads;
+GRANT SELECT ON TABLE mtrees TO omnileadsro;
 
 
 --
--- Name: mtrees_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: mtrees_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE mtrees_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE mtrees_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE mtrees_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE mtrees_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE mtrees_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE mtrees_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE mtrees_id_seq TO omnileadsro;
 
 
 --
--- Name: pdt; Type: ACL; Schema: public; Owner: kamailio
+-- Name: pdt; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE pdt FROM PUBLIC;
-REVOKE ALL ON TABLE pdt FROM kamailio;
-GRANT ALL ON TABLE pdt TO kamailio;
-GRANT SELECT ON TABLE pdt TO kamailioro;
+REVOKE ALL ON TABLE pdt FROM omnileads;
+GRANT ALL ON TABLE pdt TO omnileads;
+GRANT SELECT ON TABLE pdt TO omnileadsro;
 
 
 --
--- Name: pdt_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: pdt_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE pdt_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE pdt_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE pdt_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE pdt_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE pdt_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE pdt_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE pdt_id_seq TO omnileadsro;
 
 
 --
--- Name: pl_pipes; Type: ACL; Schema: public; Owner: kamailio
+-- Name: pl_pipes; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE pl_pipes FROM PUBLIC;
-REVOKE ALL ON TABLE pl_pipes FROM kamailio;
-GRANT ALL ON TABLE pl_pipes TO kamailio;
-GRANT SELECT ON TABLE pl_pipes TO kamailioro;
+REVOKE ALL ON TABLE pl_pipes FROM omnileads;
+GRANT ALL ON TABLE pl_pipes TO omnileads;
+GRANT SELECT ON TABLE pl_pipes TO omnileadsro;
 
 
 --
--- Name: pl_pipes_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: pl_pipes_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE pl_pipes_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE pl_pipes_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE pl_pipes_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE pl_pipes_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE pl_pipes_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE pl_pipes_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE pl_pipes_id_seq TO omnileadsro;
 
 
 --
--- Name: presentity; Type: ACL; Schema: public; Owner: kamailio
+-- Name: presentity; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE presentity FROM PUBLIC;
-REVOKE ALL ON TABLE presentity FROM kamailio;
-GRANT ALL ON TABLE presentity TO kamailio;
-GRANT SELECT ON TABLE presentity TO kamailioro;
+REVOKE ALL ON TABLE presentity FROM omnileads;
+GRANT ALL ON TABLE presentity TO omnileads;
+GRANT SELECT ON TABLE presentity TO omnileadsro;
 
 
 --
--- Name: presentity_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: presentity_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE presentity_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE presentity_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE presentity_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE presentity_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE presentity_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE presentity_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE presentity_id_seq TO omnileadsro;
 
 
 --
--- Name: pua; Type: ACL; Schema: public; Owner: kamailio
+-- Name: pua; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE pua FROM PUBLIC;
-REVOKE ALL ON TABLE pua FROM kamailio;
-GRANT ALL ON TABLE pua TO kamailio;
-GRANT SELECT ON TABLE pua TO kamailioro;
+REVOKE ALL ON TABLE pua FROM omnileads;
+GRANT ALL ON TABLE pua TO omnileads;
+GRANT SELECT ON TABLE pua TO omnileadsro;
 
 
 --
--- Name: pua_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: pua_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE pua_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE pua_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE pua_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE pua_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE pua_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE pua_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE pua_id_seq TO omnileadsro;
 
 
 --
--- Name: purplemap; Type: ACL; Schema: public; Owner: kamailio
+-- Name: purplemap; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE purplemap FROM PUBLIC;
-REVOKE ALL ON TABLE purplemap FROM kamailio;
-GRANT ALL ON TABLE purplemap TO kamailio;
-GRANT SELECT ON TABLE purplemap TO kamailioro;
+REVOKE ALL ON TABLE purplemap FROM omnileads;
+GRANT ALL ON TABLE purplemap TO omnileads;
+GRANT SELECT ON TABLE purplemap TO omnileadsro;
 
 
 --
--- Name: purplemap_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: purplemap_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE purplemap_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE purplemap_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE purplemap_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE purplemap_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE purplemap_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE purplemap_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE purplemap_id_seq TO omnileadsro;
 
 
 --
--- Name: re_grp; Type: ACL; Schema: public; Owner: kamailio
+-- Name: re_grp; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE re_grp FROM PUBLIC;
-REVOKE ALL ON TABLE re_grp FROM kamailio;
-GRANT ALL ON TABLE re_grp TO kamailio;
-GRANT SELECT ON TABLE re_grp TO kamailioro;
+REVOKE ALL ON TABLE re_grp FROM omnileads;
+GRANT ALL ON TABLE re_grp TO omnileads;
+GRANT SELECT ON TABLE re_grp TO omnileadsro;
 
 
 --
--- Name: re_grp_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: re_grp_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE re_grp_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE re_grp_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE re_grp_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE re_grp_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE re_grp_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE re_grp_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE re_grp_id_seq TO omnileadsro;
 
 
 --
--- Name: rls_presentity; Type: ACL; Schema: public; Owner: kamailio
+-- Name: rls_presentity; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE rls_presentity FROM PUBLIC;
-REVOKE ALL ON TABLE rls_presentity FROM kamailio;
-GRANT ALL ON TABLE rls_presentity TO kamailio;
-GRANT SELECT ON TABLE rls_presentity TO kamailioro;
+REVOKE ALL ON TABLE rls_presentity FROM omnileads;
+GRANT ALL ON TABLE rls_presentity TO omnileads;
+GRANT SELECT ON TABLE rls_presentity TO omnileadsro;
 
 
 --
--- Name: rls_presentity_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: rls_presentity_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE rls_presentity_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE rls_presentity_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE rls_presentity_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE rls_presentity_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE rls_presentity_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE rls_presentity_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE rls_presentity_id_seq TO omnileadsro;
 
 
 --
--- Name: rls_watchers; Type: ACL; Schema: public; Owner: kamailio
+-- Name: rls_watchers; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE rls_watchers FROM PUBLIC;
-REVOKE ALL ON TABLE rls_watchers FROM kamailio;
-GRANT ALL ON TABLE rls_watchers TO kamailio;
-GRANT SELECT ON TABLE rls_watchers TO kamailioro;
+REVOKE ALL ON TABLE rls_watchers FROM omnileads;
+GRANT ALL ON TABLE rls_watchers TO omnileads;
+GRANT SELECT ON TABLE rls_watchers TO omnileadsro;
 
 
 --
--- Name: rls_watchers_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: rls_watchers_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE rls_watchers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE rls_watchers_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE rls_watchers_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE rls_watchers_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE rls_watchers_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE rls_watchers_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE rls_watchers_id_seq TO omnileadsro;
 
 
 --
--- Name: rtpproxy; Type: ACL; Schema: public; Owner: kamailio
+-- Name: rtpproxy; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE rtpproxy FROM PUBLIC;
-REVOKE ALL ON TABLE rtpproxy FROM kamailio;
-GRANT ALL ON TABLE rtpproxy TO kamailio;
-GRANT SELECT ON TABLE rtpproxy TO kamailioro;
+REVOKE ALL ON TABLE rtpproxy FROM omnileads;
+GRANT ALL ON TABLE rtpproxy TO omnileads;
+GRANT SELECT ON TABLE rtpproxy TO omnileadsro;
 
 
 --
--- Name: rtpproxy_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: rtpproxy_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE rtpproxy_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE rtpproxy_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE rtpproxy_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE rtpproxy_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE rtpproxy_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE rtpproxy_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE rtpproxy_id_seq TO omnileadsro;
 
 
 --
--- Name: sca_subscriptions; Type: ACL; Schema: public; Owner: kamailio
+-- Name: sca_subscriptions; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE sca_subscriptions FROM PUBLIC;
-REVOKE ALL ON TABLE sca_subscriptions FROM kamailio;
-GRANT ALL ON TABLE sca_subscriptions TO kamailio;
-GRANT SELECT ON TABLE sca_subscriptions TO kamailioro;
+REVOKE ALL ON TABLE sca_subscriptions FROM omnileads;
+GRANT ALL ON TABLE sca_subscriptions TO omnileads;
+GRANT SELECT ON TABLE sca_subscriptions TO omnileadsro;
 
 
 --
--- Name: sca_subscriptions_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: sca_subscriptions_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE sca_subscriptions_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE sca_subscriptions_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE sca_subscriptions_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE sca_subscriptions_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE sca_subscriptions_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE sca_subscriptions_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE sca_subscriptions_id_seq TO omnileadsro;
 
 
 --
--- Name: silo; Type: ACL; Schema: public; Owner: kamailio
+-- Name: silo; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE silo FROM PUBLIC;
-REVOKE ALL ON TABLE silo FROM kamailio;
-GRANT ALL ON TABLE silo TO kamailio;
-GRANT SELECT ON TABLE silo TO kamailioro;
+REVOKE ALL ON TABLE silo FROM omnileads;
+GRANT ALL ON TABLE silo TO omnileads;
+GRANT SELECT ON TABLE silo TO omnileadsro;
 
 
 --
--- Name: silo_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: silo_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE silo_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE silo_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE silo_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE silo_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE silo_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE silo_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE silo_id_seq TO omnileadsro;
 
 
 --
--- Name: sip_trace; Type: ACL; Schema: public; Owner: kamailio
+-- Name: sip_trace; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE sip_trace FROM PUBLIC;
-REVOKE ALL ON TABLE sip_trace FROM kamailio;
-GRANT ALL ON TABLE sip_trace TO kamailio;
-GRANT SELECT ON TABLE sip_trace TO kamailioro;
+REVOKE ALL ON TABLE sip_trace FROM omnileads;
+GRANT ALL ON TABLE sip_trace TO omnileads;
+GRANT SELECT ON TABLE sip_trace TO omnileadsro;
 
 
 --
--- Name: sip_trace_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: sip_trace_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE sip_trace_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE sip_trace_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE sip_trace_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE sip_trace_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE sip_trace_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE sip_trace_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE sip_trace_id_seq TO omnileadsro;
 
 
 --
--- Name: speed_dial; Type: ACL; Schema: public; Owner: kamailio
+-- Name: speed_dial; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE speed_dial FROM PUBLIC;
-REVOKE ALL ON TABLE speed_dial FROM kamailio;
-GRANT ALL ON TABLE speed_dial TO kamailio;
-GRANT SELECT ON TABLE speed_dial TO kamailioro;
+REVOKE ALL ON TABLE speed_dial FROM omnileads;
+GRANT ALL ON TABLE speed_dial TO omnileads;
+GRANT SELECT ON TABLE speed_dial TO omnileadsro;
 
 
 --
--- Name: speed_dial_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: speed_dial_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE speed_dial_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE speed_dial_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE speed_dial_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE speed_dial_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE speed_dial_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE speed_dial_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE speed_dial_id_seq TO omnileadsro;
 
 
 --
--- Name: subscriber; Type: ACL; Schema: public; Owner: kamailio
+-- Name: subscriber; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE subscriber FROM PUBLIC;
-REVOKE ALL ON TABLE subscriber FROM kamailio;
-GRANT ALL ON TABLE subscriber TO kamailio;
-GRANT SELECT ON TABLE subscriber TO kamailioro;
+REVOKE ALL ON TABLE subscriber FROM omnileads;
+GRANT ALL ON TABLE subscriber TO omnileads;
+GRANT SELECT ON TABLE subscriber TO omnileadsro;
 
 
 --
--- Name: subscriber_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: subscriber_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE subscriber_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE subscriber_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE subscriber_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE subscriber_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE subscriber_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE subscriber_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE subscriber_id_seq TO omnileadsro;
 
 
 --
--- Name: topos_d; Type: ACL; Schema: public; Owner: kamailio
+-- Name: topos_d; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE topos_d FROM PUBLIC;
-REVOKE ALL ON TABLE topos_d FROM kamailio;
-GRANT ALL ON TABLE topos_d TO kamailio;
-GRANT SELECT ON TABLE topos_d TO kamailioro;
+REVOKE ALL ON TABLE topos_d FROM omnileads;
+GRANT ALL ON TABLE topos_d TO omnileads;
+GRANT SELECT ON TABLE topos_d TO omnileadsro;
 
 
 --
--- Name: topos_d_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: topos_d_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE topos_d_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE topos_d_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE topos_d_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE topos_d_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE topos_d_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE topos_d_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE topos_d_id_seq TO omnileadsro;
 
 
 --
--- Name: topos_t; Type: ACL; Schema: public; Owner: kamailio
+-- Name: topos_t; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE topos_t FROM PUBLIC;
-REVOKE ALL ON TABLE topos_t FROM kamailio;
-GRANT ALL ON TABLE topos_t TO kamailio;
-GRANT SELECT ON TABLE topos_t TO kamailioro;
+REVOKE ALL ON TABLE topos_t FROM omnileads;
+GRANT ALL ON TABLE topos_t TO omnileads;
+GRANT SELECT ON TABLE topos_t TO omnileadsro;
 
 
 --
--- Name: topos_t_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: topos_t_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE topos_t_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE topos_t_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE topos_t_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE topos_t_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE topos_t_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE topos_t_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE topos_t_id_seq TO omnileadsro;
 
 
 --
--- Name: trusted; Type: ACL; Schema: public; Owner: kamailio
+-- Name: trusted; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE trusted FROM PUBLIC;
-REVOKE ALL ON TABLE trusted FROM kamailio;
-GRANT ALL ON TABLE trusted TO kamailio;
-GRANT SELECT ON TABLE trusted TO kamailioro;
+REVOKE ALL ON TABLE trusted FROM omnileads;
+GRANT ALL ON TABLE trusted TO omnileads;
+GRANT SELECT ON TABLE trusted TO omnileadsro;
 
 
 --
--- Name: trusted_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: trusted_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE trusted_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE trusted_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE trusted_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE trusted_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE trusted_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE trusted_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE trusted_id_seq TO omnileadsro;
 
 
 --
--- Name: uacreg; Type: ACL; Schema: public; Owner: kamailio
+-- Name: uacreg; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE uacreg FROM PUBLIC;
-REVOKE ALL ON TABLE uacreg FROM kamailio;
-GRANT ALL ON TABLE uacreg TO kamailio;
-GRANT SELECT ON TABLE uacreg TO kamailioro;
+REVOKE ALL ON TABLE uacreg FROM omnileads;
+GRANT ALL ON TABLE uacreg TO omnileads;
+GRANT SELECT ON TABLE uacreg TO omnileadsro;
 
 
 --
--- Name: uacreg_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: uacreg_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE uacreg_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE uacreg_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE uacreg_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE uacreg_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE uacreg_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE uacreg_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE uacreg_id_seq TO omnileadsro;
 
 
 --
--- Name: uri; Type: ACL; Schema: public; Owner: kamailio
+-- Name: uri; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE uri FROM PUBLIC;
-REVOKE ALL ON TABLE uri FROM kamailio;
-GRANT ALL ON TABLE uri TO kamailio;
-GRANT SELECT ON TABLE uri TO kamailioro;
+REVOKE ALL ON TABLE uri FROM omnileads;
+GRANT ALL ON TABLE uri TO omnileads;
+GRANT SELECT ON TABLE uri TO omnileadsro;
 
 
 --
--- Name: uri_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: uri_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE uri_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE uri_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE uri_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE uri_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE uri_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE uri_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE uri_id_seq TO omnileadsro;
 
 
 --
--- Name: userblacklist; Type: ACL; Schema: public; Owner: kamailio
+-- Name: userblacklist; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE userblacklist FROM PUBLIC;
-REVOKE ALL ON TABLE userblacklist FROM kamailio;
-GRANT ALL ON TABLE userblacklist TO kamailio;
-GRANT SELECT ON TABLE userblacklist TO kamailioro;
+REVOKE ALL ON TABLE userblacklist FROM omnileads;
+GRANT ALL ON TABLE userblacklist TO omnileads;
+GRANT SELECT ON TABLE userblacklist TO omnileadsro;
 
 
 --
--- Name: userblacklist_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: userblacklist_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE userblacklist_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE userblacklist_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE userblacklist_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE userblacklist_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE userblacklist_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE userblacklist_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE userblacklist_id_seq TO omnileadsro;
 
 
 --
--- Name: usr_preferences; Type: ACL; Schema: public; Owner: kamailio
+-- Name: usr_preferences; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE usr_preferences FROM PUBLIC;
-REVOKE ALL ON TABLE usr_preferences FROM kamailio;
-GRANT ALL ON TABLE usr_preferences TO kamailio;
-GRANT SELECT ON TABLE usr_preferences TO kamailioro;
+REVOKE ALL ON TABLE usr_preferences FROM omnileads;
+GRANT ALL ON TABLE usr_preferences TO omnileads;
+GRANT SELECT ON TABLE usr_preferences TO omnileadsro;
 
 
 --
--- Name: usr_preferences_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: usr_preferences_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE usr_preferences_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE usr_preferences_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE usr_preferences_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE usr_preferences_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE usr_preferences_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE usr_preferences_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE usr_preferences_id_seq TO omnileadsro;
 
 
 --
--- Name: version; Type: ACL; Schema: public; Owner: kamailio
+-- Name: version; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE version FROM PUBLIC;
-REVOKE ALL ON TABLE version FROM kamailio;
-GRANT ALL ON TABLE version TO kamailio;
-GRANT SELECT ON TABLE version TO kamailioro;
+REVOKE ALL ON TABLE version FROM omnileads;
+GRANT ALL ON TABLE version TO omnileads;
+GRANT SELECT ON TABLE version TO omnileadsro;
 
 
 --
--- Name: watchers; Type: ACL; Schema: public; Owner: kamailio
+-- Name: watchers; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE watchers FROM PUBLIC;
-REVOKE ALL ON TABLE watchers FROM kamailio;
-GRANT ALL ON TABLE watchers TO kamailio;
-GRANT SELECT ON TABLE watchers TO kamailioro;
+REVOKE ALL ON TABLE watchers FROM omnileads;
+GRANT ALL ON TABLE watchers TO omnileads;
+GRANT SELECT ON TABLE watchers TO omnileadsro;
 
 
 --
--- Name: watchers_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: watchers_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE watchers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE watchers_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE watchers_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE watchers_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE watchers_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE watchers_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE watchers_id_seq TO omnileadsro;
 
 
 --
--- Name: xcap; Type: ACL; Schema: public; Owner: kamailio
+-- Name: xcap; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON TABLE xcap FROM PUBLIC;
-REVOKE ALL ON TABLE xcap FROM kamailio;
-GRANT ALL ON TABLE xcap TO kamailio;
-GRANT SELECT ON TABLE xcap TO kamailioro;
+REVOKE ALL ON TABLE xcap FROM omnileads;
+GRANT ALL ON TABLE xcap TO omnileads;
+GRANT SELECT ON TABLE xcap TO omnileadsro;
 
 
 --
--- Name: xcap_id_seq; Type: ACL; Schema: public; Owner: kamailio
+-- Name: xcap_id_seq; Type: ACL; Schema: public; Owner: omnileads
 --
 
 REVOKE ALL ON SEQUENCE xcap_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE xcap_id_seq FROM kamailio;
-GRANT ALL ON SEQUENCE xcap_id_seq TO kamailio;
-GRANT SELECT ON SEQUENCE xcap_id_seq TO kamailioro;
+REVOKE ALL ON SEQUENCE xcap_id_seq FROM omnileads;
+GRANT ALL ON SEQUENCE xcap_id_seq TO omnileads;
+GRANT SELECT ON SEQUENCE xcap_id_seq TO omnileadsro;
 
 
 --

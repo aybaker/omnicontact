@@ -89,9 +89,9 @@ ASTERISK = {
 # Server donde realizar request desde AGI PROXY => NGINX
 FTS_FAST_AGI_DAEMON_PROXY_URL = '{{dj_sett_FTS_FAST_AGI_DAEMON_PROXY_URL}}'
 
-FTS_DIALPLAN_FILENAME = '{{dj_sett_FTS_DIALPLAN_FILENAME}}'
+FTS_DIALPLAN_FILENAME = '{{ asterisk_location }}/etc/asterisk/ics_extensions.conf'
 
-FTS_QUEUE_FILENAME = '{{dj_sett_FTS_QUEUE_FILENAME}}'
+FTS_QUEUE_FILENAME = '{{ asterisk_location }}/etc/asterisk/ics_queues.conf'
 
 FTS_RELOAD_CMD = '["{{ asterisk_location }}/sbin/asterisk", "-x", "dialplan reload"]'
 
