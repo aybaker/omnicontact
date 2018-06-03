@@ -7,13 +7,9 @@
   template: src=bin/{{ item }} dest={{ install_prefix }}bin mode=0755
   with_items:
     - db_update_plpython_stored_proc.sh
-    - stop-ftsender-daemons-for-deploy.py
-    - start-ftsender-daemons-for-deploy.py
+    - stop-omnileads-daemons-for-deploy.py
+    - start-omnileads-daemons-for-deploy.py
     - upload_etc_rclocal.sh
-
-- name: Stop FTSender services (except FastAGI daemon)
-  shell: python -u /home/ftsender/deploy/bin/stop-ftsender-daemons-for-deploy.py 2>&1
-  ignore_errors: yes
 
 - name: Install stored procedures
   shell: >
@@ -51,27 +47,6 @@
   become_method: sudo
 
 #----------------------------------------------------------------------
-# Con supervisor configurado, hacemos reload
-#----------------------------------------------------------------------
-
-- name: Start FTSender services (except FastAGI daemon)
-  shell: "python -u {{ install_prefix }}bin/start-ftsender-daemons-for-deploy.py 2>&1"
-  ignore_errors: no
-
-#----------------------------------------------------------------------
-# Checks
-#----------------------------------------------------------------------
-
-- name: Run ftsdaemon_checks
-  shell: "{{ install_prefix }}bin/manage.sh ftsdaemon_checks"
-  register: ftsdaemon_checks_output
-  ignore_errors: True
-
-- name: Print output of ftsdaemon_checks
-  debug: msg="{{ ftsdaemon_checks_output.stdout }}"
-  when: ftsdaemon_checks_output|failed
-
-#----------------------------------------------------------------------
 # Deploy sms
 #----------------------------------------------------------------------
 
@@ -84,16 +59,16 @@
     - docker
   ignore_errors: True
 
-- name: Upload built (rsync to /apidinstar)
+#- name: Upload built (rsync to /apidinstar)
   # Copies xxx/app to /home/ftsender/deploy/apidinstar (/apidinstar on dest is implicit)
-  synchronize: >
-    src={{ BUILD_API_DINSTAR }}
-    dest=/home/ftsender/deploy
-    delete=yes checksum=yes times=no
-  tags:
-    - deploy
-    - quick_deploy
-    - docker
+#  synchronize: >
+#    src={{ BUILD_API_DINSTAR }}
+#    dest=/home/ftsender/deploy
+#    delete=yes checksum=yes times=no
+#  tags:
+#    - deploy
+#    - quick_deploy
+#    - docker
 
 #- name: Change permissions to directory dinstar
 #  shell: chmod -R 777 /home/ftsender/deploy/apidinstar/dinstar/
@@ -147,7 +122,6 @@
           - "service ominicontacto-daemon start"
           - "service ominicontacto-daemon stop"
           - "chkconfig ominicontacto-daemon on"
-          - "service ominicontacto-daemon start"
   become: true
   become_method: sudo
   ignore_errors: yes
@@ -185,3 +159,28 @@
 
 - name: Generate manage.sh script
   template: src=templates/manage.sh.j2 dest={{ install_prefix }}bin/manage.sh owner={{ usuario }} group={{ usuario }} mode=755
+
+#----------------------------------------------------------------------
+# Con supervisor configurado, hacemos reload
+#----------------------------------------------------------------------
+
+- name: Stop Omnileads services (except FastAGI daemon)
+  shell: python -u {{ install_prefix }}bin/stop-omnileads-daemons-for-deploy.py 2>&1
+  ignore_errors: yes
+
+- name: Start Omnileads services (except FastAGI daemon)
+  shell: "python -u {{ install_prefix }}bin/start-omnileads-daemons-for-deploy.py 2>&1"
+  ignore_errors: no
+
+#----------------------------------------------------------------------
+# Checks
+#----------------------------------------------------------------------
+
+- name: Run omldaemon_checks
+  shell: "{{ install_prefix }}bin/manage.sh ftsdaemon_checks"
+  register: omldaemon_checks_output
+  ignore_errors: True
+
+- name: Print output of omldaemon_checks
+  debug: msg="{{ omldaemon_checks_output.stdout }}"
+  when: omldaemon_checks_output|failed
