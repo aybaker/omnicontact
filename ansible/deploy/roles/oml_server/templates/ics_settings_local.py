@@ -79,6 +79,19 @@ INTERNAL_IPS = (
     "127.0.0.1",
 )
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': '127.0.0.1',
+        'PORT': 5432,
+        'NAME': 'omnileads',
+        'USER': 'omnileads',
+        'PASSWORD': 'omnileadsrw',
+        'CONN_MAX_AGE': 300,
+        'ATOMIC_REQUESTS': True,
+    }
+}
+
 ASTERISK = {
     'USERNAME': '{{dj_sett_ASTERISK_USERNAME}}',
     'PASSWORD': '{{dj_sett_ASTERISK_PASSWORD}}',
@@ -136,7 +149,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': '/home/ftsender/deploy/log/{0}'.format(_logging_output_file),
+            'filename': '{{ install_prefix }}/log/{0}'.format(_logging_output_file),
             'formatter': 'verbose'
         },
     },

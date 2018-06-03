@@ -63,7 +63,7 @@ LOCK_SOCKETS = [
     LOCK_DEPURACION_DE_CAMPANA,
 ]
 
-UWSGI_PID_FILE = "/home/ftsender/deploy/run/fts-uwsgi.pid"
+UWSGI_PID_FILE = "{{ install_prefix }}ominicontacto/oml-uwsgi.pid"
 
 
 def shell(cmd):
@@ -119,15 +119,15 @@ def bajar_uwsgi():
 
     if uwsgi_pid:
         try:
-            shell("pgrep -u ftsender uwsgi | egrep -q '^{0}$'".format(uwsgi_pid))
+            shell("pgrep -u omnileads uwsgi | egrep -q '^{0}$'".format(uwsgi_pid))
         except subprocess.CalledProcessError:
             pass
         else:
-            logger.info(" + Bajando servicio 'ftsender-daemon'")
+            logger.info(" + Bajando servicio 'ominicontacto-daemon'")
             try:
-                shell("/sbin/service ftsender-daemon stop")
+                shell("/sbin/service ominicontacto-daemon stop")
             except subprocess.CalledProcessError:
-                logger.exception("ERROR DETECTADO al intentar bajar servicio 'ftsender-daemon'")
+                logger.exception("ERROR DETECTADO al intentar bajar servicio 'ominicontacto-daemon'")
 
 
 def main():

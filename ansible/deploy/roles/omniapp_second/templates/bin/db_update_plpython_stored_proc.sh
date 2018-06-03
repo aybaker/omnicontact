@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BD="${BD:-ftsender}"
+BD="${BD:-omnileads}"
 
 while [ -n "$1" ] ; do
 	# Nombre de stored proc. es igual al nombre del archivo

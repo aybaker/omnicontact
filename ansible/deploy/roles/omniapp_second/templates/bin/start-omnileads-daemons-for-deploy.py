@@ -52,7 +52,7 @@ LOCK_SOCKETS = [
     LOCK_DEPURACION_DE_CAMPANA,
 ]
 
-UWSGI_PID_FILE = "/home/ftsender/deploy/run/fts-uwsgi.pid"
+UWSGI_PID_FILE = "{{ install_prefix }}ominicontacto/oml-uwsgi.pid"
 
 
 def shell(cmd):
@@ -96,11 +96,11 @@ def iniciar_uwsgi():
     logger.info("# Iniciamos uWSGI")
     logger.info("# ------------------------------------------------------------------------------------------")
 
-    logger.info(" + Iniciando servicio 'ftsender-daemon'")
+    logger.info(" + Iniciando servicio 'ominicontacto-daemon'")
     try:
-        shell("/sbin/service ftsender-daemon start")
+        shell("/sbin/service ominicontacto-daemon start")
     except subprocess.CalledProcessError:
-        logger.exception("ERROR DETECTADO al intentar iniciar servicio 'ftsender-daemon'")
+        logger.exception("ERROR DETECTADO al intentar iniciar servicio 'ominicontacto-daemon'")
 
 
 def main():
