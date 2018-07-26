@@ -8,7 +8,7 @@ class Campana_Model {
     private $argPdo;
 
     function __construct() {
-        $this->argPdo = 'pgsql:host=' . PG_HOST . ';dbname=kamailio;port=5432';
+        $this->argPdo = 'pgsql:host=' . PG_HOST . ';dbname=omnileads;port=5432';
     }
 
     function getCampaignsForAdm() {
