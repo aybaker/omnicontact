@@ -27,3 +27,5 @@ settings_local.py
 /ics/deploy/virtualenv-fig
 .pydevproject
 # ----- </ics>
+atom-sftp-sync.json
+deployment-config.json

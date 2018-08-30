@@ -8,42 +8,43 @@ DT:Mover la creacion de agente a otra vista
 
 from __future__ import unicode_literals
 
-import json
 import logging
 
 from services.sms_services import SmsManager
+from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render_to_response, redirect
 from django.template.response import TemplateResponse
 from django.template import RequestContext
 from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.views.generic import (
-    ListView, CreateView, UpdateView, DeleteView, FormView
+    ListView, CreateView, UpdateView, DeleteView, FormView, TemplateView
 )
+from defender import utils
+from defender import config
+
 from ominicontacto_app.models import (
     User, AgenteProfile, Modulo, Grupo, Pausa, DuracionDeLlamada, Agenda,
-    Chat, MensajeChat, WombatLog, Campana, Contacto, QueueMember
+    Chat, MensajeChat, QueueMember
 )
 from ominicontacto_app.forms import (
     CustomUserCreationForm, UserChangeForm, AgenteProfileForm,
     AgendaBusquedaForm, PausaForm, GrupoForm
 )
-from django.contrib.auth.forms import AuthenticationForm
-from services.kamailio_service import KamailioService
 from services.asterisk_service import ActivacionAgenteService,\
     RestablecerConfigSipError
 from services.regeneracion_asterisk import RegeneracionAsteriskService,\
     RestablecerDialplanError
 from ominicontacto_app.utiles import convert_string_in_boolean,\
     convert_fecha_datetime
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import TemplateView
 from ominicontacto_app import version
-
+from configuracion_telefonia_app.regeneracion_configuracion_telefonia import (
+    RestablecerConfiguracionTelefonicaError, SincronizadorDeConfiguracionPausaAsterisk)
 
 logger = logging.getLogger(__name__)
 
@@ -62,28 +63,45 @@ def index_view(request):
 
 
 def login_view(request):
-    """
-    Vista login, si el user es un agente lo redirijo a la vista del
-    agente(view_node)
-    """
+    detail = None
+    user_is_blocked = False
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
+        login_unsuccessful = False
+        if utils.is_already_locked(request, username=username):
+            intentos_fallidos = config.FAILURE_LIMIT + 2
+            detail = _("Haz tratado de loguearte {intentos_fallidos} veces,"
+                       " sin exito. Tu cuenta y dirección IP"
+                       " permanecerán bloqueadas por {cooloff_time_seconds} segundos."
+                       " Contacta al Administrador".format(intentos_fallidos=intentos_fallidos,
+                                                           cooloff_time_seconds=config.COOLOFF_TIME)
+
+                       )
+            user_is_blocked = True
+            login_unsuccessful = True
         user = authenticate(username=username, password=password)
         form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            login(request, user)
-            user.set_session_key(request.session.session_key)
-            if user.is_agente:
-                return HttpResponseRedirect(reverse('view_node'))
-            else:
-                return HttpResponseRedirect(reverse('index'))
-
+        if not form.is_valid():
+            login_unsuccessful = True
+        utils.add_login_attempt_to_db(request, login_valid=not login_unsuccessful,
+                                      username=username)
+        user_not_blocked = utils.check_request(request, login_unsuccessful=login_unsuccessful,
+                                               username=username)
+        if user_not_blocked and not user_is_blocked and not login_unsuccessful:
+            if form.is_valid():
+                login(request, user)
+                user.set_session_key(request.session.session_key)
+                if user.is_agente:
+                    return HttpResponseRedirect(reverse('view_node'))
+                else:
+                    return HttpResponseRedirect(reverse('index'))
     else:
         form = AuthenticationForm(request)
-
     context = {
         'form': form,
+        'detail': detail,
+        'user_is_blocked': user_is_blocked,
     }
     template_name = 'registration/login.html'
     return TemplateResponse(request, template_name, context)
@@ -150,18 +168,11 @@ class UserDeleteView(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        # DEUDA TECNICA: separar todo esto en un servicio o app aparte
         if self.object.is_agente and self.object.get_agente_profile():
-            kamailio_service = KamailioService()
-            kamailio_service.delete_agente_kamailio(
-                self.object.get_agente_profile())
             self.object.get_agente_profile().borrar()
             QueueMember.objects.borrar_member_queue(
                 self.object.get_agente_profile())
         if self.object.is_supervisor and self.object.get_supervisor_profile():
-            kamailio_service = KamailioService()
-            kamailio_service.delete_agente_kamailio(
-                self.object.get_supervisor_profile())
             self.object.get_supervisor_profile().borrar()
         self.object.borrar()
         return HttpResponseRedirect(self.get_success_url())
@@ -218,13 +229,8 @@ class AgenteProfileCreateView(CreateView):
         usuario = User.objects.get(pk=self.kwargs['pk_user'])
         self.object.user = usuario
         self.object.sip_extension = 1000 + usuario.id
-        # generar un sip_password aleatorio
-        self.object.sip_password = User.objects.make_random_password()
         self.object.reported_by = self.request.user
         self.object.save()
-        # insertar agente en kamailio-debian
-        kamailio_service = KamailioService()
-        kamailio_service.crear_agente_kamailio(self.object)
         # generar archivos sip en asterisk
         asterisk_sip_service = ActivacionAgenteService()
         try:
@@ -300,6 +306,16 @@ class ModuloDeleteView(DeleteView):
     model = Modulo
     template_name = 'delete_modulo.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        modulo = Modulo.objects.get(pk=self.kwargs['pk'])
+        agentes_relacionados = modulo.agenteprofile_set.exists()
+        if agentes_relacionados:
+            message = _("No está permitido eliminar un módulo con agentes relacionados")
+            messages.warning(self.request, message)
+            return HttpResponseRedirect(
+                reverse('modulo_list'))
+        return super(ModuloDeleteView, self).dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
         return reverse('modulo_list')
 
@@ -333,7 +349,7 @@ class GrupoCreateView(CreateView):
     DT: eliminar fields de la vista crear un form para ello
     """
     model = Grupo
-    template_name = 'base_create_update_form.html'
+    template_name = 'grupo_create_update.html'
     form_class = GrupoForm
 
     def form_valid(self, form):
@@ -352,7 +368,7 @@ class GrupoUpdateView(UpdateView):
         DT: eliminar fields de la vista crear un form para ello
         """
     model = Grupo
-    template_name = 'base_create_update_form.html'
+    template_name = 'grupo_create_update.html'
     form_class = GrupoForm
 
     def form_valid(self, form):
@@ -395,42 +411,9 @@ class GrupoDeleteView(DeleteView):
         return reverse('grupo_list')
 
 
-class RegenerarAsteriskOnSuccessMixin(object):
-
-    def get_success_url(self):
-        activacion_queue_service = RegeneracionAsteriskService()
-        try:
-            activacion_queue_service.regenerar()
-        except RestablecerDialplanError, e:
-            message = ("Operación Errónea! "
-                       "No se realizo de manera correcta la regeneracion de los "
-                       "archivos de asterisk al siguiente error: {0}".format(e))
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                message,
-            )
-        messages.success(self.request,
-                         'La regeneracion de los archivos de configuracion de'
-                         ' asterisk y el reload se hizo de manera correcta')
-
-        return reverse('pausa_list')
-
-
-class PausaCreateView(RegenerarAsteriskOnSuccessMixin, CreateView):
-    """Vista para crear pausa"""
-    model = Pausa
-    template_name = 'base_create_update_form.html'
-    form_class = PausaForm
-
-
-class PausaUpdateView(RegenerarAsteriskOnSuccessMixin, UpdateView):
-    """Vista para modificar pausa"""
-    model = Pausa
-    template_name = 'base_create_update_form.html'
-    form_class = PausaForm
-
-
+####################
+# PAUSAS
+####################
 class PausaListView(TemplateView):
     """Vista para listar pausa"""
     model = Pausa
@@ -443,7 +426,48 @@ class PausaListView(TemplateView):
         return context
 
 
-class PausaToggleDeleteView(TemplateView):
+class SincronizarPausaMixin(object):
+
+    def get_success_url(self):
+        return reverse('pausa_list')
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.sincronizar(self.object, self.request)
+        return super(SincronizarPausaMixin, self).form_valid(form)
+
+    def sincronizar(self, pausa, request, eliminar=False):
+        sincronizador = SincronizadorDeConfiguracionPausaAsterisk()
+        try:
+            if eliminar:
+                sincronizador.eliminar_y_regenerar_asterisk(pausa)
+                message = (_(u"La pausa se ha elimiado exitosamente."))
+            else:
+                sincronizador.regenerar_asterisk(pausa)
+                message = (_(u"La pausa se ha guardado exitosamente."))
+            messages.add_message(self.request, messages.SUCCESS, message)
+        except RestablecerConfiguracionTelefonicaError, e:
+            message = ("Operación Errónea! "
+                       "No se realizo de manera correcta la sincronización de los  "
+                       "datos en asterisk según el siguiente error: {0}".format(e))
+            messages.add_message(self.request, messages.WARNING, message)
+
+
+class PausaCreateView(SincronizarPausaMixin, CreateView):
+    """Vista para crear pausa"""
+    model = Pausa
+    template_name = 'base_create_update_form.html'
+    form_class = PausaForm
+
+
+class PausaUpdateView(SincronizarPausaMixin, UpdateView):
+    """Vista para modificar pausa"""
+    model = Pausa
+    template_name = 'base_create_update_form.html'
+    form_class = PausaForm
+
+
+class PausaToggleDeleteView(SincronizarPausaMixin, TemplateView):
     """
     Esta vista se encarga de la eliminación/activación del
     objeto pausa
@@ -464,6 +488,10 @@ class PausaToggleDeleteView(TemplateView):
             return redirect('pausa_list')
         pausa.eliminada = not pausa.eliminada
         pausa.save()
+        if pausa.eliminada:
+            self.sincronizar(pausa, request, True)
+        else:
+            self.sincronizar(pausa, request)
         return redirect('pausa_list')
 
 
@@ -472,7 +500,9 @@ def node_view(request):
     registro = []
     campanas_preview_activas = []
     agente_profile = request.user.get_agente_profile()
-    if request.user.is_authenticated() and agente_profile:
+    if request.user.is_authenticated() and agente_profile and not agente_profile.is_inactive:
+        sip_usuario = request.user.generar_usuario(agente_profile.sip_extension)
+        sip_password = request.user.generar_contrasena(sip_usuario)
         registro = DuracionDeLlamada.objects.filter(
             agente=request.user.get_agente_profile(),
             tipo_llamada__in=(DuracionDeLlamada.TYPE_INBOUND,
@@ -485,12 +515,19 @@ def node_view(request):
             'registro': registro,
             'campanas_preview_activas': campanas_preview_activas,
             'agente_profile': agente_profile,
+            'sip_usuario': sip_usuario,
+            'sip_password': sip_password,
         }
         return render_to_response(
             'agente/base_agente.html',
             context,
             context_instance=RequestContext(request)
         )
+    if agente_profile.is_inactive:
+        message = ("El agente con el cuál ud intenta loguearse está inactivo, contactese con"
+                   " su supervisor")
+        messages.warning(request, message)
+        logout(request)
     return HttpResponseRedirect(reverse('login'))
 
 
@@ -522,7 +559,8 @@ def blanco_view(request):
 
 def nuevo_evento_agenda_view(request):
     """Vista get para insertar un nuevo evento en la agenda
-    REVISAR si se usa esta vista si no es obsoleta"""
+        REVISAR si se usa esta vista si no es obsoleta. Referenciada en Calendar.js
+    """
     agente = request.GET['agente']
     es_personal = request.GET['personal']
     fecha = request.GET['fechaEvento']
@@ -588,25 +626,26 @@ class AgenteEventosFormView(FormView):
             listado_de_eventos=listado_de_eventos))
 
 
-def regenerar_asterisk_view(request):
-    """Vista para regenerar los archivos de asterisk"""
-    activacion_queue_service = RegeneracionAsteriskService()
-    try:
-        activacion_queue_service.regenerar()
-    except RestablecerDialplanError, e:
-        message = ("Operación Errónea! "
-                   "No se realizo de manera correcta la regeneracion de los "
-                   "archivos de asterisk al siguiente error: {0}".format(e))
-        messages.add_message(
-            request,
-            messages.ERROR,
-            message,
-        )
-    messages.success(request,
-                     'La regeneracion de los archivos de configuracion de'
-                     ' asterisk y el reload se hizo de manera correcta')
-    return render_to_response('regenerar_asterisk.html',
-                              context_instance=RequestContext(request))
+# TODO: Se puede Eliminar esta vista?
+# def regenerar_asterisk_view(request):
+#     """Vista para regenerar los archivos de asterisk"""
+#     activacion_queue_service = RegeneracionAsteriskService()
+#     try:
+#         activacion_queue_service.regenerar()
+#     except RestablecerDialplanError, e:
+#         message = ("Operación Errónea! "
+#                    "No se realizo de manera correcta la regeneracion de los "
+#                    "archivos de asterisk al siguiente error: {0}".format(e))
+#         messages.add_message(
+#             request,
+#             messages.ERROR,
+#             message,
+#         )
+#     messages.success(request,
+#                      'La regeneracion de los archivos de configuracion de'
+#                      ' asterisk y el reload se hizo de manera correcta')
+#     return render_to_response('regenerar_asterisk.html',
+#                               context_instance=RequestContext(request))
 
 
 def nuevo_duracion_llamada_view(request):
@@ -659,73 +698,24 @@ def crear_chat_view(request):
     return response
 
 
-@csrf_exempt
-def wombat_log_view(request):
-    """
-    Log de wombat insertar los log q devuelve los log de las campana de wombat
-    """
-    dict_post = request.POST
-
-    id_contacto = int(dict_post['I_ID_CLIENTE'])
-    telefono = dict_post['num']
-    estado = dict_post['state']
-    calificacion = dict_post['extstate']
-    timeout = 0
-    if 'I_TIMEOUT' in dict_post.keys():
-        timeout = int(dict_post['I_TIMEOUT'])
-    id_campana = int(dict_post['I_ID_CAMPANA'])
-    id_agente = None
-    if 'O_id_agente' in dict_post.keys():
-        id_agente = int(dict_post['O_id_agente'])
-
-    metadata = {
-        'reschedule': dict_post['reschedule'],
-        'retry': dict_post['retry']
-    }
-    agente = None
-    try:
-        campana = Campana.objects.get(pk=id_campana)
-        contacto = Contacto.objects.get(pk=id_contacto)
-        if id_agente:
-            agente = AgenteProfile.objects.get(pk=id_agente)
-    except Campana.DoesNotExist:
-        campana = None
-        logger.exception("Excepcion detectada al obtener campana "
-                         "con la id {0} no existe ".format(id_campana))
-    except Contacto.DoesNotExist:
-        contacto = None
-        logger.exception("Excepcion detectada al obtener contacto "
-                         "con la id {0} no existe ".format(id_contacto))
-    except AgenteProfile.DoesNotExist:
-        agente = None
-        logger.exception("Excepcion detectada al obtener agente "
-                         "con la id {0} no existe ".format(id_agente))
-
-    defaults = {
-        'agente': agente,
-        'telefono': telefono,
-        'estado': estado,
-        'timeout': timeout,
-        'metadata': json.dumps(metadata),
-    }
-    # Si la calificacion viene vacía, puede ser que ya se haya creado el WombatLog
-    # correspondiente. Entonces no corresponde sobreescribirla.
-    if not calificacion == '':
-        defaults['calificacion'] = calificacion
-
-    WombatLog.objects.update_or_create(campana=campana, contacto=contacto, defaults=defaults)
-
-    response = JsonResponse({'status': 'OK'})
-    return response
-
-
 def supervision_url_externa(request):
     """Vista que redirect a la supervision externa de marce"""
-    if request.user.is_authenticated() and \
-            request.user.get_supervisor_profile():
-        supervisor = request.user.get_supervisor_profile()
+    user = request.user
+    # TODO: Simon abarque el supervisor administrador del sistema pueda ver la supervision
+    # hasta que este resuelto el tema de perfiles de supervisor por la tarjeta 652
+    # que no permitia que un usuario administrador del sistema vea la sueprvision
+    if user.get_es_administrador_o_supervisor_normal() or user.get_is_supervisor_customer():
+        supervisor = user.get_supervisor_profile()
+        sip_extension = supervisor.sip_extension
+        timestamp = user.generar_usuario(sip_extension).split(':')[0]
+        sip_usuario = timestamp + ":" + str(sip_extension)
+        supervisor.timestamp = timestamp
+        supervisor.sip_password = request.user.generar_contrasena(sip_usuario)
+        supervisor.save()
         url = settings.OML_SUPERVISION_URL + str(supervisor.pk)
         if supervisor.is_administrador:
+            # TODO: Con los nuevos permisos nunca se puede dar este caso
+            # Discutir si este caso de uso queda descartado
             url += "&es_admin=t"
         else:
             url += "&es_admin=f"

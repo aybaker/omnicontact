@@ -1,15 +1,6 @@
 var tabagt;
 $(function () {
   tabagt = $('#tableAgt').DataTable({
-    createdRow: function (row, data, dataIndex) {
-      if (data.estado === "Libre") {
-        $(row).css("background-color", "rgb(164, 235, 143)");
-      } else if (data.estado === "Llamada") {
-        $(row).css("background-color", "rgb(44, 169, 231)");
-      } else {//esta en pausa
-        $(row).css("background-color", "rgb(249, 159, 157)");
-      }
-    },
     columns: [
         {data: 'agente'},
         {data: 'estado'},
@@ -19,23 +10,15 @@ $(function () {
     ordering: false,
     searching: false,
     bLengthChange: false,
-    paging: false/*,
-    language: {
-      "info": "pagina _PAGE_ de _PAGES_",
-      "paginate": {
-        "first":      "Primero",
-        "last":       "Ultimo",
-        "next":       "Siguiente",
-        "previous":   "Anterior"
-      },
-    }*/
+    paging: false
   });
   var url = window.location.href;
   if(url.indexOf('Detalle_Campana') !== -1) {
     setInterval("actualiza_contenido_agt()", 4000);
+    setInterval("actualiza_contenido_objcamp()", 4000);
     setInterval("actualiza_contenido_camp()", 4000);
     setInterval("actualiza_contenido_colas()", 4000);
-    setInterval("actualiza_contenido_wombat()", 4000);
+    setInterval("actualiza_contenido_wombat()", 1000);
   }
 });
 
@@ -61,73 +44,74 @@ function actualiza_contenido_agt() {
   });
 }
 
-function actualiza_contenido_camp() {
-  var nomcamp = $("#nombreCamp").html();
+function actualiza_contenido_objcamp() {
   var campid = $("#campId").val();
-  var tabla = document.getElementById('bodyTableCampSummary');
   $.ajax({
     url: 'Controller/Detalle_Campana_Contenido.php',
     type: 'GET',
     dataType: 'html',
-    data: 'nomcamp='+nomcamp+'&op=campstatus&CampId=' + campid,
+    data: 'idcamp='+campid+'&op=objcamp',
     success: function (msg) {
       if(msg!=="]") {
         var mje = JSON.parse(msg);
-        $("#received").html(mje.recibidas);
-        $("#attended").html(mje.atendidas);
-        $("#abandoned").html(mje.abandonadas);
-        $("#expired").html(mje.expiradas);
-        $("#manuals").html(mje.manuales);
-        $("#manualsa").html(mje.manualesatendidas);
-        $("#manualsna").html(mje.manualesnoatendidas);
-        $("#answererdetected").html(mje.contestador_detectado);
-        $("#objcampana").html(mje.objetivo_campana);
         $("#gestioncampana").html(mje.gestion_campana);
-        a = mje.objetivo_campana;
-        b = mje.gestion_campana;
-        n = (b / a) * 100;
-        n = n.toFixed(2);
-        if(n != "NaN") {
-          $("#percent").html(n+" %");
-        } else {
-          $("#percent").html("0 %");
-        }
-
+        $("#objcampana").html(mje.objetivo_campana);
+        var pje = (mje.gestion_campana * 100) / mje.objetivo_campana;
+        pje = pje.toFixed(2);
+        $("#percent").html(pje +"%");
       }
     },
     error: function (jqXHR, textStatus, errorThrown) {
       console.log("Error al ejecutar => " + textStatus + " - " + errorThrown);
     }
   });
+}
+
+function actualiza_contenido_camp() {
+  var nomcamp = $("#nombreCamp").html();
+  var campid = $("#campId").val();
+  var tabla = document.getElementById('bodyTableCampSummary');
   $.ajax({
-    url: 'Controller/Detalle_Campana_Contenido.php',
+    url: 'https://' + OmlIp + ':' + OmlPort + '/api_supervision/llamadas_campana/' + campid + '/',
     type: 'GET',
     dataType: 'html',
-    data: 'op=scorestatus&CampId=' + campid + '&nomcamp=' + nomcamp,
     success: function (msg) {
-      if($("#bodyTableCampSummary").children().length > 0) {
-        while(tabla.firstChild) {
-          tabla.removeChild(tabla.firstChild);
+      $("#bodyScore").html("");
+      var mje = $.parseJSON(msg), trHTML = '';
+      var llamadas = mje['llamadas'];
+      $.each (llamadas, function (i, item) {
+        if (i !== 'status') {
+          trHTML += '<span class=\'label\'>' + item[0] + '</span>&nbsp;<span>' + item[1] + '</span>.&nbsp;';
         }
+      });
+      if (mje.hasOwnProperty('manuales')){
+        var manuales = mje['manuales'];
+        trHTML += '<br/><br/><h2>Llamadas Manuales</h2>';
+        $.each (manuales, function (i, item) {
+          if (i !== 'status') {
+            trHTML += '<span class=\'label\'>' + item[0] + '</span>&nbsp;<span>' + item[1] + '</span>.&nbsp;';
+          }
+        });
       }
-      if(msg !== "]") {
-        var mje = JSON.parse(msg);
-        for (var i = 0; i < mje.length; i++){
-          var tdScoreContainer = document.createElement('td');
-          var tdScoreLabel = document.createElement('td');
-          var rowScore = document.createElement('tr');
-
-          var textScoreContainer = document.createTextNode(mje[i].cantidad);
-          var textScoreLabel = document.createTextNode(mje[i].calificacion);
-
-          tdScoreLabel.id = mje[i].tagId;
-          tdScoreContainer.appendChild(textScoreContainer);
-          tdScoreLabel.appendChild(textScoreLabel);
-          rowScore.appendChild(tdScoreLabel);
-          rowScore.appendChild(tdScoreContainer);
-          tabla.appendChild(rowScore);
+      $("#bodyScore").append(trHTML);
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.log("Error al ejecutar => " + textStatus + " - " + errorThrown);
+    }
+  });
+  $.ajax({
+    url: 'https://' + OmlIp + ':' + OmlPort + '/api_supervision/calificaciones_campana/'+ campid + '/',
+    type: 'GET',
+    dataType: 'html',
+    success: function (msg) {
+      $("#bodySummary").html("");
+      var mje = $.parseJSON(msg), trHTML = '';
+      $.each (mje, function (i, item) {
+        if (i !== 'status') {
+          trHTML += '<tr><td>' + i + '</td><td>' + item + '</td></tr>';
         }
-      }
+      });
+      $("#bodySummary").append(trHTML);
     },
     error: function (jqXHR, textStatus, errorThrown) {
       console.log("Error al ejecutar => " + textStatus + " - " + errorThrown);
@@ -137,11 +121,12 @@ function actualiza_contenido_camp() {
 
 function actualiza_contenido_colas() {
   var nomcamp = $("#nombreCamp").html();
+  var idcamp = $("#campId").val();
   $.ajax({
     url: 'Controller/Detalle_Campana_Contenido.php',
     type: 'GET',
     dataType: 'html',
-    data: 'nomcamp='+nomcamp+'&op=queuedcalls',
+    data: 'nomcamp='+nomcamp+'&idcamp='+idcamp+'&op=queuedcalls',
     success: function (msg) {
       if(msg!=="]") {
         var mje = JSON.parse(msg);
@@ -156,11 +141,15 @@ function actualiza_contenido_colas() {
           var tdTimeLabel = document.createElement('td');
           var rowTime = document.createElement('tr');
 
+          var spanTime = document.createElement('span');
+
+          spanTime.className = 'icon far fa-clock';
           var textTimeContainer = document.createTextNode(mje[i].nroLlam);
           var textTimeLabel = document.createTextNode(mje[i].tiempo);
 
-          tdTimeContainer.appendChild(textTimeContainer);
-          tdTimeLabel.appendChild(textTimeLabel);
+          tdTimeContainer.appendChild(spanTime);
+          tdTimeContainer.appendChild(textTimeLabel);
+          tdTimeLabel.appendChild(textTimeContainer);
           rowTime.appendChild(tdTimeLabel);
           rowTime.appendChild(tdTimeContainer);
           tabla.appendChild(rowTime);
@@ -201,11 +190,28 @@ function actualiza_contenido_wombat() {
           var tdTelContainer = document.createElement('td');
           var row = document.createElement('tr');
 
+          var spanStatus = document.createElement('span');
+
+          var statusTag;
+          switch(mje[i].estado) {
+            case "CONNECTED":
+            statusTag = 'connected';
+            break;
+            case "DIALING":
+            statusTag = 'calling';
+            break;
+            default:
+            statusTag = 'shortcall';
+            break;
+          }
+          spanStatus.className = 'badge badge-outline line-' + statusTag;
+
           var textStatContainer = document.createTextNode(mje[i].estado);
           var textTelContainer = document.createTextNode(mje[i].numero);
 
+          spanStatus.appendChild(textStatContainer);
           tdTelContainer.appendChild(textTelContainer);
-          tdStatContainer.appendChild(textStatContainer);
+          tdStatContainer.appendChild(spanStatus);
           row.appendChild(tdStatContainer);
           row.appendChild(tdTelContainer);
           tabla.appendChild(row);

@@ -63,13 +63,11 @@ SESSION_COOKIE_AGE = 600
 
 #  para hacer un include de este archivo
 # **** RECORDAR: revisar permisos y que existan los directorios ****
-OML_QUEUE_FILENAME = "/home/freetech/extensions_fts_queues.conf"
 OML_ASTERISK_HOSTNAME = "root@127.0.0.1"
 OML_ASTERISK_REMOTEPATH = "/etc/asterisk/"
 OML_SIP_FILENAME = "/home/freetech/sip_fts.conf"
 OML_QUEUES_FILENAME = "/home/freetech/queues_fts.conf"
-OML_BACKLIST_REMOTEPATH  = "/var/spool/asterisk/"
-OML_GLOBALS_VARIABLES_FILENAME = "/home/freetech/extensions_fts_globals.conf"
+OML_BACKLIST_REMOTEPATH = "/var/spool/asterisk/"
 # parametros de conexion con base de datos mysql de asterisk
 DATABASE_MYSQL_ASTERISK = {
     'BASE': 'asterisk',

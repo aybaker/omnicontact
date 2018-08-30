@@ -1,0 +1,176 @@
+---
+
+#----------------------------------------------------------
+#--- Upload and execution of ICS scripts
+#----------------------------------------------------------
+- name: Upload ICS scripts to deploy/bin
+  template: src=bin/{{ item }} dest={{ install_prefix }}bin mode=0755
+  with_items:
+    - db_update_plpython_stored_proc.sh
+    - stop-omnileads-daemons-for-deploy.py
+    - start-omnileads-daemons-for-deploy.py
+    - upload_etc_rclocal.sh
+
+- name: Install stored procedures
+  shell: >
+    {{ install_prefix }}bin/db_update_plpython_stored_proc.sh
+    {{ install_prefix }}ominicontacto/fts_web/sql/plpython/*.sql
+    {{ install_prefix }}ominicontacto/fts_web/sql/plpgsql/update_timestamp.sql
+
+#----------------------------------------------------------------------
+# Setup supervisor
+#----------------------------------------------------------------------
+
+- name: Upload Supervisor config file
+  template: src=templates/supervisord.conf dest=/etc/supervisord.conf
+  become: true
+  become_method: sudo
+
+- name: Create /var/tmp/supervisor.sock file
+  file: path=/var/tmp/supervisor.sock state=touch mode=755
+  become: true
+  become_method: sudo
+
+- name: Start supervisor service
+  service: name=supervisord state=started enabled=yes
+  become: true
+  become_method: sudo
+
+- name: Reload supervisor service
+  shell: supervisorctl reload
+  become: true
+  become_method: sudo
+
+- name: Flush handlers - reload de supervisor
+  meta: flush_handlers
+  become: true
+  become_method: sudo
+
+#----------------------------------------------------------------------
+# Deploy sms
+#----------------------------------------------------------------------
+
+- name: Upload /etc/rc.local
+  shell: "{{ install_prefix }}/bin/upload_etc_rclocal.sh"
+  tags:
+    - deploy
+    - quick_deploy
+    - update_settings
+    - docker
+  ignore_errors: True
+
+#- name: Upload built (rsync to /apidinstar)
+  # Copies xxx/app to /home/ftsender/deploy/apidinstar (/apidinstar on dest is implicit)
+#  synchronize: >
+#    src={{ BUILD_API_DINSTAR }}
+#    dest=/home/ftsender/deploy
+#    delete=yes checksum=yes times=no
+#  tags:
+#    - deploy
+#    - quick_deploy
+#    - docker
+
+#- name: Change permissions to directory dinstar
+#  shell: chmod -R 777 /home/ftsender/deploy/apidinstar/dinstar/
+#  when: ansible_os_family == "RedHat"
+#  tags:
+
+
+# Se sube el archivo de config de nginx
+- name: Upload nginx.conf configuration
+  template: src=templates/nginx.conf.j2 dest=/etc/nginx/nginx.conf
+  become: true
+  become_method: sudo
+
+# Se sube el archivo de configuracion de omnileads para nginx
+- name: Create of ominicontacto.conf
+  template: src=templates/ominicontacto.conf.j2 dest=/etc/nginx/conf.d/ominicontacto.conf
+  become: true
+  become_method: sudo
+
+# Se pasan los certificados creados en kamailio a la carpeta nginx_certs
+- name: Copy of the certificates in nginx
+  copy: "src={{ kamailio_location }}/etc/certs/{{ item }} dest={{ install_prefix }}nginx_certs/ remote_src=yes"
+  with_items:
+      - cert.pem
+      - key.pem
+  become: true
+  ignore_errors: yes
+  become_method: sudo
+  tags: kamailio-cert
+  notify: restart nginx
+
+# Se crea el archivo .ini de uwsgi. Para mas info revisar documentacion de uwsgi
+- name: Create of oml_uwgsi.ini script
+  template: src=templates/oml_uwsgi.ini.j2 dest={{ install_prefix }}bin/oml_uwsgi.ini mode=755 owner={{ usuario }} group={{ usuario }}
+
+# Se crea el arhivo de systemd para omnileads daemon
+- name: Create of omnileads service
+  template: src=templates/omnileads.service dest=/etc/systemd/system/omnileads.service owner=root group=root mode=650
+  become: true
+  become_method: sudo
+
+# Se inicia y habilita el servicio
+- name: Start the omnileads-daemon service
+  command: "{{ item }}"
+  with_items:
+          - "systemctl daemon-reload"
+          - "systemctl enable omnileads"
+          - "service omnileads stop"
+          - "service omnileads start"
+  become: true
+  become_method: sudo
+  ignore_errors: yes
+
+# El concatenate.sh es un script chamullero que sirve para poner en un solo archivo (voip.cert) el certificado de CA concatenado con el cert de nodo
+# Así evitamos la advertencia de seguridad de los browsers.
+- name: Copy of the Kamailio cert in voip.cert
+  template: src=templates/concatenate.sh dest={{ install_prefix }}bin/concatenate.sh mode=755
+  ignore_errors: yes
+  tags: kamailio-cert
+  become: true
+  become_method: sudo
+
+# Se ejecuta el script
+- shell: "bash concatenate.sh chdir={{ install_prefix }}bin"
+  tags: kamailio-cert
+  ignore_errors: yes
+  become: true
+  become_method: sudo
+
+# Se genera el script de cambio de IP
+- name: Generate changeip.sh script
+  template: src=templates/changeip.sh.j2 dest={{ install_prefix }}bin/changeip.sh owner={{ usuario }} group={{ usuario }} mode=755
+
+# Este script sirve para hacer comandos de manage.py sin necesidad de activar virualenv primero
+- name: Generate manage.sh script
+  template: src=templates/manage.sh.j2 dest={{ install_prefix }}bin/manage.sh owner={{ usuario }} group={{ usuario }} mode=755
+
+# Se sube el script de backup-restore
+- name: Generate backup-restore.sh script
+  template: src=templates/backup-restore.sh.j2 dest={{ install_prefix }}bin/backup-restore.sh owner={{ usuario }} group={{ usuario }} mode=755
+
+#----------------------------------------------------------------------
+# Con supervisor configurado, hacemos reload
+#----------------------------------------------------------------------
+
+- name: Stop Omnileads services (except FastAGI daemon)
+  shell: python -u {{ install_prefix }}bin/stop-omnileads-daemons-for-deploy.py 2>&1
+  ignore_errors: yes
+
+- name: Start Omnileads services (except FastAGI daemon)
+  shell: "python -u {{ install_prefix }}bin/start-omnileads-daemons-for-deploy.py 2>&1"
+  ignore_errors: no
+
+#----------------------------------------------------------------------
+# Checks
+#----------------------------------------------------------------------
+
+- name: Run omldaemon_checks
+  shell: "{{ install_prefix }}bin/manage.sh ftsdaemon_checks"
+  register: omldaemon_checks_output
+  ignore_errors: True
+
+- name: Print output of omldaemon_checks
+  debug: msg="{{ omldaemon_checks_output.stdout }}"
+  when: omldaemon_checks_output|failed

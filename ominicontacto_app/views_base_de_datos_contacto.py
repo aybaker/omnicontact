@@ -7,12 +7,13 @@ from __future__ import unicode_literals
 import json
 
 from django.contrib import messages
+from django.contrib.auth.hashers import check_password
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseRedirect
 from django.http import JsonResponse
-from django.shortcuts import redirect, get_object_or_404, render
+from django.shortcuts import redirect, render
 from django.views.generic.edit import (
-    CreateView, UpdateView, DeleteView, FormView
+    CreateView, UpdateView, DeleteView
 )
 from django.views.generic.list import ListView
 from django.views.generic.base import RedirectView
@@ -29,7 +30,6 @@ from ominicontacto_app.services.base_de_datos_contactos import (
     CreacionBaseDatosService, PredictorMetadataService,
     NoSePuedeInferirMetadataError, NoSePuedeInferirMetadataErrorEncabezado,
     ContactoExistenteError, CreacionBaseDatosApiService)
-from ominicontacto_app.utiles import ValidadorDeNombreDeCampoExtra
 from django.views.decorators.csrf import csrf_exempt
 import logging as logging_
 
@@ -110,7 +110,6 @@ class BaseDatosContactoUpdateView(UpdateView):
     context_object_name = 'base_datos_contacto'
     form_class = BaseDatosContactoForm
 
-
     def get_object(self, queryset=None):
         return BaseDatosContacto.objects.get(pk=self.kwargs['pk_bd_contacto'])
 
@@ -118,7 +117,7 @@ class BaseDatosContactoUpdateView(UpdateView):
 
         self.object = form.save(commit=False)
         self.object.estado = BaseDatosContacto.ESTADO_DEFINIDA_ACTUALIZADA
-        #self.object.nombre_archivo_importacion = nombre_archivo_importacion
+        # self.object.nombre_archivo_importacion = nombre_archivo_importacion
 
         try:
             creacion_base_datos = CreacionBaseDatosService()
@@ -547,21 +546,6 @@ class DepuraBaseDatosContactoView(DeleteView):
         )
 
 
-class BaseDatosContactoListView(ListView):
-    """
-    Esta vista es para generar el listado de
-    Lista de Contactos.
-    """
-
-    template_name = 'base_datos_contacto/lista_base_datos_contacto.html'
-    context_object_name = 'bases_datos_contacto'
-    model = BaseDatosContacto
-
-    def get_queryset(self):
-        queryset = BaseDatosContacto.objects.obtener_definidas()
-        return queryset
-
-
 class ActualizaBaseDatosContactoView(UpdateView):
     """
     Esta vista se obtiene un resumen de la estructura
@@ -859,8 +843,8 @@ def cargar_base_datos_view(request):
         try:
             usuario = UserApiCrm.objects.get(
                 usuario=received_json_data['user_api'])
-
-            if usuario.password == received_json_data['password_api']:
+            received_password = received_json_data['password_api']
+            if check_password(received_password,usuario.password):
                service = CreacionBaseDatosApiService()
                base_datos = service.crear_base_datos_api(
                    received_json_data['nombre'])

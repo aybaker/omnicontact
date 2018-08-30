@@ -41,11 +41,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ominicontacto_app',
+    'configuracion_telefonia_app',
     'crispy_forms',
     'compressor',
-    'reciclado_app',
+    'defender',
     'formtools',
+    'ominicontacto_app',
+    'reciclado_app',
+    'reportes_app',
+    'simple_history',
     'widget_tweaks',
 ]
 
@@ -66,6 +70,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'defender.middleware.FailedLoginMiddleware',
 ]
 
 
@@ -98,6 +103,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ominicontacto.wsgi.application'
+
+# Password hashers available
+# https://docs.djangoproject.com/en/1.9/topics/auth/passwords/
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -196,35 +209,24 @@ Ejemplo:
 # DEPLOY -> Asterisk
 # ==============================================================================
 
-# parametros de conexion con base de datos mysql de asterisk
-DATABASE_MYSQL_ASTERISK = {
-    'BASE': None,
-    'HOST': None,
-    'USER': None,
-    'PASSWORD': None,
-}
-
-OML_QUEUE_FILENAME = None
 OML_ASTERISK_HOSTNAME = None
 OML_ASTERISK_REMOTEPATH = None
 OML_SIP_FILENAME = None
 OML_QUEUES_FILENAME = None
 OML_BACKLIST_REMOTEPATH = None
-OML_GLOBALS_VARIABLES_FILENAME = None
+OML_RUTAS_SALIENTES_FILENAME = None
 """Path completo (absoluto) al archivo donde se debe generar queues
 
 Ejemplos:
 
 .. code-block:: python
 
-    OML_QUEUE_FILENAME = "/etc/asterisk/extensions_fts_queues.conf"
     OML_ASTERISK_HOSTNAME = "root@192.168.1.23"
     OML_ASTERISK_REMOTEPATH = "/etc/asterisk/"
     OML_SIP_FILENAME = "/etc/asterisk/sip_fts.conf"
     OML_QUEUES_FILENAME = "/etc/asterisk/queues_fts.conf"
     OML_BACKLIST_REMOTEPATH  = "/var/spool/asterisk/"
-    OML_GLOBALS_VARIABLES_FILENAME = "/etc/asterisk/extensions_fts_globals.conf"
-
+    OML_RUTAS_SALIENTES_FILENAME = "/etc/asterisk/oml_extensions_outr.conf"
 """
 
 OML_RELOAD_CMD = None
@@ -764,11 +766,6 @@ except ImportError as e:
     print "# "
     raise Exception("No se pudo importar oml_settings_local")
 
-# ~~~~~ Check OML_QUEUE_FILENAME
-
-assert OML_QUEUE_FILENAME is not None, \
-    "Falta definir setting para OML_QUEUE_FILENAME"
-
 # ~~~~~ Check OML_ASTERISK_HOSTNAME
 
 assert OML_ASTERISK_HOSTNAME is not None, \
@@ -790,14 +787,6 @@ assert OML_QUEUES_FILENAME is not None, \
     "Falta definir setting para OML_QUEUES_FILENAME"
 
 # ~~~~~ Check ASTERISK
-
-for key in ('BASE', 'PASSWORD', 'HOST', 'USER'):
-    assert key in DATABASE_MYSQL_ASTERISK, \
-        "Falta key '{0}' en configuracion de la base de datos de ASTERISK".\
-        format(key)
-    assert DATABASE_MYSQL_ASTERISK[key] is not None, \
-        "Falta key '{0}' en configuracion de la base de datos ASTERISK".\
-        format(key)
 
 for key in ('USERNAME', 'PASSWORD', 'HTTP_AMI_URL'):
     assert key in ASTERISK, \
@@ -833,11 +822,15 @@ assert OML_KAMAILIO_IP is not None, \
 assert OML_WOMBAT_URL is not None, \
     "Falta definir setting para OML_WOMBAT_URL"
 
-# ~~~~~ Check OML_WOMBAT_URL
+# ~~~~~ Check OML_WOMBAT_FILENAME
 
 assert OML_WOMBAT_FILENAME is not None, \
     "Falta definir setting para OML_WOMBAT_FILENAME"
 
+# ~~~~~ Check OML_RUTAS_SALIENTES_FILENAME
+
+assert OML_RUTAS_SALIENTES_FILENAME is not None, \
+    "Falta definir setting para OML_RUTAS_SALIENTES_FILENAME"
 
 # ~~~~~ Check OML_WOMBAT_USER
 
@@ -861,11 +854,6 @@ assert OML_OMNILEADS_IP is not None, \
 assert OML_BACKLIST_REMOTEPATH is not None, \
     "Falta definir setting para OML_BACKLIST_REMOTEPATH"
 
-
-# ~~~~~ Check OML_GLOBALS_VARIABLES_FILENAME
-
-assert OML_GLOBALS_VARIABLES_FILENAME is not None, \
-    "Falta definir setting para OML_GLOBALS_VARIABLES_FILENAME"
 
 # ~~~~~ Check TMPL_OML_AUDIO_CONVERSOR
 
@@ -893,10 +881,18 @@ assert ret == 0, "No se ha encontrado el ejecutable configurado " +\
 assert TMPL_OML_AUDIO_CONVERSOR_EXTENSION is not None, \
     "Falta definir setting para TMPL_OML_AUDIO_CONVERSOR"
 
-# ~~~~~ Check OML_AUDIO_PATH_ASTERISK
+# ~~~~~ Check ASTERISK_AUDIO_PATH
 
-assert OML_AUDIO_PATH_ASTERISK is not None, \
-    "Falta definir setting para OML_AUDIO_PATH_ASTERISK"
+assert ASTERISK_AUDIO_PATH is not None, \
+    "Falta definir setting para ASTERISK_AUDIO_PATH"
+
+# ~~~~~ Check OML_AUDIO_FOLDER
+
+assert OML_AUDIO_FOLDER is not None, \
+    "Falta definir setting para OML_AUDIO_FOLDER"
+
+# Una vez que tengo ASTERISK_AUDIO_PATH y OML_AUDIO_FOLDER puedo calcular OML_AUDIO_PATH_ASTERISK
+OML_AUDIO_PATH_ASTERISK = ASTERISK_AUDIO_PATH + OML_AUDIO_FOLDER
 
 # ~~~~~ Check CALIFICACION_REAGENDA
 
