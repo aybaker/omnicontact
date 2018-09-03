@@ -54,7 +54,6 @@
   roles:
           - {role: prerequisitos, tags: ['yum']}
           - {role: oml_server, tags: ['virtualenv']}
-          - kamailio
           - {role: docker, tags: ['docker']}
           - {role: omniapp_second, tags: ['omniapp']}
           - deploy_supervision

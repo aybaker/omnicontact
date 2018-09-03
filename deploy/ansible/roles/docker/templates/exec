@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo "Ingrese 1 para abrir shell de Asterisk o 2 para abrir shell de Kamailio"
+echo -en "Opcion: "; read opcion
+
+container=$1
+
+case $container in
+  asterisk)
+    sudo docker exec -it asterisk /bin/bash
+  ;;
+  kamailio)
+    sudo docker exec -it kamailio /bin/bash
+  *)
+    echo "No existe container para esa opción."
+esac

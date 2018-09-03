@@ -66,7 +66,7 @@ Restore() {
 
     #Restore of Database
     cd ../../postgres_database
-    pg_restore -U kamailio -F t -c -C -w -h 127.0.0.1 base_backup
+    pg_restore -U kamailio -F t -d kamailio  -w -h 127.0.0.1 base_backup
 
     rm -rf {{ install_prefix }}backup/tar_directory
 
