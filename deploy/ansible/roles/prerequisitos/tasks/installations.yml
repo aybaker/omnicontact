@@ -97,7 +97,7 @@
     - libunistring-devel.x86_64
   become: true
   become_method: sudo
-  when: ansible_os_family == "RedHat"
+  when: ['DOCKER == "false"','ansible_os_family == "RedHat"']
 
 - meta: clear_host_errors
 

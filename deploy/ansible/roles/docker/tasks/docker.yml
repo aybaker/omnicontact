@@ -80,17 +80,17 @@
   template: src=templates/{{ item }} dest={{ install_prefix }}bin mode=755
   with_items:
     - run-docker.sh
-    - exec-containers.sh
+    - exec
     - docker-compose.yml
-    - certificate-create.sh
+    - kamailio_postdocker.sh
 
 - name: Change permission of docker volumes folder
   file: path=/var/lib/docker/volumes/ owner={{ usuario }} group={{ usuario }} state=directory
   become: true
   become_method: sudo
 
-- name: Creation of openssl.cnf
-  template: src=roles/kamailio/templates/openssl.cnf.j2 dest=/tmp/openssl.cnf mode=755
+#- name: Creation of openssl.cnf
+#  template: src=roles/kamailio/templates/openssl.cnf.j2 dest=/tmp/openssl.cnf mode=755
 
 - name: Creation of script conversor.sh
   template: src=roles/asterisk/templates/conversor.sh dest=/tmp/conversor.sh mode=700

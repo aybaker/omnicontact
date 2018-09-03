@@ -17,5 +17,17 @@
 #
 ---
 
+- name: Check if Kamailio certificates exists
+  shell: test -d {{ kamailio_location }}/etc/certs || test -d /opt/kamailio/etc/certs
+  ignore_errors: True
+  register: certs_exists
+  tags: docker
+  become: true
+  become_method: sudo
+
+- include: kamailio/tasks/certificate_CA.yml
+  tags: docker
+  when: certs_exists|failed
+
 - include: docker.yml
   tags: docker

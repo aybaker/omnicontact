@@ -37,12 +37,26 @@
   become_method: sudo
   ignore_errors: True
 
+- name: Install of prerequisites
+  apt: "name={{ item }} state=present"
+  with_items:
+    - net-tools
+    - git
+    - mariadb-server
+    - vim
+    - curl
+    - mysql-client
+    - sudo
+    - wget
+    - unzip
+  become: true
+  become_method: sudo
+
   # Intalo los paquetes necesarios para la parte VoIP -- FIX ME -- separar paquetes de asterisk y paquetes de kamailio
 - name: Installation of VoIP dependencies
   apt: "name={{ item }} state=present"
   with_items:
     - build-essential
-    - net-tools
     - debhelper
     - iptables-dev
     - libcurl4-openssl-dev
@@ -52,12 +66,12 @@
     - libglib2.0-dev
     - libhiredis-dev
     - dkms
-    - git
     - libevent-dev
     - libbencode-perl
     - libcrypt-rijndael-perl
     - libdigest-hmac-perl
     - libio-socket-inet6-perl
+    - libavformat-dev
     - libsocket6-perl
     - libb-hooks-op-check-perl
     - libexporter-tidy-perl
@@ -66,13 +80,11 @@
     - libio-socket-ip-perl
     - libavcodec-dev
     - libavfilter-dev
-    - libavformat-dev
     - libavresample-dev
     - libavutil-dev
     - gcc
     - flex
     - bison
-    - mariadb-server
     - default-libmysqlclient-dev
     - make
     - libxml2-dev
@@ -85,9 +97,6 @@
     - libunistring-dev
     - libjson-glib-dev
     - postgresql-client
-    - vim
-    - curl
-    - mysql-client
     - sox
     - libncurses5-dev
     - libssl-dev
@@ -107,14 +116,12 @@
     - libneon27-dev
     - libsrtp0-dev
     - libspandsp-dev
-    - sudo
     #- libmyodbc
     - subversion
     - odbc-postgresql
-    - wget
-    - unzip
   become: true
   become_method: sudo
+  when: DOCKER == "false"
 
 # Intalo los paquetes necesarios para la parte App
 - name: Installation of app dependencies

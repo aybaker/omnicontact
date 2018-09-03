@@ -34,12 +34,12 @@
   when: ansible_os_family == "Debian"
 
 - name: Creacion de {{ kamailio_location }}/etc/certs
-  file: path={{ kamailio_location }}/etc/certs state=directory mode=0700
+  file: path={{ kamailio_location }}/etc/certs state=directory mode=0700 recurse=yes
   become: true
   become_method: sudo
 
 - name: Creacion de {{ kamailio_location }}/etc/certs/demoCA y /newcerts
-  file: "path={{ item }} state=directory mode=0700"
+  file: path="{{ item }}" state=directory mode=0700 recurse=yes
   with_items:
       - "{{ kamailio_location }}/etc/certs/demoCA"
       - "{{ kamailio_location }}/etc/certs/demoCA/newcerts"
