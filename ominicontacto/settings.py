@@ -931,9 +931,9 @@ if os.path.exists(FTS_DIALPLAN_FILENAME):
     assert not os.path.isdir(FTS_DIALPLAN_FILENAME), \
     "FTS_DIALPLAN_FILENAME es un directorio"
 
-assert os.path.exists(os.path.dirname(FTS_DIALPLAN_FILENAME)), \
-    "FTS_DIALPLAN_FILENAME: el directorio '{0}' no existe".format(
-        os.path.dirname(FTS_DIALPLAN_FILENAME))
+# assert os.path.exists(os.path.dirname(FTS_DIALPLAN_FILENAME)), \
+#    "FTS_DIALPLAN_FILENAME: el directorio '{0}' no existe".format(
+#        os.path.dirname(FTS_DIALPLAN_FILENAME))
 
 # ~~~~~ Check FTS_QUEUE_FILENAME
 
