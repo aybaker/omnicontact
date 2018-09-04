@@ -947,9 +947,9 @@ if os.path.exists(FTS_QUEUE_FILENAME):
     assert not os.path.isdir(FTS_QUEUE_FILENAME), \
         "FTS_QUEUE_FILENAME es un directorio"
 
-assert os.path.exists(os.path.dirname(FTS_QUEUE_FILENAME)), \
-    "FTS_QUEUE_FILENAME: el directorio '{0}' no existe".format(
-        os.path.dirname(FTS_QUEUE_FILENAME))
+# assert os.path.exists(os.path.dirname(FTS_QUEUE_FILENAME)), \
+#    "FTS_QUEUE_FILENAME: el directorio '{0}' no existe".format(
+#        os.path.dirname(FTS_QUEUE_FILENAME))
 
 # ~~~~~ Check FTS_RELOAD_CMD
 
