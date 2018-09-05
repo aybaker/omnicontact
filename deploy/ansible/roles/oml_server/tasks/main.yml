@@ -11,10 +11,7 @@
 #----------------------------------------------------------------------
 
 - include: deploy.yml
-  tags:
-    - postinstall
-    - deploy
-    - omniapp
+  tags: postinstall
 
 - include: celery.yml
   tags: ['postinstall','celery']
