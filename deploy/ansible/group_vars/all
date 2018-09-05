@@ -88,8 +88,8 @@ db_password: ftsender
 dj_sett_SECRET_KEY: 8989dfas783klenfad8s3kfad0sf2oilkf8s7fgs0fgsfgs76g8fsdf7hsdf8sdfh
 # TODO: usar 'ASTERISK_AMI_HTTP_PORT' en vez de 7088
 
-dj_sett_ASTERISK_USERNAME: ics
-dj_sett_ASTERISK_PASSWORD: ics-omnileads
+dj_sett_ASTERISK_USERNAME: icsami
+dj_sett_ASTERISK_PASSWORD: C20H25N3O
 
 dj_sett_ASTERISK_HTTP_AMI_URL: http://127.0.0.1:7088
 dj_sett_ASTERISK_DIAL_URL: "${{OPEN_BR}}TECH{{CLOSE_BR}}/${{OPEN_BR}}OBJETO{{CLOSE_BR}}/${NumberToCall}"
