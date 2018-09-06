@@ -12,10 +12,11 @@ from mock import Mock
 
 from fts_daemon.asterisk_config import (
     DialplanConfigCreator, QueueConfigCreator,
-    AsteriskConfigReloader, ConfigFile)
+    ConfigFile)
 from fts_web.models import (Opcion, Campana, GrupoAtencion, AudioDeCampana,
                             BaseDatosContacto, Calificacion)
 from fts_web.tests.utiles import FTSenderBaseTest
+from ominicontacto_app.asterisk_config import AsteriskConfigReloader
 
 
 class ConfigFileMock(ConfigFile):

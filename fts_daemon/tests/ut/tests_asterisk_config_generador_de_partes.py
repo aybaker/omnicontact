@@ -14,7 +14,7 @@ from fts_daemon.asterisk_config import generar_dialplan, \
 
 from fts_daemon.asterisk_config import (
     DialplanConfigCreator, QueueConfigCreator,
-    AsteriskConfigReloader, DialplanConfigFile, QueueConfigFile, ConfigFile)
+    DialplanConfigFile, QueueConfigFile, ConfigFile)
 
 from fts_daemon.asterisk_config_generador_de_partes import *
 

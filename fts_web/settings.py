@@ -253,16 +253,6 @@ Ejemplos:
     FTS_QUEUE_FILENAME = "/opt/asterisk-11/etc/ftsender/queues.conf"
 """
 
-FTS_RELOAD_CMD = None
-"""Comando a ejecutar para hacer reload de Asterisk
-
-Ejemplo:
-
-.. code-block:: python
-
-    FTS_RELOAD_CMD = ["/usr/bin/asterisk", "-x", "reload"]
-"""
-
 TMPL_FTS_AUDIO_CONVERSOR = None
 """Comando para convertir audios (wav a gsm)
 
@@ -467,11 +457,6 @@ if os.path.exists(FTS_QUEUE_FILENAME):
 assert os.path.exists(os.path.dirname(FTS_QUEUE_FILENAME)), \
     "FTS_QUEUE_FILENAME: el directorio '{0}' no existe".format(
         os.path.dirname(FTS_QUEUE_FILENAME))
-
-# ~~~~~ Check FTS_RELOAD_CMD
-
-assert FTS_RELOAD_CMD is not None, \
-    "Falta definir setting para FTS_RELOAD_CMD"
 
 # ~~~~~ Check TMPL_FTS_AUDIO_CONVERSOR
 

@@ -9,9 +9,9 @@ from __future__ import unicode_literals
 import logging
 
 from fts_web.errors import FtsError
-from fts_daemon.asterisk_config import (DialplanConfigCreator,
-                                        QueueConfigCreator,
-                                        AsteriskConfigReloader)
+from fts_daemon.asterisk_config import DialplanConfigCreator, QueueConfigCreator
+from ominicontacto_app.asterisk_config import AsteriskConfigReloader
+
 
 logger = logging.getLogger(__name__)
 
@@ -115,14 +115,14 @@ class ActivacionCampanaTemplateService(object):
             mensaje_error += ("Hubo un inconveniente al crear el archivo de "
                               "configuracion de colas de Asterisk. ")
         try:
-            ret = self.reload_asterisk_config.reload_config()
+            ret = self.reload_asterisk_config.reload_asterisk()
             if ret != 0:
                 proceso_ok = False
                 mensaje_error += ("Hubo un inconveniente al intenar recargar "
                                   "la configuracion de Asterisk. ")
         except:
             logger.exception("ActivacionCampanaTemplateService: error al "
-                             " intentar reload_config()")
+                             " intentar reload_asterisk()")
             proceso_ok = False
             mensaje_error += ("Hubo un inconveniente al crear el archivo de "
                               "configuracion de colas de Asterisk. ")
