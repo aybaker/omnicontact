@@ -114,19 +114,20 @@ class ActivacionCampanaTemplateService(object):
             proceso_ok = False
             mensaje_error += ("Hubo un inconveniente al crear el archivo de "
                               "configuracion de colas de Asterisk. ")
-        try:
-            ret = self.reload_asterisk_config.reload_asterisk()
-            if ret != 0:
-                proceso_ok = False
-                mensaje_error += ("Hubo un inconveniente al intenar recargar "
-                                  "la configuracion de Asterisk. ")
-        except:
-            logger.exception("ActivacionCampanaTemplateService: error al "
-                             " intentar reload_asterisk()")
-            proceso_ok = False
-            mensaje_error += ("Hubo un inconveniente al crear el archivo de "
-                              "configuracion de colas de Asterisk. ")
-
+        # FIXME: Ver si es correcta la forma de hacer el reload asterisk
+        # try:
+        #     ret = self.reload_asterisk_config.reload_asterisk()
+        #     if ret != 0:
+        #         proceso_ok = False
+        #         mensaje_error += ("Hubo un inconveniente al intenar recargar "
+        #                           "la configuracion de Asterisk. ")
+        # except:
+        #     logger.exception("ActivacionCampanaTemplateService: error al "
+        #                      " intentar reload_asterisk()")
+        #     proceso_ok = False
+        #     mensaje_error += ("Hubo un inconveniente al crear el archivo de "
+        #                       "configuracion de colas de Asterisk. ")
+        self.reload_asterisk_config.reload_asterisk()
         if not proceso_ok:
             raise(RestablecerDialplanError(mensaje_error))
 
