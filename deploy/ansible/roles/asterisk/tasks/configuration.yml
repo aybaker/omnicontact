@@ -1,3 +1,20 @@
+# Copyright (C) 2018 Freetech Solutions
+
+# This file is part of OMniLeads
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see http://www.gnu.org/licenses/.
+#
 ---
 # Esta tarea está medio al pedo porque ya no instalamos sobre sangomaOS pero por si las dudas la dejo
 - name: Apache adjustments
@@ -63,8 +80,12 @@
       - oml_extensions.conf
       - oml_extensions_sub.conf
       - oml_func_odbc.conf
-      - oml_manager.conf
       - oml_res_odbc.conf
+      - oml_amd.conf
+      - oml_dahdi.conf
+      - oml_http.conf
+      - oml_sip_general.conf
+      - oml_sip_nat.conf
       - queues.conf
       - res_odbc.conf
       - sip.conf
@@ -72,6 +93,10 @@
   become: yes
   become_method: sudo
   when: asterisk_location != ""
+  tags: postinstall
+
+- name: Create of oml_manager.conf
+  template: src=templates/conf/oml_manager.conf dest={{ install_prefix }}ominicontacto/ominicontacto_voip/asterisk-files/conf/oml_manager.conf owner={{ usuario }} group={{ usuario }} mode=755
   tags: postinstall
 
 # Los archivos-no-enlaces se copian a la a /etc/asterisk

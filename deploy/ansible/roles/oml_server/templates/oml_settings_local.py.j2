@@ -79,8 +79,8 @@ OML_BACKLIST_REMOTEPATH  = "/var/lib/docker/volumes/bin_grabaciones/_data"
 OML_KAMAILIO_LOCATION = "{{ kamailio_location }}/etc/kamailio/"
 
 ASTERISK = {
-    'USERNAME': "omnileadsami",  # Usuario para AMI
-    'PASSWORD': " 5_MeO_DMT",  # Password para usuario para AMI
+    'AMI_USERNAME': "omnileadsami",  # Usuario para AMI
+    'AMI_PASSWORD': "5_MeO_DMT",  # Password para usuario para AMI
     'HTTP_AMI_URL': "http://{{ localhost }}:7088",
     'DIAL_URL': "{{dj_sett_ASTERISK_DIAL_URL}}",
 }
@@ -191,10 +191,15 @@ OML_AUDIO_FOLDER = "oml/"
 
 CALIFICACION_REAGENDA = 'Agendado'
 
+{% if desarrollo == 1 %}
+LOCAL_APPS = ['sslserver', 'django_extensions']
+DJANGO_DEBUG_TOOLBAR = True
+if DJANGO_DEBUG_TOOLBAR:
+    INTERNAL_IPS = ['127.0.0.1','0.0.0.0']
+{% else %}
 LOCAL_APPS = []
-
 DJANGO_DEBUG_TOOLBAR = False
-
 if DJANGO_DEBUG_TOOLBAR:
     INTERNAL_IPS = ['127.0.0.1']
+{% endif %}
     LOCAL_APPS += ['debug_toolbar']

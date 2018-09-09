@@ -49,7 +49,7 @@ Rama() {
         echo "No tienes instalado ansible"
         echo "Instalando ansible 2.5.0"
 	    echo ""
-	    $PIP install 'ansible==2.5.0.0' --user > /dev/null 2>&1
+	    $PIP install 'ansible==2.5.0.0' --user
         IS_ANSIBLE="`find /usr/bin /usr/sbin /usr/local /root ~ -name ansible |grep \"/bin/ansible\" |head -1 2> /dev/null`"
 	fi
     ANS_VERSION=`"$IS_ANSIBLE" --version |grep ansible |head -1`
@@ -58,7 +58,7 @@ Rama() {
     else
         echo "Tienes una versión de ansible distinta a la 2.5.0"
         echo "Instalando versión 2.5.0"
-        $PIP install 'ansible==2.5.0.0' --user > /dev/null 2>&1
+        $PIP install 'ansible==2.5.0.0' --user 
     fi
 
     cd $current_directory
@@ -210,7 +210,7 @@ rm -rf /var/tmp/ominicontacto-build
 
 }
 
-while getopts "r::t:ihd:" OPTION;do
+while getopts "r::t:ihd" OPTION;do
 	case "${OPTION}" in
 		r) # Rama a deployar
             Rama $OPTARG
@@ -218,18 +218,18 @@ while getopts "r::t:ihd:" OPTION;do
 		i) #Realizar pasos y agregar opciones preliminares
 		    Preliminar
 		;;
+    d) #Cliente de desarrollo?
+		    Desarrollo
+		;;
 		t) #Tag
 		    set -f # disable glob
-           IFS=',' # split on space characters
-            array=($OPTARG) # use the split+glob operator
-   		    Tag $array
+        IFS=',' # split on space characters
+        array=($OPTARG) # use the split+glob operator
+   		  Tag $array
 		;;
 		h) # Print the help option
 			Help
 		;;
-		d) #Cliente de desarrollo?
-		    Desarrollo
-		 ;;
 	esac
 done
 if [ $# -eq 0  ]; then Help; fi
