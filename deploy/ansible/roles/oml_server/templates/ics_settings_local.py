@@ -93,8 +93,8 @@ DATABASES = {
 }
 
 ASTERISK = {
-    'USERNAME': '{{dj_sett_ASTERISK_USERNAME}}',
-    'PASSWORD': '{{dj_sett_ASTERISK_PASSWORD}}',
+    'AMI_USERNAME': '{{dj_sett_ASTERISK_USERNAME}}',
+    'AMI_PASSWORD': '{{dj_sett_ASTERISK_PASSWORD}}',
     'HTTP_AMI_URL': '{{dj_sett_ASTERISK_HTTP_AMI_URL}}',
     'DIAL_URL': "{{dj_sett_ASTERISK_DIAL_URL}}",
 }
