@@ -127,18 +127,6 @@
   become: true
   become_method: sudo
 
-# Se inicia y habilita el servicio
-- name: Start the omnileads-daemon service
-  command: "{{ item }}"
-  with_items:
-          - "systemctl daemon-reload"
-          - "systemctl enable omnileads"
-          - "service omnileads stop"
-          - "service omnileads start"
-  become: true
-  become_method: sudo
-  ignore_errors: yes
-
 # El concatenate.sh es un script chamullero que sirve para poner en un solo archivo (voip.cert) el certificado de CA concatenado con el cert de nodo
 # Así evitamos la advertencia de seguridad de los browsers.
 - name: Copy of the Kamailio cert in voip.cert
@@ -174,7 +162,7 @@
   template: src=templates/backup-restore.sh.j2 dest={{ install_prefix }}bin/backup-restore.sh owner={{ usuario }} group={{ usuario }} mode=755
 
 #----------------------------------------------------------------------
-# Con supervisor configurado, hacemos reload
+# Con supervisor configurado, hacemos reload y levantamos servicios
 #----------------------------------------------------------------------
 
 - name: Stop Omnileads services (except FastAGI daemon)
@@ -184,6 +172,18 @@
 - name: Start Omnileads services (except FastAGI daemon)
   shell: "python -u {{ install_prefix }}bin/start-omnileads-daemons-for-deploy.py 2>&1"
   ignore_errors: no
+
+# Se inicia y habilita el servicio
+- name: Start the omnileads-daemon service
+  command: "{{ item }}"
+  with_items:
+          - "systemctl daemon-reload"
+          - "systemctl enable omnileads"
+          - "service omnileads stop"
+          - "service omnileads start"
+  become: true
+  become_method: sudo
+  ignore_errors: yes
 
 #----------------------------------------------------------------------
 # Checks
