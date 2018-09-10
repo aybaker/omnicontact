@@ -1001,7 +1001,7 @@ assert TMPL_FTS_AUDIO_CONVERSOR_EXTENSION is not None, \
 
 # ~~~~~ Check ASTERISK
 
-for key in ('USERNAME', 'PASSWORD', 'HTTP_AMI_URL', 'DIAL_URL'):
+for key in ('AMI_USERNAME', 'AMI_PASSWORD', 'HTTP_AMI_URL', 'DIAL_URL'):
     assert key in ASTERISK, \
         "Falta key '{0}' en configuracion de ASTERISK".format(key)
     assert ASTERISK[key] is not None, \
