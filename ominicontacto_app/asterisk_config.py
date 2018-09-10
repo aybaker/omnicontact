@@ -552,12 +552,12 @@ class AsteriskConfigReloader(object):
                   0 (cero) si fue exitoso, otro valor si se produjo
                   un error
         """
-        stdout_file = tempfile.mkstemp()
-        stderr_file = tempfile.mkstemp()
+        stdout_file = tempfile.TemporaryFile()
+        stderr_file = tempfile.TemporaryFile()
 
         try:
             subprocess.check_call(settings.OML_RELOAD_CMD,
-                                  stdout=stdout_file, stderr=stderr_file)
+                                  stdout=stdout_file, stderr=stderr_file, shell=True)
             logger.info("Reload de configuracion de Asterisk fue OK")
             return 0
         except subprocess.CalledProcessError, e:
