@@ -240,14 +240,14 @@ class GeneradorParaStart(GeneradorDePedazoDeDialplanParaStart):
 
         [campania_{fts_campana_id}]
 
-        exten => _ftsX.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
-        exten => _ftsX.,n,Set(OriginalExten=${{EXTEN}})
-        exten => _ftsX.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
-        exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
-        exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
-        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
-        exten => _ftsX.,n,Answer()
-        exten => _ftsX.,n(audio),NoOp()
+        exten => _fts.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
+        exten => _fts.,n,Set(OriginalExten=${{EXTEN}})
+        exten => _fts.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
+        exten => _fts.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
+        exten => _fts.,n,Set(Intento=${{CUT(EXTEN,,4)}})
+        exten => _fts.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
+        exten => _fts.,n,Answer()
+        exten => _fts.,n(audio),NoOp()
 
         """
 
@@ -289,35 +289,35 @@ class GeneradorParaStartDetectarContestador(
 
         [campania_{fts_campana_id}]
 
-        exten => _ftsX.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
-        exten => _ftsX.,n,Set(OriginalExten=${{EXTEN}})
-        exten => _ftsX.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
-        exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
-        exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
-        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
-        exten => _ftsX.,n,Answer()
+        exten => _fts.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
+        exten => _fts.,n,Set(OriginalExten=${{EXTEN}})
+        exten => _fts.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
+        exten => _fts.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
+        exten => _fts.,n,Set(Intento=${{CUT(EXTEN,,4)}})
+        exten => _fts.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
+        exten => _fts.,n,Answer()
 
         ; http://www.voip-info.org/wiki/view/Asterisk+cmd+AMD
         ; AMDSTATUS -> MACHINE | HUMAN | NOTSURE | HANGUP
-        exten => _ftsX.,n,Background(silence/1)
-        exten => _ftsX.,n,AMD()
-        exten => _ftsX.,n,NoOp(AMDSTATUS=${{AMDSTATUS}})
-        exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine)
-        exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "HUMAN"]?amd_human)
+        exten => _fts.,n,Background(silence/1)
+        exten => _fts.,n,AMD()
+        exten => _fts.,n,NoOp(AMDSTATUS=${{AMDSTATUS}})
+        exten => _fts.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine)
+        exten => _fts.,n,GotoIf($["${{AMDSTATUS}}" == "HUMAN"]?amd_human)
         ; Por las dudas, lo tratamos como si fuera un humano
-        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-detection-failed/)
-        exten => _ftsX.,n,Goto(amd_finished)
+        exten => _fts.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-detection-failed/)
+        exten => _fts.,n,Goto(amd_finished)
 
-        exten => _ftsX.,n(amd_machine),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-machine-detected/)
-        exten => _ftsX.,n,Wait(10)
-        exten => _ftsX.,n,Set(RepetirAudiosDeCampana=1)
-        exten => _ftsX.,n,Goto(amd_finished)
+        exten => _fts.,n(amd_machine),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-machine-detected/)
+        exten => _fts.,n,Wait(10)
+        exten => _fts.,n,Set(RepetirAudiosDeCampana=1)
+        exten => _fts.,n,Goto(amd_finished)
 
-        exten => _ftsX.,n(amd_human),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-human-detected/)
-        exten => _ftsX.,n,Goto(amd_finished)
+        exten => _fts.,n(amd_human),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-human-detected/)
+        exten => _fts.,n,Goto(amd_finished)
 
-        exten => _ftsX.,n(amd_finished),NoOp()
-        exten => _ftsX.,n(audio),NoOp()
+        exten => _fts.,n(amd_finished),NoOp()
+        exten => _fts.,n(audio),NoOp()
 
         """
 
@@ -359,33 +359,33 @@ class GeneradorParaStartDetectarYEvitarContestador(
 
         [campania_{fts_campana_id}]
 
-        exten => _ftsX.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
-        exten => _ftsX.,n,Set(OriginalExten=${{EXTEN}})
-        exten => _ftsX.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
-        exten => _ftsX.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
-        exten => _ftsX.,n,Set(Intento=${{CUT(EXTEN,,4)}})
-        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
-        exten => _ftsX.,n,Answer()
+        exten => _fts.,1,NoOp(FTS,INICIO,EXTEN=${{EXTEN}},campana={fts_campana_id})
+        exten => _fts.,n,Set(OriginalExten=${{EXTEN}})
+        exten => _fts.,n,Set(ContactoId=${{CUT(EXTEN,,2)}})
+        exten => _fts.,n,Set(NumberToCall=${{CUT(EXTEN,,3)}})
+        exten => _fts.,n,Set(Intento=${{CUT(EXTEN,,4)}})
+        exten => _fts.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/inicio/)
+        exten => _fts.,n,Answer()
 
         ; http://www.voip-info.org/wiki/view/Asterisk+cmd+AMD
         ; AMDSTATUS -> MACHINE | HUMAN | NOTSURE | HANGUP
-        exten => _ftsX.,n,Background(silence/1)
-        exten => _ftsX.,n,AMD()
-        exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine)
-        exten => _ftsX.,n,GotoIf($["${{AMDSTATUS}}" == "HUMAN"]?amd_human)
+        exten => _fts.,n,Background(silence/1)
+        exten => _fts.,n,AMD()
+        exten => _fts.,n,GotoIf($["${{AMDSTATUS}}" == "MACHINE"]?amd_machine)
+        exten => _fts.,n,GotoIf($["${{AMDSTATUS}}" == "HUMAN"]?amd_human)
         ; Por las dudas, lo tratamos como si fuera un humano
-        exten => _ftsX.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-detection-failed/)
-        exten => _ftsX.,n,Goto(amd_finished)
+        exten => _fts.,n,AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-detection-failed/)
+        exten => _fts.,n,Goto(amd_finished)
 
-        exten => _ftsX.,n(amd_machine),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-machine-detected/)
-        exten => _ftsX.,n,Wait(1)
-        exten => _ftsX.,n,Hangup()
+        exten => _fts.,n(amd_machine),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-machine-detected/)
+        exten => _fts.,n,Wait(1)
+        exten => _fts.,n,Hangup()
 
-        exten => _ftsX.,n(amd_human),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-human-detected/)
-        exten => _ftsX.,n,Goto(amd_finished)
+        exten => _fts.,n(amd_human),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/amd-human-detected/)
+        exten => _fts.,n,Goto(amd_finished)
 
-        exten => _ftsX.,n(amd_finished),NoOp()
-        exten => _ftsX.,n(audio),NoOp()
+        exten => _fts.,n(amd_finished),NoOp()
+        exten => _fts.,n(audio),NoOp()
 
         """
 
@@ -420,7 +420,7 @@ class GeneradorParaAudioAsterisk(GeneradorDePedazoDeDialplanParaAudio):
         return """
 
         ; TEMPLATE_DIALPLAN_PLAY_AUDIO-{fts_audio_de_campana_id}
-        exten => _ftsX.,n,Background({fts_audio_file})
+        exten => _fts.,n,Background({fts_audio_file})
 
         """
 
@@ -449,7 +449,7 @@ class GeneradorParaArchivoDeAudio(GeneradorDePedazoDeDialplanParaAudio):
         return """
 
         ; TEMPLATE_DIALPLAN_PLAY_AUDIO-{fts_audio_de_campana_id}
-        exten => _ftsX.,n,Background({fts_audio_file})
+        exten => _fts.,n,Background({fts_audio_file})
 
         """
 
@@ -478,12 +478,12 @@ class GeneradorParaTtsHora(GeneradorDePedazoDeDialplanParaAudio):
         return """
 
         ; TEMPLATE_DIALPLAN_HORA-{fts_audio_de_campana_id}
-        exten => _ftsX.,n,NoOp(TTS,{fts_tts_hora}_hora,${{{fts_tts_hora}_hora}})
-        exten => _ftsX.,n,Saynumber(${{{fts_tts_hora}_hora}})
-        exten => _ftsX.,n,Playback(horas)
-        exten => _ftsX.,n,NoOp(TTS,{fts_tts_hora}_min,${{{fts_tts_hora}_min}})
-        exten => _ftsX.,n,Saynumber(${{{fts_tts_hora}_min}})
-        exten => _ftsX.,n,Playback(minutos)
+        exten => _fts.,n,NoOp(TTS,{fts_tts_hora}_hora,${{{fts_tts_hora}_hora}})
+        exten => _fts.,n,Saynumber(${{{fts_tts_hora}_hora}})
+        exten => _fts.,n,Playback(horas)
+        exten => _fts.,n,NoOp(TTS,{fts_tts_hora}_min,${{{fts_tts_hora}_min}})
+        exten => _fts.,n,Saynumber(${{{fts_tts_hora}_min}})
+        exten => _fts.,n,Playback(minutos)
 
         """
 
@@ -501,14 +501,14 @@ class GeneradorParaTtsFecha(GeneradorDePedazoDeDialplanParaAudio):
         return """
 
         ; TEMPLATE_DIALPLAN_FECHA-{fts_audio_de_campana_id}
-        exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_dia,${{{fts_tts_fecha}_dia}})
-        exten => _ftsX.,n,Saynumber(${{{fts_tts_fecha}_dia}})
-        exten => _ftsX.,n,Playback(del)
-        exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_mes,${{{fts_tts_fecha}_mes}})
-        exten => _ftsX.,n,Playback(${{{fts_tts_fecha}_mes}})
-        exten => _ftsX.,n,Playback(de)
-        exten => _ftsX.,n,NoOp(TTS,{fts_tts_fecha}_anio,${{{fts_tts_fecha}_anio}})
-        exten => _ftsX.,n,Saynumber(${{{fts_tts_fecha}_anio}})
+        exten => _fts.,n,NoOp(TTS,{fts_tts_fecha}_dia,${{{fts_tts_fecha}_dia}})
+        exten => _fts.,n,Saynumber(${{{fts_tts_fecha}_dia}})
+        exten => _fts.,n,Playback(del)
+        exten => _fts.,n,NoOp(TTS,{fts_tts_fecha}_mes,${{{fts_tts_fecha}_mes}})
+        exten => _fts.,n,Playback(${{{fts_tts_fecha}_mes}})
+        exten => _fts.,n,Playback(de)
+        exten => _fts.,n,NoOp(TTS,{fts_tts_fecha}_anio,${{{fts_tts_fecha}_anio}})
+        exten => _fts.,n,Saynumber(${{{fts_tts_fecha}_anio}})
 
         """
 
@@ -526,8 +526,8 @@ class GeneradorParaTtsUsandoGoogle(GeneradorDePedazoDeDialplanParaAudio):
         return """
 
         ; TEMPLATE_DIALPLAN_TTS-{fts_audio_de_campana_id}
-        exten => _ftsX.,n,NoOp(TTS,{fts_tts},${{{fts_tts}}})
-        exten => _ftsX.,n,AGI(googletts.agi,${{{fts_tts}}},es)
+        exten => _fts.,n,NoOp(TTS,{fts_tts},${{{fts_tts}}})
+        exten => _fts.,n,AGI(googletts.agi,${{{fts_tts}}},es)
 
         """
 
@@ -546,8 +546,8 @@ class GeneradorParaTtsUsandoSwift(GeneradorDePedazoDeDialplanParaAudio):
         return """
 
         ; TEMPLATE_DIALPLAN_TTS-{fts_audio_de_campana_id}
-        exten => _ftsX.,n,NoOp(TTS,{fts_tts},${{{fts_tts}}})
-        exten => _ftsX.,n,Swift(${{{fts_tts}}})
+        exten => _fts.,n,NoOp(TTS,{fts_tts},${{{fts_tts}}})
+        exten => _fts.,n,Swift(${{{fts_tts}}})
 
         """
 
@@ -566,7 +566,7 @@ class GeneradorParaTtsMensajeSwift(GeneradorDePedazoDeDialplanParaAudio):
         return """
 
         ; TEMPLATE_DIALPLAN_TTS_MENSAJE-{fts_audio_de_campana_id}
-        exten => _ftsX.,n,Swift({fts_tts_mensaje})
+        exten => _fts.,n,Swift({fts_tts_mensaje})
 
         """
 
@@ -600,15 +600,15 @@ class GeneradorParaHangup(GeneradorDePedazoDeDialplanParaHangup):
 
         ; TEMPLATE_DIALPLAN_HANGUP-{fts_campana_id}
         ; TODO: alcanza 'WaitExten(10)'?
-        exten => _ftsX.,n,WaitExten(6)
+        exten => _fts.,n,WaitExten(6)
 
         ; A veces, AMD setea RepetirAudiosDeCampana=1 para repetir los audios
-        exten => _ftsX.,n,GotoIf("${{RepetirAudiosDeCampana}}" != "1"?fin)
-        exten => _ftsX.,n,Set(RepetirAudiosDeCampana=0)
-        exten => _ftsX.,n,Goto(audio)
+        exten => _fts.,n,GotoIf("${{RepetirAudiosDeCampana}}" != "1"?fin)
+        exten => _fts.,n,Set(RepetirAudiosDeCampana=0)
+        exten => _fts.,n,Goto(audio)
 
-        exten => _ftsX.,n(fin),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
-        exten => _ftsX.,n,Hangup()
+        exten => _fts.,n(fin),AGI(agi://{fts_agi_server}/{fts_campana_id}/${{ContactoId}}/${{Intento}}/fin/)
+        exten => _fts.,n,Hangup()
 
         """
 
