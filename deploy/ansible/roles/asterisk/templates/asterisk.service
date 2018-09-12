@@ -5,13 +5,18 @@ After=syslog.target network-online.target
 [Service]
 Type=forking
 User=omnileads
+{% if DOCKER == "false" %}
 Environment=USER={{ usuario }}
 Environment=GROUP={{ usuario }}
 ExecStartPre=/bin/bash {{ install_prefix }}bin/changeip.sh -a
 ExecStart=/usr/sbin/asterisk -U $USER -G $GROUP -g
 ExecReload=/usr/sbin/asterisk -x 'core restart gracefully'
-ExecStop=/usr/sbin/asterisk -x 'core stop now'
 PIDFile={{ asterisk_location }}/var/run/asterisk/asterisk.pid
+{% else %}
+ExecStop=/usr/sbin/asterisk -x 'core stop now'
+ExecStart=docker exec -i asterisk /bin/bash -c "service asterisk start"
+ExecStop=docker exec -i asterisk /bin/bash -c "service asterisk stop"
+{% endif %}
 RuntimeDirectory=asterisk
 RuntimeDirectoryMode=755
 Restart=on-failure

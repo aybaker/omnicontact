@@ -75,10 +75,10 @@ Rtpengine(){
 
 Asterisk(){
   {% if DOCKER == "true" %}
-    cd {{ install_prefix }}ominicontacto/ominicontacto_voip/asterisk-files/conf/
+    cd /etc/asterisk/conf/
     sed -i "s/\(^bindaddr\).*/bindaddr = $ASTERISK_IP\";/" oml_http.conf
-    sed -i "4s/.*/permit = $ASTERISK_IP\/255.255.255.0/" oml_manager.conf
-    sed -i "11s/.*/permit = $ASTERISK_IP\/255.255.255.0/" oml_manager.conf
+    sed -i "4s/.*/permit = $OML_IP\/255.255.255.0/" oml_manager.conf
+    sed -i "11s/.*/permit = $OML_IP\/255.255.255.0/" oml_manager.conf
   {% else %}
     cd /etc/
       sed -i "4s/.*/Database            = $POSTGRES_DATABASE/" odbc.ini
