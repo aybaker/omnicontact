@@ -9,10 +9,16 @@ User={{ usuario }}
 Environment=SHM_SIZE=64
 Environment=PKG_SIZE=8
 ExecStartPre=/bin/bash {{ install_prefix }}bin/changeip.sh -k
+{% if DOCKER == "false" %}
 ExecStartPre={{ kamailio_location }}/sbin/kamailio -c
 ExecStart={{ kamailio_location }}/sbin/kamailio -m $SHM_SIZE -M $PKG_SIZE -P {{ kamailio_location }}/run/kamailio/kamailio.pid
 ExecStop=/usr/bin/rm -f {{ kamailio_location }}/run/kamailio/kamailio.pid
 PIDFile={{ kamailio_location }}/run/kamailio/kamailio.pid
+{% else %}
+ExecStart=docker exec -i kamailio /bin/bash -c "systemctl start kamailio"
+ExecStop=docker exec -i kamailio /bin/bash -c "systemctl stop kamailio"
+{% endif %}
+
 RuntimeDirectory=kamailio
 RuntimeDirectoryMode=755
 Restart=on-failure

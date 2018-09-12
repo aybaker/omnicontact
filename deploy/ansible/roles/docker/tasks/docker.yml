@@ -59,6 +59,16 @@
   become: true
   become_method: sudo
 
+- name: Add of docker repository (centos)
+  yum_repository:
+    name: docker
+    baseurl: https://download.docker.com/linux/centos/docker-ce.repo
+    state: present
+    gpgcheck: no
+  when: ansible_os_family == "RedHat"
+  become: true
+  become_method: sudo
+
 - name: Docker Installation (centos)
   yum: name=docker-ce state=present
   when: ansible_os_family == "RedHat"
@@ -82,7 +92,6 @@
     - run-docker.sh
     - exec
     - docker-compose.yml
-    - kamailio_postdocker.sh
 
 - name: Change permission of docker volumes folder
   file: path=/var/lib/docker/volumes/ owner={{ usuario }} group={{ usuario }} state=directory
@@ -96,7 +105,7 @@
   template: src=roles/asterisk/templates/conversor.sh dest=/tmp/conversor.sh mode=700
 
 - name: Creation of folders needed for containers
-  file: dest= state=directory owner={{ usuario }} group={{ usuario }} mode=755 recurse=yes
+  file: path={{ item }} state=directory owner={{ usuario }} group={{ usuario }} mode=755 recurse=yes
   with_items:
     - /var/log/asterisk
     - /etc/asterisk/conf/
@@ -112,11 +121,26 @@
   become_method: sudo
 
 - name: Creation of kamailio custom files
-  template: src=roles/kamailio/templates/{{ item.src }}dest={{ kamailio_location }}/etc/kamailio/{{ item.dest }} owner={{ usuario }} group={{ usuario }}
+  template: src=roles/kamailio/templates/{{ item.src }} dest={{ kamailio_location }}/etc/kamailio/{{ item.dest }} owner={{ usuario }} group={{ usuario }}
   with_items:
-    - { src: "rtpengine-config.conf", dest: "rtpengine-config.conf" }
+    - { src: "sysconfig_rtpengine.j2", dest: "rtpengine-config.conf" }
     - { src: "kamailio-local.cfg", dest: "kamailio-local.cfg" }
     - { src: "kamctlrc", dest: "kamctlrc" }
+  become: true
+  become_method: sudo
+
+- name: Creation of services in systemd
+  template: src=roles/{{ item.src }} dest=/etc/systemd/system/{{ item.dest }} owner={{ usuario }} group={{ usuario }}
+  with_items:
+    - { src: "asterisk/templates/asterisk.service", dest: "asterisk.service" }
+    - { src: "kamailio/templates/kamailio.service.j2", dest: "kamailio.service" }
+#    - { src: "kamailio/templates/rtpengine.service", dest: "rtpengine.service" }
+#    - { src: "omniapp_second/templates/omnileads.service", dest: "omnileads.service" }
+  become: true
+  become_method: sudo
+
+- name: Daemon-reload
+  command: "systemctl daemon-reload"
   become: true
   become_method: sudo
 
