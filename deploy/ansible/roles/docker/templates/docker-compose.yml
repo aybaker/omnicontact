@@ -66,13 +66,13 @@ services:
     #userns_mode: "host"
     volumes:
       - type: bind
-        source: {{ install_prefix }}ominicontacto/ominicontacto_voip/asterisk-files/conf
+        source: /etc/asterisk/conf
         target: {{ asterisk_location }}/etc/asterisk/
       - type: bind
         source: {{ asterisk_location }}/var/log/
         target: /var/log/asterisk
       - type: bind
-        source: {{ install_prefix }}ominicontacto/ominicontacto_voip/asterisk-files/agis
+        source: /etc/asterisk/agis
         target: {{ asterisk_location }}/var/lib/asterisk/agi-bin/
       - type: bind
         source: /usr/pgsql-9.6/
@@ -132,7 +132,7 @@ services:
     #userns_mode: "host"
     volumes:
       - type: bind
-        source: {{ install_prefix }}ominicontacto/ominicontacto_voip/kamailio-files/
+        source: {{ kamailio_location }}/etc/kamailio/
         target: {{ kamailio_location }}/etc/kamailio/
       - type: bind
         source: {{ kamailio_location }}/etc/certs/

@@ -95,8 +95,30 @@
 - name: Creation of script conversor.sh
   template: src=roles/asterisk/templates/conversor.sh dest=/tmp/conversor.sh mode=700
 
-- name: Creation of logs folders in /var/log/
-  file: dest=/var/log/asterisk state=directory owner={{ usuario }} group={{ usuario }} mode=755
+- name: Creation of folders needed for containers
+  file: dest= state=directory owner={{ usuario }} group={{ usuario }} mode=755 recurse=yes
+  with_items:
+    - /var/log/asterisk
+    - /etc/asterisk/conf/
+    - "{{ kamailio_location }}/etc/kamailio"
+  become: true
+  become_method: sudo
+
+# Se linkea el kamailio.cfg de omnileads a su ubicacion /etc/kamailio
+- name: Link kamailio.cfg repo file to {{ kamailio_location }}
+  file: state=link src={{ install_prefix }}ominicontacto/ominicontacto_voip/kamailio-files/kamailio.cfg dest={{ kamailio_location }}/etc/kamailio/kamailio.cfg force=true owner={{ usuario }} group={{ usuario }} mode=644
+  tags: postinstall
+  become: true
+  become_method: sudo
+
+- name: Creation of kamailio custom files
+  template: src=roles/kamailio/templates/{{ item.src }}dest={{ kamailio_location }}/etc/kamailio/{{ item.dest }} owner={{ usuario }} group={{ usuario }}
+  with_items:
+    - { src: "rtpengine-config.conf", dest: "rtpengine-config.conf" }
+    - { src: "kamailio-local.cfg", dest: "kamailio-local.cfg" }
+    - { src: "kamctlrc", dest: "kamctlrc" }
+  become: true
+  become_method: sudo
 
 - name: Execution of run-docker.sh init script
   shell: "./run-docker.sh chdir={{ install_prefix }}bin"
