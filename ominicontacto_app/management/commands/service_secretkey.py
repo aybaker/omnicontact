@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
     def generar_secret_key(self, flag):
         try:
-            cmd = "kamctl mi autheph.dump_secrets |awk -F ' ' '{print $3}' |head -1"
+            cmd = settings.OML_KAMAILIO_CMD
             actual_key = subprocess.check_output(cmd, shell=True)
             actual_key = actual_key[:-1]
             if flag == "consultar":

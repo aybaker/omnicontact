@@ -18,8 +18,11 @@
 DBENGINE=PGSQL
 
 ## database host
+{% if DOCKER == "false" %}
 DBHOST=127.0.0.1
-
+{% else %}
+DBHOST={{ omni_ip }}
+{% endif %}
 ## database name (for ORACLE this is TNS name)
 DBNAME=kamailio
 

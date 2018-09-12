@@ -36,12 +36,10 @@
   become: true
   become_method: sudo
 
-# Se copia el archivo kamctlrc a /opt/omnileads/kamailio/etc/kamailio -- FIX ME -- usar modulo copy
+# Se copia el archivo kamctlrc a /opt/omnileads/kamailio/etc/kamailio
 # Ver archivo kamctlrc para mas info
 - name: Copy of oml/kamailio-files to the desired destinations
-  shell: "{{ item }} chdir={{ install_prefix }}ominicontacto/ominicontacto_voip"
-  with_items:
-      - cp kamailio-files/kamctlrc {{ kamailio_location }}/etc/kamailio/
+  template: src=templates/kamctlrc dest={{ kamailio_location }}/etc/kamailio owner={{ usuario }} group={{ usuario }} mode=755
 
 # Se cre el archivo kamailio en /etc/default este archivo contiene variables que va a usar systemctl para levantar kamailio
 - name: Creation of kamailio file in /etc/default
