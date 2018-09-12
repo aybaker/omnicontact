@@ -73,7 +73,7 @@
   tags: postinstall
 
 - name: Config of asterisk for OML
-  copy: src=templates/conf/"{{ item }}" dest="{{ asterisk_location }}"/etc/asterisk/"{{ item }}" remote_src=yes owner="{{ usuario }}" group="{{ usuario }}" mode=755
+  template: "src=templates/conf/{{ item }} dest={{ asterisk_location }}/etc/asterisk/{{ item }} owner={{ usuario }} group={{ usuario }} mode=755"
   with_items:
       - amd.conf
       - chan_dahdi.conf
@@ -106,8 +106,9 @@
 
 # Los archivos-no-enlaces se copian a la a /etc/asterisk
 - name: Copy of all asterisk config files
-  template: src=templates/conf/archivos-no-enlaces dest="{{ asterisk_location }}"/etc/asterisk/ owner="{{ usuario }}" group="{{ usuario }}" mode=755
+  copy: "src=templates/conf/archivos-no-enlaces/ dest={{ asterisk_location }}/etc/asterisk/ owner={{ usuario }} group={{ usuario }} mode=755"
   when: asterisk_location != ""
+  tags: test
 
 # Se copian los agis a /var/lib/asterisk/agi-bin
 - name: Copy of the php agis
@@ -170,13 +171,6 @@
   become_method: sudo
   tags: postinstall
 
-# El odbc.ini si lo copio desde el repo, creo los directorios de sonidos y descomprimo -- FIX ME -- usar los modulos file y unarchive
-- name: Copy of odbc.ini file
-  copy: "src={{ install_prefix }}ominicontacto/ominicontacto_voip/asterisk-files/odbc.ini dest=/etc/ mode=755 remote_src=yes owner=root group=root"
-  become: true
-  become_method: sudo
-  tags: postinstall
-
 # Creo los directorios que tendran los sonidos de agentes
 - name: Make of the sounds dirs
   file: state=directory path={{ asterisk_location }}/var/lib/asterisk/sounds/{{ item }} owner={{ usuario }} group={{ usuario }} mode=755
@@ -193,14 +187,6 @@
     - { source: "es-oml.tgz", dest: "es" }
     - { source: "en-oml.tgz", dest: "en" }
   tags: postinstall
-
-# Añado la entrada webenabled=yes al manager.conf
-- name: Add web enabled in /etc/asterisk/manager.conf
-  ini_file: "path={{ asterisk_location }}/etc/asterisk/manager.conf section=general option=webenabled no_extra_spaces=yes value=yes state=present"
-
-# Añado el webcolor=yes al asterisk.conf
-- name: Add web nocolor=yes in /etc/asterisk/asterisk.conf
-  ini_file: "path={{ asterisk_location }}/etc/asterisk/asterisk.conf section=options option=nocolor no_extra_spaces=yes value=yes state=present"
 
 # Permiso de usuario a la carpeta de asterisk -- FIX ME -- usar file
 - name: Set up permissions of asterisk
