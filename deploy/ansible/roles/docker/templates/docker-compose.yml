@@ -40,19 +40,19 @@ services:
     image: lionite/asterisk-omnileads:v1
     #isolation:
     #labels: asterisk
+    links:
+      - kamailio
     logging:
       driver: "json-file"
       options:
         max-size: "20M"
         max-file: "10"
-    network_mode: bridge
+    #network_mode: bridge
     #pid:
     ports:
-     - "5060:5060/udp"
-     - "4569:4569/udp"
      - "5038:5038/tcp"
      - "7088:7088/tcp"
-     - "10000-20000:10000-20000/udp"
+     - "10001-10100:10001-10100/udp"
      - "5160:5160/udp"
     restart: on-failure
     #secrets
@@ -67,23 +67,22 @@ services:
     volumes:
       - type: bind
         source: /etc/asterisk/conf
-        target: {{ asterisk_location }}/etc/asterisk/
+        target: /opt/omnileads/asterisk/etc/asterisk/
       - type: bind
-        source: {{ asterisk_location }}/var/log/
+        source: /opt/omnileads/asterisk/var/log/
         target: /var/log/asterisk
       - type: bind
         source: /etc/asterisk/agis
-        target: {{ asterisk_location }}/var/lib/asterisk/agi-bin/
+        target: /opt/omnileads/asterisk/var/lib/asterisk/agi-bin/
       - type: bind
         source: /usr/pgsql-9.6/
         target: /usr/pgsql-9.6/
       - type: volume
         source: grabaciones
-        target: {{ asterisk_location }}/var/spool/asterisk/monitor
+        target: /opt/omnileads/asterisk/var/spool/asterisk/monitor/
       - type: bind
         source: {{ install_prefix }}media_root/audio_asterisk_predefinido/
-        target: {{ asterisk_location }}/var/lib/asterisk/sounds/oml/
-      - type: bind
+        target: /opt/omnileads/asterisk/var/lib/asterisk/sounds/oml/
   kamailio:
     #build:
     #  context: ./build
@@ -117,7 +116,7 @@ services:
     ports:
      - "14443:14443/tcp"
      - "6379:6379/tcp"
-     - "20000-20500:20000-20500/udp"
+     - "20000-20100:20000-20100/udp"
      - "5060:5060/udp"
      - "1080:1080/udp"
     restart: on-failure
