@@ -27,7 +27,11 @@ Y luego de eso, las customizaciones.
 
 import os
 
+{% if desarrollo == 1 %}
+DEBUG = True
+{% else %}
 DEBUG = False
+{% endif %}
 TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = [

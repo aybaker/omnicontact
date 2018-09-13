@@ -38,8 +38,6 @@
   with_items:
       # Directorio que contiene configuracion de pip
           - "{{ install_prefix }}.pip"
-      # Directorio donde está almacenado el codigo python
-          - "{{ install_prefix }}ominicontacto"
       # Directorio donde se guarda el archivo de settings de django
           - "{{ install_prefix }}local"
       # Directorio donde se crean los json para hablar con la api de wombat
@@ -56,7 +54,6 @@
           - "{{ install_prefix }}static"
       # DOnde se guardan los logs uwsgi.log y django.log
           - "{{ install_prefix }}log"
-  when: desarrollo == 0
 
 #----------------------------------------------------------------------
 # pip / virtualenv
