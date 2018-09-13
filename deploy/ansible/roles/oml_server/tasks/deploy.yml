@@ -77,7 +77,7 @@
 
 # Esta tarea no está funcionando bien lo que quería hacer es para las maquinas de desarrollo, en vez de copiar el codigo clonar el repo
 - name: Clone of OML repository
-  git: repo=https://gitlab.com/omnileads/ominicontacto.git dest={{ install_prefix }}ominicontacto/ accept_hostkey=yes
+  git: repo=https://gitlab.com/omnileads/ominicontacto.git dest={{ install_prefix }}ominicontacto/ accept_hostkey=yes force=yes
   when: desarrollo == 1
   ignore_errors: yes
 
