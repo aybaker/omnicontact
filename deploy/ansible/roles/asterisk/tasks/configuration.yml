@@ -16,21 +16,11 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #
 ---
-# Esta tarea está medio al pedo porque ya no instalamos sobre sangomaOS pero por si las dudas la dejo
-- name: Apache adjustments
-  shell: "{{ item }}"
-  with_items:
-      - sed -i 's/\(^upload_max_filesize = \).*/\120M/' /etc/php.ini
-      - sed -i 's/^\(User\|Group\).*/\1 asterisk/' /etc/httpd/conf/httpd.conf
-      - sed -i 's/AllowOverride None/AllowOverride All/' /etc/httpd/conf/httpd.conf
-  when: asterisk_location == "" and ansible_os_family == "Sangoma"
-  become: yes
-  become_method: sudo
-
 # Se crea el servicico de asterisk  para systemctl
 - name: Creation of asterisk.service
   template: src=templates/asterisk.service dest=/etc/systemd/system/asterisk.service owner=root group=root mode=650
   tags: postinstall
+  tags: ['vagrant']
 
 # Linkeo el binario a /usr/sbin
 - name: Create simbolic link of asterisk binarie
@@ -38,28 +28,6 @@
   when: asterisk_location != ""
   become: yes
   become_method: sudo
-
-# Esto tambien está al pedo es para sangomaOS
-- name: Config of asterisk-freepbx for OML
-  file: "state=link src={{ install_prefix }}ominicontacto/ominicontacto_voip/asterisk-files/{{ item }} dest={{ asterisk_location }}/etc/asterisk/{{ item }} force=true owner={{ usuario }} group={{ usuario }}"
-  with_items:
-      - extensions_custom.conf
-      - extensions_fts.conf
-      - sip_custom.conf
-      - extconfig.conf
-      - amd.conf
-      - func_odbc.conf
-      - cdr_adaptive_odbc.conf
-      - http_custom.conf
-      - manager_custom.conf
-      - queues_custom.conf
-      - globals_custom.conf
-      - http_custom.conf
-      - pjsip.transports_custom.conf
-      - res_odbc_custom.conf
-  become: yes
-  become_method: sudo
-  when: asterisk_location == "" or ansible_os_family == "Sangoma"
 
 # Se linkean los .conf de asterisk (los que estan afuera de archivos-no-enlaces) a /opt/omnileads/asterisk/etc/asterisk
 - name: Config of asterisk for OML
@@ -70,7 +38,7 @@
   become: true
   become_method: sudo
   when: asterisk_location != ""
-  tags: postinstall
+  tags: ['postinstall','vagrant']
 
 - name: Config of asterisk for OML
   template: "src=templates/conf/{{ item }} dest={{ asterisk_location }}/etc/asterisk/{{ item }} owner={{ usuario }} group={{ usuario }} mode=755"
@@ -102,13 +70,14 @@
   become: true
   become_method: sudo
   when: asterisk_location != ""
-  tags: postinstall
+  tags: ['postinstall','vagrant']
 
 # Los archivos-no-enlaces se copian a la a /etc/asterisk
 - name: Copy of all asterisk config files
   copy: "src=templates/conf/archivos-no-enlaces/ dest={{ asterisk_location }}/etc/asterisk/ owner={{ usuario }} group={{ usuario }} mode=755"
   when: asterisk_location != ""
   tags: test
+  tags: ['vagrant']
 
 # Se copian los agis a /var/lib/asterisk/agi-bin
 - name: Copy of the php agis
@@ -122,7 +91,7 @@
       - phpagi.php
   become: yes
   become_method: sudo
-  tags: postinstall
+  tags: ['postinstall','vagrant']
 
 # Estos dos agis los creo desde ansible
 - name: Creation of the agis omni-blackist and omni-dialednum
@@ -132,7 +101,7 @@
       - omni-dialednum.php
   become: yes
   become_method: sudo
-  tags: postinstall
+  tags: ['postinstall','vagrant']
 
 # Aca creo la carpeta parselog
 - name: Create /usr/local/parselog

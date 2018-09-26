@@ -170,6 +170,7 @@
   template: src=templates/rtpengine.service dest=/etc/systemd/system owner=root group=root mode=650
   become: true
   become_method: sudo
+  tags: ['vagrant']
 
 # Tengo un template de rsyslog modificado para tener logs de rtpengine y kamailio en sus propios archivos (ver template para mas info)
 - name: Modify of /etc/rsyslog.conf

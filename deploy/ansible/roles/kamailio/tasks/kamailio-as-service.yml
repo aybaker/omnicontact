@@ -42,6 +42,7 @@
   shell: "{{ item }} chdir={{ install_prefix }}ominicontacto/ominicontacto_voip"
   with_items:
       - cp kamailio-files/kamctlrc {{ kamailio_location }}/etc/kamailio/
+  tags: ['vagrant']
 
 # Se cre el archivo kamailio en /etc/default este archivo contiene variables que va a usar systemctl para levantar kamailio
 - name: Creation of kamailio file in /etc/default
@@ -50,6 +51,7 @@
 # Se crea el archivo de systemd para el servicio kamailio
 - name: Creation of kamailio.service file in systemd
   template: src=templates/kamailio.service.j2 dest=/etc/systemd/system/kamailio.service owner=root group=root mode=650
+  tags: ['vagrant']
 
 # Se restartea rsyslog se habilita kamailio y se hace el daemon-reload. -- FIX ME -- usar modulos service y file para setear los permisos
 - name: Run kamailio as a service
@@ -60,6 +62,7 @@
       - "chown {{ usuario }}:{{ usuario }} -R {{ kamailio_location }}"
   become: true
   become_method: sudo
+  tags: ['vagrant']
 
 # Bueno este paso es importante. El comando kamdbctl es para interactuar con la base de datos. http://manpages.ubuntu.com/manpages/trusty/man8/kamdbctl.8.html
 # Aca lo que se esta haciendo es creando la base de datos y las tablas que necesitan los modulos de kamailio. Se usa la  configuracion que hay en el kamctlrc
@@ -80,6 +83,7 @@
   tags: postinstall
   become: true
   become_method: sudo
+  tags: ['vagrant']
 
 # Se borra el kamailio.cfg que se crea por default a  la  hora de instalar
 - name: Erase of default kamailio.cfg file
@@ -91,6 +95,7 @@
   tags: postinstall
   become: true
   become_method: sudo
+  tags: ['vagrant']
 
 # Linkeamos dos binarios de kamailio que son necesarios para el buen funcionamiento del proceso de autenticacion
 - name: Link kamcmd binarie to /usr/sbin
@@ -108,6 +113,7 @@
   command: systemctl enable kamailio
   become: true
   become_method: sudo
+  tags: ['vagrant']
 
 - name: Restart kamailio service
   service: name=kamailio state=restarted enabled=yes

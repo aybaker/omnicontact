@@ -11,12 +11,18 @@
 # 2. Copia toda la carpeta ansible del repo a /var/tmp/ansible y todo el codigo a /var/tmp/ominicontacto-build
 # 3. Pregunta si se quiere dockerizar asterisk o no, para pasarle la variable a ansible.
 # 4. Ejecuta ansible segun la opcion de Dockerizar o no
-DOCKER="false"
+DEVOPS_TECH=""
 PIP=`which pip`
 current_directory=`pwd`
 TMP_ANSIBLE='/var/tmp/ansible'
 export ANSIBLE_CONFIG=$TMP_ANSIBLE
 IS_ANSIBLE="`find /usr/bin /usr/sbin /usr/local /root ~ -name ansible 2>/dev/null |grep \"/bin/ansible\" |head -1`"
+
+echo ""
+echo "###############################################################"
+echo "##    Bienvenido al asistente de instalación de Omnileads    ##"
+echo "###############################################################"
+echo ""
 
 Help() {
 USAGE="
@@ -37,52 +43,6 @@ USAGE="
 }
 
 Rama() {
-
-    echo ""
-    echo "###############################################################"
-    echo "##    Bienvenido al asistente de instalación de Omnileads    ##"
-    echo "###############################################################"
-    echo ""
-    sleep 2
-    echo "Detectando si ansible 2.5.0 se encuentra instalado"
-    if [ -z "$IS_ANSIBLE" ] ; then
-        echo "No tienes instalado ansible"
-        echo "Instalando ansible 2.5.0"
-	    echo ""
-	    $PIP install 'ansible==2.5.0.0' --user
-        IS_ANSIBLE="`find /usr/bin /usr/sbin /usr/local /root ~ -name ansible |grep \"/bin/ansible\" |head -1 2> /dev/null`"
-	fi
-    ANS_VERSION=`"$IS_ANSIBLE" --version |grep ansible |head -1`
-	if [ "$ANS_VERSION" = 'ansible 2.5.0' ] ; then
-         echo "Ansible ya se encuentra instalado"
-    else
-        echo "Tienes una versión de ansible distinta a la 2.5.0"
-        echo "Instalando versión 2.5.0"
-        $PIP install 'ansible==2.5.0.0' --user
-    fi
-
-    cd $current_directory
-    USUARIO="`grep ansible_user hosts| head -1 |awk -F " " '{print $3}'|awk -F "=" '{print $2}'`"
-    sleep 2
-    echo "Creando directorio temporal de ansible"
-    if [ -e $TMP_ANSIBLE ]; then
-        rm -rf $TMP_ANSIBLE
-    fi
-    mkdir -p /var/tmp/ansible
-    sleep 2
-    echo "Copiando el contenido de ansible del repositorio al directorio temporal"
-    cp -a $current_directory/* $TMP_ANSIBLE
-
-    if [ -z $FROM_INTWO ]; then
-        echo ""
-    else
-        sed -i "s/\(^LOCALHOST\).*/LOCALHOST=true/" $TMP_ANSIBLE/hosts
-    fi
-
-    sleep 2
-    echo "Creando directorio y carpeta de logs de proceso de instalación"
-    mkdir -p /var/tmp/log
-    touch /var/tmp/log/oml_install
     #sleep 2
     cd ../..
     echo "Chequeando y copiando el código a deployar"
@@ -170,16 +130,46 @@ echo ""
 }
 
 Preliminar() {
-    Docker
-}
+  echo "Detectando si ansible 2.5.0 se encuentra instalado"
+  if [ -z "$IS_ANSIBLE" ] ; then
+      echo "No tienes instalado ansible"
+      echo "Instalando ansible 2.5.0"
+    echo ""
+    $PIP install 'ansible==2.5.0.0' --user
+      IS_ANSIBLE="`find /usr/bin /usr/sbin /usr/local /root ~ -name ansible |grep \"/bin/ansible\" |head -1 2> /dev/null`"
+fi
+  ANS_VERSION=`"$IS_ANSIBLE" --version |grep ansible |head -1`
+if [ "$ANS_VERSION" = 'ansible 2.5.0' ] ; then
+       echo "Ansible ya se encuentra instalado"
+  else
+      echo "Tienes una versión de ansible distinta a la 2.5.0"
+      echo "Instalando versión 2.5.0"
+      $PIP install 'ansible==2.5.0.0' --user
+  fi
 
-Desarrollo() {
-    echo ""
-    echo "#############################################################################"
-    echo "Escogió la opción -d por lo que el deploy es para una máquina de desarrollo"
-    echo "#############################################################################"
-    echo ""
-    sed -i "s/\(^desarrollo\).*/desarrollo=1/" $TMP_ANSIBLE/hosts
+  cd $current_directory
+  USUARIO="`grep ansible_user hosts| head -1 |awk -F " " '{print $3}'|awk -F "=" '{print $2}'`"
+  sleep 2
+  echo "Creando directorio temporal de ansible"
+  if [ -e $TMP_ANSIBLE ]; then
+      rm -rf $TMP_ANSIBLE
+  fi
+  mkdir -p /var/tmp/ansible
+  sleep 2
+  echo "Copiando el contenido de ansible del repositorio al directorio temporal"
+  cp -a $current_directory/* $TMP_ANSIBLE
+
+  if [ -z $FROM_INTWO ]; then
+      echo ""
+  else
+      sed -i "s/\(^LOCALHOST\).*/LOCALHOST=true/" $TMP_ANSIBLE/hosts
+  fi
+
+  sleep 2
+  echo "Creando directorio y carpeta de logs de proceso de instalación"
+  mkdir -p /var/tmp/log
+  touch /var/tmp/log/oml_install
+  Docker
 }
 
 Tag() {
@@ -190,10 +180,15 @@ Tag() {
     echo "El servicio sin humildad es egoísmo"
     echo "Reflexionar serena, muy serenamente, es mejor que tomar decisiones desesperadas - Franz Kafka"
     echo ""
-    if [ $DOCKER == "true" ]; then
-      ${IS_ANSIBLE}-playbook -s $TMP_ANSIBLE/docker.yml --extra-vars "BUILD_DIR=$TMP/ominicontacto RAMA=$rama" --tags "${array[0]},${array[1]}" --skip-tags "${array[2]}" -K
+    if [ "${array[0]}" == "vagrant" ] || [ "${array[1]}" == "vagrant" ]; then
+      DEVOPS_TECH="vagrant"
+    elif [ "${array[0]}" == "docker" ] || [ "${array[1]}" == "docker" ]; then
+      DEVOPS_TECH="docker"
+    fi
+    if [ $DEVOPS == "true" ]; then
+      ${IS_ANSIBLE}-playbook -s $TMP_ANSIBLE/devops.yml --extra-vars "DEVOPS_TECH=$DEVOPS_TECH" --tags "${array[0]},${array[1]},${array[2]}" -K
     else
-      ${IS_ANSIBLE}-playbook -s $TMP_ANSIBLE/omnileads.yml --extra-vars "BUILD_DIR=$TMP/ominicontacto RAMA=$rama" --tags "${array[0]},${array[1]}" --skip-tags "${array[2]}" -K
+      ${IS_ANSIBLE}-playbook -s $TMP_ANSIBLE/omnileads.yml --extra-vars "BUILD_DIR=$TMP/ominicontacto RAMA=$rama" --tags "${array[0]},${array[1]},${array[2]}" -K
 
     fi
     ResultadoAnsible=`echo $?`
@@ -218,9 +213,6 @@ while getopts "r::t:ihd" OPTION;do
 		;;
 		i) #Realizar pasos y agregar opciones preliminares
 		    Preliminar
-		;;
-    d) #Cliente de desarrollo?
-		    Desarrollo
 		;;
 		t) #Tag
 		    set -f # disable glob

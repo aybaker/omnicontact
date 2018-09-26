@@ -18,6 +18,6 @@
 ---
 
 - include: deploy_supervision.yml
-  tags: ['supervision','postinstall']
+  tags: ['supervision','postinstall','vagrant']
 
 - include: reboot.yml

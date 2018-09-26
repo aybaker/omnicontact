@@ -40,7 +40,3 @@
 
 - include: configuration.yml
   tags: asterisk
-
-#- include: freepbx.yml
-#  when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
-#  tags: freepbx

@@ -32,41 +32,12 @@
       )
   tags: always
 
-# chequea si asterisk si existe /etc/asterisk y guarda el resultado (true/false) en asterisk_etc_installed
-- name: Check if Asterisk is installed in /etc
-  command: test -d /etc/asterisk
-  ignore_errors: true
-  register: asterisk_etc_installed
-  tags: always
-  become: true
-  become_method: sudo
-
-# si asterisk_etc_installed es false setea la variable asterisk_location con /opt/omnileads/asterisk
+# seteo la variable asterisk_location
 - set_fact: asterisk_location={{ install_prefix }}asterisk
-  when: asterisk_etc_installed|failed
   tags: always
 
-# si asterisk_etc_installed es true setea la variable asterisk_location vacia
-- set_fact: asterisk_location=
-  when: asterisk_etc_installed|succeeded
-  tags: always
-
-# se hace el mismo proceso para detectar si kamailio está instalado en /opt/
-- name: Check if Kamailio is installed in /opt
-  command: test -d /opt/kamailio
-  ignore_errors: true
-  register: kamailio_opt_installed
-  tags: always
-  become: true
-  become_method: sudo
-
-# si si kamailio_opt_installd es false setea la variable asterisk_location con /opt/omnileads/kamailio
+# seteo la variable kamailio_location
 - set_fact: kamailio_location={{ install_prefix }}kamailio
-  when: kamailio_opt_installed|failed
-  tags: always
-
-- set_fact: kamailio_location=/opt/kamailio
-  when: kamailio_opt_installed|succeeded
   tags: always
 
 # se crea el grupo de usuario omnileads

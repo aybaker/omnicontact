@@ -32,6 +32,7 @@
   become: true
   become_method: sudo
   when: ansible_os_family == "Debian"
+  tags: ['vagrant']
 
 # Restarteamos servicio
 - name: Restart postgres service (centos)
@@ -45,6 +46,7 @@
   become: true
   become_method: sudo
   when: ansible_os_family == "Debian"
+  tags: ['vagrant']
 
 # Se crea el usuario de postgres kamailio
 - name: Create kamailio postgres user
@@ -52,6 +54,7 @@
   become_method: sudo
   become_user: postgres
   postgresql_user: name=kamailio password=kamailiorw role_attr_flags=SUPERUSER
+  tags: ['vagrant']
 
 # Se crea el usuario de postgres kamailiorw
 - name: Create kamailioro postgres user
@@ -59,3 +62,4 @@
   become: yes
   become_method: sudo
   become_user: postgres
+  tags: ['vagrant']

@@ -20,14 +20,13 @@
 # y copiado el codigo al servidor
 
 - include: sshkey_transfer.yml
-  tags: postinstall
+  tags: ['postinstall','vagrant']
 
 - include: django_migrations.yml
-  tags: ['postinstall','django']
+  tags: ['postinstall','django','vagrant']
 
 - include: omniapp_second.yml
-  tags: ['nginx','postinstall']
-
+  tags: ['nginx','postinstall','vagrant']
 
 - include: wombat.yml
   tags: wombat

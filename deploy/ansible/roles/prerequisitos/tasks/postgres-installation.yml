@@ -41,9 +41,11 @@
   become: yes
   become_method: sudo
   when: ansible_os_family == "Debian"
+  tags: ['vagrant','docker']
 
-# Habilitamos y empezamos redis. Redis es necesario para rtpengine y para django-defender 
+# Habilitamos y empezamos redis. Redis es necesario para rtpengine y para django-defender
 - name: Start and enable redis service
   service: name=redis state=restarted enabled=yes
   become: yes
   become_method: sudo
+  tags: ['vagrant','docker']

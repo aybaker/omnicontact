@@ -20,10 +20,12 @@
 # Se desinstala apache2 para que no hinche los huevos
 - name: Uninstall of apache2
   apt: name=apache2 state=absent purge=yes
+  tags: ['vagrant','docker']
 
 # Se instala este paquete necesario antes de hacer update
 - name: Install apt-transport-https
   apt: name=apt-transport-https state=present
+  tags: ['vagrant','docker']
 
 # Update/upgrade, https://docs.ansible.com/ansible/latest/modules/apt_module.html
 - name: Update/upgrade of system
@@ -37,12 +39,26 @@
   become_method: sudo
   ignore_errors: True
 
+- name: Install of prerequisites
+  apt: "name={{ item }} state=present"
+  with_items:
+    - net-tools
+    - git
+    - vim
+    - curl
+    - mysql-client
+    - sudo
+    - wget
+    - unzip
+  become: true
+  become_method: sudo
+  tags: ['vagrant','docker']
+
   # Intalo los paquetes necesarios para la parte VoIP -- FIX ME -- separar paquetes de asterisk y paquetes de kamailio
 - name: Installation of VoIP dependencies
   apt: "name={{ item }} state=present"
   with_items:
     - build-essential
-    - net-tools
     - debhelper
     - iptables-dev
     - libcurl4-openssl-dev
@@ -52,7 +68,6 @@
     - libglib2.0-dev
     - libhiredis-dev
     - dkms
-    - git
     - libevent-dev
     - libbencode-perl
     - libcrypt-rijndael-perl
@@ -85,9 +100,6 @@
     - libunistring-dev
     - libjson-glib-dev
     - postgresql-client
-    - vim
-    - curl
-    - mysql-client
     - sox
     - libncurses5-dev
     - libssl-dev
@@ -107,12 +119,9 @@
     - libneon27-dev
     - libsrtp0-dev
     - libspandsp-dev
-    - sudo
     #- libmyodbc
     - subversion
     - odbc-postgresql
-    - wget
-    - unzip
   become: true
   become_method: sudo
 
@@ -143,3 +152,4 @@
     - php-xml
   become: true
   become_method: sudo
+  tags: ['vagrant','docker']
