@@ -18,18 +18,27 @@
 ---
 
 # Se desinstala apache2 para que no hinche los huevos
-- name: Uninstall of apache2
-  apt: name=apache2 state=absent purge=yes
+- name: Uninstall of apache2 and postgresql-10
+  apt: name={{ item }} state=absent purge=yes
+  with_items:
+    - apache2
+    - postgresql-10
+  become: true
+  become_method: sudo
   tags: ['vagrant','docker']
 
 # Se instala este paquete necesario antes de hacer update
 - name: Install apt-transport-https
   apt: name=apt-transport-https state=present
+  become: true
+  become_method: sudo
   tags: ['vagrant','docker']
 
 # Update/upgrade, https://docs.ansible.com/ansible/latest/modules/apt_module.html
 - name: Update/upgrade of system
   apt: "update_cache=yes cache_valid_time=12 upgrade=yes dpkg_options='force-confdef'"
+  become: true
+  become_method: sudo
   when: LOCALHOST == "true"
 
 # Instalo linux-headers del kernel  en cuestion
@@ -37,7 +46,7 @@
   shell: "apt-get install -y linux-headers-$(uname -r)"
   become: true
   become_method: sudo
-  ignore_errors: True
+  ignore_errors: true
 
 - name: Install of prerequisites
   apt: "name={{ item }} state=present"
@@ -139,10 +148,6 @@
     - libsasl2-dev
     - libffi-dev
     - python-virtualenv
-    - postgresql-9.6
-    - postgresql-contrib
-    - postgresql-server-dev-9.6
-    - postgresql-plpython-9.6
     - python-mysqldb
     - libjpeg-dev
     - python-psycopg2
@@ -153,3 +158,39 @@
   become: true
   become_method: sudo
   tags: ['vagrant','docker']
+
+- name: Installation of postgresql-9.6 (debian)
+  apt: "name= {{ item }} state=present"
+  with_items:
+    - postgresql-9.6
+    - postgresql-contrib
+    - postgresql-server-dev-9.6
+    - postgresql-plpython-9.6
+  become: true
+  become_method: sudo
+  when: ansible_distribution == "Debian"
+
+- name: Download postgresql-9.6 repository
+  apt_repository: repo="deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" filenam=pgdg.list state=present update_cache=yes
+  become: true
+  become_method: sudo
+  when: ansible_distribution == "Ubuntu"
+  tags: ['vagrant']
+
+- name: Add the postgresql repository key (ubuntu )
+  apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc validate_certs=no state=present
+  become: true
+  become_method: sudo
+  when: ansible_distribution == "Ubuntu"
+  tags: ['vagrant']
+
+- name: Installation of postgresql-9.6 (ubuntu)
+  apt: "name= {{ item }} state=present"
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - libpq-dev
+  become: true
+  become_method: sudo
+  when: ansible_distribution == "Ubuntu"
+  tags: ['vagrant']

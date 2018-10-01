@@ -29,7 +29,7 @@
 # variables que vienen exportadas desde el deploy.sh
   vars:
           build_dir: "{{ BUILD_DIR }}"
-          rama: "{{ RAMA }}"
+          devops: "{{ DEVOPS }}"
 
 # se piden las variables de superuser y el formato de conversion
 # https://docs.ansible.com/ansible/2.6/user_guide/playbooks_prompts.html

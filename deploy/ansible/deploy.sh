@@ -15,8 +15,15 @@ DEVOPS_TECH=""
 PIP=`which pip`
 current_directory=`pwd`
 TMP_ANSIBLE='/var/tmp/ansible'
+ANSIBLE_USER=`whoami`
 export ANSIBLE_CONFIG=$TMP_ANSIBLE
 IS_ANSIBLE="`find /usr/bin /usr/sbin /usr/local /root ~ -name ansible 2>/dev/null |grep \"/bin/ansible\" |head -1`"
+
+if [[ ${@: -1} =~ -v* ]]; then
+  DEBUG=${@: -1}
+else
+  DEBUG=""
+fi
 
 echo ""
 echo "###############################################################"
@@ -130,14 +137,21 @@ echo ""
 }
 
 Preliminar() {
+  echo "Detectando si python-pip se encuentra instalado"
+  if [ -z "$PIP" ]; then
+    echo "No tienes instalado python-pip, se sale del script"
+    exit 1
+  else
+    echo "Python-pip se encuentra instalado, procediendo"
+  fi
   echo "Detectando si ansible 2.5.0 se encuentra instalado"
   if [ -z "$IS_ANSIBLE" ] ; then
-      echo "No tienes instalado ansible"
-      echo "Instalando ansible 2.5.0"
+    echo "No tienes instalado ansible"
+    echo "Instalando ansible 2.5.0"
     echo ""
     $PIP install 'ansible==2.5.0.0' --user
-      IS_ANSIBLE="`find /usr/bin /usr/sbin /usr/local /root ~ -name ansible |grep \"/bin/ansible\" |head -1 2> /dev/null`"
-fi
+    IS_ANSIBLE="`find /usr/bin /usr/sbin /usr/local /root ~ -name ansible |grep \"/bin/ansible\" |head -1 2> /dev/null`"
+  fi
   ANS_VERSION=`"$IS_ANSIBLE" --version |grep ansible |head -1`
 if [ "$ANS_VERSION" = 'ansible 2.5.0' ] ; then
        echo "Ansible ya se encuentra instalado"
@@ -185,10 +199,10 @@ Tag() {
     elif [ "${array[0]}" == "docker" ] || [ "${array[1]}" == "docker" ]; then
       DEVOPS_TECH="docker"
     fi
-    if [ $DEVOPS == "true" ]; then
-      ${IS_ANSIBLE}-playbook -s $TMP_ANSIBLE/devops.yml --extra-vars "DEVOPS_TECH=$DEVOPS_TECH" --tags "${array[0]},${array[1]},${array[2]}" -K
+    if [ $DEVOPS_TECH == "vagrant" ] || [ $DEVOPS_TECH == "docker" ]; then
+      ${IS_ANSIBLE}-playbook -s $TMP_ANSIBLE/devops.yml --extra-vars "DEVOPS=1 DEVOPS_TECH=$DEVOPS_TECH" --tags "${array[0]},${array[1]},${array[2]}" -K $DEBUG
     else
-      ${IS_ANSIBLE}-playbook -s $TMP_ANSIBLE/omnileads.yml --extra-vars "BUILD_DIR=$TMP/ominicontacto RAMA=$rama" --tags "${array[0]},${array[1]},${array[2]}" -K
+      ${IS_ANSIBLE}-playbook -s $TMP_ANSIBLE/omnileads.yml --extra-vars "BUILD_DIR=$TMP/ominicontacto DEVOPS=0" --tags "${array[0]},${array[1]},${array[2]}" -K $DEBUG
 
     fi
     ResultadoAnsible=`echo $?`

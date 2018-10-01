@@ -16,21 +16,22 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #
 ---
-- name: Instalacion de Omnileads con Asterisk en container
+- name: Instalacion de Omnileads para development
   hosts: omnileads
   vars:
+          devops: "{{ DEVOPS }}"
           devops_tech: "{{ DEVOPS_TECH }}"
   pre_tasks:
       - name: Set the install prefix
-        set_fact: install_prefix="~/opt/"
+        set_fact: asterisk_location="ansible_env.HOME/opt/"
         tags: ['vagrant']
 
       - name: Create required directories for asterisk and kamailio config files
         file: "dest={{ item }} state=directory owner={{ usuario }} group={{ usuario }} mode=0755 recurse=yes"
         with_items:
-          - /opt/omnileads/kamailio/etc/kamailio
-          - /opt/omnileads/asterisk/etc/asterisk
-          - /opt/omnileads/asterisk/var/lib/asterisk/agi-bin
+          - "{{ install_prefix }}kamailio/etc/kamailio"
+          - "{{ install_prefix }}asterisk/etc/asterisk"
+          - "{{ install_prefix }}asterisk/var/lib/asterisk/agi-bin"
         tags: ['vagrant']
 
   gather_facts: True
@@ -39,6 +40,6 @@
           - {role: prerequisitos, tags: ['yum']}
           - {role: oml_server, tags: ['virtualenv']}
           - kamailio
-          - {role: docker, tags: ['docker']}
+          #- {role: docker, tags: ['docker']}
           - {role: omniapp_second, tags: ['omniapp']}
           - deploy_supervision
