@@ -39,7 +39,7 @@
 #  Si rtpengine_installed es failed incluyo la tarea de instalacion. Osea el sistema detecta cuando rtpengine
 #  está instalado o no y en caso de que no lo  esté lo instala sino omite
 - include: rtpengine.yml
-  tags: ['rtpengine','vagrant']
+  tags: rtpengine
   when: rtpengine_installed|failed
 
 # Lo mismo se hace con kamailio

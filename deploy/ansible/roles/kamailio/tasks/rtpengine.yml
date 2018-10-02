@@ -158,6 +158,7 @@
 
 - name: Touch of changeip.sh
   file: path={{ install_prefix }}bin/changeip.sh state=touch owner={{ usuario }}  group={{ usuario }} mode=755
+  tags: ['vagrant']
 
 # Se crea el archivo de configuracion de rtpengine, el cual tiene el comando que se ejecuta al hacer start con systemctl
 - name: Creation of RTPengine config file

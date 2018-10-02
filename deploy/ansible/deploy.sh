@@ -199,7 +199,7 @@ Tag() {
     elif [ "${array[0]}" == "docker" ] || [ "${array[1]}" == "docker" ]; then
       DEVOPS_TECH="docker"
     fi
-    if [ $DEVOPS_TECH == "vagrant" ] || [ $DEVOPS_TECH == "docker" ]; then
+    if [ "$DEVOPS_TECH" == "vagrant" ] || [ "$DEVOPS_TECH" == "docker" ]; then
       ${IS_ANSIBLE}-playbook -s $TMP_ANSIBLE/devops.yml --extra-vars "DEVOPS=1 DEVOPS_TECH=$DEVOPS_TECH" --tags "${array[0]},${array[1]},${array[2]}" -K $DEBUG
     else
       ${IS_ANSIBLE}-playbook -s $TMP_ANSIBLE/omnileads.yml --extra-vars "BUILD_DIR=$TMP/ominicontacto DEVOPS=0" --tags "${array[0]},${array[1]},${array[2]}" -K $DEBUG

@@ -102,7 +102,7 @@
     virtualenv_command=/usr/bin/virtualenv
   environment:
       #PATH: /usr/pgsql-9.6/bin/:{{ lookup('env', 'PATH') }}:{{ install_prefix }}ominicontacto/virtualenv/bin
-      PATH: "{{ install_prefix }}virtualenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin:/usr/pgsql-9.6/bin"
+      PATH: "{{ lookup('env', 'PATH') }}:{{ install_prefix }}virtualenv/bin:/usr/pgsql-9.6/bin:/usr/lib/postgresql/9.6/bin"
       PYTHONPATH: '{{ install_prefix }}ominicontacto:{{ install_prefix }}local'
   become: true
   become_method: su

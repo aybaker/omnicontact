@@ -30,6 +30,7 @@
         file: "dest={{ item }} state=directory owner={{ usuario }} group={{ usuario }} mode=0755 recurse=yes"
         with_items:
           - "{{ install_prefix }}kamailio/etc/kamailio"
+          - "{{ install_prefix }}kamailio/etc/certs"
           - "{{ install_prefix }}asterisk/etc/asterisk"
           - "{{ install_prefix }}asterisk/var/lib/asterisk/agi-bin"
         tags: ['vagrant']

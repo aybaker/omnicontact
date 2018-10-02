@@ -34,6 +34,12 @@
   when: ansible_os_family == "Debian"
   tags: ['vagrant']
 
+- name: Modifiy of ubuntu default postgresql listening port
+  lineinfile: path=/etc/postgresql/9.6/main/postgresql.conf regexp="'^port" line="port = 5432"
+  become: true
+  become_method: sudo
+  tags: ['vagrant']
+
 # Restarteamos servicio
 - name: Restart postgres service (centos)
   service: name=postgresql-9.6 state=restarted enabled=yes
@@ -53,13 +59,20 @@
   become: yes
   become_method: sudo
   become_user: postgres
-  postgresql_user: name=kamailio password=kamailiorw role_attr_flags=SUPERUSER
+  postgresql_user: name=kamailio password=kamailiorw role_attr_flags=SUPERUSER encrypted=yes
   tags: ['vagrant']
 
 # Se crea el usuario de postgres kamailiorw
 - name: Create kamailioro postgres user
-  postgresql_user: name=kamailioro password=kamailioro role_attr_flags=SUPERUSER
+  postgresql_user: name=kamailioro password=kamailioro role_attr_flags=SUPERUSER encrypted=yes
   become: yes
+  become_method: sudo
+  become_user: postgres
+  tags: ['vagrant']
+
+- name: Creation of database
+  postgresql_db: login_host=127.0.0.1 login_user=kamailio login_password=kamailiorw name=kamailio owner=kamailio ssl_mode=disable state=present
+  become: true
   become_method: sudo
   become_user: postgres
   tags: ['vagrant']
