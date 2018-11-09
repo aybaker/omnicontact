@@ -1,3 +1,11 @@
 .subtitle {
   color: #088A08;
 }
+
+.takecall {
+  display: none;
+}
+
+.fas.fa-users.conference {
+  display: none;
+}
