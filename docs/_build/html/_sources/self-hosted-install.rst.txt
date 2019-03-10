@@ -7,8 +7,8 @@ Ansible Self-Hosted Install
  git clone https://gitlab.com/omnileads/ominicontacto.git
  cd ominicontacto
  git checkout master
+ cd deploy/ansible
 |
-where "master" is the OMniLeads stable release.
 
 - Check your hostname and ip address
 ::
@@ -19,13 +19,13 @@ where "master" is the OMniLeads stable release.
 
 .. image:: images/hostname_command.png
         :align: center
-        
+*hostname output*
 
 .. image:: images/ip_a_command.png
         :align: center
+*ip a output*
 
 - Edit your inventory file accord to the "hostname" and "ip a" commands output
-
 
 
 .. image:: images/inventory_file_hostname_ip.png
