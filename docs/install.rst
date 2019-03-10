@@ -37,8 +37,6 @@ Install Options
 .. toctree::
    :maxdepth: 2
 
-   self-hosted-install.rst
-
-- Ansible Host-Mode  Installation
-- Ansible-Cluster Installation
-- Development Environment
+   install_self_hosted.rst
+   install_remote_ansible.rst
+   install_cluster.rst
