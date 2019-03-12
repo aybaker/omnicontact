@@ -192,13 +192,27 @@
             
   <div class="section" id="horizontal-cluster-installation">
 <h1>Horizontal Cluster Installation<a class="headerlink" href="#horizontal-cluster-installation" title="Permalink to this headline">¶</a></h1>
-<p>Existen dos formas de dividir los componentes de OML.</p>
-<p>En 5 hosts:
-omniapp: contiene los servicios uwsgi, php-fpm, nginx, por lo tanto es aca donde estan el repositorio con el código de la aplicación
-kamailio: con kamailio, rtpengine
-asterisk: contiene asterisk y todos sus servicios
-database: contiene la base de datos postgresql
-dialer: contiene la aplicación wombat dialer con su respectiva base de datos</p>
+<p>OMniLeads puede ser desplegado de manera tal que los componentes queden separados en diferentes hosts. A diferencia de la instalación AIO (All In One)
+que despliega todo OMniLeads en un único host, este método de instalación permite dividir la carga de los servicios en más de un host.</p>
+<p>Puntualmente existen dos formas de instalar en cluster horizontal:</p>
+<ul class="simple">
+<li>OMniLeads II</li>
+</ul>
+<p>Host1 para los servicios: Asterisk y Kamailio
+Host2 para los servicios: Aplicación web, Postgres y Dialer</p>
+<img alt="_images/install_cluster_in_2.png" src="_images/install_cluster_in_2.png" />
+<p><a href="#id1"><span class="problematic" id="id2">*</span></a>Figure 1: *</p>
+<ul class="simple">
+<li>OMniLeads V:</li>
+</ul>
+<p>Se despliega el sistema en cinco hosts</p>
+<p>Host1 (omniapp): contiene los servicios uwsgi, php-fpm, nginx, por lo tanto es aca donde estan el repositorio con el código de la aplicación
+Host2 (kamailio): con kamailio, rtpengine
+Host3 (asterisk): contiene asterisk y todos sus servicios
+Host4 (database): contiene la base de datos postgresql
+Host5 (dialer): contiene la aplicación wombat dialer con su respectiva base de datos</p>
+<img alt="_images/install_cluster_in_5.png" src="_images/install_cluster_in_5.png" />
+<p><a href="#id3"><span class="problematic" id="id4">*</span></a>Figure 1: *</p>
 </div>
 
 
