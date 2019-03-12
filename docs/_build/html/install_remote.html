@@ -220,8 +220,9 @@ la estación de trabajo del sysadmin, ya que precisamente al estar basada en Ans
 <li>Una instancia de GNU/Linux CentOS 7 (minimal), Debian 9 (netinstall) ó Ubuntu Server 18.04</li>
 <li>20 GB de espacio en disco</li>
 <li>4 GB de memoria RAM</li>
-<li>En <em>Ubuntu / Debian</em>; Instalar el paquete ssh, permitir login SSH con el usuario root y Reiniciar el servicio de ssh:</li>
+<li>En <em>Ubuntu / Debian</em>; Instalar el paquete sudo, openssh-server y phyton-minimal, permitir login SSH con el usuario root y reiniciar el</li>
 </ul>
+<p>servicio de ssh para que se tomen los cambios:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">sudo</span> <span class="n">openssh</span><span class="o">-</span><span class="n">server</span> <span class="n">python</span><span class="o">-</span><span class="n">minimal</span> <span class="o">-</span><span class="n">y</span>
 <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/#PermitRootLogin prohibit-password/PermitRootLogin yes/&#39;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">ssh</span><span class="o">/</span><span class="n">sshd_config</span>
 <span class="n">systemctl</span> <span class="n">restart</span> <span class="n">ssh</span>
@@ -239,7 +240,6 @@ la estación de trabajo del sysadmin, ya que precisamente al estar basada en Ans
 </ul>
 <p>Ubuntu - Debian:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span> <span class="n">install</span> <span class="n">git</span>
-<span class="n">yum</span> <span class="n">install</span> <span class="n">git</span>
 <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitlab</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">omnileads</span><span class="o">/</span><span class="n">ominicontacto</span><span class="o">.</span><span class="n">git</span>
 <span class="n">cd</span> <span class="n">ominicontacto</span>
 <span class="n">git</span> <span class="n">checkout</span> <span class="n">master</span>
@@ -253,6 +253,22 @@ la estación de trabajo del sysadmin, ya que precisamente al estar basada en Ans
 </pre></div>
 </div>
 <ul class="simple">
+<li>Debemos asegurarnos de contar con una clave pública generada en la carpeta /root/.ssh/</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">ls</span> <span class="o">-</span><span class="n">l</span> <span class="o">/</span><span class="n">root</span><span class="o">/.</span><span class="n">ssh</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>Es probable ya contemos con una clave pública (id_rsa.pub), como se aprecia en la <em>figura 1</em>.</p>
+<img alt="_images/install_id_rsa.png" src="_images/install_id_rsa.png" />
+<p><em>Figure 1: ls -a /root/.ssh command output</em></p>
+<p>En caso de NO disponer de una, se puede generar rápidamente con el siguiente comando:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">ssh</span><span class="o">-</span><span class="n">keygen</span><span class="o">/</span><span class="n">install_sshkeygen_remote</span><span class="o">.</span><span class="n">png</span>
+</pre></div>
+</div>
+<img alt="_images/install_sshkeygen_remote.png" src="_images/install_sshkeygen_remote.png" />
+<p><em>Figure 2: ssh-keygen command output</em></p>
+<p>Este comando genera nuestra clave <em>id_rsa.pub</em> que mencionamos anteriormente.</p>
+<ul class="simple">
 <li>Se comprueba la <em>dirección IP</em> y <em>hostname</em> que posee el host destino de la instalación, para luego ajustar el archivo <em>inventory</em> que se utiliza a la hora de tomar los parámetros de la instalación.</li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hostname</span>
@@ -260,50 +276,46 @@ la estación de trabajo del sysadmin, ya que precisamente al estar basada en Ans
 </pre></div>
 </div>
 <img alt="_images/install_hostname_command.png" src="_images/install_hostname_command.png" />
-<p><em>Figure 2: hostname command output</em></p>
+<p><em>Figure 3: hostname command output</em></p>
 <img alt="_images/install_ip_a_command.png" src="_images/install_ip_a_command.png" />
-<p><em>Figure 3: ip a command output</em></p>
+<p><em>Figure 4: ip a command output</em></p>
 <ul class="simple">
-<li>En este paso, se debe editar el archivo <em>inventory</em> (PATH/ominicontacto/deploy/ansible). El mismo reside dentro del repositorio del proyecto</li>
+<li>En este paso, se debe editar el archivo <em>inventory</em> (PATH/ominicontacto/deploy/ansible). El mismo reside dentro del repositorio del proyecto, que se generó en la PC del sysadmin que ejecuta el deploy remoto.</li>
 </ul>
-<p>que se generó en la PC del sysadmin que ejecuta el deploy remoto.</p>
 <p>Nota: OMniLeads utiliza ansible para realizar la instalación, por lo tanto existe un “archivo de inventario” que debe ser modificado de acuerdo a los
 parámetros del host sobre el que estamos trabajando.</p>
 <p>Localizar la sección <em>[omnileads-aio]</em> y modificar la cadena ‘hostname’ por el hostname de nuestro servidor destino de la instalción. También en
 esta sección se debe editar el parámetro ‘X.X.X.X’ con la dirección IP del servidor.</p>
 <img alt="_images/install_inventory_file_net_remote.png" src="_images/install_inventory_file_net_remote.png" />
-<p><em>Figure 4: inventory file network params section</em></p>
+<p><em>Figure 5: inventory file network params section</em></p>
 <p>Además dentro del mismo archivo, unas líneas debajo encontraremos la sección <em>[everyyone:vars]</em>, en la cual se pueden alterar variables y contraseñas
 que vienen por defecto en el sistema.</p>
 <img alt="_images/install_inventory_passwords.png" src="_images/install_inventory_passwords.png" />
-<p><em>Figure 5: Passwords and parameters of services</em></p>
+<p><em>Figure 6: Passwords and parameters of services</em></p>
 <p>Es importante aclarar que cada vez que se corre el script “./deploy.sh” ya sea para instalar, re-instalar, actualizar, modificar la dirección IP de OML, etc.,
 el archivo de inventory se vuelve a “cero”. No obstante se genera una copia del archivo (my_inventory), de manera tal que se cuente con los parámetros
 del sistema utilizados en la última ejecución del script.
 La copia en cuestión se ubica en el path donde ha sido clonado el repositorio de OML y bajo el nombre de “my_inventory” como lo expone la figura 6.</p>
-<img alt="_images/install_my_inventory.png" src="_images/install_my_inventory.png" />
-<p><em>Figure 6: inevntory copy, my_inventory file</em></p>
+<img alt="_images/install_remote_my_inventory.png" src="_images/install_remote_my_inventory.png" />
+<p><em>Figure 7: inevntory copy, my_inventory file</em></p>
 </div>
 <div class="section" id="ejecucion-del-script-de-instalacion">
 <h2>Ejecución del script de instalación:<a class="headerlink" href="#ejecucion-del-script-de-instalacion" title="Permalink to this headline">¶</a></h2>
 <p>La instalación de OMniLeads se realiza mediante el script <em>deploy.sh</em>, ubicado dentro de la carpeta deploy/ansible con respecto a la carpeta
 raíz del proyecto (ominicontacto).</p>
-<p>Una vez configuradas las variables citadas, se procede con la ejecución del script de instalación (como usuario root).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">deploy</span><span class="o">.</span><span class="n">sh</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">a</span>
+<p>Una vez configuradas las variables citadas, se procede con la ejecución del script de instalación (uitilizando sudo).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="o">./</span><span class="n">deploy</span><span class="o">.</span><span class="n">sh</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">a</span>
 </pre></div>
 </div>
-<img alt="_images/install_deploysh.png" src="_images/install_deploysh.png" />
-<p><em>Figure 7: install runing</em></p>
-<p>A diferencia de la instalación ‘Self-Hosted’, en este tipo de instalación en remoto, el script nos pide la contraseña del usuario <em>root</em> del host
-servidor de la instalación.</p>
-<p>imagen remota …….. ssh</p>
+<img alt="_images/install_deploysh_remote.png" src="_images/install_deploysh_remote.png" />
+<p><em>Figure 7: remote root password</em></p>
+<p>La diferencia respecto de la instalación ‘Self-Hosted’, es que el script nos pide la contraseña del usuario <em>root</em> del host
+destino de la instalación.</p>
 <p>El tiempo de instalación dependerá mayormente de la velocidad de conexión a internet del host sobre ek que se está corriendo el deplot de  OML,
 ya que se deben descargar, instalar y configurar varios paquetes correspondientes a los diferentes componentes de software que conforman el sistema.</p>
-<p>IMPORTANTE: en caso de que el proceso de instalación de OML se interrumpa (por fallas de internet, fallas locales del servidor ajenas al software, etc.)
-, debe ejecutar nuevamente el script de instalación.</p>
 <p>Si la ejecución de la instalación finaliza exitosamente, se despliega una vista como la de la figura 8.</p>
 <img alt="_images/install_ok.png" src="_images/install_ok.png" />
-<p><em>Figure 8: install runing</em></p>
+<p><em>Figure 8: OMniLeads installation ended succesfuly</em></p>
 </div>
 <div class="section" id="primer-acceso-a-omnileads">
 <h2>Primer acceso a OMniLeads:<a class="headerlink" href="#primer-acceso-a-omnileads" title="Permalink to this headline">¶</a></h2>
@@ -327,7 +339,7 @@ ya que se deben descargar, instalar y configurar varios paquetes correspondiente
 <ul class="simple">
 <li>Falla por mala sintaxis o falta de definición de <em>hostname</em> y <em>dirección IP</em> en el archivo <em>inventory</em>.</li>
 </ul>
-<p><em>Revisar archivo inventory</em></p>
+<p><em>Revisar archivo inventorys</em></p>
 <ul class="simple">
 <li>No se configuró correctamente el acceso ssh del host destino de la instalación.</li>
 </ul>

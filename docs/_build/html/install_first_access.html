@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Install from Ansible Remote" href="install_remote.html" />
+    <link rel="next" title="Instalación desde ansible remoto" href="install_remote.html" />
     <link rel="prev" title="Ansible Self-Hosted Install" href="install_self_hosted.html" /> 
 </head>
 
@@ -94,13 +94,13 @@
 <li class="toctree-l4"><a class="reference internal" href="install_self_hosted.html#errores-comunes">Errores comunes:</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="install_remote.html">Install from Ansible Remote</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
 <li class="toctree-l3"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="install_remote.html">Install from Ansible Remote</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_devenv.html">OMniLeads Maintenance</a></li>
 </ul>
@@ -208,11 +208,14 @@ hostname:</p>
 <p>1 - Que los DNS de la red lo hagan.
 2 - Añadir el hostname.domain del host, dentro del archivo de <em>hosts</em> (Windows, Linux o Mac de cada PC que tenga que acceder a OMniLeads.</p>
 <img alt="_images/install_dns_hosts.png" src="_images/install_dns_hosts.png" />
-<p><em>Figure 9: file hosts</em></p>
+<p><em>Figure 1: hosts file</em></p>
 <p>Al encontrarnos con la pantalla de login, simplemente se debe ingresar el usuario admin y la clave generada durante la instalación (my_inventory),
 como se expone en las figura 10.</p>
 <img alt="_images/install_1st_login.png" src="_images/install_1st_login.png" />
-<p><em>Figure 10: First login</em></p>
+<p><em>Figure 2: First login</em></p>
+<p>En caso de no recordar la contraseña de admin, recuerde que quedó la copia del archivo <em>inventory</em> en el archivo <em>my_inventory</em> ubicado
+en el mismo directorio donde se encuentra la raíz del proyecto <em>ominicontacto</em>. Allí entre otras cosas, cuenta con la contraseña generada
+para el usuario admin.</p>
 </div>
 
 
@@ -223,7 +226,7 @@ como se expone en las figura 10.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="install_remote.html" class="btn btn-neutral float-right" title="Install from Ansible Remote" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="install_remote.html" class="btn btn-neutral float-right" title="Instalación desde ansible remoto" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="install_self_hosted.html" class="btn btn-neutral float-left" title="Ansible Self-Hosted Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
