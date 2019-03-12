@@ -1,6 +1,22 @@
 Ansible Self-Hosted Install
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Ubuntu - Debian:
+::
+
+  apt install git
+|
+
+CentOS:
+::
+
+  yum install git
+|
+
+- Remember to check and correct (if  necessary) the server’s date and time
+- Remember to check and correct (if  necessary) the server’s hostname and ip address
+
+
 - Cloning the official OML repository and select release to be deployed
 ::
 

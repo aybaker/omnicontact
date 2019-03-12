@@ -84,7 +84,7 @@
 <li class="toctree-l1"><a class="reference internal" href="what_is.html">Qué es OMniLeads ?</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="install.html">Installing OMniLeads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Instalación de OMniLeads</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Ansible Self-Hosted Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_remote.html">Install from Ansible Remote</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
@@ -183,7 +183,23 @@
             
   <div class="section" id="ansible-self-hosted-install">
 <h1>Ansible Self-Hosted Install<a class="headerlink" href="#ansible-self-hosted-install" title="Permalink to this headline">¶</a></h1>
+<p>Ubuntu - Debian:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span> <span class="n">install</span> <span class="n">git</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>CentOS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="n">git</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <ul class="simple">
+<li>Remember to check and correct (if  necessary) the server’s date and time</li>
+<li>Remember to check and correct (if  necessary) the server’s hostname and ip address</li>
 <li>Cloning the official OML repository and select release to be deployed</li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitlab</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">omnileads</span><span class="o">/</span><span class="n">ominicontacto</span><span class="o">.</span><span class="n">git</span>

@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Install from Ansible Remote" href="install_remote_ansible.html" />
-    <link rel="prev" title="Installing OMniLeads" href="installing.html" /> 
+    <link rel="next" title="Primer acceso a OMniLeads:" href="install_first_access.html" />
+    <link rel="prev" title="Instalación de OMniLeads" href="install.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,33 +81,56 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_what_is.html">What is OMniLeads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is.html">Qué es OMniLeads ?</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="installing.html">Installing OMniLeads</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installing.html#prerequisites">Prerequisites:</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="installing.html#install-options">Install Options</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Ansible Self-Hosted Install</a></li>
-<li class="toctree-l3"><a class="reference internal" href="install_remote_ansible.html">Install from Ansible Remote</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="install.html">Instalación de OMniLeads</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="install.html#tipos-de-instalacion">Tipos de instalación</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Ansible Self-Hosted Install</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pre-requisitos">Pre-requisitos:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ajustes-necesarios-antes-de-la-ejecucion-de-script">Ajustes necesarios antes  de la ejecución de script:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#errores-comunes">Errores comunes:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
 <li class="toctree-l3"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_devenv.html">OMniLeads Maintenance</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Initial Settings</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_pstn.html">Connect your OMniLeads to the PSTN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_pbx.html">OMniLeads as a call center module of a SIP Based PBX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony.html">TELEFONIA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Telephony Settings - OML and the PBX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Telephony Settings - OML BPO Contact Center</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_campaigns.html">Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_manual_camp.html">Manual Call Campaign</a></li>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_preview_camp.html">Preview Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_dialer_camp.html">Dialer Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_inbound_camp.html">Inbound Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns_manual.html">Manual Call Campaign</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns_preview.html">Preview Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns_dialer.html">Dialer Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns_inbound.html">Inbound Campaigns</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reports.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports_inbound_camp.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports_outbound_camp.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports_general.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports_agents.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports_supervision.html">Telephony</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="maintance_backup.html">OMniLeads Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintance_changeip.html">OMniLeads Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintance_upgrades.html">OMniLeads Maintenance</a></li>
 </ul>
 
             
@@ -153,7 +176,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="installing.html">Installing OMniLeads</a> &raquo;</li>
+          <li><a href="install.html">Instalación de OMniLeads</a> &raquo;</li>
         
       <li>Ansible Self-Hosted Install</li>
     
@@ -176,36 +199,121 @@
             
   <div class="section" id="ansible-self-hosted-install">
 <h1>Ansible Self-Hosted Install<a class="headerlink" href="#ansible-self-hosted-install" title="Permalink to this headline">¶</a></h1>
+<p>Cuando decimos “Ansible Self-Hosted” nos referimos a instalar OMniLeads sobre un OS de forma monolítica (todos los servicios corriendo en dicho host) y
+descargando el proyecto en el OS destino de la instalación, para posteriormente ejecutar el script de instalación desde el propio host.</p>
+<img alt="_images/install_gitlab_repo.png" src="_images/install_gitlab_repo.png" />
+<p><em>Figure 1: self-hosted install</em></p>
+<div class="section" id="pre-requisitos">
+<h2>Pre-requisitos:<a class="headerlink" href="#pre-requisitos" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Cloning the official OML repository and select release to be deployed</li>
+<li>Una instancia de GNU/Linux CentOS 7 (minimal), Debian 9 (netinstall) ó Ubuntu Server 18.04</li>
+<li>20 GB de espacio en disco</li>
+<li>4 GB de memoria RAM</li>
+<li>Es muy importante dejar la hora correctamente configurada en el host.</li>
+<li>Configurar una <em>dirección IP</em> y un <em>hostname</em> fijo, antes de ejecutar la instalación.</li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitlab</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">omnileads</span><span class="o">/</span><span class="n">ominicontacto</span><span class="o">.</span><span class="n">git</span>
+</div>
+<div class="section" id="ajustes-necesarios-antes-de-la-ejecucion-de-script">
+<h2>Ajustes necesarios antes  de la ejecución de script:<a class="headerlink" href="#ajustes-necesarios-antes-de-la-ejecucion-de-script" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Debemos contar con el paquete git para luego clonar el repositorio del protyecto y seleccionar el release a instalar</li>
+</ul>
+<p>Ubuntu - Debian:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span> <span class="n">install</span> <span class="n">git</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitlab</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">omnileads</span><span class="o">/</span><span class="n">ominicontacto</span><span class="o">.</span><span class="n">git</span>
 <span class="n">cd</span> <span class="n">ominicontacto</span>
 <span class="n">git</span> <span class="n">checkout</span> <span class="n">master</span>
-<span class="n">cd</span> <span class="n">deploy</span><span class="o">/</span><span class="n">ansible</span>
 </pre></div>
 </div>
-<div class="line-block">
-<div class="line"><br /></div>
+<p>CentOS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="n">git</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitlab</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">omnileads</span><span class="o">/</span><span class="n">ominicontacto</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">ominicontacto</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">master</span>
+</pre></div>
 </div>
 <ul class="simple">
-<li>Check your hostname and ip address</li>
+<li>La instalación se trabaja en el directorio “deploy/ansible”, disponible desde la raíz del proyecto (PATH/ominicontacto/deploy/ansible):</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">deploy</span><span class="o">/</span><span class="n">ansible</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Se comprueba la <em>dirección IP</em> y <em>hostname</em> que posee el host y que luego se utiliza en el archivo de inventario en el proceso de instalación:</li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hostname</span>
 <span class="n">ip</span> <span class="n">a</span>
 </pre></div>
 </div>
+<img alt="_images/install_hostname_command.png" src="_images/install_hostname_command.png" />
+<p><em>Figure 2: hostname command output</em></p>
+<img alt="_images/install_ip_a_command.png" src="_images/install_ip_a_command.png" />
+<p><em>Figure 3: ip a command output</em></p>
+<ul class="simple">
+<li>En este paso, se debe editar el archivo <em>inventory</em> (PATH/ominicontacto/deploy/ansible).</li>
+</ul>
+<p>Nota: OMniLeads utiliza ansible para realizar la instalación, por lo tanto existe un “archivo de inventario” que debe ser modificado de acuerdo a los
+parámetros del host sobre el que estamos trabajando.</p>
+<p>Modificar la cadena ‘hostname’ por el que hemos configurado a nuestro servidor. También en esta línea, se debe editar el parámetro ‘X.X.X.X’
+con la dirección IP del host sobre el que estamos trabajando.</p>
+<img alt="_images/install_inventory_file_net.png" src="_images/install_inventory_file_net.png" />
+<p><em>Figure 4: inventory file network params section</em></p>
+<p>Además dentro del mismo archivo, unas líneas debajo encontraremos la sección <em>[everyyone:vars]</em>, en la cual se pueden alterar variables y contraseñas
+que vienen por defecto en el sistema.</p>
+<img alt="_images/install_inventory_passwords.png" src="_images/install_inventory_passwords.png" />
+<p><em>Figure 5: Passwords and parameters of services</em></p>
+<p>Es importante aclarar que cada vez que se corre el script “./deploy.sh” ya sea para instalar, re-instalar, actualizar, modificar la dirección IP de OML, etc.,
+el archivo de inventory se vuelve a “cero”. No obstante se genera una copia del archivo (my_inventory), de manera tal que se cuente con los parámetros
+del sistema utilizados en la última ejecución del script.
+La copia en cuestión se ubica en el path donde ha sido clonado el repositorio de OML y bajo el nombre de “my_inventory” como lo expone la figura 6.</p>
+<img alt="_images/install_my_inventory.png" src="_images/install_my_inventory.png" />
+<p><em>Figure 6: inevntory copy, my_inventory file</em></p>
+</div>
+<div class="section" id="ejecucion-del-script-de-instalacion">
+<h2>Ejecución del script de instalación:<a class="headerlink" href="#ejecucion-del-script-de-instalacion" title="Permalink to this headline">¶</a></h2>
+<p>La instalación de OMniLeads se realiza mediante el script <em>deploy.sh</em>, ubicado dentro de la carpeta deploy/ansible con respecto a la carpeta
+raíz del proyecto (ominicontacto).</p>
+<p>Una vez configuradas las variables citadas, se procede con la ejecución del script de instalación (como usuario root):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">deploy</span><span class="o">.</span><span class="n">sh</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">a</span>
+</pre></div>
+</div>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<img alt="_images/hostname_command.png" class="align-center" src="_images/hostname_command.png" />
-<p><em>hostname output</em></p>
-<img alt="_images/ip_a_command.png" class="align-center" src="_images/ip_a_command.png" />
-<p><em>ip a output</em></p>
-<ul class="simple">
-<li>Edit your inventory file accord to the “hostname” and “ip a” commands output</li>
+<p>El tiempo de instalación dependerá mayormente de la velocidad de conexión a internet del host OML, ya que se deben descargar, instalar y configurar
+varios paquetes correspondientes a los diferentes componentes de software que conforman el sistema.</p>
+<img alt="_images/install_deploysh.png" src="_images/install_deploysh.png" />
+<p><em>Figure 7: install runing</em></p>
+<p>IMPORTANTE: en caso de que el proceso de instalación de OML se interrumpa (por fallas de internet, fallas locales del servidor ajenas al software, etc.)
+, debe ejecutar nuevamente el script de instalación.</p>
+<p>Si la ejecución de la instalación finaliza exitosamente, se despliega una vista como la de la figura 8.</p>
+<img alt="_images/install_ok.png" src="_images/install_ok.png" />
+<p><em>Figure 8: install runing</em></p>
+</div>
+<div class="section" id="primer-acceso-a-omnileads">
+<h2>Primer acceso a OMniLeads:<a class="headerlink" href="#primer-acceso-a-omnileads" title="Permalink to this headline">¶</a></h2>
+<p>Si la ejecución de la instalación fue exitosa, entonces vamos por el primer acceso a OMniLeads.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_first_access.html">Primer acceso a OMniLeads:</a></li>
 </ul>
-<img alt="_images/inventory_file_hostname_ip.png" class="align-center" src="_images/inventory_file_hostname_ip.png" />
+</div>
+</div>
+<div class="section" id="errores-comunes">
+<h2>Errores comunes:<a class="headerlink" href="#errores-comunes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>El server no tiene internet o no resuelve dominios (configuración de DNS).</li>
+</ul>
+<p>Compruebe el acceso a internet del host (por ej: actualizando paquetes - apt-get update | yum update).</p>
+<ul class="simple">
+<li>Timeout de algún paquete que se intenta bajar. Puede volver a intentar ejecutar el deploy y si vuelve a fallar, la opción puede ser</li>
+</ul>
+<p>instalar el paquete desde la terminal.</p>
+<ul class="simple">
+<li>Falla por mala sintaxis o falta de definición de <em>hostname</em> y <em>dirección IP</em> en el archivo <em>inventory</em>.</li>
+<li>No ejecutó el script de deploy con el usuario <em>root</em>.</li>
+</ul>
+</div>
 </div>
 
 
@@ -216,10 +324,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="install_remote_ansible.html" class="btn btn-neutral float-right" title="Install from Ansible Remote" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="install_first_access.html" class="btn btn-neutral float-right" title="Primer acceso a OMniLeads:" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="installing.html" class="btn btn-neutral float-left" title="Installing OMniLeads" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="install.html" class="btn btn-neutral float-left" title="Instalación de OMniLeads" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

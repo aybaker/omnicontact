@@ -35,8 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Initial Settings" href="initial_settings.html" />
-    <link rel="prev" title="Install from Ansible Remote" href="install_remote_ansible.html" /> 
+    <link rel="prev" title="Instalación desde ansible remoto" href="install_remote.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,33 +80,49 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_what_is.html">What is OMniLeads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is.html">Qué es OMniLeads ?</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="installing.html">Installing OMniLeads</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installing.html#prerequisites">Prerequisites:</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="installing.html#install-options">Install Options</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="install.html">Instalación de OMniLeads</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="install.html#tipos-de-instalacion">Tipos de instalación</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a></li>
-<li class="toctree-l3"><a class="reference internal" href="install_remote_ansible.html">Install from Ansible Remote</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Horizontal Cluster Installation</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Horizontal Cluster Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_devenv.html">OMniLeads Maintenance</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Initial Settings</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_pstn.html">Connect your OMniLeads to the PSTN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_pbx.html">OMniLeads as a call center module of a SIP Based PBX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony.html">TELEFONIA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Telephony Settings - OML and the PBX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Telephony Settings - OML BPO Contact Center</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_campaigns.html">Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_manual_camp.html">Manual Call Campaign</a></li>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_preview_camp.html">Preview Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_dialer_camp.html">Dialer Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="omnileads_inbound_camp.html">Inbound Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns_manual.html">Manual Call Campaign</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns_preview.html">Preview Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns_dialer.html">Dialer Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns_inbound.html">Inbound Campaigns</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reports.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports_inbound_camp.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports_outbound_camp.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports_general.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports_agents.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports_supervision.html">Telephony</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="maintance_backup.html">OMniLeads Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintance_changeip.html">OMniLeads Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintance_upgrades.html">OMniLeads Maintenance</a></li>
 </ul>
 
             
@@ -153,7 +168,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="installing.html">Installing OMniLeads</a> &raquo;</li>
+          <li><a href="install.html">Instalación de OMniLeads</a> &raquo;</li>
         
       <li>Horizontal Cluster Installation</li>
     
@@ -176,6 +191,13 @@
             
   <div class="section" id="horizontal-cluster-installation">
 <h1>Horizontal Cluster Installation<a class="headerlink" href="#horizontal-cluster-installation" title="Permalink to this headline">¶</a></h1>
+<p>Existen dos formas de dividir los componentes de OML.</p>
+<p>En 5 hosts:
+omniapp: contiene los servicios uwsgi, php-fpm, nginx, por lo tanto es aca donde estan el repositorio con el código de la aplicación
+kamailio: con kamailio, rtpengine
+asterisk: contiene asterisk y todos sus servicios
+database: contiene la base de datos postgresql
+dialer: contiene la aplicación wombat dialer con su respectiva base de datos</p>
 </div>
 
 
@@ -186,10 +208,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="initial_settings.html" class="btn btn-neutral float-right" title="Initial Settings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="install_remote_ansible.html" class="btn btn-neutral float-left" title="Install from Ansible Remote" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="install_remote.html" class="btn btn-neutral float-left" title="Instalación desde ansible remoto" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
