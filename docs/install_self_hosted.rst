@@ -104,14 +104,10 @@ varios paquetes correspondientes a los diferentes componentes de software que co
 .. image:: images/install_deploysh.png
 *Figure 7: install runing*
 
-
-IMPORTANTE: en caso de que el proceso de instalación de OML se interrumpa (por fallas de internet, fallas locales del servidor ajenas al software, etc.)
-, debe ejecutar nuevamente el script de instalación.
-
 Si la ejecución de la instalación finaliza exitosamente, se despliega una vista como la de la figura 8.
 
 .. image:: images/install_ok.png
-*Figure 8: install runing*
+*Figure 8: OMniLeads installation ended succesfuly*
 
 
 Primer acceso a OMniLeads:
@@ -135,4 +131,6 @@ instalar el paquete desde la terminal.
 
 - Falla por mala sintaxis o falta de definición de *hostname* y *dirección IP* en el archivo *inventory*.
 
-- No ejecutó el script de deploy con el usuario *root*.
+- No ejecutó el script de deploy con *sudo*, en el host deployer.
+
+- En ubuntu - debian, falta alguno el paquete *sudo*

@@ -284,11 +284,9 @@ raíz del proyecto (ominicontacto).</p>
 varios paquetes correspondientes a los diferentes componentes de software que conforman el sistema.</p>
 <img alt="_images/install_deploysh.png" src="_images/install_deploysh.png" />
 <p><em>Figure 7: install runing</em></p>
-<p>IMPORTANTE: en caso de que el proceso de instalación de OML se interrumpa (por fallas de internet, fallas locales del servidor ajenas al software, etc.)
-, debe ejecutar nuevamente el script de instalación.</p>
 <p>Si la ejecución de la instalación finaliza exitosamente, se despliega una vista como la de la figura 8.</p>
 <img alt="_images/install_ok.png" src="_images/install_ok.png" />
-<p><em>Figure 8: install runing</em></p>
+<p><em>Figure 8: OMniLeads installation ended succesfuly</em></p>
 </div>
 <div class="section" id="primer-acceso-a-omnileads">
 <h2>Primer acceso a OMniLeads:<a class="headerlink" href="#primer-acceso-a-omnileads" title="Permalink to this headline">¶</a></h2>
@@ -311,7 +309,8 @@ varios paquetes correspondientes a los diferentes componentes de software que co
 <p>instalar el paquete desde la terminal.</p>
 <ul class="simple">
 <li>Falla por mala sintaxis o falta de definición de <em>hostname</em> y <em>dirección IP</em> en el archivo <em>inventory</em>.</li>
-<li>No ejecutó el script de deploy con el usuario <em>root</em>.</li>
+<li>No ejecutó el script de deploy con <em>sudo</em>, en el host deployer.</li>
+<li>En ubuntu - debian, falta alguno el paquete <em>sudo</em></li>
 </ul>
 </div>
 </div>
