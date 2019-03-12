@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Plataforma de Contact Center integrado a un PBX basado en SIP &mdash; OMniLeads develop documentation</title>
+  <title>Primer acceso a OMniLeads: &mdash; OMniLeads develop documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Instalación de OMniLeads" href="install.html" />
-    <link rel="prev" title="WebRTC; la tecnología subyacente de OMniLeads" href="what_is_extra.html" /> 
+    <link rel="next" title="Install from Ansible Remote" href="install_remote.html" />
+    <link rel="prev" title="Ansible Self-Hosted Install" href="install_self_hosted.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -80,25 +80,26 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="what_is.html">Qué es OMniLeads ?</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="what_is_extra.html">WebRTC; la tecnología subyacente de OMniLeads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="what_is_extra.html#caracteristicas-y-funcionalidades-de-omnileads">Características y funcionalidades de OMniLeads</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="what_is.html#donde-y-como-lo-puedo-usar">Dónde y cómo lo puedo usar ?</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Plataforma de Contact Center integrado a un PBX basado en SIP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#compania-de-servicios-de-customer-contact">Compañia de servicios de Customer Contact</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#carriers-o-proveedores-de-cloud-pbx">Carriers ó Proveedores de Cloud PBX</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="what_is.html">Qué es OMniLeads ?</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="install.html">Instalación de OMniLeads</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="install.html#tipos-de-instalacion">Tipos de instalación</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="install_self_hosted.html#pre-requisitos">Pre-requisitos:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="install_self_hosted.html#ajustes-necesarios-antes-de-la-ejecucion-de-script">Ajustes necesarios antes  de la ejecución de script:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="install_self_hosted.html#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="install_self_hosted.html#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="install_self_hosted.html#errores-comunes">Errores comunes:</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="what_is.html#como-lo-obtengo">Cómo lo obtengo ?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="what_is.html#donde-lo-puedo-instalar">Dónde lo puedo instalar ?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="what_is.html#como-lo-instalo">Cómo lo instalo ?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install_remote.html">Install from Ansible Remote</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
 </ul>
 </li>
 </ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Instalación de OMniLeads</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_selfhosted.html">Ansible Self-Hosted Install</a></li>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="install_remote.html">Install from Ansible Remote</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_devenv.html">OMniLeads Maintenance</a></li>
@@ -175,15 +176,17 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="what_is.html">Qué es OMniLeads ?</a> &raquo;</li>
+          <li><a href="install.html">Instalación de OMniLeads</a> &raquo;</li>
         
-      <li>Plataforma de Contact Center integrado a un PBX basado en SIP</li>
+          <li><a href="install_self_hosted.html">Ansible Self-Hosted Install</a> &raquo;</li>
+        
+      <li>Primer acceso a OMniLeads:</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/what_is_use_cases.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/install_first_access.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -196,37 +199,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="plataforma-de-contact-center-integrado-a-un-pbx-basado-en-sip">
-<h1>Plataforma de Contact Center integrado a un PBX basado en SIP<a class="headerlink" href="#plataforma-de-contact-center-integrado-a-un-pbx-basado-en-sip" title="Permalink to this headline">¶</a></h1>
-<p>OMniLeads como una extensión del sistema de telefonía de una compañía u organización que ya dispone de un sistema PBX basado en SIP.
-En este escenario es la solución ideal cuando dicha compañía comienza a demandar funcionalidades de típicas del Contact Center, para medir,
-monitorear y gestionar un caudal comunicaciones más intensivo y con personal asignado 100% a la atención / generación de comunicaciones.</p>
-<p>En este esquema el personal de IT de la compaía o bien el integrador de tecnologías que asesore a la compañía puede realizar una instalación
-de OMniLeads bare metal o en VM en unos pocos pasos, para luego configurar fácilmente la integración con el PBX.</p>
-<p>De ésta manera se evita la compañia se evita los costos tanto económicos por adquisición de licencias de software así como también en términos
-de performance del PBX sacrificada para correr complejos reportes y herramientas de monitoreo, que implica la alternativa de instalar un
-“módulo de call center” sobre el sistema PBX.</p>
-<p>Además a la hora de garantizar una escalabilidad OMniLeads está pensado para realizar un deploy en cluster horizontal de componentes, lo cual
-facilita la escalabilidad hacia cientos de agentes simultáneos.</p>
-<img alt="_images/oml_and_pbx.png" class="align-center" src="_images/oml_and_pbx.png" />
-</div>
-<div class="section" id="compania-de-servicios-de-customer-contact">
-<h1>Compañia de servicios de Customer Contact<a class="headerlink" href="#compania-de-servicios-de-customer-contact" title="Permalink to this headline">¶</a></h1>
-<p>En este escenario, OMniLeads puede trabajar como núcleo de comunicaciones de un Contact Center con agentes entre las decenas y centenas.
-El acceso a la PSTN es a través de SIP Trunks con carriers de telefonía o bien a través de SBC o GWs. En este escenario OMniLeads puede
-manejar múltiples troncales SIP a la vez, con su pertinente enrutamientos entrante y saliente de comunicaciones.</p>
-<p>En estos contextos la escalabilidad es un requisito básico, ya que las operaciones son muy dinámicas y pueden demandar picos de usuarios
-conectados trabajando en simultánea.</p>
-<img alt="_images/oml_bpo.png" class="align-center" src="_images/oml_bpo.png" />
-</div>
-<div class="section" id="carriers-o-proveedores-de-cloud-pbx">
-<h1>Carriers ó Proveedores de Cloud PBX<a class="headerlink" href="#carriers-o-proveedores-de-cloud-pbx" title="Permalink to this headline">¶</a></h1>
-<p>Por últimp, este perfil de usuarios es muy viable a partir de la ventaja otorgada por WebRTC como tecnología base de OMniLeads, en este caso
-la performance del audio y video de los agentes es optimizada a partir de contar con Opus y VP8 como codecs de media por un lado y además
-por otro lado tenemos la ventaja de que WebRTC se encarga de abrstraer al administrador IT de los típicos problemas de NAT que poseen
-aquellar aplicaciones VoIP tradicionales SIP-RTP.</p>
-<p>A parir del hecho de utilizar Kamailio como proxy y autenticador de agentes, la seguridad se ve incrementada y enfocada en la nube.</p>
-<p>IMAGEN</p>
+  <div class="section" id="primer-acceso-a-omnileads">
+<h1>Primer acceso a OMniLeads:<a class="headerlink" href="#primer-acceso-a-omnileads" title="Permalink to this headline">¶</a></h1>
+<p>Para acceder al sistema OMniLeads debe ingresar a:</p>
+<p><a class="reference external" href="https://omnileads-hostname">https://omnileads-hostname</a></p>
+<p>Nota: El acceso web a OMniLeads debe ser a través del hostname.domain del host. Por lo tanto existen dos posibilidades a la hora de resolver el
+hostname:</p>
+<p>1 - Que los DNS de la red lo hagan.
+2 - Añadir el hostname.domain del host, dentro del archivo de <em>hosts</em> (Windows, Linux o Mac de cada PC que tenga que acceder a OMniLeads.</p>
+<img alt="_images/install_dns_hosts.png" src="_images/install_dns_hosts.png" />
+<p><em>Figure 9: file hosts</em></p>
+<p>Al encontrarnos con la pantalla de login, simplemente se debe ingresar el usuario admin y la clave generada durante la instalación (my_inventory),
+como se expone en las figura 10.</p>
+<img alt="_images/install_1st_login.png" src="_images/install_1st_login.png" />
+<p><em>Figure 10: First login</em></p>
 </div>
 
 
@@ -237,10 +223,10 @@ aquellar aplicaciones VoIP tradicionales SIP-RTP.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="install.html" class="btn btn-neutral float-right" title="Instalación de OMniLeads" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="install_remote.html" class="btn btn-neutral float-right" title="Install from Ansible Remote" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="what_is_extra.html" class="btn btn-neutral float-left" title="WebRTC; la tecnología subyacente de OMniLeads" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="install_self_hosted.html" class="btn btn-neutral float-left" title="Ansible Self-Hosted Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

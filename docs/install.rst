@@ -1,42 +1,20 @@
-Installing OMniLeads
-=====================
+Instalación de OMniLeads
+========================
 
-Install OMniLeads takes approximately 30-60 minutes to install.  The following video shows you the install process:
+En el siguiente video se expone paso a paso el proceso de instalación más básico (self-hosted script)
 
 .. raw:: html
 
         <iframe src="https://player.vimeo.com/video/317503659" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
-Prerequisites:
-^^^^^^^^^^^^^^
+En las próximas páginas del presente capítulo, detallaremos la ejecución de cada tipo de instalación.
 
-The platform is compatible and can be deployed over the following Operations Systems:
-
-- GNU/Linux CentOS 7 (minimal), Debian 9 (netinstall) & Ubuntu Server 18.04
-- The minimum disk space needed to install OML in any host is 20 GB
-- Git package needs to be installed
-Ubuntu - Debian:
-::
-
-  apt install git
-|
-
-CentOS:
-::
-
-  yum install git
-|
-
-- Remember to check and correct (if  necessary) the server’s date and time
-- Remember to check and correct (if  necessary) the server’s hostname and ip address
-
-
-Install Options
-^^^^^^^^^^^^^^^^
+Tipos de instalación
+^^^^^^^^^^^^^^^^^^^^
 .. toctree::
    :maxdepth: 2
 
    install_self_hosted.rst
-   install_remote_ansible.rst
+   install_remote.rst
    install_cluster.rst

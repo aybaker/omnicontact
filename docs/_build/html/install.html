@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installing OMniLeads &mdash; OMniLeads develop documentation</title>
+  <title>Instalación de OMniLeads &mdash; OMniLeads develop documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Horizontal Cluster Installation" href="install_cluster.html" />
+    <link rel="next" title="Ansible Self-Hosted Install" href="install_self_hosted.html" />
     <link rel="prev" title="Plataforma de Contact Center integrado a un PBX basado en SIP" href="what_is_use_cases.html" /> 
 </head>
 
@@ -84,16 +84,16 @@
 <li class="toctree-l1"><a class="reference internal" href="what_is.html">Qué es OMniLeads ?</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installing OMniLeads</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites:</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#install-options">Install Options</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Instalación de OMniLeads</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tipos-de-instalacion">Tipos de instalación</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
 <li class="toctree-l3"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="install_selfhosted.html">Ansible Self-Hosted Install</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_remote.html">Install from Ansible Remote</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_devenv.html">OMniLeads Maintenance</a></li>
 </ul>
@@ -169,7 +169,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Installing OMniLeads</li>
+      <li>Instalación de OMniLeads</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -188,40 +188,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="installing-omnileads">
-<h1>Installing OMniLeads<a class="headerlink" href="#installing-omnileads" title="Permalink to this headline">¶</a></h1>
-<p>Install OMniLeads takes approximately 30-60 minutes to install.  The following video shows you the install process:</p>
-<iframe src="https://player.vimeo.com/video/317503659" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe><div class="section" id="prerequisites">
-<h2>Prerequisites:<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
-<p>The platform is compatible and can be deployed over the following Operations Systems:</p>
-<ul class="simple">
-<li>GNU/Linux CentOS 7 (minimal), Debian 9 (netinstall) &amp; Ubuntu Server 18.04</li>
-<li>The minimum disk space needed to install OML in any host is 20 GB</li>
-<li>Git package needs to be installed</li>
-</ul>
-<p>Ubuntu - Debian:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span> <span class="n">install</span> <span class="n">git</span>
-</pre></div>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<p>CentOS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="n">git</span>
-</pre></div>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<ul class="simple">
-<li>Remember to check and correct (if  necessary) the server’s date and time</li>
-<li>Remember to check and correct (if  necessary) the server’s hostname and ip address</li>
-</ul>
-</div>
-<div class="section" id="install-options">
-<h2>Install Options<a class="headerlink" href="#install-options" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="instalacion-de-omnileads">
+<h1>Instalación de OMniLeads<a class="headerlink" href="#instalacion-de-omnileads" title="Permalink to this headline">¶</a></h1>
+<p>En el siguiente video se expone paso a paso el proceso de instalación más básico (self-hosted script)</p>
+<iframe src="https://player.vimeo.com/video/317503659" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe><p>En las próximas páginas del presente capítulo, detallaremos la ejecución de cada tipo de instalación.</p>
+<div class="section" id="tipos-de-instalacion">
+<h2>Tipos de instalación<a class="headerlink" href="#tipos-de-instalacion" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#pre-requisitos">Pre-requisitos:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#ajustes-necesarios-antes-de-la-ejecucion-de-script">Ajustes necesarios antes  de la ejecución de script:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#errores-comunes">Errores comunes:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#pre-requisitos">Pre-requisitos:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota">Preparación en la máquina que ejecuta la instalación remota:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#errores-comunes">Errores comunes:</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
 </ul>
 </div>
@@ -236,7 +226,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="install_cluster.html" class="btn btn-neutral float-right" title="Horizontal Cluster Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="install_self_hosted.html" class="btn btn-neutral float-right" title="Ansible Self-Hosted Install" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="what_is_use_cases.html" class="btn btn-neutral float-left" title="Plataforma de Contact Center integrado a un PBX basado en SIP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
