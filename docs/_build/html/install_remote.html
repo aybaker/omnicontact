@@ -90,6 +90,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Instalación desde ansible remoto</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pre-requisitos">Pre-requisitos:</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota">Preparación en la máquina que ejecuta la instalación remota:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#preparacion-del-archivo-inventory">Preparación del archivo <em>inventory</em>:</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#errores-comunes">Errores comunes:</a></li>
@@ -103,6 +104,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Instalación desde ansible remoto</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#pre-requisitos">Pre-requisitos:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota">Preparación en la máquina que ejecuta la instalación remota:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#preparacion-del-archivo-inventory">Preparación del archivo <em>inventory</em>:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="install_first_access.html">Primer acceso a OMniLeads:</a></li>
@@ -220,9 +222,8 @@ la estación de trabajo del sysadmin, ya que precisamente al estar basada en Ans
 <li>Una instancia de GNU/Linux CentOS 7 (minimal), Debian 9 (netinstall) ó Ubuntu Server 18.04</li>
 <li>20 GB de espacio en disco</li>
 <li>4 GB de memoria RAM</li>
-<li>En <em>Ubuntu / Debian</em>; Instalar el paquete sudo, openssh-server y phyton-minimal, permitir login SSH con el usuario root y reiniciar el</li>
+<li>En <em>Ubuntu / Debian</em>; Instalar el paquete sudo, openssh-server y phyton-minimal, permitir login SSH con el usuario root y reiniciar el servicio de ssh para que se tomen los cambios:</li>
 </ul>
-<p>servicio de ssh para que se tomen los cambios:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">sudo</span> <span class="n">openssh</span><span class="o">-</span><span class="n">server</span> <span class="n">python</span><span class="o">-</span><span class="n">minimal</span> <span class="o">-</span><span class="n">y</span>
 <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/#PermitRootLogin prohibit-password/PermitRootLogin yes/&#39;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">ssh</span><span class="o">/</span><span class="n">sshd_config</span>
 <span class="n">systemctl</span> <span class="n">restart</span> <span class="n">ssh</span>
@@ -279,6 +280,9 @@ la estación de trabajo del sysadmin, ya que precisamente al estar basada en Ans
 <p><em>Figure 3: hostname command output</em></p>
 <img alt="_images/install_ip_a_command.png" src="_images/install_ip_a_command.png" />
 <p><em>Figure 4: ip a command output</em></p>
+</div>
+<div class="section" id="preparacion-del-archivo-inventory">
+<h2>Preparación del archivo <em>inventory</em>:<a class="headerlink" href="#preparacion-del-archivo-inventory" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>En este paso, se debe editar el archivo <em>inventory</em> (PATH/ominicontacto/deploy/ansible). El mismo reside dentro del repositorio del proyecto, que se generó en la PC del sysadmin que ejecuta el deploy remoto.</li>
 </ul>

@@ -8,6 +8,7 @@ la estación de trabajo del sysadmin, ya que precisamente al estar basada en Ans
 La ventaja principal de esta opción es que el sysadmin puede instalar y mantener varias instancias de OMniLeads desde un único nodo "deployer".
 
 .. image:: images/install_ansible_remote.png
+
 *Figure 1: remote ansible install*
 
 Pre-requisitos:
@@ -16,9 +17,8 @@ Pre-requisitos:
 - Una instancia de GNU/Linux CentOS 7 (minimal), Debian 9 (netinstall) ó Ubuntu Server 18.04
 - 20 GB de espacio en disco
 - 4 GB de memoria RAM
+- En *Ubuntu / Debian*; Instalar el paquete sudo, openssh-server y phyton-minimal, permitir login SSH con el usuario root y reiniciar el servicio de ssh para que se tomen los cambios:
 
-- En *Ubuntu / Debian*; Instalar el paquete sudo, openssh-server y phyton-minimal, permitir login SSH con el usuario root y reiniciar el
-servicio de ssh para que se tomen los cambios:
 ::
 
   apt-get install sudo openssh-server python-minimal -y
@@ -35,20 +35,25 @@ Preparación en la máquina que ejecuta la instalación remota:
 - Debemos contar con el paquete git para luego clonar el repositorio del protyecto y seleccionar el release a instalar.
 
 Ubuntu - Debian:
+
 ::
+
   apt install git
   git clone https://gitlab.com/omnileads/ominicontacto.git
   cd ominicontacto
   git checkout master
 
 CentOS:
+
 ::
+
   yum install git
   git clone https://gitlab.com/omnileads/ominicontacto.git
   cd ominicontacto
   git checkout master
 
 - Debemos asegurarnos de contar con una clave pública generada en la carpeta /root/.ssh/
+
 ::
 
    sudo ls -l /root/.ssh/
@@ -56,6 +61,7 @@ CentOS:
 Es probable ya contemos con una clave pública (id_rsa.pub), como se aprecia en la *figura 1*.
 
 .. image:: images/install_id_rsa.png
+
 *Figure 1: ls -a /root/.ssh command output*
 
 En caso de NO disponer de una, se puede generar rápidamente con el siguiente comando:
@@ -65,23 +71,29 @@ En caso de NO disponer de una, se puede generar rápidamente con el siguiente co
  sudo ssh-keygen/install_sshkeygen_remote.png
 
 .. image:: images/install_sshkeygen_remote.png
+
 *Figure 2: ssh-keygen command output*
 
 Este comando genera nuestra clave *id_rsa.pub* que mencionamos anteriormente.
 
 - Se comprueba la *dirección IP* y *hostname* que posee el host destino de la instalación, para luego ajustar el archivo *inventory* que se utiliza a la hora de tomar los parámetros de la instalación.
+
 ::
 
  hostname
  ip a
 
 .. image:: images/install_hostname_command.png
+
 *Figure 3: hostname command output*
 
 
 .. image:: images/install_ip_a_command.png
+
 *Figure 4: ip a command output*
 
+Preparación del archivo *inventory*:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - En este paso, se debe editar el archivo *inventory* (PATH/ominicontacto/deploy/ansible). El mismo reside dentro del repositorio del proyecto, que se generó en la PC del sysadmin que ejecuta el deploy remoto.
 
@@ -93,12 +105,14 @@ esta sección se debe editar el parámetro 'X.X.X.X' con la dirección IP del se
 
 
 .. image:: images/install_inventory_file_net_remote.png
+
 *Figure 5: inventory file network params section*
 
 Además dentro del mismo archivo, unas líneas debajo encontraremos la sección *[everyyone:vars]*, en la cual se pueden alterar variables y contraseñas
 que vienen por defecto en el sistema.
 
 .. image:: images/install_inventory_passwords.png
+
 *Figure 6: Passwords and parameters of services*
 
 
@@ -108,6 +122,7 @@ del sistema utilizados en la última ejecución del script.
 La copia en cuestión se ubica en el path donde ha sido clonado el repositorio de OML y bajo el nombre de "my_inventory" como lo expone la figura 6.
 
 .. image:: images/install_remote_my_inventory.png
+
 *Figure 7: inevntory copy, my_inventory file*
 
 
@@ -124,6 +139,7 @@ Una vez configuradas las variables citadas, se procede con la ejecución del scr
   sudo ./deploy.sh -i -a
 
 .. image:: images/install_deploysh_remote.png
+
 *Figure 7: remote root password*
 
 La diferencia respecto de la instalación 'Self-Hosted', es que el script nos pide la contraseña del usuario *root* del host
@@ -136,6 +152,7 @@ ya que se deben descargar, instalar y configurar varios paquetes correspondiente
 Si la ejecución de la instalación finaliza exitosamente, se despliega una vista como la de la figura 8.
 
 .. image:: images/install_ok.png
+
 *Figure 8: OMniLeads installation ended succesfuly*
 
 
@@ -153,13 +170,17 @@ Errores comunes:
 ^^^^^^^^^^^^^^^^
 
 - El server no tiene internet o no resuelve dominios (configuración de DNS).
+
 *Compruebe el acceso a internet del host (por ej: actualizando paquetes - apt-get update | yum update).*
 
 - Timeout de algún paquete que se intenta bajar. Puede volver a intentar ejecutar el deploy y si vuelve a fallar, la opción puede ser
+
 *Instalar el paquete desde la terminal.*
 
 - Falla por mala sintaxis o falta de definición de *hostname* y *dirección IP* en el archivo *inventory*.
+
 *Revisar archivo inventorys*
 
 - No se configuró correctamente el acceso ssh del host destino de la instalación.
+
 *Revisar estado del firewall. Comprobar acceso remoto por ssh con el usuario root*
