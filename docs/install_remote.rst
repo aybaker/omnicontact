@@ -184,3 +184,5 @@ Errores comunes:
 - No se configuró correctamente el acceso ssh del host destino de la instalación.
 
 *Revisar estado del firewall. Comprobar acceso remoto por ssh con el usuario root*
+
+- En caso de contar con algún host Ubuntu-Debian, recordar que se deben instalar paquetes como *sudo, openssh-server o python-minimal* antes de correr el script de *deploy.sh*
