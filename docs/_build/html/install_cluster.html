@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="OMniLeads Maintenance" href="install_devenv.html" />
+    <link rel="next" title="&lt;no title&gt;" href="install_devenv.html" />
     <link rel="prev" title="Instalación desde ansible remoto" href="install_remote.html" /> 
 </head>
 
@@ -94,6 +94,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#pre-requisitos">Pre-requisitos</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota">Preparación en la máquina que ejecuta la instalación remota:</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#preparacion-del-archivo-inventory">Preparación del archivo <em>inventory</em>:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#errores-comunes">Errores comunes:</a></li>
 </ul>
 </li>
 </ul>
@@ -107,9 +110,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#pre-requisitos">Pre-requisitos</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota">Preparación en la máquina que ejecuta la instalación remota:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#preparacion-del-archivo-inventory">Preparación del archivo <em>inventory</em>:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="install_first_access.html">Primer acceso a OMniLeads:</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="install_devenv.html">OMniLeads Maintenance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#errores-comunes">Errores comunes:</a></li>
+</ul>
+</li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Initial Settings</a></li>
@@ -259,10 +267,79 @@ del cluster. Para generar nuestro host “deployer”, sugerimos repasar el íte
 </div>
 <div class="section" id="preparacion-del-archivo-inventory">
 <h2>Preparación del archivo <em>inventory</em>:<a class="headerlink" href="#preparacion-del-archivo-inventory" title="Permalink to this headline">¶</a></h2>
-<p>Para este tipo de despliegue, se debe configurar primero el archivo <em>/etc/hosts</em> de nuestra maquina <em>deployer</em>. Por lo que en base a cada <em>hostname</em> configurado
-en cada host que compone nuestro cluster, se debe generar una entrada en el archivo mencionado anteriormente.</p>
-<img alt="_images/install_dns_hosts_cluster.png" src="_images/install_dns_hosts_cluster.png" />
-<p><em>Figure 3: /etc/hosts - OMniLeads deployer workstation</em></p>
+<p>Para este tipo de despliegue, se deben configurar los parámetros <em>hostname</em> y <em>dirección IP</em> de cada host-componente de nuestro cluster.</p>
+<ul class="simple">
+<li>Ejemplo para <em>OMniLeads in two</em></li>
+</ul>
+<img alt="_images/install_inventory_net_cluster_in2.png" src="_images/install_inventory_net_cluster_in2.png" />
+<p><em>Figure 3: Cluster in 2 hosts, inventory file</em></p>
+<p>Como se puede apreciar en la figura 3, se agrupan los componentes Aplicación web + Database + Dialer bajo un <em>hostname</em> y <em>dirección IP</em> por un lado, y por otro lado
+Asterisk + Kamailio bajo otro <em>hostname</em> y <em>dirección IP</em>. De esta manera se despliegan dichos componentes en dos hosts destino independientes entre si.</p>
+<ul class="simple">
+<li>Ejemplo para <em>OMniLeads in five</em></li>
+</ul>
+<img alt="_images/install_inventory_net_cluster_in5.png" src="_images/install_inventory_net_cluster_in5.png" />
+<p><em>Figure 4: Cluster in 5 hosts, inventory file</em></p>
+<p>Como se puede apreciar en la figura 4, se separan todos los componentes Aplicación web, Database, Dialer diferentes <em>hostname</em> y <em>dirección IP</em>, ya que cada componente corre
+bajo un host dedicado e independiente.</p>
+<p>Al igual que en las otras instalaciones, las variables y passwords de los diferentes componentes se pueden modificar en la sección  <em>[everyyone:vars]</em></p>
+<img alt="_images/install_inventory_passwords.png" src="_images/install_inventory_passwords.png" />
+<p><em>Figure 5: Passwords and parameters of services</em></p>
+<p>Es importante aclarar que cada vez que se corre el script “./deploy.sh” ya sea para instalar, re-instalar, actualizar, modificar la dirección IP de OML, etc.,
+el archivo de inventory se vuelve a “cero”. No obstante se genera una copia del archivo (my_inventory), de manera tal que se cuente con los parámetros
+del sistema utilizados en la última ejecución del script.
+La copia en cuestión se ubica en el path donde ha sido clonado el repositorio de OML y bajo el nombre de “my_inventory” como lo expone la figura 6.</p>
+<img alt="_images/install_remote_my_inventory.png" src="_images/install_remote_my_inventory.png" />
+<p><em>Figure 6: inevntory copy, my_inventory file</em></p>
+</div>
+<div class="section" id="ejecucion-del-script-de-instalacion">
+<h2>Ejecución del script de instalación:<a class="headerlink" href="#ejecucion-del-script-de-instalacion" title="Permalink to this headline">¶</a></h2>
+<p>La instalación de OMniLeads se realiza mediante el script <em>deploy.sh</em>, ubicado dentro de la carpeta deploy/ansible con respecto a la carpeta
+raíz del proyecto (ominicontacto).</p>
+<p>Una vez configuradas las variables citadas, se procede con la ejecución del script de instalación (uitilizando sudo).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="o">./</span><span class="n">deploy</span><span class="o">.</span><span class="n">sh</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">a</span>
+</pre></div>
+</div>
+<img alt="_images/install_deploysh_cluster.png" src="_images/install_deploysh_cluster.png" />
+<p><em>Figure 7: remote root passwords</em></p>
+<p>La diferencia respecto de las otras instalacines, es que el script nos pide las contraseñas del usuario <em>root</em> de cada host
+destino de la instalación de nuestro cluster.</p>
+<p>El tiempo de instalación dependerá mayormente de la velocidad de conexión a internet del host sobre ek que se está corriendo el deplot de  OML,
+ya que se deben descargar, instalar y configurar varios paquetes correspondientes a los diferentes componentes de software que conforman el sistema.</p>
+<p>Si la ejecución de la instalación finaliza exitosamente, se despliega una vista como la de la figura 8.</p>
+<img alt="_images/install_ok_cluster.png" src="_images/install_ok_cluster.png" />
+<p><em>Figure 8: OMniLeads installation ended succesfuly</em></p>
+</div>
+<div class="section" id="primer-acceso-a-omnileads">
+<h2>Primer acceso a OMniLeads:<a class="headerlink" href="#primer-acceso-a-omnileads" title="Permalink to this headline">¶</a></h2>
+<p>Si la ejecución de la instalación fue exitosa, entonces vamos por el primer acceso a OMniLeads.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_first_access.html">Primer acceso a OMniLeads:</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="errores-comunes">
+<h2>Errores comunes:<a class="headerlink" href="#errores-comunes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Alguno de los hosts no tiene internet o no resuelve dominios (configuración de DNS).</li>
+</ul>
+<p><em>Compruebe el acceso a internet de cada host (por ej: actualizando paquetes - apt-get update | yum update).</em></p>
+<ul class="simple">
+<li>Timeout de algún paquete que se intenta bajar. Puede volver a intentar ejecutar el deploy y si vuelve a fallar, la opción puede ser</li>
+</ul>
+<p><em>Instalar el paquete desde la terminal.</em></p>
+<ul class="simple">
+<li>Falla por mala sintaxis o falta de definición de <em>hostname</em> y <em>dirección IP</em> en el archivo <em>inventory</em>.</li>
+</ul>
+<p><em>Revisar archivo inventorys</em></p>
+<ul class="simple">
+<li>No se configuró correctamente el acceso ssh del host destino de la instalación.</li>
+</ul>
+<p><em>Revisar estado del firewall. Comprobar acceso remoto por ssh con el usuario root</em></p>
+<ul class="simple">
+<li>En caso de contar con algún host Ubuntu-Debian, recordar que se deben instalar paquetes como <em>sudo, openssh-server o python-minimal</em> antes de correr el script de <em>deploy.sh</em></li>
+</ul>
 </div>
 </div>
 
@@ -274,7 +351,7 @@ en cada host que compone nuestro cluster, se debe generar una entrada en el arch
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="install_devenv.html" class="btn btn-neutral float-right" title="OMniLeads Maintenance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="install_devenv.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="install_remote.html" class="btn btn-neutral float-left" title="Instalación desde ansible remoto" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

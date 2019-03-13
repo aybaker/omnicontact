@@ -219,19 +219,21 @@ descargando el proyecto en el OS destino de la instalación, para posteriormente
 <li>Debemos contar con el paquete git para luego clonar el repositorio del protyecto y seleccionar el release a instalar</li>
 </ul>
 <p>Ubuntu - Debian:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span> <span class="n">install</span> <span class="n">git</span>
-<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitlab</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">omnileads</span><span class="o">/</span><span class="n">ominicontacto</span><span class="o">.</span><span class="n">git</span>
-<span class="n">cd</span> <span class="n">ominicontacto</span>
-<span class="n">git</span> <span class="n">checkout</span> <span class="n">master</span>
-</pre></div>
-</div>
+<dl class="docutils">
+<dt>::</dt>
+<dd>apt install git
+git clone <a class="reference external" href="https://gitlab.com/omnileads/ominicontacto.git">https://gitlab.com/omnileads/ominicontacto.git</a>
+cd ominicontacto
+git checkout master</dd>
+</dl>
 <p>CentOS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="n">git</span>
-<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitlab</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">omnileads</span><span class="o">/</span><span class="n">ominicontacto</span><span class="o">.</span><span class="n">git</span>
-<span class="n">cd</span> <span class="n">ominicontacto</span>
-<span class="n">git</span> <span class="n">checkout</span> <span class="n">master</span>
-</pre></div>
-</div>
+<dl class="docutils">
+<dt>::</dt>
+<dd>yum install git
+git clone <a class="reference external" href="https://gitlab.com/omnileads/ominicontacto.git">https://gitlab.com/omnileads/ominicontacto.git</a>
+cd ominicontacto
+git checkout master</dd>
+</dl>
 <ul class="simple">
 <li>La instalación se trabaja en el directorio “deploy/ansible”, disponible desde la raíz del proyecto (PATH/ominicontacto/deploy/ansible):</li>
 </ul>
@@ -277,9 +279,6 @@ raíz del proyecto (ominicontacto).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">deploy</span><span class="o">.</span><span class="n">sh</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">a</span>
 </pre></div>
 </div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <p>El tiempo de instalación dependerá mayormente de la velocidad de conexión a internet del host OML, ya que se deben descargar, instalar y configurar
 varios paquetes correspondientes a los diferentes componentes de software que conforman el sistema.</p>
 <img alt="_images/install_deploysh.png" src="_images/install_deploysh.png" />
@@ -310,7 +309,7 @@ varios paquetes correspondientes a los diferentes componentes de software que co
 <ul class="simple">
 <li>Falla por mala sintaxis o falta de definición de <em>hostname</em> y <em>dirección IP</em> en el archivo <em>inventory</em>.</li>
 <li>No ejecutó el script de deploy con <em>sudo</em>, en el host deployer.</li>
-<li>En ubuntu - debian, falta alguno el paquete <em>sudo</em></li>
+<li>En caso de contar con algún host Ubuntu-Debian, recordar que se deben instalar paquetes como <em>sudo, openssh-server o python-minimal</em> antes de correr el script de <em>deploy.sh</em></li>
 </ul>
 </div>
 </div>
