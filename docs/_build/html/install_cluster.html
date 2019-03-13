@@ -88,13 +88,27 @@
 <li class="toctree-l2 current"><a class="reference internal" href="install.html#tipos-de-instalacion">Tipos de instalación</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a></li>
 <li class="toctree-l3"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Horizontal Cluster Installation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Horizontal Cluster Installation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#omnileads-in-two">OMniLeads in two:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#omnileads-in-five">OMniLeads in five:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pre-requisitos">Pre-requisitos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota">Preparación en la máquina que ejecuta la instalación remota:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#preparacion-del-archivo-inventory">Preparación del archivo <em>inventory</em>:</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Horizontal Cluster Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Horizontal Cluster Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#omnileads-in-two">OMniLeads in two:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omnileads-in-five">OMniLeads in five:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pre-requisitos">Pre-requisitos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota">Preparación en la máquina que ejecuta la instalación remota:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#preparacion-del-archivo-inventory">Preparación del archivo <em>inventory</em>:</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="install_devenv.html">OMniLeads Maintenance</a></li>
 </ul>
 <ul>
@@ -195,24 +209,61 @@
 <p>OMniLeads puede ser desplegado de manera tal que los componentes queden separados en diferentes hosts. A diferencia de la instalación AIO (All In One)
 que despliega todo OMniLeads en un único host, este método de instalación permite dividir la carga de los servicios en más de un host.</p>
 <p>Puntualmente existen dos formas de instalar en cluster horizontal:</p>
+<div class="section" id="omnileads-in-two">
+<h2>OMniLeads in two:<a class="headerlink" href="#omnileads-in-two" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>OMniLeads II</li>
+<li>Host1 (omlvoip): Asterisk y Kamailio + rtpengine</li>
+<li>Host2 (omlapp): Aplicación web, Postgres y Dialer</li>
 </ul>
-<p>Host1 para los servicios: Asterisk y Kamailio
-Host2 para los servicios: Aplicación web, Postgres y Dialer</p>
 <img alt="_images/install_cluster_in_2.png" src="_images/install_cluster_in_2.png" />
-<p><a href="#id1"><span class="problematic" id="id2">*</span></a>Figure 1: *</p>
+<p><em>Figure 1: Cluster in 2 hosts</em></p>
+</div>
+<div class="section" id="omnileads-in-five">
+<h2>OMniLeads in five:<a class="headerlink" href="#omnileads-in-five" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>OMniLeads V:</li>
+<li>Host1 (omlapp): Aplicación web</li>
+<li>Host2 (kamailio): Kamailio + rtpengine</li>
+<li>Host3 (asterisk): Asterisk</li>
+<li>Host4 (database): Postgresql</li>
+<li>Host5 (dialer): Wombat dialer + MySQL</li>
 </ul>
-<p>Se despliega el sistema en cinco hosts</p>
-<p>Host1 (omniapp): contiene los servicios uwsgi, php-fpm, nginx, por lo tanto es aca donde estan el repositorio con el código de la aplicación
-Host2 (kamailio): con kamailio, rtpengine
-Host3 (asterisk): contiene asterisk y todos sus servicios
-Host4 (database): contiene la base de datos postgresql
-Host5 (dialer): contiene la aplicación wombat dialer con su respectiva base de datos</p>
 <img alt="_images/install_cluster_in_5.png" src="_images/install_cluster_in_5.png" />
-<p><a href="#id3"><span class="problematic" id="id4">*</span></a>Figure 1: *</p>
+<p><em>Figure 2: Cluster in 5 hosts</em></p>
+</div>
+<div class="section" id="pre-requisitos">
+<h2>Pre-requisitos<a class="headerlink" href="#pre-requisitos" title="Permalink to this headline">¶</a></h2>
+<p>Los hosts sobre los cuales vamos a desplegar los servicios en cluster deben cumplir con los siguitens requisitos:</p>
+<ul class="simple">
+<li>GNU/Linux CentOS 7 (minimal), Debian 9 (netinstall) ó Ubuntu Server 18.04</li>
+<li>Al menos 20 GB de espacio en disco</li>
+<li>Al menos 4 GB de memoria RAM</li>
+<li>Si es <em>Ubuntu / Debian</em>; Instalar el paquete <em>sudo</em>, <em>openssh-server</em> y <em>phyton-minimal</em>, permitir login SSH con el usuario <em>root</em> y reiniciar el servicio de ssh para que se tomen los cambios:</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">sudo</span> <span class="n">openssh</span><span class="o">-</span><span class="n">server</span> <span class="n">python</span><span class="o">-</span><span class="n">minimal</span> <span class="o">-</span><span class="n">y</span>
+<span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/#PermitRootLogin prohibit-password/PermitRootLogin yes/&#39;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">ssh</span><span class="o">/</span><span class="n">sshd_config</span>
+<span class="n">systemctl</span> <span class="n">restart</span> <span class="n">ssh</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Es muy importante dejar la hora correctamente configurada en cada host.</li>
+<li>Configurar una <em>dirección IP</em> y un <em>hostname</em> fijo en cada host destino de la instalación.</li>
+</ul>
+</div>
+<div class="section" id="preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota">
+<h2>Preparación en la máquina que ejecuta la instalación remota:<a class="headerlink" href="#preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota" title="Permalink to this headline">¶</a></h2>
+<p>Al igual que en la instalación “desde ansible remoto”, para desplegar OMniLeads en cualquiera de los dos tipos de clusters, debemos proceder con la ejecución
+del script de deploy a partir de contar con el proyecto clonado sobre una estación de trabajo con GNU/Linux (deployer). Desde la misma se ejecuta la instalación
+del cluster. Para generar nuestro host “deployer”, sugerimos repasar el ítem “Preparación en la máquina que ejecuta la instalación remota” dentro de la sección
+“instalación desde ansible remoto”.</p>
+<p>Se considera entonces que el usuario dispone del repositorio clonado en su Linux Workstation (OMniLeads deployer) !</p>
+</div>
+<div class="section" id="preparacion-del-archivo-inventory">
+<h2>Preparación del archivo <em>inventory</em>:<a class="headerlink" href="#preparacion-del-archivo-inventory" title="Permalink to this headline">¶</a></h2>
+<p>Para este tipo de despliegue, se debe configurar primero el archivo <em>/etc/hosts</em> de nuestra maquina <em>deployer</em>. Por lo que en base a cada <em>hostname</em> configurado
+en cada host que compone nuestro cluster, se debe generar una entrada en el archivo mencionado anteriormente.</p>
+<img alt="_images/install_dns_hosts_cluster.png" src="_images/install_dns_hosts_cluster.png" />
+<p><em>Figure 3: /etc/hosts - OMniLeads deployer workstation</em></p>
+</div>
 </div>
 
 

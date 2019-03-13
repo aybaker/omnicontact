@@ -6,22 +6,72 @@ que despliega todo OMniLeads en un único host, este método de instalación per
 
 Puntualmente existen dos formas de instalar en cluster horizontal:
 
-- OMniLeads II
-Host1 para los servicios: Asterisk y Kamailio
-Host2 para los servicios: Aplicación web, Postgres y Dialer
+OMniLeads in two:
+^^^^^^^^^^^^^^^^^
+- Host1 (omlvoip): Asterisk y Kamailio + rtpengine
+- Host2 (omlapp): Aplicación web, Postgres y Dialer
+
 
 .. image:: images/install_cluster_in_2.png
-*Figure 1: *
 
-- OMniLeads V:
-Se despliega el sistema en cinco hosts
+*Figure 1: Cluster in 2 hosts*
 
-Host1 "omniapp": contiene los servicios uwsgi, php-fpm, nginx, por lo tanto es aca donde estan el repositorio con el código de la aplicación
-Host2 (kamailio): con kamailio, rtpengine
-Host3 (asterisk): contiene asterisk y todos sus servicios
-Host4 (database): contiene la base de datos postgresql
-Host5 (dialer): contiene la aplicación wombat dialer con su respectiva base de datos
+
+OMniLeads in five:
+^^^^^^^^^^^^^^^^^^
+- Host1 (omlapp): Aplicación web
+- Host2 (kamailio): Kamailio + rtpengine
+- Host3 (asterisk): Asterisk
+- Host4 (database): Postgresql
+- Host5 (dialer): Wombat dialer + MySQL
 
 
 .. image:: images/install_cluster_in_5.png
-*Figure 1: *
+
+*Figure 2: Cluster in 5 hosts*
+
+Pre-requisitos
+^^^^^^^^^^^^^^
+Los hosts sobre los cuales vamos a desplegar los servicios en cluster deben cumplir con los siguitens requisitos:
+
+- GNU/Linux CentOS 7 (minimal), Debian 9 (netinstall) ó Ubuntu Server 18.04
+- Al menos 20 GB de espacio en disco
+- Al menos 4 GB de memoria RAM
+- Si es *Ubuntu / Debian*; Instalar el paquete *sudo*, *openssh-server* y *phyton-minimal*, permitir login SSH con el usuario *root* y reiniciar el servicio de ssh para que se tomen los cambios:
+
+::
+
+  apt-get install sudo openssh-server python-minimal -y
+  sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+  systemctl restart ssh
+
+- Es muy importante dejar la hora correctamente configurada en cada host.
+- Configurar una *dirección IP* y un *hostname* fijo en cada host destino de la instalación.
+
+
+
+Preparación en la máquina que ejecuta la instalación remota:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Al igual que en la instalación "desde ansible remoto", para desplegar OMniLeads en cualquiera de los dos tipos de clusters, debemos proceder con la ejecución
+del script de deploy a partir de contar con el proyecto clonado sobre una estación de trabajo con GNU/Linux (deployer). Desde la misma se ejecuta la instalación
+del cluster. Para generar nuestro host "deployer", sugerimos repasar el ítem "Preparación en la máquina que ejecuta la instalación remota" dentro de la sección
+"instalación desde ansible remoto".
+
+Se considera entonces que el usuario dispone del repositorio clonado en su Linux Workstation (OMniLeads deployer) !
+
+
+Preparación del archivo *inventory*:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Para este tipo de despliegue, se deben configurar los parámetros *hostname* y *dirección IP* de cada host-componente de nuestro cluster.
+
+
+- Ejemplo para *OMniLeads in two*
+
+
+- Ejemplo para *OMniLeads in five*
+
+   */etc/hosts* de nuestra maquina *deployer*. Por lo que en base a cada *hostname* configurado
+en cada host que compone nuestro cluster, se debe generar una entrada en el archivo mencionado anteriormente.
+
+
+-
