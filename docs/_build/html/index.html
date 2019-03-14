@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Intro to OMniLeads &mdash; OMniLeads develop documentation</title>
+  <title>INTRODUCCION A OMNILEADS &mdash; OMniLeads develop documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Qué es OMniLeads ?" href="what_is.html" /> 
+    <link rel="next" title="WebRTC; la tecnología subyacente de OMniLeads" href="what_is_extra.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -80,18 +80,24 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="what_is.html">Qué es OMniLeads ?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_extra.html">WebRTC; la tecnología subyacente de OMniLeads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_extra.html#caracteristicas-y-funcionalidades-de-omnileads">Características y funcionalidades de OMniLeads</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Instalación de OMniLeads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html">Plataforma de Contact Center integrado a un PBX basado en SIP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html#compania-de-servicios-de-customer-contact">Compañia de servicios de Customer Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html#carriers-o-proveedores-de-cloud-pbx">Carriers ó Proveedores de Cloud PBX</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Initial Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Configuración Inicial</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="telephony.html">TELEFONIA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony.html">Configuración telefónica de OMniLeads</a></li>
 <li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Telephony Settings - OML and the PBX</a></li>
 <li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Telephony Settings - OML BPO Contact Center</a></li>
 </ul>
@@ -159,7 +165,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Intro to OMniLeads</li>
+      <li>INTRODUCCION A OMNILEADS</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -178,30 +184,68 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="intro-to-omnileads">
-<h1>Intro to OMniLeads<a class="headerlink" href="#intro-to-omnileads" title="Permalink to this headline">¶</a></h1>
-<p>OMniLeads es una solución para Contact Centers basada en software Open Source (GPL v3), destinada a soportar la gestión, operación
+  <div class="section" id="introduccion-a-omnileads">
+<h1>INTRODUCCION A OMNILEADS<a class="headerlink" href="#introduccion-a-omnileads" title="Permalink to this headline">¶</a></h1>
+<p>OMniLeads es una solución para Contact Centers basada en Software Libre (GPL v3), destinada a soportar la gestión, operación
 y administración de un Contact Center.</p>
+<p>OMniLeads como sistema ofrece funcionalidades que permiten desarrollar operaciones de Call Center tanto Inbound como Outbound
+(campañas preview, manuales y predictivas), que se puede instalar siguiendo unos pocos pasos. Con OMniLeads se puede montar toda una operación de
+Contact Center ya sea dentro del marco de una compañia u organización que necesita su propio Contact Center integrado al PBX operativo, así como
+también como Núcleo de Comunicaciones de una compañía que brinda servicios de Customer Contact (Business Outsorocing Process - BPO).</p>
+<p>De gestión y operación 100% Web, los agentes disponen de una interfaz basada WebRTC(link) para la gestión de comunicaciones mientras que los supervisores
+utilizan WebRTC para realizar acciones de channel spy, coaching de agentes, gestión de QA o three way conferences. Por otro lado, los administradores
+cuentan con una interfaz que permite mantener usuarios, campañas, bases de datos, a su vez extraer métricas y estadísticas, gestionar las grabaciones
+de las comunicaciones entre otras funcionalidades.</p>
+<img alt="_images/what_is.png" class="align-center" src="_images/what_is.png" />
+<div class="section" id="como-lo-obtengo">
+<h2>Cómo lo obtengo ?<a class="headerlink" href="#como-lo-obtengo" title="Permalink to this headline">¶</a></h2>
+<p>Nuestro repositorio se encuentra disponible en GitLab (link), para libre descarga y posterior uso del Software.</p>
+</div>
+<div class="section" id="donde-se-puede-instalar">
+<h2>Donde se puede instalar ?<a class="headerlink" href="#donde-se-puede-instalar" title="Permalink to this headline">¶</a></h2>
+<p>OMniLeads puede correr sobre las distribuciones de GNU/Linux; CentOS7, Debian-9 y Ubuntu Server 18.04.</p>
+</div>
+<div class="section" id="como-lo-instalo">
+<h2>Cómo lo instalo ?<a class="headerlink" href="#como-lo-instalo" title="Permalink to this headline">¶</a></h2>
+<p>Dentro del código del proyecto, se dispone de un script de instalación que permite instalar el producto sobre cualquier SO de los
+mencionados anteriormente. En la sección Instalación de ésta pagin se detalla el proceso, en sus diferentes tipos de instalación.</p>
+</div>
+<div class="section" id="caracteristicas-y-funcionalidades-de-omnileads">
+<h2>Características y funcionalidades de OMniLeads<a class="headerlink" href="#caracteristicas-y-funcionalidades-de-omnileads" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="what_is.html">Qué es OMniLeads ?</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="what_is_extra.html">WebRTC; la tecnología subyacente de OMniLeads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="what_is_extra.html#caracteristicas-y-funcionalidades-de-omnileads">Características y funcionalidades de OMniLeads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="what_is.html#donde-y-como-lo-puedo-usar">Dónde y cómo lo puedo usar ?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="what_is.html#como-lo-obtengo">Cómo lo obtengo ?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="what_is.html#donde-lo-puedo-instalar">Dónde lo puedo instalar ?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="what_is.html#como-lo-instalo">Cómo lo instalo ?</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_extra.html">WebRTC; la tecnología subyacente de OMniLeads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_extra.html#caracteristicas-y-funcionalidades-de-omnileads">Características y funcionalidades de OMniLeads</a></li>
 </ul>
 </div>
 </div>
-<div class="section" id="installing-omnileads">
-<h1>Installing OMniLeads<a class="headerlink" href="#installing-omnileads" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="donde-y-como-lo-puedo-usar">
+<h2>Dónde y cómo lo puedo usar ?<a class="headerlink" href="#donde-y-como-lo-puedo-usar" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Instalación de OMniLeads</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="install.html#tipos-de-instalacion">Tipos de instalación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html">Plataforma de Contact Center integrado a un PBX basado en SIP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html#compania-de-servicios-de-customer-contact">Compañia de servicios de Customer Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html#carriers-o-proveedores-de-cloud-pbx">Carriers ó Proveedores de Cloud PBX</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="instalacion">
+<h1>INSTALACIÓN<a class="headerlink" href="#instalacion" title="Permalink to this headline">¶</a></h1>
+<p>En el siguiente video se expone paso a paso el proceso de instalación más básico (self-hosted script)</p>
+<iframe src="https://player.vimeo.com/video/317503659" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe><p>En las próximas páginas del presente capítulo, detallaremos la ejecución de cada tipo de instalación.</p>
+</div>
+<div class="section" id="tipos-de-instalacion">
+<h1>Tipos de instalación<a class="headerlink" href="#tipos-de-instalacion" title="Permalink to this headline">¶</a></h1>
+<p>Existen tres formas en la que OMniLeads puede ser instalador. En la presente sección se detalla cada proceso.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#pre-requisitos">Pre-requisitos:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#ajustes-necesarios-antes-de-la-ejecucion-de-script">Ajustes necesarios antes  de la ejecución de script:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#errores-comunes">Errores comunes:</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a><ul>
@@ -227,22 +271,23 @@ y administración de un Contact Center.</p>
 </ul>
 </div>
 </div>
-<div class="section" id="initial-settings">
-<h1>Initial Settings<a class="headerlink" href="#initial-settings" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="setting-iniciales">
+<h1>SETTING INICIALES<a class="headerlink" href="#setting-iniciales" title="Permalink to this headline">¶</a></h1>
+<p>En esta sección se plantean las configuraciones escenciales a realizar una vez que dejamos instalada una instancia de OMniLeads.</p>
 <blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Initial Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Configuración Inicial</a></li>
 </ul>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="telephony-settings">
-<h1>Telephony Settings<a class="headerlink" href="#telephony-settings" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuracion-telefonica">
+<h1>CONFIGURACIÓN TELEFÓNICA<a class="headerlink" href="#configuracion-telefonica" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="telephony.html">TELEFONIA</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="telephony.html">Configuración telefónica de OMniLeads</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="telephony.html#configuracion-telefonica-de-oml-pbx">Configuración telefónica de OML &amp; PBX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="telephony.html#configuracion-telefonica-de-oml-acceso-directo-a-la-pstn">Configuración telefónica de OML (acceso directo a la PSTN)</a></li>
 </ul>
@@ -253,12 +298,17 @@ y administración de un Contact Center.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="campaigns">
-<h1>Campaigns<a class="headerlink" href="#campaigns" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="campanas">
+<h1>CAMPAÑAS<a class="headerlink" href="#campanas" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campaigns</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="campaigns.html#calificaciones">Calificaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="campaigns.html#formularios">Formularios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="campaigns.html#base-de-contactos">Base de contactos</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="campaigns_manual.html">Manual Call Campaign</a></li>
 <li class="toctree-l1"><a class="reference internal" href="campaigns_preview.html">Preview Campaigns</a></li>
 <li class="toctree-l1"><a class="reference internal" href="campaigns_dialer.html">Dialer Campaigns</a></li>
@@ -303,7 +353,7 @@ y administración de un Contact Center.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="what_is.html" class="btn btn-neutral float-right" title="Qué es OMniLeads ?" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="what_is_extra.html" class="btn btn-neutral float-right" title="WebRTC; la tecnología subyacente de OMniLeads" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

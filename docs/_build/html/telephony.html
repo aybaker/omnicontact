@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TELEFONIA &mdash; OMniLeads develop documentation</title>
+  <title>Configuración telefónica de OMniLeads &mdash; OMniLeads develop documentation</title>
   
 
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Telephony Settings - OML and the PBX" href="telephony_settings_pbx.html" />
-    <link rel="prev" title="Initial Settings" href="initial_settings.html" /> 
+    <link rel="prev" title="Configuración Inicial" href="initial_settings.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,19 +81,24 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="what_is.html">Qué es OMniLeads ?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_extra.html">WebRTC; la tecnología subyacente de OMniLeads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_extra.html#caracteristicas-y-funcionalidades-de-omnileads">Características y funcionalidades de OMniLeads</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Instalación de OMniLeads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html">Plataforma de Contact Center integrado a un PBX basado en SIP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html#compania-de-servicios-de-customer-contact">Compañia de servicios de Customer Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html#carriers-o-proveedores-de-cloud-pbx">Carriers ó Proveedores de Cloud PBX</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_devenv.html">OMniLeads Maintenance</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Initial Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Configuración Inicial</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">TELEFONIA</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuración telefónica de OMniLeads</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#configuracion-telefonica-de-oml-pbx">Configuración telefónica de OML &amp; PBX</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="telephony_settings_pbx.html">Telephony Settings - OML and the PBX</a></li>
 </ul>
@@ -171,7 +176,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>TELEFONIA</li>
+      <li>Configuración telefónica de OMniLeads</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -190,11 +195,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="telefonia">
-<h1>TELEFONIA<a class="headerlink" href="#telefonia" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="configuracion-telefonica-de-omnileads">
+<h1>Configuración telefónica de OMniLeads<a class="headerlink" href="#configuracion-telefonica-de-omnileads" title="Permalink to this headline">¶</a></h1>
 <p>En este capítulo vamos a explicar cómo dejar la capa de telefonía de OMniLeads lista para operar de acuerdo a los contextos planteados.</p>
 <div class="section" id="configuracion-telefonica-de-oml-pbx">
 <h2>Configuración telefónica de OML &amp; PBX<a class="headerlink" href="#configuracion-telefonica-de-oml-pbx" title="Permalink to this headline">¶</a></h2>
+<p>Esta sección apunta al caso de uso “OMniLeads como Plataforma de Contact Center integrado a un PBX basado en SIP”.
+Por lo tanto se plantea una configuración en la cual OMniLeads interactúa con la PSTN a través de un troncal SIP establecido con un
+sistema PBX. Además el vínculo SIP mencionado es funcional al flujo de llamadas entre los agentes de OMniLeads y los recursos internos
+del PBX (extensiones, colas, salas de conferencias, ertc.), así como también desde los recursos del PBX hacia los de OMniLeads.</p>
+<blockquote>
+<div><img alt="_images/oml_and_pbx.png" class="align-center" src="_images/oml_and_pbx.png" />
+</div></blockquote>
+<p>lala</p>
 <blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
@@ -226,7 +239,7 @@
         <a href="telephony_settings_pbx.html" class="btn btn-neutral float-right" title="Telephony Settings - OML and the PBX" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="initial_settings.html" class="btn btn-neutral float-left" title="Initial Settings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="initial_settings.html" class="btn btn-neutral float-left" title="Configuración Inicial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
