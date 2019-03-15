@@ -55,6 +55,8 @@ Dónde y cómo lo puedo usar ?
 
   what_is_use_cases.rst
 
+
+
 ***********
 INSTALACIÓN
 ***********
@@ -80,17 +82,28 @@ Existen tres formas en la que OMniLeads puede ser instalador. En la presente sec
    install_remote.rst
    install_cluster.rst
 
+
+
 *****************
 SETTING INICIALES
 *****************
-
 En esta sección se plantean las configuraciones escenciales a realizar una vez que dejamos instalada una instancia de OMniLeads.
 
+En el vídeo; una típica configuración posterior a la instalación de OMniLeads.
+
+.. raw:: html
+
+        <iframe src="https://player.vimeo.com/video/319574451" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+
+Dentro de la sección se profundiza al respecto.
 
   .. toctree::
    :maxdepth: 2
 
    initial_settings.rst
+
+
 
 *********************************
 CONFIGURACIÓN DE ACCESO A LA PSTN
@@ -99,6 +112,14 @@ OMniLeads facilita mediante configuración web, la posibilidad de mantener tronc
 son invocados por reglas de enrutamiento de llamadas salientes, en las cuales se puede especificar qué tipo de llamadas son procesadas
 por cada troncal SIP. Además los troncales pueden ser configurados en modo *failover*
 
+En el video se expone una configuración típica y escencial que permite dejar activo un troncal SIP y una ruta de acceso a la PSTN desde OMniLeads a un sistema PBX basado SIP.
+
+.. raw:: html
+
+        <iframe src="https://player.vimeo.com/video/320936127" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+
+Para profundizar al respecto se recomienda leer el resto del capítulo.
 
   .. toctree::
    :maxdepth: 2
@@ -109,8 +130,24 @@ por cada troncal SIP. Además los troncales pueden ser configurados en modo *fai
    telephony_settings_outr.rst
 
 
+
 CAMPAÑAS
 ********
+Todo procesamiento de comunicaciones entre "el exterior" y un agente de OMniLeads es encapsulado sobre una campaña. En este capítulo se aborda todo lo inherente a la gestión de campañas Entrantes y Salientes (manuales, preview y dialer)
+
+En el video se expone una introducción conceptual a las campañas en OMniLeads, ejemplificando además paso a paso la creación de:
+
+- Base de contactos
+- Calificaciones de campañas
+- Formulario de campaña
+- Agentes
+
+.. raw:: html
+
+        <iframe src="https://player.vimeo.com/video/320946591" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+
+En el resto del capítulo cubrimos cada tipo de campaña.
 
   .. toctree::
    :maxdepth: 2

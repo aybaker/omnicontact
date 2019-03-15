@@ -108,11 +108,11 @@
 <li class="toctree-l3"><a class="reference internal" href="telephony_settings_bpo.html">Troncal SIP con proveedor de acceso PSTN</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#configuracion-de-enrutamiento-de-llamadas-salientes">Configuración de enrutamiento de llamadas salientes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Troncal SIP entre OMniLeads y un PBX</a></li>
 <li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Troncal SIP con proveedor de acceso PSTN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_outr.html">Configuración de enrutamiento de llamadas salientes</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campaigns</a></li>
@@ -203,7 +203,7 @@
 OMniLeads admite solamente SIP como tecnología de interconexión con otros conmutadores de telefonía.</p>
 <div class="section" id="explicacion-del-abm-de-troncales">
 <h2>Explicación del ABM de troncales<a class="headerlink" href="#explicacion-del-abm-de-troncales" title="Permalink to this headline">¶</a></h2>
-<p>Para acceder a la configuración de los troncales debemos ingresar en el punto de menú <strong>Telephony - SIP Trunks</strong> y allí añadir un nuevo
+<p>Para acceder a la configuración de los troncales debemos ingresar en el punto de menú <em>(Telephony -&gt; SIP Trunks)</em> y allí añadir un nuevo
 troncal SIP. Se va a desplegar un formulario similar al de la figura 1.</p>
 <img alt="_images/telephony_siptrunk_view.png" class="align-center" src="_images/telephony_siptrunk_view.png" />
 <p><em>Figure 1: New SIP Trunk</em></p>
@@ -250,6 +250,33 @@ del PBX (extensiones, colas, salas de conferencias, ertc.), así como también d
 </ul>
 </div>
 </div></blockquote>
+</div>
+<div class="section" id="configuracion-de-enrutamiento-de-llamadas-salientes">
+<h2>Configuración de enrutamiento de llamadas salientes<a class="headerlink" href="#configuracion-de-enrutamiento-de-llamadas-salientes" title="Permalink to this headline">¶</a></h2>
+<p>OMniLeads permite gestionar el enrutamiento de llamadas salientes sobre múltiples troncales SIP (previamente creados), de manera tal que
+utilizando criterios como el <em>largo o prefijo del número</em> para determinar por qué vínculo SIP encaminar la llamada. Además es posible mantener una lógica de <em>failover</em>
+en término de troncales SIP.</p>
+<p>Para acceder al ABM de rutas salientes ingresar al punto de menú (<em>Telephony -&gt; Outbound routes</em>)</p>
+<img alt="_images/telephony_outr.png" src="_images/telephony_outr.png" />
+<p><em>Figure 2: Outbound route</em></p>
+<ul class="simple">
+<li>Nombre: es el nombre de la ruta (alfanumérico sin espacios)</li>
+<li>Ring time: es el tiempo (en segundos) que las llamadas cursadas por esta ruta, intentarán establecer una conexión con el destino, antes de seguir intentando por el próximo troncal o bien descartar la llamada.</li>
+<li>Dial options: son las opciones de la aplicación “Dial” utilizadas por Asterisk(r) en bajo nivel.</li>
+<li>Patrones de discado: mediante patrones, se puede representar los “tipos de llamadas” que serán aceptados por la ruta para enviarlos al destino por el Trunk SIP.</li>
+</ul>
+<p>Para comprender cómo se representan los dígitos con patrones, se recomienda leer éste link: <a class="reference external" href="https://www.voip-info.org/asterisk-extension-matching/">https://www.voip-info.org/asterisk-extension-matching/</a>.</p>
+<p>Dentro de cada patrón ingresado hay tres campos:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Prepend: son los dígitos que se mandan por el trunk SIP como adicionales al número discado. Es decir llegan al Trunk posicionados delante del número marcado.</li>
+<li>Prefijo: son los dígitos que pueden venir como “prefijo” de una llamada marcada y éstos serán quitados en el momento de enviarlos por el SIP Trunk.</li>
+<li>Patrón de discado: se busca representar en este campo el patrón de dígitos autorizados que la ruta va a procesar para y enviar a un SIP Trunk para sacar la llamada hacia el exterior.</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li>Secuencia de troncales: son los troncales SIP sobre los cuales la ruta saliente va a intentar establecer la llamada discada por OML. Si la llamada falla en un troncal, se sigue intentando en el siguiente.</li>
+</ul>
 </div>
 </div>
 
