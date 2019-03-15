@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Instalación de OMniLeads &mdash; OMniLeads develop documentation</title>
+  <title>Procedimientos de instalación &mdash; OMniLeads develop documentation</title>
   
 
   
@@ -34,7 +34,9 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Ansible Self-Hosted Install" href="install_self_hosted.html" />
+    <link rel="prev" title="Plataforma de Contact Center integrado a un PBX basado en SIP" href="what_is_use_cases.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,38 +89,28 @@
 <li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html#compania-de-servicios-de-customer-contact">Compañia de servicios de Customer Contact</a></li>
 <li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html#carriers-o-proveedores-de-cloud-pbx">Carriers ó Proveedores de Cloud PBX</a></li>
 </ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Procedimientos de instalación</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
+</ul>
+</li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Initial Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Configuración Inicial</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="telephony.html">TELEFONIA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Telephony Settings - OML and the PBX</a></li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Telephony Settings - OML BPO Contact Center</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony.html">Configuración de acceso a la PSTN</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_manual.html">Manual Call Campaign</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_preview.html">Preview Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_dialer.html">Dialer Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_inbound.html">Inbound Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campañas Telefónicas</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="reports.html">Telephony</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports_inbound_camp.html">Telephony</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports_outbound_camp.html">Telephony</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports_general.html">Telephony</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports_agents.html">Telephony</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports_supervision.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports.html">Metricas, grabaciones y supervicion</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="maintance_backup.html">OMniLeads Maintenance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="maintance_changeip.html">OMniLeads Maintenance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="maintance_upgrades.html">OMniLeads Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintance.html">OMniLeads Maintenance</a></li>
 </ul>
 
             
@@ -164,7 +156,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Instalación de OMniLeads</li>
+      <li>Procedimientos de instalación</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -183,8 +175,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="instalacion-de-omnileads">
-<h1>Instalación de OMniLeads<a class="headerlink" href="#instalacion-de-omnileads" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="procedimientos-de-instalacion">
+<h1>Procedimientos de instalación<a class="headerlink" href="#procedimientos-de-instalacion" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#pre-requisitos">Pre-requisitos:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#ajustes-necesarios-antes-de-la-ejecucion-de-script">Ajustes necesarios antes  de la ejecución de script:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_self_hosted.html#errores-comunes">Errores comunes:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#pre-requisitos">Pre-requisitos:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota">Preparación en la máquina que ejecuta la instalación remota:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#preparacion-del-archivo-inventory">Preparación del archivo <em>inventory</em>:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_remote.html#errores-comunes">Errores comunes:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install_cluster.html#omnileads-in-two">OMniLeads in two:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_cluster.html#omnileads-in-five">OMniLeads in five:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_cluster.html#pre-requisitos">Pre-requisitos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_cluster.html#preparacion-en-la-maquina-que-ejecuta-la-instalacion-remota">Preparación en la máquina que ejecuta la instalación remota:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_cluster.html#preparacion-del-archivo-inventory">Preparación del archivo <em>inventory</em>:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_cluster.html#ejecucion-del-script-de-instalacion">Ejecución del script de instalación:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_cluster.html#primer-acceso-a-omnileads">Primer acceso a OMniLeads:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_cluster.html#errores-comunes">Errores comunes:</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 
 
@@ -192,6 +216,15 @@
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="install_self_hosted.html" class="btn btn-neutral float-right" title="Ansible Self-Hosted Install" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="what_is_use_cases.html" class="btn btn-neutral float-left" title="Plataforma de Contact Center integrado a un PBX basado en SIP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
