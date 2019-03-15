@@ -90,8 +90,6 @@ En cada llamada al CRM se pueden enviar datos de la llamada y el contacto como p
 
 Entre otros parámetros.
 
- 
-
 Campañas Manuales
 *****************
 
@@ -103,6 +101,13 @@ Campañas Manuales
 
 Campañas Preview
 ****************
+
+En el siguiente video se expone paso a paso la creación y puesta en marcha de una campaña preview. Además se ejemplifica la operación del agente dentro de la misma.
+
+.. raw:: html
+
+        <iframe src="https://player.vimeo.com/video/320950602" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
 
 .. toctree::
  :maxdepth: 2
@@ -123,6 +128,13 @@ Campañas con discador predictivo
 
 Campañas Entrantes
 ******************
+
+En el siguiente video se expone paso a paso la creación y puesta en marcha de una campaña entrante. Además se ejemplifica la operación del agente dentro de la misma.
+
+.. raw:: html
+
+        <iframe src="https://player.vimeo.com/video/320941143" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
 
 .. toctree::
  :maxdepth: 2
