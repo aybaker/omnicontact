@@ -129,11 +129,11 @@ Campañas con discador predictivo
 Campañas Entrantes
 ******************
 
-En el siguiente video se expone paso a paso la creación y puesta en marcha de una campaña preview. Además se ejemplifica la operación del agente dentro de la misma.
+En el siguiente video se expone paso a paso la creación y puesta en marcha de una campaña entrante. Además se ejemplifica la operación del agente dentro de la misma.
 
 .. raw:: html
 
-        <iframe width="640" height="564" src="https://player.vimeo.com/video/320941143" frameborder="0" allowFullScreen mozallowfullscreen webkitAllowFullScreen></iframe>
+        <iframe src="https://player.vimeo.com/video/320941143" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
 .. toctree::
