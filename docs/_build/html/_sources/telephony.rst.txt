@@ -8,7 +8,7 @@ OMniLeads admite solamente SIP como tecnología de interconexión con otros conm
 Explicación del ABM de troncales
 ********************************
 
-Para acceder a la configuración de los troncales debemos ingresar en el punto de menú **Telephony - SIP Trunks** y allí añadir un nuevo
+Para acceder a la configuración de los troncales debemos ingresar en el punto de menú *(Telephony -> SIP Trunks)* y allí añadir un nuevo
 troncal SIP. Se va a desplegar un formulario similar al de la figura 1.
 
 .. image:: images/telephony_siptrunk_view.png
@@ -51,3 +51,34 @@ Dentro de ésta sección se expone la configuración de un proveedor que nos bri
       :maxdepth: 2
 
       telephony_settings_bpo.rst
+
+
+
+Configuración de enrutamiento de llamadas salientes
+***************************************************
+
+OMniLeads permite gestionar el enrutamiento de llamadas salientes sobre múltiples troncales SIP (previamente creados), de manera tal que
+utilizando criterios como el *largo o prefijo del número* para determinar por qué vínculo SIP encaminar la llamada. Además es posible mantener una lógica de *failover*
+en término de troncales SIP.
+
+Para acceder al ABM de rutas salientes ingresar al punto de menú (*Telephony -> Outbound routes*)
+
+.. image:: images/telephony_outr.png
+
+*Figure 2: Outbound route*
+
+- Nombre: es el nombre de la ruta (alfanumérico sin espacios)
+- Ring time: es el tiempo (en segundos) que las llamadas cursadas por esta ruta, intentarán establecer una conexión con el destino, antes de seguir intentando por el próximo troncal o bien descartar la llamada.
+- Dial options: son las opciones de la aplicación "Dial" utilizadas por Asterisk(r) en bajo nivel.
+- Patrones de discado: mediante patrones, se puede representar los “tipos de llamadas” que serán aceptados por la ruta para enviarlos al destino por el Trunk SIP.
+
+Para comprender cómo se representan los dígitos con patrones, se recomienda leer éste link: https://www.voip-info.org/asterisk-extension-matching/.
+
+Dentro de cada patrón ingresado hay tres campos:
+
+
+  * Prepend: son los dígitos que se mandan por el trunk SIP como adicionales al número discado. Es decir llegan al Trunk posicionados delante del número marcado.
+  * Prefijo: son los dígitos que pueden venir como “prefijo” de una llamada marcada y éstos serán quitados en el momento de enviarlos por el SIP Trunk.
+  * Patrón de discado: se busca representar en este campo el patrón de dígitos autorizados que la ruta va a procesar para y enviar a un SIP Trunk para sacar la llamada hacia el exterior.
+
+- Secuencia de troncales: son los troncales SIP sobre los cuales la ruta saliente va a intentar establecer la llamada discada por OML. Si la llamada falla en un troncal, se sigue intentando en el siguiente.

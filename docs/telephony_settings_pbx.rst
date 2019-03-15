@@ -10,15 +10,6 @@ El esquema que se repasa en esta sección es el que presenta la figura 1.
 *Figure 1: OML and PBX integration*
 
 
-Los pasos a ejecutar para dejar OMniLeads y un sistema PBX basado en SIP, Asterisk (r) & FreePBX (r) vinculado mediante un *Troncal*, son expuestos en el siguiente video.
-
-.. raw:: html
-
-        <iframe src="https://player.vimeo.com/video/320936127" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-
-
-Debajo se lista la configuración expuesta en el video.
-
 Parámetros para el troncal SIP en el PBX
 ****************************************
 
