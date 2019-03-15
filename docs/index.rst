@@ -125,14 +125,15 @@ Para profundizar al respecto se recomienda leer el resto del capítulo.
    :maxdepth: 2
 
    telephony.rst
-   telephony_settings_pbx.rst
-   telephony_settings_bpo.rst
-   telephony_settings_outr.rst
+   #telephony_settings_pbx.rst
+   #telephony_settings_bpo.rst
+   #telephony_settings_outr.rst
 
 
-
-CAMPAÑAS
 ********
+Campañas
+********
+
 Todo procesamiento de comunicaciones entre "el exterior" y un agente de OMniLeads es encapsulado sobre una campaña. En este capítulo se aborda todo lo inherente a la gestión de campañas Entrantes y Salientes (manuales, preview y dialer)
 
 En el video se expone una introducción conceptual a las campañas en OMniLeads, ejemplificando además paso a paso la creación de:
@@ -153,14 +154,15 @@ En el resto del capítulo cubrimos cada tipo de campaña.
    :maxdepth: 2
 
    campaigns.rst
-   campaigns_manual.rst
-   campaigns_preview.rst
-   campaigns_dialer.rst
-   campaigns_inbound.rst
+   #campaigns_manual.rst
+   #campaigns_preview.rst
+   #campaigns_dialer.rst
+   #campaigns_inbound.rst
 
 
-Reports & Supervision
-^^^^^^^^^^^^^^^^^^^^^
+****************************************************
+Métricas, reportes, grabaciones y supervisión online
+****************************************************
 
   .. toctree::
    :maxdepth: 2
