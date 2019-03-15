@@ -98,15 +98,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="telephony.html">Configuración de acceso a la PSTN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Troncal SIP entre OMniLeads y un PBX</a></li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Troncal SIP con proveedor de acceso PSTN</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_manual.html">Manual Call Campaign</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_preview.html">Preview Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_dialer.html">Dialer Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_inbound.html">Inbound Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campañas Telefónicas</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="reports.html">Telephony</a></li>
@@ -304,22 +298,12 @@ por cada troncal SIP. Además los troncales pueden ser configurados en modo <em>
 <li class="toctree-l2"><a class="reference internal" href="telephony.html#configuracion-de-enrutamiento-de-llamadas-salientes">Configuración de enrutamiento de llamadas salientes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Troncal SIP entre OMniLeads y un PBX</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="telephony_settings_pbx.html#parametros-para-el-troncal-sip-en-el-pbx">Parámetros para el troncal SIP en el PBX</a></li>
-<li class="toctree-l2"><a class="reference internal" href="telephony_settings_pbx.html#parametros-para-el-troncal-sip-en-omnileads">Parámetros para el troncal SIP en OMniLeads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="telephony_settings_pbx.html#comprobacion-del-estado-del-troncal">Comprobación del estado del troncal</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Troncal SIP con proveedor de acceso PSTN</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="telephony_settings_bpo.html#parametros-para-el-troncal-sip">Parámetros para el troncal SIP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="telephony_settings_bpo.html#comprobacion-del-estado-del-troncal">Comprobación del estado del troncal</a></li>
-</ul>
-</li>
 </ul>
 </div>
 </div></blockquote>
+</div>
 <div class="section" id="campanas">
-<h2>CAMPAÑAS<a class="headerlink" href="#campanas" title="Permalink to this headline">¶</a></h2>
+<h1>Campañas<a class="headerlink" href="#campanas" title="Permalink to this headline">¶</a></h1>
 <p>Todo procesamiento de comunicaciones entre “el exterior” y un agente de OMniLeads es encapsulado sobre una campaña. En este capítulo se aborda todo lo inherente a la gestión de campañas Entrantes y Salientes (manuales, preview y dialer)</p>
 <p>En el video se expone una introducción conceptual a las campañas en OMniLeads, ejemplificando además paso a paso la creación de:</p>
 <ul class="simple">
@@ -332,21 +316,23 @@ por cada troncal SIP. Además los troncales pueden ser configurados en modo <em>
 <blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campaigns</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campañas Telefónicas</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="campaigns.html#calificaciones">Calificaciones</a></li>
-<li class="toctree-l2"><a class="reference internal" href="campaigns.html#formularios">Formularios</a></li>
 <li class="toctree-l2"><a class="reference internal" href="campaigns.html#base-de-contactos">Base de contactos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="campaigns.html#formularios">Formularios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="campaigns.html#interaccion-con-un-crm-externo">Interacción con un CRM externo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="campaigns.html#campanas-manuales">Campañas Manuales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="campaigns.html#campanas-preview">Campañas Preview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="campaigns.html#campanas-con-discador-predictivo">Campañas con discador predictivo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="campaigns.html#campanas-entrantes">Campañas Entrantes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_manual.html">Manual Call Campaign</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_preview.html">Preview Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_dialer.html">Dialer Campaigns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_inbound.html">Inbound Campaigns</a></li>
 </ul>
 </div>
 </div></blockquote>
-<div class="section" id="reports-supervision">
-<h3>Reports &amp; Supervision<a class="headerlink" href="#reports-supervision" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="metricas-reportes-grabaciones-y-supervision-online">
+<h1>Métricas, reportes, grabaciones y supervisión online<a class="headerlink" href="#metricas-reportes-grabaciones-y-supervision-online" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
@@ -359,8 +345,6 @@ por cada troncal SIP. Además los troncales pueden ser configurados en modo <em>
 </ul>
 </div>
 </div></blockquote>
-</div>
-</div>
 <div class="section" id="maintenance">
 <h2>Maintenance<a class="headerlink" href="#maintenance" title="Permalink to this headline">¶</a></h2>
 <blockquote>
