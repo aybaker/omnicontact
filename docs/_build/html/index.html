@@ -97,9 +97,10 @@
 <li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Configuración Inicial</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="telephony.html">Configuración telefónica de OMniLeads</a></li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Telephony Settings - OML and the PBX</a></li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Telephony Settings - OML BPO Contact Center</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony.html">Configuración de acceso a la PSTN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Troncal SIP entre OMniLeads y un PBX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Troncal SIP con proveedor de acceso PSTN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony_settings_outr.html">Configuración de enrutamiento de llamadas salientes</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="campaigns.html">Campaigns</a></li>
@@ -186,20 +187,23 @@
             
   <div class="section" id="introduccion-a-omnileads">
 <h1>INTRODUCCION A OMNILEADS<a class="headerlink" href="#introduccion-a-omnileads" title="Permalink to this headline">¶</a></h1>
-<p>OMniLeads es una solución para Contact Centers basada en Software Libre (GPL v3), destinada a soportar la gestión, operación
+<p>OMniLeads es una solución <em>Standalone</em> para Contact Centers basada en <em>Software Libre GPL V3</em>, destinada a soportar la gestión, operación
 y administración de un Contact Center.</p>
-<p>OMniLeads como sistema ofrece funcionalidades que permiten desarrollar operaciones de Call Center tanto Inbound como Outbound
-(campañas preview, manuales y predictivas), que se puede instalar siguiendo unos pocos pasos. Con OMniLeads se puede montar toda una operación de
-Contact Center ya sea dentro del marco de una compañia u organización que necesita su propio Contact Center integrado al PBX operativo, así como
-también como Núcleo de Comunicaciones de una compañía que brinda servicios de Customer Contact (Business Outsorocing Process - BPO).</p>
-<p>De gestión y operación 100% Web, los agentes disponen de una interfaz basada WebRTC(link) para la gestión de comunicaciones mientras que los supervisores
+<p>OMniLeads ofrece funcionalidades que permiten desarrollar operaciones de Call Center tanto Inbound como Outbound
+(campañas preview, manuales y predictivas). A partir de una instalación sencilla, se puede montar toda una operación de
+Contact Center ya sea dentro del marco de una compañia u organización que necesita su propio Contact Center integrado al PBX operativo dentro de su sistema de telefonía, así como
+también funcionando como Núcleo de Comunicaciones de una compañía que brinda servicios de Customer Contact (Business Outsorocing Process - BPO).</p>
+<p>De gestión y operación 100% Web, los agentes disponen de una interfaz basada <a class="reference external" href="https://www.webrtc.org/">WebRTC</a> para la gestión de comunicaciones mientras que los supervisores
 utilizan WebRTC para realizar acciones de channel spy, coaching de agentes, gestión de QA o three way conferences. Por otro lado, los administradores
 cuentan con una interfaz que permite mantener usuarios, campañas, bases de datos, a su vez extraer métricas y estadísticas, gestionar las grabaciones
 de las comunicaciones entre otras funcionalidades.</p>
+<p>OMniLeads cuenta con su propio engine e interfaz de configuración de funciones de telefonía, permitiendo adminsitrar múltiples troncales SIP y su enrutamiento de llamadas salientes de acuerdo
+a reglas/patrones de marcado así como también enrutamiento de llamadas entrantes con la posibilidad de utilizar IVRs y/o Condicionales de tiempo a la hora de encaminar una numeración <em>DID</em> hacia una campaña entrante.</p>
+<p>Por si quedan dudas: <strong>OMniLeads NO es un módulo de “call center” que añade reportería y  supervisión a un sistema PBX. OMniLeads fue concebido desde cero, como una plataforma orientada y optimizada para el manejo de campañas telefónicas en el marco del Contact Center</strong></p>
 <img alt="_images/what_is.png" class="align-center" src="_images/what_is.png" />
 <div class="section" id="como-lo-obtengo">
 <h2>Cómo lo obtengo ?<a class="headerlink" href="#como-lo-obtengo" title="Permalink to this headline">¶</a></h2>
-<p>Nuestro repositorio se encuentra disponible en GitLab (link), para libre descarga y posterior uso del Software.</p>
+<p><a class="reference external" href="https://gitlab.com/omnileads/ominicontacto">Nuestro repositorio</a> se encuentra disponible en GitLab, para libre descarga, instalación y uso del Software.</p>
 </div>
 <div class="section" id="donde-se-puede-instalar">
 <h2>Donde se puede instalar ?<a class="headerlink" href="#donde-se-puede-instalar" title="Permalink to this headline">¶</a></h2>
@@ -207,7 +211,7 @@ de las comunicaciones entre otras funcionalidades.</p>
 </div>
 <div class="section" id="como-lo-instalo">
 <h2>Cómo lo instalo ?<a class="headerlink" href="#como-lo-instalo" title="Permalink to this headline">¶</a></h2>
-<p>Dentro del código del proyecto, se dispone de un script de instalación que permite instalar el producto sobre cualquier SO de los
+<p>Dentro del código del proyecto, se dispone de un script de instalación basado en <a class="reference external" href="https://www.ansible.com/">Ansible</a> que permite instalar el producto sobre cualquier SO de los
 mencionados anteriormente. En la sección Instalación de ésta pagin se detalla el proceso, en sus diferentes tipos de instalación.</p>
 </div>
 <div class="section" id="caracteristicas-y-funcionalidades-de-omnileads">
@@ -234,9 +238,8 @@ mencionados anteriormente. En la sección Instalación de ésta pagin se detalla
 <h1>INSTALACIÓN<a class="headerlink" href="#instalacion" title="Permalink to this headline">¶</a></h1>
 <p>En el siguiente video se expone paso a paso el proceso de instalación más básico (self-hosted script)</p>
 <iframe src="https://player.vimeo.com/video/317503659" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe><p>En las próximas páginas del presente capítulo, detallaremos la ejecución de cada tipo de instalación.</p>
-</div>
 <div class="section" id="tipos-de-instalacion">
-<h1>Tipos de instalación<a class="headerlink" href="#tipos-de-instalacion" title="Permalink to this headline">¶</a></h1>
+<h2>Tipos de instalación<a class="headerlink" href="#tipos-de-instalacion" title="Permalink to this headline">¶</a></h2>
 <p>Existen tres formas en la que OMniLeads puede ser instalador. En la presente sección se detalla cada proceso.</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -271,6 +274,7 @@ mencionados anteriormente. En la sección Instalación de ésta pagin se detalla
 </ul>
 </div>
 </div>
+</div>
 <div class="section" id="setting-iniciales">
 <h1>SETTING INICIALES<a class="headerlink" href="#setting-iniciales" title="Permalink to this headline">¶</a></h1>
 <p>En esta sección se plantean las configuraciones escenciales a realizar una vez que dejamos instalada una instancia de OMniLeads.</p>
@@ -282,24 +286,40 @@ mencionados anteriormente. En la sección Instalación de ésta pagin se detalla
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="configuracion-telefonica">
-<h1>CONFIGURACIÓN TELEFÓNICA<a class="headerlink" href="#configuracion-telefonica" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuracion-de-acceso-a-la-pstn">
+<h1>CONFIGURACIÓN DE ACCESO A LA PSTN<a class="headerlink" href="#configuracion-de-acceso-a-la-pstn" title="Permalink to this headline">¶</a></h1>
+<p>OMniLeads facilita mediante configuración web, la posibilidad de mantener troncales SIP de acceso a la PSTN. Éstos troncales
+son invocados por reglas de enrutamiento de llamadas salientes, en las cuales se puede especificar qué tipo de llamadas son procesadas
+por cada troncal SIP. Además los troncales pueden ser configurados en modo <em>failover</em></p>
 <blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="telephony.html">Configuración telefónica de OMniLeads</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="telephony.html#configuracion-telefonica-de-oml-pbx">Configuración telefónica de OML &amp; PBX</a></li>
-<li class="toctree-l2"><a class="reference internal" href="telephony.html#configuracion-telefonica-de-oml-acceso-directo-a-la-pstn">Configuración telefónica de OML (acceso directo a la PSTN)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony.html">Configuración de acceso a la PSTN</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="telephony.html#explicacion-del-abm-de-troncales">Explicación del ABM de troncales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telephony.html#troncal-sip-entre-omnileads-y-un-sistema-pbx">Troncal SIP entre OMniLeads y un sistema PBX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telephony.html#troncal-sip-entre-omnileads-y-un-proveedor-de-acceso-a-la-pstn">Troncal SIP entre OMniLeads y un proveedor de acceso a la PSTN</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Telephony Settings - OML and the PBX</a></li>
-<li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Telephony Settings - OML BPO Contact Center</a></li>
+<li class="toctree-l1"><a class="reference internal" href="telephony_settings_pbx.html">Troncal SIP entre OMniLeads y un PBX</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="telephony_settings_pbx.html#parametros-para-el-troncal-sip-en-el-pbx">Parámetros para el troncal SIP en el PBX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telephony_settings_pbx.html#parametros-para-el-troncal-sip-en-omnileads">Parámetros para el troncal SIP en OMniLeads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telephony_settings_pbx.html#comprobacion-del-estado-del-troncal">Comprobación del estado del troncal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="telephony_settings_bpo.html">Troncal SIP con proveedor de acceso PSTN</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="telephony_settings_bpo.html#parametros-para-el-troncal-sip">Parámetros para el troncal SIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telephony_settings_bpo.html#comprobacion-del-estado-del-troncal">Comprobación del estado del troncal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="telephony_settings_outr.html">Configuración de enrutamiento de llamadas salientes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="telephony_settings_outr.html#explicacion-del-abm-de-rutas-salientes">Explicación del ABM de rutas salientes</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div></blockquote>
-</div>
 <div class="section" id="campanas">
-<h1>CAMPAÑAS<a class="headerlink" href="#campanas" title="Permalink to this headline">¶</a></h1>
+<h2>CAMPAÑAS<a class="headerlink" href="#campanas" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
@@ -316,9 +336,8 @@ mencionados anteriormente. En la sección Instalación de ésta pagin se detalla
 </ul>
 </div>
 </div></blockquote>
-</div>
 <div class="section" id="reports-supervision">
-<h1>Reports &amp; Supervision<a class="headerlink" href="#reports-supervision" title="Permalink to this headline">¶</a></h1>
+<h3>Reports &amp; Supervision<a class="headerlink" href="#reports-supervision" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
@@ -332,8 +351,9 @@ mencionados anteriormente. En la sección Instalación de ésta pagin se detalla
 </div>
 </div></blockquote>
 </div>
+</div>
 <div class="section" id="maintenance">
-<h1>Maintenance<a class="headerlink" href="#maintenance" title="Permalink to this headline">¶</a></h1>
+<h2>Maintenance<a class="headerlink" href="#maintenance" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
@@ -343,6 +363,7 @@ mencionados anteriormente. En la sección Instalación de ésta pagin se detalla
 </ul>
 </div>
 </div></blockquote>
+</div>
 </div>
 
 

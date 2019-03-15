@@ -1,18 +1,24 @@
+************************
 INTRODUCCION A OMNILEADS
-^^^^^^^^^^^^^^^^^^^^^^^^
+************************
 
-OMniLeads es una solución para Contact Centers basada en Software Libre (GPL v3), destinada a soportar la gestión, operación
+OMniLeads es una solución *Standalone* para Contact Centers basada en *Software Libre GPL V3*, destinada a soportar la gestión, operación
 y administración de un Contact Center.
 
-OMniLeads como sistema ofrece funcionalidades que permiten desarrollar operaciones de Call Center tanto Inbound como Outbound
-(campañas preview, manuales y predictivas), que se puede instalar siguiendo unos pocos pasos. Con OMniLeads se puede montar toda una operación de
-Contact Center ya sea dentro del marco de una compañia u organización que necesita su propio Contact Center integrado al PBX operativo, así como
-también como Núcleo de Comunicaciones de una compañía que brinda servicios de Customer Contact (Business Outsorocing Process - BPO).
+OMniLeads ofrece funcionalidades que permiten desarrollar operaciones de Call Center tanto Inbound como Outbound
+(campañas preview, manuales y predictivas). A partir de una instalación sencilla, se puede montar toda una operación de
+Contact Center ya sea dentro del marco de una compañia u organización que necesita su propio Contact Center integrado al PBX operativo dentro de su sistema de telefonía, así como
+también funcionando como Núcleo de Comunicaciones de una compañía que brinda servicios de Customer Contact (Business Outsorocing Process - BPO).
 
-De gestión y operación 100% Web, los agentes disponen de una interfaz basada WebRTC(link) para la gestión de comunicaciones mientras que los supervisores
+De gestión y operación 100% Web, los agentes disponen de una interfaz basada `WebRTC <https://www.webrtc.org/>`_ para la gestión de comunicaciones mientras que los supervisores
 utilizan WebRTC para realizar acciones de channel spy, coaching de agentes, gestión de QA o three way conferences. Por otro lado, los administradores
 cuentan con una interfaz que permite mantener usuarios, campañas, bases de datos, a su vez extraer métricas y estadísticas, gestionar las grabaciones
 de las comunicaciones entre otras funcionalidades.
+
+OMniLeads cuenta con su propio engine e interfaz de configuración de funciones de telefonía, permitiendo adminsitrar múltiples troncales SIP y su enrutamiento de llamadas salientes de acuerdo
+a reglas/patrones de marcado así como también enrutamiento de llamadas entrantes con la posibilidad de utilizar IVRs y/o Condicionales de tiempo a la hora de encaminar una numeración *DID* hacia una campaña entrante.
+
+Por si quedan dudas: **OMniLeads NO es un módulo de "call center" que añade reportería y  supervisión a un sistema PBX. OMniLeads fue concebido desde cero, como una plataforma orientada y optimizada para el manejo de campañas telefónicas en el marco del Contact Center**
 
 
 .. image:: images/what_is.png
@@ -21,7 +27,7 @@ de las comunicaciones entre otras funcionalidades.
 
 Cómo lo obtengo ?
 *****************
-Nuestro repositorio se encuentra disponible en GitLab (link), para libre descarga y posterior uso del Software.
+`Nuestro repositorio  <https://gitlab.com/omnileads/ominicontacto>`_ se encuentra disponible en GitLab, para libre descarga, instalación y uso del Software.
 
 
 Donde se puede instalar ?
@@ -31,7 +37,7 @@ OMniLeads puede correr sobre las distribuciones de GNU/Linux; CentOS7, Debian-9 
 
 Cómo lo instalo ?
 *****************
-Dentro del código del proyecto, se dispone de un script de instalación que permite instalar el producto sobre cualquier SO de los
+Dentro del código del proyecto, se dispone de un script de instalación basado en `Ansible <https://www.ansible.com/>`_ que permite instalar el producto sobre cualquier SO de los
 mencionados anteriormente. En la sección Instalación de ésta pagin se detalla el proceso, en sus diferentes tipos de instalación.
 
 
@@ -49,9 +55,9 @@ Dónde y cómo lo puedo usar ?
 
   what_is_use_cases.rst
 
-
+***********
 INSTALACIÓN
-^^^^^^^^^^^
+***********
 
 En el siguiente video se expone paso a paso el proceso de instalación más básico (self-hosted script)
 
@@ -63,7 +69,7 @@ En el siguiente video se expone paso a paso el proceso de instalación más bás
 En las próximas páginas del presente capítulo, detallaremos la ejecución de cada tipo de instalación.
 
 Tipos de instalación
-^^^^^^^^^^^^^^^^^^^^
+********************
 
 Existen tres formas en la que OMniLeads puede ser instalador. En la presente sección se detalla cada proceso.
 
@@ -74,8 +80,9 @@ Existen tres formas en la que OMniLeads puede ser instalador. En la presente sec
    install_remote.rst
    install_cluster.rst
 
+*****************
 SETTING INICIALES
-^^^^^^^^^^^^^^^^^
+*****************
 
 En esta sección se plantean las configuraciones escenciales a realizar una vez que dejamos instalada una instancia de OMniLeads.
 
@@ -85,9 +92,13 @@ En esta sección se plantean las configuraciones escenciales a realizar una vez 
 
    initial_settings.rst
 
+*********************************
+CONFIGURACIÓN DE ACCESO A LA PSTN
+*********************************
+OMniLeads facilita mediante configuración web, la posibilidad de mantener troncales SIP de acceso a la PSTN. Éstos troncales
+son invocados por reglas de enrutamiento de llamadas salientes, en las cuales se puede especificar qué tipo de llamadas son procesadas
+por cada troncal SIP. Además los troncales pueden ser configurados en modo *failover*
 
-CONFIGURACIÓN TELEFÓNICA
-^^^^^^^^^^^^^^^^^^^^^^^^
 
   .. toctree::
    :maxdepth: 2
@@ -95,10 +106,11 @@ CONFIGURACIÓN TELEFÓNICA
    telephony.rst
    telephony_settings_pbx.rst
    telephony_settings_bpo.rst
+   telephony_settings_outr.rst
 
 
 CAMPAÑAS
-^^^^^^^^
+********
 
   .. toctree::
    :maxdepth: 2
@@ -125,7 +137,7 @@ Reports & Supervision
 
 
 Maintenance
-^^^^^^^^^^^
+***********
 
   .. toctree::
    :maxdepth: 2
