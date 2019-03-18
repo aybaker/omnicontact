@@ -93,6 +93,8 @@ Entre otros parámetros.
 Campañas Manuales
 *****************
 
+Dentro de este insiso se ejemplifica el paso a paso de una creación
+
 .. toctree::
  :maxdepth: 2
 
@@ -109,9 +111,10 @@ En el siguiente video se expone paso a paso la creación y puesta en marcha de u
         <iframe src="https://player.vimeo.com/video/320950602" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
+Para profundizar en el asunto ingresar al link:
+
 .. toctree::
  :maxdepth: 2
-
 
  campaigns_preview.rst
 
