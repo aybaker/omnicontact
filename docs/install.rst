@@ -1,6 +1,7 @@
 ******************************
 Procedimientos de instalación
 ******************************
+En este capítulo se detallan los tre tipos de instalación de OMniLeads
 
 .. toctree::
    :maxdepth: 2

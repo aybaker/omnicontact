@@ -1,5 +1,5 @@
 WebRTC; la tecnología subyacente de OMniLeads
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*********************************************
 Antes de de citar los casos de uso, ponemos énfasis en repasar los beneficios de la tecnología WebRTC; núcleo de OMniLeads.
 
 WebRTC dota a un navegador web de la posibilidad de mantener comunicaciones real time de voz, video, chat y compartición de pantalla.
@@ -11,7 +11,7 @@ procesando comunicaciones.
 .. image:: images/what_is_webrtc.png
         :align: center
 
-Otras ventajas de WebRTC
+**Otras ventajas de WebRTC**
 
 - Se minimizan los punto de fallo en las esrtaciones de trabajo
 - Se minimizan las tareas del helpdesk y personal de soporte
@@ -21,7 +21,7 @@ Otras ventajas de WebRTC
 
 
 Características y funcionalidades de OMniLeads
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+**********************************************
 - Gestión de campañas Entrantes y Salientes; Discador predictivo, Preview & IVR Blaster.
 - Consola de agente WebRTC (no se requiere instalar ninguna aplicación ni plugin, 100% Browser).
 - Opus ® como codec por defecto para todas las comunicaciones de Agente.
