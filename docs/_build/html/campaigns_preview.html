@@ -90,9 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="what_is_use_cases.html#carriers-o-proveedores-de-cloud-pbx">Carriers ó Proveedores de Cloud PBX</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="install_self_hosted.html">Ansible Self-Hosted Install</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_remote.html">Instalación desde ansible remoto</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_cluster.html">Horizontal Cluster Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Procedimientos de instalación</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="initial_settings.html">Configuración Inicial</a></li>
@@ -117,17 +115,10 @@
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="reports.html">Telephony</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports_inbound_camp.html">Telephony</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports_outbound_camp.html">Telephony</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports_general.html">Telephony</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports_agents.html">Telephony</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports_supervision.html">Telephony</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reports.html">Metricas, grabaciones y supervicion</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="maintance_backup.html">OMniLeads Maintenance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="maintance_changeip.html">OMniLeads Maintenance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="maintance_upgrades.html">OMniLeads Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintance.html">OMniLeads Maintenance</a></li>
 </ul>
 
             
@@ -196,6 +187,32 @@
             
   <div class="section" id="preview-campaigns">
 <h1>Preview Campaigns<a class="headerlink" href="#preview-campaigns" title="Permalink to this headline">¶</a></h1>
+<p>Para crear una nueva campaña preview se debe ingresar al punto de menú <em>Campaigns -&gt; New  Campaign</em>. El proceso de creación consta de
+un wizard de dos vistas.</p>
+<p>La primera pantalla nos invita a indicar una serie de parámtros de la campaña, como lo indica la figura 1.</p>
+<img alt="_images/campaigns_prev_wizard1.png" src="_images/campaigns_prev_wizard1.png" />
+<p><em>Figure 1: Campaigns parameters</em></p>
+<ul class="simple">
+<li><strong>Name:</strong> nombre de la campaña</li>
+<li><strong>Contact database:</strong> se utiliza para desplegar datos a partir del número de teléfono origen que realiza la llamada entrante al sistema.</li>
+<li><strong>Campaign form:</strong> campo de selección del formulario que se desplegará cada vez que un agente califique un contacto con la calificación “de gestión”.</li>
+<li><strong>External URL:</strong> URL a disparar cada vez que el agente lo indique.</li>
+<li><strong>Enable recordings:</strong> habilitar que todas las llamadas de la campaña sean grabadas.</li>
+<li><strong>Scope:</strong> se define como la cantidad de gestiones positivas que se esperan para la campaña. En la supervisión de la campaña se muestra en tiempo real el porcentaje de avence de la campaña respecto al objetivo definido.</li>
+<li><strong>Disconection time:</strong> es el tiempo que el discador preview reserva un contacto a un agente, antes de volverlo como disponible para ser procesado por otro.</li>
+</ul>
+<p>En la segunda pantalla se deben asignar las calificaciones que se requieran como disponibles para os agentes a la hora de tipificar cada llamada de cada contacto.</p>
+<img alt="_images/campaigns_prev_wizard_disposition.png" src="_images/campaigns_prev_wizard_disposition.png" />
+<p><em>Figure 2: Call dispositions</em></p>
+<p>Una vez lista la campaña solo resta asignar a los agentes que podrán trabajar en la misma, opteniendo contactos para marcar.
+En la figura 3 y 4 se ejemplifica una asignación de agentes a una campaña.</p>
+<img alt="_images/campaigns_prev_ag1.png" src="_images/campaigns_prev_ag1.png" />
+<p><em>Figure 3: agent assignment</em></p>
+<img alt="_images/campaigns_prev_ag2.png" src="_images/campaigns_prev_ag2.png" />
+<p><em>Figure 4: agent assignment</em></p>
+<p>Finalmente cuando un agente asignado a la campaña realice un login a la plataforma, debería disponer de la campaña preview tal como se expone en la figura 5.</p>
+<img alt="_images/campaigns_prev_ag_view.png" src="_images/campaigns_prev_ag_view.png" />
+<p><em>Figure 5: Preview agents view</em></p>
 </div>
 
 
