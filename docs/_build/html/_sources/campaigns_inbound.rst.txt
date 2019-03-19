@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ******************
 Campañas entrantes
 ******************
@@ -76,3 +77,7 @@ sin efecto los parámetros "Ring time" y "Agent callback time" como se mencionó
 .. image:: images/users_group_config.png
 
 *Figure 5: agent group config*
+=======
+Inbound Campaigns
+=================
+>>>>>>> ebe1b1d9313f3eb007bdd40e455d72b110587caf

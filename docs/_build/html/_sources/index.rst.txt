@@ -79,8 +79,17 @@ Existen tres formas en la que OMniLeads puede ser instalador. En la presente sec
    :maxdepth: 2
 
    install.rst
+<<<<<<< HEAD
+=======
+   
+>>>>>>> ebe1b1d9313f3eb007bdd40e455d72b110587caf
 
+*****************
+SETTING INICIALES
+*****************
+En esta sección se plantean las configuraciones escenciales a realizar una vez que dejamos instalada una instancia de OMniLeads.
 
+<<<<<<< HEAD
 *****************
 SETTING INICIALES
 *****************
@@ -88,6 +97,10 @@ En esta sección se plantean las configuraciones escenciales a realizar una vez 
 
 En el vídeo; una típica configuración posterior a la instalación de OMniLeads.
 
+=======
+En el vídeo; una típica configuración posterior a la instalación de OMniLeads.
+
+>>>>>>> ebe1b1d9313f3eb007bdd40e455d72b110587caf
 .. raw:: html
 
         <iframe src="https://player.vimeo.com/video/319574451" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>

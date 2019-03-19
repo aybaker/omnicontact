@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ********************
 Manual Call Campaign
 ********************
@@ -84,3 +85,7 @@ Finalmente se despliegan el nuevo contacto y la opción de clasificar la llamada
 .. image:: images/campaigns_manual_agconsole7.png
 
 *Figure 8: new contact called*
+=======
+Manual Call Campaign
+====================
+>>>>>>> ebe1b1d9313f3eb007bdd40e455d72b110587caf
