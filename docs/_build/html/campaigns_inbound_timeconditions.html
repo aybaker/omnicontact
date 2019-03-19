@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Recibiendo llamadas entrantes desde el PBX" href="campaigns_inbound_with_pbx.html" />
+    <link rel="next" title="Metricas, grabaciones y supervicion" href="reports.html" />
     <link rel="prev" title="IVR - Interactive Voice Response" href="campaigns_inbound_ivr.html" /> 
 </head>
 
@@ -110,9 +110,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="campaigns.html#campanas-entrantes">Campañas Entrantes</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="campaigns_inbound.html">Campañas entrantes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_routes.html">Enrutamiento de llamadas entrantes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_routes_frompbx.html">Enrutamiento de llamadas entrantes desde un PBX hacia OMniLeads</a></li>
 <li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_ivr.html">IVR - Interactive Voice Response</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Enrutamiento condicionado por fechas y horas</a></li>
-<li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_with_pbx.html">Recibiendo llamadas entrantes desde el PBX</a></li>
 </ul>
 </li>
 </ul>
@@ -191,15 +191,35 @@
             
   <div class="section" id="enrutamiento-condicionado-por-fechas-y-horas">
 <h1>Enrutamiento condicionado por fechas y horas<a class="headerlink" href="#enrutamiento-condicionado-por-fechas-y-horas" title="Permalink to this headline">¶</a></h1>
-<p>2.4 - Grupos horarios</p>
-<p>Este módulo permite agrupar patrones de fechas y horas así también como fechas y horarios puntuales dentro de un grupo que luego puede ser invocado por los condicionales de tiempo en en otros componentes como el login de agentes o discado de llamadas salientes.
-Para definir o editar grupos de horarios, se debe acceder a Telefonía - Grupos horarios. Para añadir un nuevo grupo se debe presionar el botón “Agregar nuevo grupo”. Luego se presenta una vista como la de la Figura 14 y 15.</p>
-<p>Figura 14: nuevo grupo horario</p>
-<p>Figura 15: nuevo grupo horario</p>
-<p>2.5 - Validaciones de tiempo</p>
-<p>Este módulo permite comparar la fecha y hora en el momento de procesar una llamada, con un grupo horario asignado como patrón de comparación. Luego en base a la coincidencia o no con alguna franja de fecha/hora del grupo, la llamada se envía hacia un destino u otro.</p>
-<p>Para generar un nuevo objeto En la Figura 16 se ejemplifica.</p>
-<p>Figura 16: nueva validación fecha/hora</p>
+<p>OMniLeads permite configurar el enrutamiento de llamadas entrantes hacia diferentes destinos internos a partir de comparar la fecha/hora en que se procesa una llamada y un patrón configurado, de manera tal que se pueda planificar de antemano
+si una llamada debe ir hacia un destino u otro basandonos en dicha comparación.</p>
+<p>Por ejemplo una llamada podria ir hacia una campaña entrante “en fechas y horas de atención al cliente” y hacia un IVR fuera de ese rango definido.</p>
+<p>Cada elemento de este tipo generado, puede ser invocado por otros como el destino de:</p>
+<ul class="simple">
+<li>una ruta entrante</li>
+<li>una opción de un IVR</li>
+<li>el failover de una campaña entrante</li>
+<li>otro elemento similar</li>
+</ul>
+<p>Para llevar a cabo este tipo de configuiraciones se disponen de dos módulos que trabajan juntos.</p>
+<ul class="simple">
+<li><strong>Grupos horarios</strong></li>
+</ul>
+<p>Este módulo permite agrupar patrones de fechas y horas así también como fechas y horarios puntuales dentro de un elemento interno de OMniLeasds, para luego puede ser invocado por los condicionales de tiempo, módulo complementario que permite realizar un enrutamiento comparando la fecha/hora de la llamada con la de un grupo de éstos.
+Para definir o editar grupos de horarios, se debe acceder al punto de menú <strong>Telefonía -&gt; Grupos horarios</strong>. Para añadir un nuevo grupo se debe presionar el botón “Agregar nuevo grupo”.</p>
+<p>La pantalla de grupos horarios se expone en la figura 1.</p>
+<img alt="_images/campaigns_in_tc1.png" src="_images/campaigns_in_tc1.png" />
+<p><em>Figure 1: Time groups</em></p>
+<p>Una vez generados los <em>Grupos de tiempos</em> podemos invocarlos desde el módulo complementario <em>Condicionales de tiempos</em></p>
+<ul class="simple">
+<li><strong>Validaciones de tiempo</strong></li>
+</ul>
+<p>Este módulo permite comparar la fecha y hora en el momento de procesar una llamada, con un grupo horario asignado como patrón de comparación. Luego en base a la coincidencia o no con alguna franja de fecha/hora del grupo, la llamada se envía hacia el destino positivo o negativo de la comparación.</p>
+<p>Para generar un elemento Condicional de tiempo, se debe acceder a <strong>Telephony -&gt; Time conditions</strong></p>
+<p>La pantalla de configuración es similar a la figura 2.</p>
+<img alt="_images/campaigns_in_tc2.png" src="_images/campaigns_in_tc2.png" />
+<p><em>Figure 2: Time conditions</em></p>
+<p>Finalmente tenemos disponible este elemento de enrutamiento para ser utilizado por ejemple como destino de una ruta entrante.</p>
 </div>
 
 
@@ -210,7 +230,7 @@ Para definir o editar grupos de horarios, se debe acceder a Telefonía - Grupos 
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="campaigns_inbound_with_pbx.html" class="btn btn-neutral float-right" title="Recibiendo llamadas entrantes desde el PBX" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="reports.html" class="btn btn-neutral float-right" title="Metricas, grabaciones y supervicion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="campaigns_inbound_ivr.html" class="btn btn-neutral float-left" title="IVR - Interactive Voice Response" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
