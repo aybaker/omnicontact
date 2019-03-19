@@ -111,11 +111,7 @@ En el siguiente video se expone paso a paso la creación y puesta en marcha de u
         <iframe src="https://player.vimeo.com/video/320950602" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
-<<<<<<< HEAD
 Para profundizar en el asunto ingresar al link, donde se explica cada pantalla de configuración detalladamente.
-=======
-Para profundizar en el asunto ingresar al link:
->>>>>>> ebe1b1d9313f3eb007bdd40e455d72b110587caf
 
 .. toctree::
  :maxdepth: 2
@@ -131,29 +127,20 @@ Campañas con discador predictivo
 
 
  campaigns_dialer.rst
-<<<<<<< HEAD
  campaigns_dialer_recycle.rst
-=======
->>>>>>> ebe1b1d9313f3eb007bdd40e455d72b110587caf
 
 
 Campañas Entrantes
 ******************
-<<<<<<< HEAD
 En este capítulo se repasan todas las funcionalidades asociadas al tratamiento de llamadas entrantes.
 
 En el siguiente video se expone paso a paso la creación y puesta en marcha de una campaña entrante.
-=======
-
-En el siguiente video se expone paso a paso la creación y puesta en marcha de una campaña entrante. Además se ejemplifica la operación del agente dentro de la misma.
->>>>>>> ebe1b1d9313f3eb007bdd40e455d72b110587caf
 
 .. raw:: html
 
         <iframe src="https://player.vimeo.com/video/320941143" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
-<<<<<<< HEAD
 En este siguiente video se ejemplifica cómo configurar un PBX basado en Asterisk para derivar llamadas hacia campañas entrantes de OMniLeads, desde un IVR del PBX. Aunque la configuración expuesta también permite
 derivar llamadas desde cualquier elemento del PBX, incluyendo las llamadas generadas o transferidas desde extensiones del PBX con destino en alguna campaña de OMniLeads.
 
@@ -164,17 +151,12 @@ derivar llamadas desde cualquier elemento del PBX, incluyendo las llamadas gener
 
 Para profundizar en cada una de las funcionalidaes pertinentes al mundo de las llamadas entrantes, se recomienda ingresar a cada uno de los links expuestos debajo.
 
-=======
->>>>>>> ebe1b1d9313f3eb007bdd40e455d72b110587caf
 .. toctree::
  :maxdepth: 2
 
 
  campaigns_inbound.rst
-<<<<<<< HEAD
  campaigns_inbound_routes.rst
  campaigns_inbound_routes_frompbx.rst
  campaigns_inbound_ivr.rst
  campaigns_inbound_timeconditions.rst
-=======
->>>>>>> ebe1b1d9313f3eb007bdd40e455d72b110587caf

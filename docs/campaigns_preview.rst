@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 *****************
 Preview Campaigns
 *****************
@@ -51,7 +50,3 @@ Si el agente hace click sobre el teléfono entonces se dispara la llamada, se vi
 .. image:: images/campaigns_prev_agconsole2.png
 
 *Figure 6: Contact called*
-=======
-Preview Campaigns
-=================
->>>>>>> ebe1b1d9313f3eb007bdd40e455d72b110587caf
