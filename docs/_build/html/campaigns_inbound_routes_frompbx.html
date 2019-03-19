@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Recibiendo llamadas entrantes desde el PBX &mdash; OMniLeads develop documentation</title>
+  <title>Enrutamiento de llamadas entrantes desde un PBX hacia OMniLeads &mdash; OMniLeads develop documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Metricas, grabaciones y supervicion" href="reports.html" />
-    <link rel="prev" title="Enrutamiento condicionado por fechas y horas" href="campaigns_inbound_timeconditions.html" /> 
+    <link rel="next" title="IVR - Interactive Voice Response" href="campaigns_inbound_ivr.html" />
+    <link rel="prev" title="Enrutamiento de llamadas entrantes" href="campaigns_inbound_routes.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -110,9 +110,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="campaigns.html#campanas-entrantes">Campañas Entrantes</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="campaigns_inbound.html">Campañas entrantes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_routes.html">Enrutamiento de llamadas entrantes</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Enrutamiento de llamadas entrantes desde un PBX hacia OMniLeads</a></li>
 <li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_ivr.html">IVR - Interactive Voice Response</a></li>
 <li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_timeconditions.html">Enrutamiento condicionado por fechas y horas</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Recibiendo llamadas entrantes desde el PBX</a></li>
 </ul>
 </li>
 </ul>
@@ -170,13 +170,13 @@
         
           <li><a href="campaigns.html">Campañas Telefónicas</a> &raquo;</li>
         
-      <li>Recibiendo llamadas entrantes desde el PBX</li>
+      <li>Enrutamiento de llamadas entrantes desde un PBX hacia OMniLeads</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/campaigns_inbound_with_pbx.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/campaigns_inbound_routes_frompbx.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,8 +189,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="recibiendo-llamadas-entrantes-desde-el-pbx">
-<h1>Recibiendo llamadas entrantes desde el PBX<a class="headerlink" href="#recibiendo-llamadas-entrantes-desde-el-pbx" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="enrutamiento-de-llamadas-entrantes-desde-un-pbx-hacia-omnileads">
+<h1>Enrutamiento de llamadas entrantes desde un PBX hacia OMniLeads<a class="headerlink" href="#enrutamiento-de-llamadas-entrantes-desde-un-pbx-hacia-omnileads" title="Permalink to this headline">¶</a></h1>
+<p>A la hora de enrutar llamadas desde un PBX (en nuestro ejemplo Asterisk), pero los concepto se pueden extender a cualquier tipo o marca.</p>
+<p>Lo primero que se debe definir es la numeración asignada a la ruta entrante que conmute la llamada hacia un destino de OMniLeads, ya que este número (DID de la ruta) debe ser invocado desde el PBX a la hora
+de derivar llamadas (desde una ruta entrante, opción del IVR o failover de alguna cola/ring group, etc.) hacia OMniLeads o bien si una extensión desea llamar o transferir una llamada hacia OMniLeads.</p>
+<img alt="_images/campaigns_in_route_frompbx.png" src="_images/campaigns_in_route_frompbx.png" />
+<p><em>Figure 1: Inbound route parameters</em></p>
+<p>Tomando como ejemplo el número “123456” utilizado en la figura anterior, entonces una forma de integrar esta ruta en un PBX basado en Asteisk sería que desde dicho PBX se genere una llamada hacia el
+número mencionado, cada vez que algún recurso del PBX necesite ser conmutado hacia este destino de OMniLeads.</p>
+<p>Si nuestro PBX Asterisk dispone de una interfaz web de configuración entonces simplemente puedo generar una <em>Nueva extensión</em> y hacer que la misma apunte a; <em>SIP/trunkomnileads/123456</em> , donde “trunkomnileads” es el nombre elegido (en el PBX) para el troncal SIP con OMniLeads.
+La idea de extensión apuntando hacia OMniLeads se ejemplifica en la figura 2.</p>
+<img alt="_images/campaigns_in_route_frompbx2.png" src="_images/campaigns_in_route_frompbx2.png" />
+<p><em>Figure 2: OMniLeads PBX custom extension</em></p>
+<p>Si bien la extension en el PBX puede tener cualquier numeración (en la figura es 2222), lo importante es enviar “123456” (en nuestro ejemplo) hacia OMniLeads como se resalta en la figura 3.</p>
+<img alt="_images/campaigns_in_route_frompbx3.png" src="_images/campaigns_in_route_frompbx3.png" />
+<p><em>Figure 3: OMniLeads PBX custom extension</em></p>
+<p>Una vez disponible la extension en el PBX, solo es cuestión de invocarla desde los elementos del PBX, como por ejemplo un IVR.</p>
+<img alt="_images/campaigns_in_route_frompbx4.png" src="_images/campaigns_in_route_frompbx4.png" />
+<p><em>Figure 4: from IVR to OMniLeads</em></p>
+<p>Si bien en la figura 4 se ejemplifica la derivación de llamadas hacia campañas entrantes de OMniLeads, desde un IVR del PBX. Podemos concluir en que también las extensiones del PBX pueden marcar o transferir llamadas a las extensiones que mapean el PBX con campañas entrantes de OMniLeads.</p>
 </div>
 
 
@@ -201,10 +219,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="reports.html" class="btn btn-neutral float-right" title="Metricas, grabaciones y supervicion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="campaigns_inbound_ivr.html" class="btn btn-neutral float-right" title="IVR - Interactive Voice Response" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="campaigns_inbound_timeconditions.html" class="btn btn-neutral float-left" title="Enrutamiento condicionado por fechas y horas" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="campaigns_inbound_routes.html" class="btn btn-neutral float-left" title="Enrutamiento de llamadas entrantes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

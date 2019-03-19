@@ -127,6 +127,7 @@ Campañas con discador predictivo
 
 
  campaigns_dialer.rst
+ campaigns_dialer_recycle.rst
 
 
 Campañas Entrantes
@@ -140,6 +141,14 @@ En el siguiente video se expone paso a paso la creación y puesta en marcha de u
         <iframe src="https://player.vimeo.com/video/320941143" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
+En este siguiente video se ejemplifica cómo configurar un PBX basado en Asterisk para derivar llamadas hacia campañas entrantes de OMniLeads, desde un IVR del PBX. Aunque la configuración expuesta también permite
+derivar llamadas desde cualquier elemento del PBX, incluyendo las llamadas generadas o transferidas desde extensiones del PBX con destino en alguna campaña de OMniLeads.
+
+.. raw:: html
+
+        <iframe src="https://player.vimeo.com/video/320955286" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+
 Para profundizar en cada una de las funcionalidaes pertinentes al mundo de las llamadas entrantes, se recomienda ingresar a cada uno de los links expuestos debajo.
 
 .. toctree::
@@ -147,7 +156,7 @@ Para profundizar en cada una de las funcionalidaes pertinentes al mundo de las l
 
 
  campaigns_inbound.rst
+ campaigns_inbound_routes.rst
+ campaigns_inbound_routes_frompbx.rst
  campaigns_inbound_ivr.rst
  campaigns_inbound_timeconditions.rst
- campaigns_inbound_routes.rst
- campaigns_inbound_with_pbx.rst
