@@ -79,7 +79,7 @@ Existen tres formas en la que OMniLeads puede ser instalador. En la presente sec
    :maxdepth: 2
 
    install.rst
-   
+
 
 *****************
 SETTING INICIALES

@@ -111,7 +111,7 @@ En el siguiente video se expone paso a paso la creación y puesta en marcha de u
         <iframe src="https://player.vimeo.com/video/320950602" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
-Para profundizar en el asunto ingresar al link:
+Para profundizar en el asunto ingresar al link, donde se explica cada pantalla de configuración detalladamente.
 
 .. toctree::
  :maxdepth: 2
@@ -139,8 +139,13 @@ En el siguiente video se expone paso a paso la creación y puesta en marcha de u
         <iframe src="https://player.vimeo.com/video/320941143" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
+Para profundizar en el asunto ingresar al link, donde se explica cada pantalla de configuración detalladamente.
+
 .. toctree::
  :maxdepth: 2
 
 
  campaigns_inbound.rst
+ campaigns_inbound_ivr.rst
+ campaigns_inbound_timeconditions.rst
+ campaigns_inbound_routes.rst

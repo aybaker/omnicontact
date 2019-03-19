@@ -3,7 +3,7 @@ Preview Campaigns
 *****************
 
 Para crear una nueva campaña preview se debe ingresar al punto de menú *Campaigns -> New  Campaign*. El proceso de creación consta de
-un wizard de dos vistas.
+un wizard de dos pantallas.
 
 La primera pantalla nos invita a indicar una serie de parámtros de la campaña, como lo indica la figura 1.
 
@@ -37,9 +37,16 @@ En la figura 3 y 4 se ejemplifica una asignación de agentes a una campaña.
 
 *Figure 4: agent assignment*
 
-Finalmente cuando un agente asignado a la campaña realice un login a la plataforma, debería disponer de la campaña preview tal como se expone en la figura 5.
+Cuando un agente asignado a la campaña realice un login a la plataforma, debería disponer de la campaña preview tal como se expone en la figura 5.
 
 
-.. image:: images/campaigns_prev_ag_view.png
+.. image:: images/campaigns_prev_agconsole1.png
 
 *Figure 5: Preview agents view*
+
+Si el agente hace click sobre el teléfono entonces se dispara la llamada, se visualizan los datos (extras al teléfono) del contacto marcado en la vista de agente, permitiendo a su vez al agente tipificar la llamada con alguna de las calificaciones asignadas a la campaña.
+
+
+.. image:: images/campaigns_prev_agconsole2.png
+
+*Figure 6: Contact called*
