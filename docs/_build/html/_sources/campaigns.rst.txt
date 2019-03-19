@@ -131,15 +131,16 @@ Campañas con discador predictivo
 
 Campañas Entrantes
 ******************
+En este capítulo se repasan todas las funcionalidades asociadas al tratamiento de llamadas entrantes.
 
-En el siguiente video se expone paso a paso la creación y puesta en marcha de una campaña entrante. Además se ejemplifica la operación del agente dentro de la misma.
+En el siguiente video se expone paso a paso la creación y puesta en marcha de una campaña entrante.
 
 .. raw:: html
 
         <iframe src="https://player.vimeo.com/video/320941143" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
-Para profundizar en el asunto ingresar al link, donde se explica cada pantalla de configuración detalladamente.
+Para profundizar en cada una de las funcionalidaes pertinentes al mundo de las llamadas entrantes, se recomienda ingresar a cada uno de los links expuestos debajo.
 
 .. toctree::
  :maxdepth: 2
@@ -149,3 +150,4 @@ Para profundizar en el asunto ingresar al link, donde se explica cada pantalla d
  campaigns_inbound_ivr.rst
  campaigns_inbound_timeconditions.rst
  campaigns_inbound_routes.rst
+ campaigns_inbound_with_pbx.rst

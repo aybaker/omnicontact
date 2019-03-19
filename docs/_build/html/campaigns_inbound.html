@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Metricas, grabaciones y supervicion" href="reports.html" />
+    <link rel="next" title="IVR - Interactive Voice Response" href="campaigns_inbound_ivr.html" />
     <link rel="prev" title="Dialer Campaigns" href="campaigns_dialer.html" /> 
 </head>
 
@@ -108,7 +108,15 @@
 <li class="toctree-l2"><a class="reference internal" href="campaigns.html#campanas-preview">Campañas Preview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="campaigns.html#campanas-con-discador-predictivo">Campañas con discador predictivo</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="campaigns.html#campanas-entrantes">Campañas Entrantes</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Campañas entrantes</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Campañas entrantes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#como-crear-una-nueva-campana">Cómo crear una nueva campaña</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ringing-vs-atencion-automatica-de-llamadas-entrantes">Ringing VS Atención automática de llamadas entrantes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_ivr.html">IVR - Interactive Voice Response</a></li>
+<li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_timeconditions.html">Enrutamiento condicionado por fechas y horas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_routes.html">Enrutamiento de llamadas entrantes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_with_pbx.html">Recibiendo llamadas entrantes desde el PBX</a></li>
 </ul>
 </li>
 </ul>
@@ -187,6 +195,8 @@
             
   <div class="section" id="campanas-entrantes">
 <h1>Campañas entrantes<a class="headerlink" href="#campanas-entrantes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="como-crear-una-nueva-campana">
+<h2>Cómo crear una nueva campaña<a class="headerlink" href="#como-crear-una-nueva-campana" title="Permalink to this headline">¶</a></h2>
 <p>Para crear una nueva campaña, se debe ir a Campaña → Campañas Entrantes → Nueva campaña.</p>
 <p>Se debe completar la primera pantalla del wizard, como lo expone la figura 1.</p>
 <img alt="_images/campaigns_in_wizard1.png" src="_images/campaigns_in_wizard1.png" />
@@ -225,6 +235,20 @@ En este caso, la base de contactos es utilizada si deseamos que cada vez que un 
 <p>Finalmente, los agentes pueden ser asignados a la campaña.</p>
 <img alt="_images/campaigns_prev_ag2.png" src="_images/campaigns_prev_ag2.png" />
 <p><em>Figure 4: agent assignment</em></p>
+<p>En el resto del capítulo se detalla todo acerca del enrutamiento de las llamadas desde los vínculos troncales hacia nustras campañas entrantes.</p>
+</div>
+<div class="section" id="ringing-vs-atencion-automatica-de-llamadas-entrantes">
+<h2>Ringing VS Atención automática de llamadas entrantes<a class="headerlink" href="#ringing-vs-atencion-automatica-de-llamadas-entrantes" title="Permalink to this headline">¶</a></h2>
+<p>El comportamiento del Webphone del agente frente a una llamada proveniente de una campaña entrante puede ser:</p>
+<ul class="simple">
+<li><strong>Ringing normal</strong> y con una duración asociada al parámetro “Ring time” presente en la creación de la campaña entrante. Durante ese tiempo el teléfono del agente notifica la llamada entrante, aguardando la acción del agente que determine la atención o no de la llamada.</li>
+<li><strong>Atención automática de la llamada</strong>. Este comportamiento implica que cada llamada entrante enviada a un agente sea atendida automáticamente por el teléfono del agente notificando a éste con un “beep” antes de dejarlo definitivamente en linea con la contraparte de la llamada.</li>
+</ul>
+<p>Dicho comportamiento depende de la configuración a nivel “Grupo de Agentes” que posea el agente vinculado a la campaña entrante. Entonces si el grupo tiene activada la Atención Automática de llamadas entrantes, el agente responderá de dicha manera ante cada llamada entrante de cualquier campaña, quedando
+sin efecto los parámetros “Ring time” y “Agent callback time” como se mencionó en la “Nota 2” de esta sección.</p>
+<img alt="_images/users_group_config.png" src="_images/users_group_config.png" />
+<p><em>Figure 5: agent group config</em></p>
+</div>
 </div>
 
 
@@ -235,7 +259,7 @@ En este caso, la base de contactos es utilizada si deseamos que cada vez que un 
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="reports.html" class="btn btn-neutral float-right" title="Metricas, grabaciones y supervicion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="campaigns_inbound_ivr.html" class="btn btn-neutral float-right" title="IVR - Interactive Voice Response" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="campaigns_dialer.html" class="btn btn-neutral float-left" title="Dialer Campaigns" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

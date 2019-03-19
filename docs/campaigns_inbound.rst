@@ -2,6 +2,9 @@
 Campañas entrantes
 ******************
 
+Cómo crear una nueva campaña
+****************************
+
 Para crear una nueva campaña, se debe ir a Campaña → Campañas Entrantes → Nueva campaña.
 
 Se debe completar la primera pantalla del wizard, como lo expone la figura 1.
@@ -56,3 +59,20 @@ Finalmente, los agentes pueden ser asignados a la campaña.
 .. image:: images/campaigns_prev_ag2.png
 
 *Figure 4: agent assignment*
+
+En el resto del capítulo se detalla todo acerca del enrutamiento de las llamadas desde los vínculos troncales hacia nustras campañas entrantes.
+
+Ringing VS Atención automática de llamadas entrantes
+****************************************************
+El comportamiento del Webphone del agente frente a una llamada proveniente de una campaña entrante puede ser:
+
+- **Ringing normal** y con una duración asociada al parámetro "Ring time" presente en la creación de la campaña entrante. Durante ese tiempo el teléfono del agente notifica la llamada entrante, aguardando la acción del agente que determine la atención o no de la llamada.
+
+- **Atención automática de la llamada**. Este comportamiento implica que cada llamada entrante enviada a un agente sea atendida automáticamente por el teléfono del agente notificando a éste con un "beep" antes de dejarlo definitivamente en linea con la contraparte de la llamada.
+
+Dicho comportamiento depende de la configuración a nivel "Grupo de Agentes" que posea el agente vinculado a la campaña entrante. Entonces si el grupo tiene activada la Atención Automática de llamadas entrantes, el agente responderá de dicha manera ante cada llamada entrante de cualquier campaña, quedando
+sin efecto los parámetros "Ring time" y "Agent callback time" como se mencionó en la "Nota 2" de esta sección.
+
+.. image:: images/users_group_config.png
+
+*Figure 5: agent group config*
