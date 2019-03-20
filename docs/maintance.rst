@@ -1,5 +1,6 @@
+*********************
 OMniLeads Maintenance
-=====================
+*********************
 
 Configuración del módulo de *Discador predictivo*
 *************************************************

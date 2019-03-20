@@ -177,3 +177,11 @@ una nueva campaña con todos los parámetros especificados en el template como c
 .. image:: images/campaigns_template.png
 
 *Figure 6: templates*
+
+
+Agentes, llamadas y calificaciones
+**********************************
+
+.. image:: images/campaigns_dispositions_engaged.png
+
+*Figure 6: Dispositions and agents*
