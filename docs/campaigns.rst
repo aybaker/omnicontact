@@ -56,13 +56,13 @@ Estas columnas adicionales, serán desplegadas en la pantalla del agente cuando 
 
 .. image:: images/campaigns_contactdb.png
 
-*Figure 3: Contacts CSV file*
+*Figure 4: Contacts CSV file*
 
 Disponiendo entonces de una base de contactos, se puede proceder con la carga del archivo en el sistema accediendo al punto de menú; *Contacts → New contacts database*
 
 .. image:: images/campaigns_upload_contacts.png
 
-*Figure 4: New contact database*
+*Figure 5: New contact database*
 
 
 Formularios
@@ -73,7 +73,7 @@ Para crear formularios se debe acceder al punto de menú; *Campaigns → New for
 
 .. image:: images/campaigns_newform.png
 
-*Figure 4: New capaign form*
+*Figure 6: New capaign form*
 
 
 Interacción con un CRM externo
@@ -160,3 +160,20 @@ Para profundizar en cada una de las funcionalidaes pertinentes al mundo de las l
  campaigns_inbound_routes_frompbx.rst
  campaigns_inbound_ivr.rst
  campaigns_inbound_timeconditions.rst
+
+
+Plantillas de Campaña
+*********************
+
+En muchas ocasiones los parámetros de una familia de campañas (por ejemeplo campañas preview de encuestas) no varían demasiado salvo por quizás por ejemplo el grupo de agentes asignados, la base de contactos a utilizar
+o el supervisor agignado. Entonces en lugar de tener que crear campañas myu similares siempre de cero, se pueden utilizar las plantillas y clonar éstas con los parámetros listos para avanzar más rápidamente en la creación de la nueva campaña.
+
+Esta funcionalidad la otorgan los *Templates* de campañas de OMniLeads.
+
+A partir de generar un template (que se genera como una campaña), se pasa a disponer del mismo, de manera tal que simplemente seleccionando el template y la opción *Create campaign from template* se genera
+una nueva campaña con todos los parámetros especificados en el template como configurados en la nueva campaña.
+
+
+.. image:: images/campaigns_template.png
+
+*Figure 6: templates*

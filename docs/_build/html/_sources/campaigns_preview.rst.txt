@@ -13,7 +13,7 @@ La primera pantalla nos invita a indicar una serie de parámtros de la campaña,
 
 
 - **Name:** nombre de la campaña
-- **Contact database:** se utiliza para desplegar datos a partir del número de teléfono origen que realiza la llamada entrante al sistema.
+- **Contact database:** la base de contactos que utilzará el discador preview a la hora de entregar llamadas a los agentes
 - **Campaign form:** campo de selección del formulario que se desplegará cada vez que un agente califique un contacto con la calificación "de gestión".
 - **External URL:** URL a disparar cada vez que el agente lo indique.
 - **Enable recordings:** habilitar que todas las llamadas de la campaña sean grabadas.

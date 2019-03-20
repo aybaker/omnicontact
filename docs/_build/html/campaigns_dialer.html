@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Dialer Campaigns &mdash; OMniLeads develop documentation</title>
+  <title>Campañas con discador predictivo &mdash; OMniLeads develop documentation</title>
   
 
   
@@ -107,7 +107,11 @@
 <li class="toctree-l2"><a class="reference internal" href="campaigns.html#campanas-manuales">Campañas Manuales</a></li>
 <li class="toctree-l2"><a class="reference internal" href="campaigns.html#campanas-preview">Campañas Preview</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="campaigns.html#campanas-con-discador-predictivo">Campañas con discador predictivo</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Dialer Campaigns</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Campañas con discador predictivo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#finalizacion-de-campanas-dialer">Finalización de campañas dialer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reciclado-y-cambio-de-bases-de-contactos">Reciclado y cambio de bases de contactos</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="campaigns.html#campanas-entrantes">Campañas Entrantes</a></li>
@@ -166,7 +170,7 @@
         
           <li><a href="campaigns.html">Campañas Telefónicas</a> &raquo;</li>
         
-      <li>Dialer Campaigns</li>
+      <li>Campañas con discador predictivo</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -185,74 +189,142 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dialer-campaigns">
-<h1>Dialer Campaigns<a class="headerlink" href="#dialer-campaigns" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="campanas-con-discador-predictivo">
+<h1>Campañas con discador predictivo<a class="headerlink" href="#campanas-con-discador-predictivo" title="Permalink to this headline">¶</a></h1>
 <p>Omnileads pone a disposición el concepto de campañas de discado automático a través de un discador predictivo.</p>
-<p>** Importante: No se provee la funcionalidad de discador automático dentro de las prestaciones del software, para este tipo de campañas está contemplada la integración con <a class="reference external" href="https://www.wombatdialer.com/">Wombat Dialer</a> p. La utilización de ese software está supeditada a la adquisición de la correspondiente licencia con el fabricante de <a class="reference external" href="https://www.wombatdialer.com/purchase.jsp/">Wombat Dialer</a>.
-**</p>
-<p>Para poner en funcionamiento este tipo de campañas, se debe contar con los siguientes requisitos:</p>
-<p>Base de contactos: archivo con información de los números a contactar por parte de la campaña saliente.
-Formulario de campaña (si estuviera previsto): es el formulario que se desplegará en la consola del agente cada vez que el discador contacte un número de la base.
-Calificaciones: cada vez que el agente termine una llamada, se desplegará un listado de calificaciones para tipificar el resultado de la llamada gestionada.
-Sitio Web Externo (en caso de trabajar con este tipo de interacción): es el Sitio web externo que se desplegará en la consola de comunicaciones del agente cada vez que el discador contacte un número de la base.</p>
-<p>Para listar todas las campañas existentes se debe ingresar a Campañas &gt; Campañas Dialer &gt; Listado de campañas. En la pantalla se puede observar las campañas agrupadas por su estado.</p>
-<p>Sobre cada campaña se pueden efectuar las siguientes acciones, ingresando al botón “Opciones” que está a la derecha de cada una:
-Según su estado se puede pausar, activar o iniciar;
-Se puede reciclar una campaña para reutilizar todas o algunas de sus configuraciones;
-Ver las calificaciones y los reportes de dicha campaña;
-Agregar agentes (sólo en las campañas activas, pausadas o inactivas)
-Dar permisos para ver la campaña a los usuarios supervisores;
-Editar o eliminar la campaña.</p>
-<p>Ejemplo de acciones sobre una campaña pausada:</p>
-<p>6.1.2. Creación de campaña</p>
-<p>Ingresar a Campañas &gt; Campañas Dialer &gt; Nueva Campaña</p>
-<p>El primer formulario que se despliega contiene los siguientes campos:</p>
-<p>Nombre: es el nombre de referencia de la campaña.
-Fecha Inicio: es la fecha en la que, estando activa la campaña y con agentes conectados, comenzará a discar.
-Fecha Fin: es la fecha en la que, estando activa la campaña y con agentes conectados, dejará de discar, aunque haya aún números pendientes de marcar.
-Calificación de campaña: es el grupo de calificaciones que se desplegará cada vez que el agente reciba una llamada de la campaña en su consola de comunicación.
-Base de Datos de contactos: la base con números que la campaña va a marcar.
-Formulario: en este campo, se indica si la nueva campaña va a trabajar con un formulario a la hora de desplegar la información del teléfono contactado por el discador, sobre la consola de agente. Además, se indica cúal es el formulario que se desplegará.
-URL Externa: en este campo, se indica si la nueva campaña va a invocar un Sitio Web Externo por cada teléfono contactado por el discador, sobre la consola de agente. Además, se indica cúal es el “Sitio” que se desplegará.
-Objetivo: es un valor numérico que representa la cantidad de gestiones que se propone realizar durante la campaña.</p>
-<p>Una vez completados estos campos, se debe dar click al botón “Paso siguiente”.</p>
-<p>La siguiente pantalla establece los parámetros de comportamiento de la campaña:</p>
-<p>Cantidad Max. de llamadas: es la cantidad de canales telefónicos que serán utilizados para discar los números de la campaña, en simultáneo.
-Tiempo de descanso entre llamadas: es el tiempo (en segundos) que cada agente tendrá de gracia, entre llamadas conectadas por el discador. Este parámetro toma sentido cuando el grupo de agentes al cual el agente que recibe la llamada pertenece, no tenga el tilde de “Auto-Pausa”, ya que en ese caso cuando se finaliza la llamada, el agente queda automáticamente en un estado de pausa.
-Nivel de servicio: es un parámetro de tiempo (en segundos) para medir cuántas de las llamadas fueron contestadas dentro de esa franja de tiempo.
-Estrategia de distribución: método de distribución de llamadas que usará la campaña sobre los agentes. Para campañas salientes, se recomienda RRmemory.
-Importancia de la campaña: Es un parámetro lineal (del 1 al 10) que indica cuán importante son las llamadas de esta campaña respecto a otras, estableciendo prioridades para los agentes que trabajen en varias campañas en simultáneo. Si se deja el valor en “0” (por defecto) se mantiene equidad con el resto de las campañas.
-Tiempo de espera en cola: es el tiempo (en segundos), que la llamada contactada quedará en cola de espera, aguardando que un agente se libere para conectarle la misma.
-Grabar llamados: se debe tildar este check, en caso de requerir que los llamados sean grabados.
-Detectar contestadores: se debe tildar este check, en caso de requerir que se detecten y eviten las llamadas con contestadores automáticos.
-Audio para contestadores: se puede indicar la reproducción de un audio en caso que se detecte un contestador automático. Para que esté disponible el audio debe subirse previamente desde el menú Audios &gt; Nuevo audio
-Activar predictividad: Wombat Dialer ofrece una configuración que posibilita revisar estadísticas de efectividad de las llamadas. En función de esos resultados, en lugar de discar uno por uno los números de teléfono de la base de contactos, selecciona el promedio de llamadas que resultan exitosas y efectúa tantas llamadas en simultáneo en función de ese dato.
-Factor de boost inicial: indica el valor por el cual se desea multiplicar el comportamiento de la predictividad. Por ejemplo: si el discador detectó que puede realizar tres llamadas en simultáneo porque es el resultado que le arroja la estadística de comunicaciones exitosas, colocando “2” en el factor de boost inicial se le pide al discador que duplique ese valor y realizará entonces seis llamadas a la vez.</p>
-<p>Luego de completar todos los campos, se debe presionar el botón “Paso siguiente”.</p>
-<p>En la siguiente pantalla se configuran las opciones de calificación, seleccionando del desplegable una a una las calificaciones que se utilizarán para las llamadas dentro de la campaña. Además, se deberá indicar si se trata de una calificación de Gestión (que desencadenará alguna otra acción, como por ejemplo un nuevo formulario) o bien de una calificación “Sin Acción”.</p>
-<p>Se guardan los cambios haciendo click en “Paso siguiente”. Se despliega entonces la opción de agregar parámetros extra al webform. Este paso nos brinda la posibilidad de agregar los parámetros que necesitamos exportar en caso de utilizar un sitio externo. Está previsto que funcione con el binomio tag/columna, por eso para cada campo se presentan dos cajas de texto vacías. Esto permitirá vincular los datos de las columnas de las bases de datos que debemos trasladar desde OML al sitio externo que estemos utilizando.</p>
-<p>Nuevamente se presiona el botón “Paso siguiente” y llegamos a la configuración que determina cuáles días de la semana y dentro de cuáles horarios la campaña efectuará llamados (siempre dentro del rango de fechas establecidas en el primer paso de la creación de la campaña).</p>
-<p>Se hace click en “Paso siguiente” y en este caso se trabaja con las “reglas de incidencia”, es decir bajo cuáles condiciones se reintentará contactar a números que dieron Ocupado, Contestador, No Contesta, Temporalmente fuera de cobertura, etc.</p>
-<p>Como se puede observar, los campos a completar permiten determinar cada cuántos segundos debe reintentarse la comunicación y cuántas veces como máximo se debe intentar según cada estado.</p>
+<p><strong>Importante: No se provee la funcionalidad de discador automático dentro de las prestaciones del software, para este tipo de campañas está contemplada la integración
+con</strong> <a class="reference external" href="https://www.wombatdialer.com/">Wombat Dialer</a> . <strong>La utilización de ese software está supeditada a la adquisición de la correspondiente licencia con el fabricante de Wombat Dialer.</strong></p>
+<p>Aclarado el tema del componente “engine dialer”, se procede con la explicación de los parámetros en juego a la hora de generar una campaña con discado predictivo.</p>
+<ul class="simple">
+<li><strong>Creación de campaña dialer</strong></li>
+</ul>
+<p>Ingresar al menú  <strong>Campaigns -&gt; Dialer Campaigns -&gt; New Campaigns</strong> en donde se despiegan una secuencia de pantallas de configuración.</p>
+<p>La primera pantalla luce como la figura 1.</p>
+<img alt="_images/campaigns_dialer_wizard1.png" src="_images/campaigns_dialer_wizard1.png" />
+<p><em>Figure 1: Campaigns parameters</em></p>
+<ul class="simple">
+<li><strong>Name:</strong> nombre de la campaña</li>
+<li><strong>Show campaign name whe reciving call:</strong> se puede habilitar para que cada llamada conectada por el dialer al agente implique la notificación del nombre de la campaña asociada a dicha llamada.</li>
+<li><strong>Initial date:</strong> es la fecha en la que, estando activa la campaña y con agentes conectados, comenzará a discar.</li>
+<li><strong>End date:</strong> es la fecha en la que, estando activa la campaña y con agentes conectados, dejará de discar, aunque haya aún números pendientes de marcar.</li>
+<li><strong>Contact database:</strong> la base de contactos que utilzará el discador a la hora de generar llamadas</li>
+<li><strong>Campaign form:</strong> campo de selección del formulario que se desplegará cada vez que un agente califique un contacto con la calificación “de gestión”.</li>
+<li><strong>External URL:</strong> URL a disparar cada vez que el agente lo indique.</li>
+<li><strong>Scope:</strong> se define como la cantidad de gestiones positivas que se esperan para la campaña. En la supervisión de la campaña se muestra en tiempo real el porcentaje de avence de la campaña respecto al objetivo definido.</li>
+</ul>
+<p>Una vez completados estos campos, se debe dar click al botón “Next”, para continuar con la generación de nuestra campaña.</p>
+<p>La siguiente pantalla establece los parámetros de comportamiento de la campaña, como lo expone la figura 2.</p>
+<img alt="_images/campaigns_dialer_wizard2.png" src="_images/campaigns_dialer_wizard2.png" />
+<p><em>Figure 2: Campaigns parameters</em></p>
+<ul class="simple">
+<li><strong>Max amount of calls:</strong> es el número de llamadas que se permiten poner en cola de espera. Por encima de ese número, la llamada será enviada a la acción “failover”.</li>
+<li><strong>Wrapup time:</strong> es el tiempo (en segundos) de gracia que cada agente tendrá entre cada llamada conectada por el discador.</li>
+<li><strong>Service level:</strong> es un parámetro para medir cuántas de las llamadas fueron contestadas dentro de esa franja de tiempo. El valor se expresa en segundos.</li>
+<li><strong>Distribution strategy:</strong> método de distribución de llamadas que usará la campaña sobre los agentes. Para campañas salientes, se recomienda RRmemory.</li>
+<li><strong>Campaign priority:</strong> Es un parámetro lineal en la escala del 1 al 10, que implica cuán importante son las llamadas de esta campaña respecto a otras. Establece prioridades para los agentes que trabajan en varias campañas en simultáneo. Si se deja el valor en “0” (por defecto) se mantiene una equidad con el resto de las campañas.</li>
+<li><strong>Waiting time:</strong> es el tiempo (en segundos), que la llamada contactada quedará en cola de espera, aguardando que un agente se libere para conectarle la misma.</li>
+<li><strong>Enable recordings:</strong> se debe tildar este check en caso de requerir que los llamados sean grabados.</li>
+<li><strong>Detectar contestadores:</strong> se debe tildar este check, en caso de requerir que se detecten y eviten las llamadas con contestadores automáticos.</li>
+<li><strong>Audio para contestadores:</strong> se puede indicar la reproducción de un audio en caso que se detecte un contestador automático. Para que esté disponible el audio debe subirse previamente desde el menú Audios &gt; Nuevo audio</li>
+<li><strong>Activar predictividad:</strong> Wombat Dialer ofrece una configuración que posibilita revisar estadísticas de efectividad de las llamadas. En función de esos resultados, en lugar de discar uno por uno los números de teléfono de la base de contactos, selecciona el promedio de llamadas que resultan exitosas y efectúa tantas llamadas en simultáneo en función de ese dato.</li>
+<li><strong>Factor de boost inicial:</strong> indica el valor por el cual se desea multiplicar el comportamiento de la predictividad. Por ejemplo: si el discador detectó que puede realizar tres llamadas en simultáneo porque es el resultado que le arroja la estadística de comunicaciones exitosas, colocando “2” en el factor de boost inicial se le pide al discador que duplique ese valor y realizará entonces seis llamadas a la vez.</li>
+<li><strong>Failover dst:</strong> destino hacia el cual se enviarán las llamadas que hayan sido expiradas (superó el tiempo de espera asociado).</li>
+</ul>
+<p>Luego de completar todos los campos, se debe presionar el botón “Next”.</p>
+<p>En la siguiente pantalla se configuran las opciones de calificación, seleccionando del desplegable una a una las calificaciones que se utilizarán para las llamadas dentro de la campaña.
+Además, se deberá indicar si se trata de una calificación de “Engaged” o de Gestión (la que dispara el formulario de campaña) o bien de una calificación “Sin Acción” que simplemente clasifica el contacto.</p>
+<img alt="_images/campaigns_dialer_wizard3.png" src="_images/campaigns_dialer_wizard3.png" />
+<p><em>Figure 3: Campaigns parameters - call dispositions</em></p>
+<p>Se guardan los cambios haciendo click en “Next” y llegamos a la configuración que determina cuáles días de la semana y dentro de cuáles horarios la campaña efectuará llamados (siempre dentro del rango de fechas establecidas en el primer paso de la creación de la campaña).</p>
+<img alt="_images/campaigns_dialer_wizard4.png" src="_images/campaigns_dialer_wizard4.png" />
+<p><em>Figure 4: Campaigns parameters - days and hours</em></p>
+<p>Se hace click en “Next” y en este caso se trabaja con las “reglas de incidencia”, es decir bajo cuáles condiciones se reintentará contactar a números que dieron Ocupado, Contestador, No Contesta, Temporalmente fuera de cobertura, etc.</p>
+<img alt="_images/campaigns_dialer_wizard5.png" src="_images/campaigns_dialer_wizard5.png" />
+<p><em>Figure 5: Campaigns parameters - days and hours</em></p>
+<p>Como se puede observar en la figura 5, los campos a completar permiten determinar cada cuántos segundos debe reintentarse la comunicación y cuántas veces como máximo se debe intentar según cada estado.</p>
 <p>Los estados telefónicos que podrán reintentarse marcar automáticamente son:
-Ocupado
-Contestador Automático
-Destino no contesta (No atiende)
-Llamada rechazada (Rechazado): cuando la llamada no pudo ser cursada por problemas inherentes a la salida telefónica.
-Timeout: cuando la llamada se contactó, se conectó pero ningún agente estuvo libre como para gestionar la misma.</p>
-<p>Se hace click en “Paso siguiente” para llegar al último paso de la creación de la campaña.</p>
+- Ocupado
+- Contestador Automático detectado
+- Destino no contesta
+- Llamada rechazada (Rechazado): cuando la llamada no pudo ser cursada por problemas inherentes a la red telefónica externa.
+- Timeout: cuando la llamada se contactó, se conectó pero ningún agente estuvo libre como para gestionar la misma.</p>
+<p>Se hace click en “Next” para llegar al último paso de la creación de la campaña.</p>
+<img alt="_images/campaigns_dialer_wizard6.png" src="_images/campaigns_dialer_wizard6.png" />
+<p><em>Figure 6: Campaigns parameters</em></p>
 <p>En este paso, simplemente se indican tres opciones:</p>
-<p>Evitar duplicados: es un check que sirve para indicar al sistema que no se disque dos veces un mismo número, por más que esté dos veces en la base de contactos.
-Evitar sin teléfono: es un check que sirve para indicar al sistema que no tenga en cuenta los registros de la base de contacto que no posean un teléfono principal.
-Prefijo: este campo sirve para indicar al discador si debe anteponer algún prefijo delante de cada número de la base de contactos en caso que lo requiera el plan de discado de la central telefónica por donde saldrán las llamadas.</p>
-<p>Finalmente, si se presiona el botón “Finalizar”, la campaña se termina de crear. Dependiendo de las configuraciones, el tamaño de la base de datos y el tipo de hardware donde está instalado OML este paso puede demorar varios minutos.</p>
-<p>Reciclado de campañas con Discador
-Cambio de base de contactos en campañas con Discador</p>
-<p>6.1.3. Cambio de base de contactos en campañas finalizadas</p>
-<p>Cuando una campaña predictiva se queda sin contactos, se puede acudir a la funcionalidad de cambio de base. Esto permite seguir operando con la misma campaña, pero renovar la fuente de contactos para que siga marcando. De esta manera se sigue el historial de reportes, grabaciones y demás estadísticas en la misma campaña.</p>
-<p>Para llevar a cabo un cambio de base, la campaña debe estar en estado de “finalizada”. A partir de allí se indica la acción de “cambio de base” sobre la campaña en cuestión.</p>
-<p>Esto desplegará una pantalla similar a la expuesta en la siguiente figura.</p>
-<p>6.1.4. Reciclado de bases de contactos en campañas finalizadas</p>
+<ul class="simple">
+<li><strong>Evitar duplicados:</strong> es un check que sirve para indicar al sistema que no se disque dos veces un mismo número, por más que esté dos veces en la base de contactos.</li>
+<li><strong>Evitar sin teléfono:</strong> es un check que sirve para indicar al sistema que no tenga en cuenta los registros de la base de contacto que no posean un teléfono principal.</li>
+<li><strong>Prefijo:</strong> este campo sirve para indicar al discador si debe anteponer algún prefijo delante de cada número de la base de contactos, este prefijo antepondría a cada llamada el discador para luego ser procesado por nuestras rutas salientes.</li>
+</ul>
+<p>Por último, si se presiona el botón “Finish”, la campaña se termina de crear.</p>
+<p>Una vez que la campaña está creada, aparece como una campaña “Inactiva” (figura 7), dentro de la vista de listado de campañas dialer.</p>
+<img alt="_images/campaigns_dialer_inactive.png" src="_images/campaigns_dialer_inactive.png" />
+<p><em>Figure 7: Inactive campaign</em></p>
+<p>En este punto el administrador debe asignar los agentes a la campaña para luego activar la misma cuando se desee que comience a discar contactos de la base.</p>
+<img alt="_images/campaigns_dialer_ag.png" src="_images/campaigns_dialer_ag.png" />
+<p><em>Figure 8: Agents dialer camp</em></p>
+<p>Finalmente el administrador puede activar la campaña como lo indica la figura 9.</p>
+<img alt="_images/campaigns_dialer_activate.png" src="_images/campaigns_dialer_activate.png" />
+<p><em>Figure 9: Activate camp</em></p>
+<p>Luego de activar nuestra campaña, automáticamente  pasamos a visualizarla en la sección de campaña activas (figura 10)</p>
+<img alt="_images/campaigns_dialer_ready.png" src="_images/campaigns_dialer_ready.png" />
+<p><em>Figure 10: Active campaigns</em></p>
+<div class="section" id="finalizacion-de-campanas-dialer">
+<h2>Finalización de campañas dialer<a class="headerlink" href="#finalizacion-de-campanas-dialer" title="Permalink to this headline">¶</a></h2>
+<p>Para determinar cuando una campaña dialer se queda sin registros, se debe consultar el estado de la misma haciendo click en el nombre de la campaña (figura 11).</p>
+<img alt="_images/campaigns_dialer_finish.png" src="_images/campaigns_dialer_finish.png" />
+<p><em>Figure 11: Campaign pending calls</em></p>
+<p>En caso de certificar que el valor “Llamadas pendientes” está en cero, se debe proceder con la finalización de la campaña (figura 12).</p>
+<img alt="_images/campaigns_dialer_finish2.png" src="_images/campaigns_dialer_finish2.png" />
+<p><em>Figure 12: Finish dialer campaign</em></p>
+<p>La campaña pasa a listarse dentro de la sección “Campañas finalizadas”.</p>
+</div>
+<div class="section" id="reciclado-y-cambio-de-bases-de-contactos">
+<h2>Reciclado y cambio de bases de contactos<a class="headerlink" href="#reciclado-y-cambio-de-bases-de-contactos" title="Permalink to this headline">¶</a></h2>
+<p>Una vez finalizada una campaña se puede re-utilizar mediante dos posibilidades:</p>
+<ul class="simple">
+<li><strong>Reciclado de la base de contactos</strong></li>
+</ul>
+<p>Esta opción permite al administrador seleccionar contactos de la base, con ciertas calificaciones ya sea de agentes (llamadas conectadas) así como también generadas por el discador (llamadas no contactadas)
+como criterio para reciclar la campaña y que esta vuelva a intentar marcar a los contactos que caigan dentro de las calificaciones indicadas en el reciclado.</p>
+<p>Para reciclar una campaña finalizada, debemos seleccionar la campaña e ingresar a las opciones para seleccionar la opción <em>Recycle</em></p>
+<img alt="_images/campaigns_dialer_recycle1.png" src="_images/campaigns_dialer_recycle1.png" />
+<p><em>Figure 13: Campaing recycle</em></p>
+<p>Allí se despliegan dos opciones:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>Reciclar sobre la misma campaña</em></li>
+</ul>
+<p>Esta vía nos lleva a volver a marcar a los contactos seleccionados en el reciclado, sobre la misma campaña desde la que se genera el reciclado.</p>
+<ul class="simple">
+<li><em>Reciclar en una nueva campaña</em></li>
+</ul>
+<p>Esta vía nos lleva a volver a marcar a los contactos seleccionados en el reciclado, en una nueva campaña cuya base de contactos serán los contactos reciclados de la campaña.</p>
+</div></blockquote>
+<p>Para completar el reciclado se deben seleccionar las calificaciones que se deasean volver a llamar para luego pasar por las etapas del wizard de campañas dialer para ajustar cualquier inherente
+a la configuración de la campaña reciclada.</p>
+<img alt="_images/campaigns_dialer_recycle2.png" src="_images/campaigns_dialer_recycle2.png" />
+<p><em>Figure 14: Recycle; call dispositions</em></p>
+<img alt="_images/campaigns_dialer_recycle3.png" src="_images/campaigns_dialer_recycle3.png" />
+<p><em>Figure 15: Recycle campaigns parameters</em></p>
+<p>Al ejecutar el reciclado, la campaña (ya se si se reciclo sobre una misma campaña o se ha generado una nueva) se encuentra en estado de “Inactiva”, por lo tanto basta activar la misma para que los contactos reciclados comiencen a ser marcados por el discador.</p>
+<img alt="_images/campaigns_dialer_recycle4.png" src="_images/campaigns_dialer_recycle4.png" />
+<p><em>Figure 16: Recycle campaign activate</em></p>
+<ul class="simple">
+<li><strong>Cambio de la base de contactos</strong></li>
+</ul>
+<p>Un campaña puede sustituir su base por otra nueva. Esto permite seguir operando con la misma campaña, pero renovar la fuente de contactos para que siga marcando. De esta manera se sigue el historial de reportes, grabaciones y demás estadísticas en la misma campaña.
+Para llevar a cabo un cambio de base, la campaña debe estar pausada o bajo el estado de “finalizada”.
+A partir de allí se indica la acción de “cambio de base” sobre la campaña en cuestión.</p>
+<img alt="_images/campaigns_dialer_changedb.png" src="_images/campaigns_dialer_changedb.png" />
+<p><em>Figure 17: database change</em></p>
+<p>Esto desplegará una pantalla similar a la expuesta en la siguiente figura 18.</p>
+<img alt="_images/campaigns_dialer_changedb2.png" src="_images/campaigns_dialer_changedb2.png" />
+<p><em>Figure 18: database change</em></p>
+<p>IMPORTANTE: la estructura de la base de contactos que se puede utilizar como sustituta debe ser similar a la base que se desea sustituir.</p>
+<p>Una vez llevada a cabo la sustitución es necesario activat nuevamente la campaña.</p>
+</div>
 </div>
 
 

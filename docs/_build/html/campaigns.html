@@ -113,7 +113,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#campanas-con-discador-predictivo">Campañas con discador predictivo</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="campaigns_dialer.html">Dialer Campaigns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="campaigns_dialer.html">Campañas con discador predictivo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#campanas-entrantes">Campañas Entrantes</a><ul>
@@ -124,6 +124,7 @@
 <li class="toctree-l3"><a class="reference internal" href="campaigns_inbound_timeconditions.html">Enrutamiento condicionado por fechas y horas</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#plantillas-de-campana">Plantillas de Campaña</a></li>
 </ul>
 </li>
 </ul>
@@ -233,17 +234,17 @@ afectado a una llamada de manera tal que éste ultimo pueda cerrar (temporal o d
 <p>Deben estar almacenadas en archivos con formato CSV con los campos separados con coma y además generadas en la codificacipón UTF8. Además, es requisito que el primer campo se llame explícitamente “telefono” almacenando a su vez el teléfono principal del contacto, el resto de las columnas puede contener diferentes valores arbitrarios y complementarios al teléfono principal.
 Estas columnas adicionales, serán desplegadas en la pantalla del agente cuando se establezca la comunicación con un cliente cuyo registro se encuentre dentro de la base de contactos de la campaña.</p>
 <img alt="_images/campaigns_contactdb.png" src="_images/campaigns_contactdb.png" />
-<p><em>Figure 3: Contacts CSV file</em></p>
+<p><em>Figure 4: Contacts CSV file</em></p>
 <p>Disponiendo entonces de una base de contactos, se puede proceder con la carga del archivo en el sistema accediendo al punto de menú; <em>Contacts → New contacts database</em></p>
 <img alt="_images/campaigns_upload_contacts.png" src="_images/campaigns_upload_contacts.png" />
-<p><em>Figure 4: New contact database</em></p>
+<p><em>Figure 5: New contact database</em></p>
 </div>
 <div class="section" id="formularios">
 <h2>Formularios<a class="headerlink" href="#formularios" title="Permalink to this headline">¶</a></h2>
 <p>Los formularios de campaña constituyen un elemento que permite recolectar información de la llamada. Son diseñados dentro de OMniLeads conjugando en una vista estática diferentes tipos campos (texto, fecha, de multiple selección y área de texto).</p>
 <p>Para crear formularios se debe acceder al punto de menú; <em>Campaigns → New form</em>. Allí</p>
 <img alt="_images/campaigns_newform.png" src="_images/campaigns_newform.png" />
-<p><em>Figure 4: New capaign form</em></p>
+<p><em>Figure 6: New capaign form</em></p>
 </div>
 <div class="section" id="interaccion-con-un-crm-externo">
 <h2>Interacción con un CRM externo<a class="headerlink" href="#interaccion-con-un-crm-externo" title="Permalink to this headline">¶</a></h2>
@@ -281,7 +282,11 @@ de una vista del CRM asociada a los datos del contacto asociado a la comunicaci�
 <h2>Campañas con discador predictivo<a class="headerlink" href="#campanas-con-discador-predictivo" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="campaigns_dialer.html">Dialer Campaigns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="campaigns_dialer.html">Campañas con discador predictivo</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="campaigns_dialer.html#finalizacion-de-campanas-dialer">Finalización de campañas dialer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="campaigns_dialer.html#reciclado-y-cambio-de-bases-de-contactos">Reciclado y cambio de bases de contactos</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -305,6 +310,16 @@ derivar llamadas desde cualquier elemento del PBX, incluyendo las llamadas gener
 <li class="toctree-l1"><a class="reference internal" href="campaigns_inbound_timeconditions.html">Enrutamiento condicionado por fechas y horas</a></li>
 </ul>
 </div>
+</div>
+<div class="section" id="plantillas-de-campana">
+<h2>Plantillas de Campaña<a class="headerlink" href="#plantillas-de-campana" title="Permalink to this headline">¶</a></h2>
+<p>En muchas ocasiones los parámetros de una familia de campañas (por ejemeplo campañas preview de encuestas) no varían demasiado salvo por quizás por ejemplo el grupo de agentes asignados, la base de contactos a utilizar
+o el supervisor agignado. Entonces en lugar de tener que crear campañas myu similares siempre de cero, se pueden utilizar las plantillas y clonar éstas con los parámetros listos para avanzar más rápidamente en la creación de la nueva campaña.</p>
+<p>Esta funcionalidad la otorgan los <em>Templates</em> de campañas de OMniLeads.</p>
+<p>A partir de generar un template (que se genera como una campaña), se pasa a disponer del mismo, de manera tal que simplemente seleccionando el template y la opción <em>Create campaign from template</em> se genera
+una nueva campaña con todos los parámetros especificados en el template como configurados en la nueva campaña.</p>
+<img alt="_images/campaigns_template.png" src="_images/campaigns_template.png" />
+<p><em>Figure 6: templates</em></p>
 </div>
 </div>
 
