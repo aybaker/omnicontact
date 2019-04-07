@@ -137,12 +137,15 @@ En el video se expone una introducción conceptual a las campañas en OMniLeads,
 - Formulario de campaña
 - Agentes
 
+
 .. raw:: html
 
         <iframe src="https://player.vimeo.com/video/320946591" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
-En el resto del capítulo cubrimos cada tipo de campaña.
+
+En el resto del capítulo formulamos campañas a partir de contar con los cuatro elementos constituidos en el video anterior, así nos adentramos
+en los detalles de cada uno de los tipos de campañas disponibles en OMniLeads.
 
   .. toctree::
    :maxdepth: 2

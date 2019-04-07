@@ -8,8 +8,8 @@ Una campaña representa una manera de clasificar dentro de la plataforma a una o
 
 - Un grupo de agentes procesando llamadas en un sentido (outbound o inbound).
 - Una base de contactos asociada a la campaña.
-- Un listado de calificaciones que se despliegan a la hora de tipificar la llamada gestionada por el agente.
-- Un formulario de campaña, a ser desplegado si el agente asigna la calificación de “gestión” sobre la llamada en curso. El formulario es desplegado por dicha calificación y el agente puede completar el mismo según los datos del contacto en curso.
+- Un listado de calificaciones que se despliegan a la hora de clasificar la llamada gestionada por el agente.
+- Uno o varios formularios de campaña, a ser desplegados en caso de que el agente asigne una calificación de "gestión" asociada a alguno de los formularios, sobre la llamada en curso. El formulario es desplegado por dicha calificación y el agente puede completar el mismo según los datos del contacto en curso.
 
 En la figura 1, se ilustra todo lo citado en los ítems.
 
@@ -30,7 +30,7 @@ Calificaciones
 **************
 
 Las calificaciones constituyen un listado de etiquetas disponibles para ser vinculadas a cualquier campaña, de manera tal que luego las llamadas procesadas dentro de una campaña pueda ofrecer dichas calificaciones al agente
-afectado a una llamada de manera tal que éste ultimo pueda cerrar (temporal o definitivamente) la gestión de la llamada utilizando una de las calificaciones disponibles en la campaña como etiqueta para tipiicar la gestión.
+afectado a una llamada i así éste ultimo pueda cerrar (temporal o definitivamente) la gestión de la llamada utilizando una de las calificaciones disponibles en la campaña como etiqueta para tipiicar la gestión.
 
 Las calificaciones las define el supervisor o administrador y se pueden relacionar a varios aspectos, por ejemplo:
 
@@ -46,54 +46,68 @@ Podemos listar las calificaciones generadas dentro de *Campaigns → Call Dispos
 
 *Figure 3: Call dispositions*
 
-
 Base de contactos
 *****************
 Las bases de datos son utilizadas tanto para las campañas entrantes como salientes. En las campañas salientes, los datos que requiere el discador predictivo/preview se extraen de la base de contactos afectada a la campaña, mientras que en las campañas entrantes aportan los datos que se despliegan en la pantalla del agente cada vez que ingresa al sistema alguna comunicación
 
-Deben estar almacenadas en archivos con formato CSV con los campos separados con coma y además generadas en la codificacipón UTF8. Además, es requisito que el primer campo se llame explícitamente "telefono" almacenando a su vez el teléfono principal del contacto, el resto de las columnas puede contener diferentes valores arbitrarios y complementarios al teléfono principal.
-Estas columnas adicionales, serán desplegadas en la pantalla del agente cuando se establezca la comunicación con un cliente cuyo registro se encuentre dentro de la base de contactos de la campaña.
+Deben estar almacenadas en archivos con formato CSV con los campos separados con coma y además generadas en la codificacipón UTF-8 (requisito excluyente). Debe existir al menos una columna
+que contenga los teléfonos de cada contacto (registro) del archivo, el resto de las columnas puede contener cualquier contenido, generalmente cada registro cuenta con datos complementarios
+al teléfono principal. Éstos datos son expuestos en la pantalla de agente a la hora de establecer una comunicación entre ambos (agente y contacto de la base).
 
-.. image:: images/campaigns_contactdb.png
+.. image:: images/campaigns_contactdb_1.png
 
-*Figure 4: Contacts CSV file*
+*Figure 4: Contacts CSV file - text editor view*
 
-Disponiendo entonces de una base de contactos, se puede proceder con la carga del archivo en el sistema accediendo al punto de menú; *Contacts → New contacts database*
+.. image:: images/campaigns_contactdb_2.png
+
+*Figure 5: Contacts CSV file - libreoffice excel view*
+
+Se dispone entonces de una base de contactos (csv) para proceder con la carga del archivo en el sistema accediendo al punto de menú; *Contacts → New contacts database*
 
 .. image:: images/campaigns_upload_contacts.png
 
-*Figure 5: New contact database*
+*Figure 6: New contact database*
 
+Se deben indicar las columnas correspondientes a teléfonos, como se indica en la figura 7.
+
+.. image:: images/campaigns_upload_contacts_2.png
+
+*Figure 7: Tel check*
+
+Finalmente se salva el archivo y el mismo queda disponible como una base de contactos del sistema instanciable por cualquier tipo de campaña.
 
 Formularios
 ***********
-Los formularios de campaña constituyen un elemento que permite recolectar información de la llamada. Son diseñados dentro de OMniLeads conjugando en una vista estática diferentes tipos campos (texto, fecha, de multiple selección y área de texto).
+Los formularios de campaña constituyen un elemento que permite recolectar información de la interacción con la persona detrás de la comunicación establecida.
+Son diseñados dentro de OMniLeads conjugando en una vista estática diferentes tipos campos (texto, fecha, de multiple selección y área de texto).
 
 Para crear formularios se debe acceder al punto de menú; *Campaigns → New form*. Allí
 
 .. image:: images/campaigns_newform.png
 
-*Figure 6: New capaign form*
+*Figure 8: New campaign form*
 
+Múltiples formularios pueden ser asignados a una campaña. La idea es que diferentes calificaciones de una campaña pueden disparar diferentes formularios, permitiendo así
+a la operación recolectar mediante formularios información asociada a la comunicación entre el agente de OMniLeads y la persona en el otro extremo de la comunicación.
 
 Interacción con un CRM externo
 ******************************
-Esta funcionalidad permite lanzar una petición "get" con datos del contacto y la llamada desde OMniLeads hacia un CRM basado en tecnología web (requisito), permitiendo así que cada agente del call center disponga automáticamente
-de una vista del CRM asociada a los datos del contacto asociado a la comunicación actual.
+Esta funcionalidad permite lanzar una petición "HTTP - Get" utilizando datos de la llamada actual, desde OMniLeads hacia un CRM basado en tecnología web (requisito excluyente),
+permitiendo así que cada agente del call center disponga automáticamente de una vista del contacto de la comunicación actual, sobre el CRM Web externo.
 
 En cada llamada al CRM se pueden enviar datos de la llamada y el contacto como por ejemplo:
 
-- El path a la grabación de la llamada
-- El "id" del agente
-- El "id" de la campaña
-- Cualquiera de las columnas de la base asociada a la campaña
+- El "path" de la grabación de la llamada.
+- El "id" del agente.
+- El "id" de la campaña.
+- Cualquiera de las columnas de la base asociada a la campaña.
 
 Entre otros parámetros.
 
 Campañas Manuales
 *****************
 
-Dentro de este insiso se ejemplifica el paso a paso de una creación
+Dentro de este insiso se ejemplifica el paso a paso de cómo generar una campaña de llamadas manuales.
 
 .. toctree::
  :maxdepth: 2
@@ -175,12 +189,14 @@ una nueva campaña con todos los parámetros especificados en el template como c
 
 .. image:: images/campaigns_template.png
 
-*Figure 6: templates*
+*Figure 9: templates*
 
 
 Agentes, llamadas y calificaciones
 **********************************
 
+En esta sección se pretende terminar de afianzar el entendimiento acerca del cómo
+
 .. image:: images/campaigns_dispositions_engaged.png
 
-*Figure 6: Dispositions and agents*
+*Figure 10: Dispositions and agents*
