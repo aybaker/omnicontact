@@ -216,11 +216,11 @@ en la figura 2, en nuestro ejemplo manejamos dos calificaciones que disparan dos
 <img alt="_images/campaigns_calldispositions_add.png" src="_images/campaigns_calldispositions_add.png" />
 <p><em>Figure 2: Call dispositions</em></p>
 <p>En los siguientes pasos se pueden añadir supervisores y agentes a nuestra campaña.</p>
-<img alt="_images/campaigns_prev_ag2.png" src="_images/campaigns_prev_ag2.png" />
+<img alt="_images/campaigns_manual_wizard_3.png" src="_images/campaigns_manual_wizard_3.png" />
 <p><em>Figure 3: agent assignment</em></p>
-<p>Finalmente cuando un agente asignado a la campaña realice un login a la plataforma y comience a marcar llamadas desde
-su webphone, el sistema le permite seleccionar a qué campaña asignar cada llamada manual generada desde el webphone, tal como se expone
-en la figura 5.</p>
+<p>Finalmente contamos con nuestra nueva campaña manual. cuando un agente asignado a la misma realice un login a la plataforma y comience a marcar llamadas desde
+su webphone, el sistema le permitirá seleccionar la campaña sobre la cual va a asignar cada llamada manual generada desde el webphone, tal como se expone
+en la figura 4.</p>
 <img alt="_images/campaigns_manual_agconsole1.png" src="_images/campaigns_manual_agconsole1.png" />
 <p><em>Figure 4: Manual call camp selection</em></p>
 <p>Cuando un agente se encuentra online y marca un teléfono correspondiente a un contacto de la base de la campaña, el contacto cuyo teléfono coincide con el teléfono marcado por el agente
@@ -228,23 +228,31 @@ es desplegado como contacto a seleccionar y así desplegar sus datos en la panta
 el contacto listado o sino también crear un nuevo contacto y marcarlo.
 Los datos (extras al teléfono) del contacto son desplegados en la pantalla de agente</p>
 <img alt="_images/campaigns_manual_agconsole2.png" src="_images/campaigns_manual_agconsole2.png" />
-<p><em>Figure 5: agent assignment</em></p>
+<p><em>Figure 5: Contact selection</em></p>
 <p>Si se selecciona llamar al contacto listado, entonces los datos del mismo son desplegados en pantalla, como lo expone la figura 6.</p>
 <img alt="_images/campaigns_manual_agconsole3.png" src="_images/campaigns_manual_agconsole3.png" />
-<p><em>Figure 6: agent assignment</em></p>
+<p><em>Figure 6: Contact data</em></p>
 <p>De esta manera el agente puede asignar una calificación sobre el contacto llamado; figura 7.</p>
 <img alt="_images/campaigns_manual_agconsole4.png" src="_images/campaigns_manual_agconsole4.png" />
-<p><em>Figure 7: call disposition assignment</em></p>
+<p><em>Figure 7: call disposition for contact</em></p>
 <p>Por otro lado, si el teléfono marcado no corresponde a ningún contacto de la base entonces el sitema permite al agente buscar el contacto en la base o generar un nuevo contacto. En caso de tratarse
 de una campaña sin base de contactos, entonces cada llamado que realice un agente implica que se genere el contacto asociado a la llamada marcada (figura 5 y 6).</p>
 <img alt="_images/campaigns_manual_agconsole5.png" src="_images/campaigns_manual_agconsole5.png" />
-<p><em>Figure 8: new contact add to campaign database screen 1</em></p>
+<p><em>Figure 8: new contact add to campaign database 1</em></p>
 <img alt="_images/campaigns_manual_agconsole6.png" src="_images/campaigns_manual_agconsole6.png" />
-<p><em>Figure 9: new contact add to campaign database screen 2</em></p>
-<p>Entonces al momento de marcar a un número que no devuelva un contacto. el agente pasará por una vista en la que primero el agente debe añadir el contacto como un registro de la base de la campaña para luego marcar.
+<p><em>Figure 9: new contact add to campaign database 2</em></p>
+<p>Entonces al momento de marcar a un número que no devuelva un contacto, el agente pasará por una vista en la que primero el agente debe añadir el contacto como un registro de la base de la campaña para luego marcar.
 Finalmente se despliegan el nuevo contacto y la opción de clasificar la llamada con alguna calificación (figura 10).</p>
 <img alt="_images/campaigns_manual_agconsole7.png" src="_images/campaigns_manual_agconsole7.png" />
 <p><em>Figure 10: new contact called</em></p>
+<p><strong>Campaña con base de datos Multinum</strong></p>
+<p>Como sabemos, OMniLeads admite que cada contacto de una base posea «n» números de teléfono de contacto, de manera tal que si el contacto no es encontrado en su número principal
+(el primero de nuestro archivo CSV de base), pueda ser contactado a los demás números. En este caso, cada número de teléfono (que indicamos en la carga de la base) se genera
+como un link dentro de los datos del contacto presentados sobre la pantalla de agente. Al hacer click sobre dicho link, se dispara una llamada hacia ekl número de teléfono extra
+del contacto. En la figura 7 se muestra dicho escenario.</p>
+<img alt="_images/campaigns_prev_agconsole3.png" src="_images/campaigns_prev_agconsole3.png" />
+<p><em>Figure 11: Multinum contact database</em></p>
+<p>Por lo tanto, el agente puede intentar contactar a todos los números disponibles como «link» en la ficha del contacto, hasta finalmente calificar y pasar a uno nuevo.</p>
 </div>
 
 

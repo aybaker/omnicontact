@@ -53,3 +53,16 @@ y permitiendo a su vez al agente clasificar la llamada con alguna de las calific
 .. image:: images/campaigns_prev_agconsole2.png
 
 *Figure 6: Contact called*
+
+**Campaña con base de datos Multinum**
+
+Como sabemos, OMniLeads admite que cada contacto de una base posea "n" números de teléfono de contacto, de manera tal que si el contacto no es encontrado en su número principal
+(el primero de nuestro archivo CSV de base), pueda ser contactado a los demás números. En este caso, cada número de teléfono (que indicamos en la carga de la base) se genera
+como un link dentro de los datos del contacto presentados sobre la pantalla de agente. Al hacer click sobre dicho link, se dispara una llamada hacia ekl número de teléfono extra
+del contacto. En la figura 7 se muestra dicho escenario.
+
+.. image:: images/campaigns_prev_agconsole3.png
+
+*Figure 7: Multinum contact database*
+
+Por lo tanto, el agente puede intentar contactar a todos los números disponibles como "link" en la ficha del contacto, hasta finalmente calificar y pasar a uno nuevo.
