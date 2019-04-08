@@ -51,7 +51,7 @@ Base de contactos
 Las bases de datos son utilizadas tanto para las campañas entrantes como salientes. En las campañas salientes, los datos que requiere el discador predictivo/preview se extraen de la base de contactos afectada a la campaña, mientras que en las campañas entrantes aportan los datos que se despliegan en la pantalla del agente cada vez que ingresa al sistema alguna comunicación
 
 Deben estar almacenadas en archivos con formato CSV con los campos separados con coma y además generadas en la codificacipón UTF-8 (requisito excluyente). Debe existir al menos una columna
-que contenga los teléfonos de cada contacto (registro) del archivo, el resto de las columnas puede contener cualquier contenido, generalmente cada registro cuenta con datos complementarios
+que contenga un teléfono de cada contacto (registro) del archivo, el resto de las columnas puede contener cualquier contenido, generalmente cada registro cuenta con datos complementarios
 al teléfono principal. Éstos datos son expuestos en la pantalla de agente a la hora de establecer una comunicación entre ambos (agente y contacto de la base).
 
 .. image:: images/campaigns_contactdb_1.png
@@ -68,7 +68,7 @@ Se dispone entonces de una base de contactos (csv) para proceder con la carga de
 
 *Figure 6: New contact database*
 
-Se deben indicar las columnas correspondientes a teléfonos, como se indica en la figura 7.
+Se debe indicar con un check, cuales columnas son las que almacenan teléfonos, como se indica en la figura 7.
 
 .. image:: images/campaigns_upload_contacts_2.png
 
@@ -83,12 +83,58 @@ Son diseñados dentro de OMniLeads conjugando en una vista estática diferentes 
 
 Para crear formularios se debe acceder al punto de menú; *Campaigns → New form*. Allí
 
-.. image:: images/campaigns_newform.png
+Los formularios pueden contener campos del tipo:
+
+- **Texto**
+- **Fecha**
+- **Combo de selección múltiple**
+- **Campo de complementarios**
+
+En la figura 8 se ejemplifica un campo del tipo "combo" dentro de la creación de un formulario.
+
+.. image:: images/campaigns_newform_1.png
 
 *Figure 8: New campaign form*
 
-Múltiples formularios pueden ser asignados a una campaña. La idea es que diferentes calificaciones de una campaña pueden disparar diferentes formularios, permitiendo así
-a la operación recolectar mediante formularios información asociada a la comunicación entre el agente de OMniLeads y la persona en el otro extremo de la comunicación.
+Podemos generar un formulario de ejemplo de encuesta de satisfacción con el aspecto de la figura 9.
+
+.. image:: images/campaigns_newform_2.png
+
+*Figure 9: Survey campaign form*
+
+
+Campañas VS Calificaciones VS Formularios
+*****************************************
+
+Para explicar la relación entre éstos componenetes, debemos recordar que múltiples formularios pueden ser asignados a una campaña. La idea es que diferentes calificaciones de una campaña
+pueden disparar diferentes formularios, permitiendo así a la operación de recolectar mediante formularios previamentes diseñados, información asociada a la interacción entre el
+agente de OMniLeads y la persona en el otro extremo de la comunicación dentro de la campaña.
+
+Resulta importante explicar conceptualmrnte cómo se utilizan los formularios de campaña en OMniLeads. Antes que nada aclarar que en el marco de una campaña a la hora de asignar
+calificaciones, se van a poder definir calificaciones normales y calificaciones "de gestión" o "engaged". Éstas últimas son las que disparan los formularios de campaña.
+
+
+.. image:: images/campaigns_calldispositions_add.png
+
+*Figure 10: Call dispositions inside campaign*
+
+En el ejemplo de la figura 10, contamos con dos calificaciones del tipo engaged, por un lado la calificación "Survey on demand client"
+que tiene asociado el formulario "Survey On Demand" y por el otro la calificación "Survey" que dispara el formulario "Survey Clients".
+
+Siempre que haya una llamada activa entre un agente y un contacto de la base de la campaña, el agente dispone de los datos complementarios al teléfono del contacto en su pantalla
+junto al combo de selección de calificación para el contacto actual. Si el agente selecciona y guarda una calificación del tipo "gestión", entonces se dispara en la pantalla de agente
+el formulario asociado a la calificación dentro de la campaña.
+
+.. image:: images/campaigns_dispositions_engaged.png
+
+*Figure 11: Engaged dispostions and forms*
+
+En el siguiente video ilustramos a los dos tipos de calificaciones y su comportamiento.
+
+.. raw:: html
+
+        <iframe src="https://player.vimeo.com/video/320941143" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
 
 Interacción con un CRM externo
 ******************************
@@ -189,14 +235,4 @@ una nueva campaña con todos los parámetros especificados en el template como c
 
 .. image:: images/campaigns_template.png
 
-*Figure 9: templates*
-
-
-Agentes, llamadas y calificaciones
-**********************************
-
-En esta sección se pretende terminar de afianzar el entendimiento acerca del cómo
-
-.. image:: images/campaigns_dispositions_engaged.png
-
-*Figure 10: Dispositions and agents*
+*Figure 13: templates*

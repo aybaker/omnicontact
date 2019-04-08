@@ -104,6 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#calificaciones">Calificaciones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#base-de-contactos">Base de contactos</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#formularios">Formularios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#campanas-vs-calificaciones-vs-formularios">Campañas VS Calificaciones VS Formularios</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#interaccion-con-un-crm-externo">Interacción con un CRM externo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#campanas-manuales">Campañas Manuales</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="campaigns_manual.html">Manual Call Campaign</a></li>
@@ -126,7 +127,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#plantillas-de-campana">Plantillas de Campaña</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#agentes-llamadas-y-calificaciones">Agentes, llamadas y calificaciones</a></li>
 </ul>
 </li>
 </ul>
@@ -240,7 +240,7 @@ afectado a una llamada i así éste ultimo pueda cerrar (temporal o definitivame
 <h2>Base de contactos<a class="headerlink" href="#base-de-contactos" title="Enlazar permanentemente con este título">¶</a></h2>
 <p>Las bases de datos son utilizadas tanto para las campañas entrantes como salientes. En las campañas salientes, los datos que requiere el discador predictivo/preview se extraen de la base de contactos afectada a la campaña, mientras que en las campañas entrantes aportan los datos que se despliegan en la pantalla del agente cada vez que ingresa al sistema alguna comunicación</p>
 <p>Deben estar almacenadas en archivos con formato CSV con los campos separados con coma y además generadas en la codificacipón UTF-8 (requisito excluyente). Debe existir al menos una columna
-que contenga los teléfonos de cada contacto (registro) del archivo, el resto de las columnas puede contener cualquier contenido, generalmente cada registro cuenta con datos complementarios
+que contenga un teléfono de cada contacto (registro) del archivo, el resto de las columnas puede contener cualquier contenido, generalmente cada registro cuenta con datos complementarios
 al teléfono principal. Éstos datos son expuestos en la pantalla de agente a la hora de establecer una comunicación entre ambos (agente y contacto de la base).</p>
 <img alt="_images/campaigns_contactdb_1.png" src="_images/campaigns_contactdb_1.png" />
 <p><em>Figure 4: Contacts CSV file - text editor view</em></p>
@@ -249,7 +249,7 @@ al teléfono principal. Éstos datos son expuestos en la pantalla de agente a la
 <p>Se dispone entonces de una base de contactos (csv) para proceder con la carga del archivo en el sistema accediendo al punto de menú; <em>Contacts → New contacts database</em></p>
 <img alt="_images/campaigns_upload_contacts.png" src="_images/campaigns_upload_contacts.png" />
 <p><em>Figure 6: New contact database</em></p>
-<p>Se deben indicar las columnas correspondientes a teléfonos, como se indica en la figura 7.</p>
+<p>Se debe indicar con un check, cuales columnas son las que almacenan teléfonos, como se indica en la figura 7.</p>
 <img alt="_images/campaigns_upload_contacts_2.png" src="_images/campaigns_upload_contacts_2.png" />
 <p><em>Figure 7: Tel check</em></p>
 <p>Finalmente se salva el archivo y el mismo queda disponible como una base de contactos del sistema instanciable por cualquier tipo de campaña.</p>
@@ -259,11 +259,38 @@ al teléfono principal. Éstos datos son expuestos en la pantalla de agente a la
 <p>Los formularios de campaña constituyen un elemento que permite recolectar información de la interacción con la persona detrás de la comunicación establecida.
 Son diseñados dentro de OMniLeads conjugando en una vista estática diferentes tipos campos (texto, fecha, de multiple selección y área de texto).</p>
 <p>Para crear formularios se debe acceder al punto de menú; <em>Campaigns → New form</em>. Allí</p>
-<img alt="_images/campaigns_newform.png" src="_images/campaigns_newform.png" />
+<p>Los formularios pueden contener campos del tipo:</p>
+<ul class="simple">
+<li><strong>Texto</strong></li>
+<li><strong>Fecha</strong></li>
+<li><strong>Combo de selección múltiple</strong></li>
+<li><strong>Campo de complementarios</strong></li>
+</ul>
+<p>En la figura 8 se ejemplifica un campo del tipo «combo» dentro de la creación de un formulario.</p>
+<img alt="_images/campaigns_newform_1.png" src="_images/campaigns_newform_1.png" />
 <p><em>Figure 8: New campaign form</em></p>
-<p>Múltiples formularios pueden ser asignados a una campaña. La idea es que diferentes calificaciones de una campaña pueden disparar diferentes formularios, permitiendo así
-a la operación recolectar mediante formularios información asociada a la comunicación entre el agente de OMniLeads y la persona en el otro extremo de la comunicación.</p>
+<p>Podemos generar un formulario de ejemplo de encuesta de satisfacción con el aspecto de la figura 9.</p>
+<img alt="_images/campaigns_newform_2.png" src="_images/campaigns_newform_2.png" />
+<p><em>Figure 9: Survey campaign form</em></p>
 </div>
+<div class="section" id="campanas-vs-calificaciones-vs-formularios">
+<h2>Campañas VS Calificaciones VS Formularios<a class="headerlink" href="#campanas-vs-calificaciones-vs-formularios" title="Enlazar permanentemente con este título">¶</a></h2>
+<p>Para explicar la relación entre éstos componenetes, debemos recordar que múltiples formularios pueden ser asignados a una campaña. La idea es que diferentes calificaciones de una campaña
+pueden disparar diferentes formularios, permitiendo así a la operación de recolectar mediante formularios previamentes diseñados, información asociada a la interacción entre el
+agente de OMniLeads y la persona en el otro extremo de la comunicación dentro de la campaña.</p>
+<p>Resulta importante explicar conceptualmrnte cómo se utilizan los formularios de campaña en OMniLeads. Antes que nada aclarar que en el marco de una campaña a la hora de asignar
+calificaciones, se van a poder definir calificaciones normales y calificaciones «de gestión» o «engaged». Éstas últimas son las que disparan los formularios de campaña.</p>
+<img alt="_images/campaigns_calldispositions_add.png" src="_images/campaigns_calldispositions_add.png" />
+<p><em>Figure 10: Call dispositions inside campaign</em></p>
+<p>En el ejemplo de la figura 10, contamos con dos calificaciones del tipo engaged, por un lado la calificación «Survey on demand client»
+que tiene asociado el formulario «Survey On Demand» y por el otro la calificación «Survey» que dispara el formulario «Survey Clients».</p>
+<p>Siempre que haya una llamada activa entre un agente y un contacto de la base de la campaña, el agente dispone de los datos complementarios al teléfono del contacto en su pantalla
+junto al combo de selección de calificación para el contacto actual. Si el agente selecciona y guarda una calificación del tipo «gestión», entonces se dispara en la pantalla de agente
+el formulario asociado a la calificación dentro de la campaña.</p>
+<img alt="_images/campaigns_dispositions_engaged.png" src="_images/campaigns_dispositions_engaged.png" />
+<p><em>Figure 11: Engaged dispostions and forms</em></p>
+<p>En el siguiente video ilustramos a los dos tipos de calificaciones y su comportamiento.</p>
+<iframe src="https://player.vimeo.com/video/320941143" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>
 <div class="section" id="interaccion-con-un-crm-externo">
 <h2>Interacción con un CRM externo<a class="headerlink" href="#interaccion-con-un-crm-externo" title="Enlazar permanentemente con este título">¶</a></h2>
 <p>Esta funcionalidad permite lanzar una petición «HTTP - Get» utilizando datos de la llamada actual, desde OMniLeads hacia un CRM basado en tecnología web (requisito excluyente),
@@ -337,13 +364,7 @@ o el supervisor agignado. Entonces en lugar de tener que crear campañas myu sim
 <p>A partir de generar un template (que se genera como una campaña), se pasa a disponer del mismo, de manera tal que simplemente seleccionando el template y la opción <em>Create campaign from template</em> se genera
 una nueva campaña con todos los parámetros especificados en el template como configurados en la nueva campaña.</p>
 <img alt="_images/campaigns_template.png" src="_images/campaigns_template.png" />
-<p><em>Figure 9: templates</em></p>
-</div>
-<div class="section" id="agentes-llamadas-y-calificaciones">
-<h2>Agentes, llamadas y calificaciones<a class="headerlink" href="#agentes-llamadas-y-calificaciones" title="Enlazar permanentemente con este título">¶</a></h2>
-<p>En esta sección se pretende terminar de afianzar el entendimiento acerca del cómo</p>
-<img alt="_images/campaigns_dispositions_engaged.png" src="_images/campaigns_dispositions_engaged.png" />
-<p><em>Figure 10: Dispositions and agents</em></p>
+<p><em>Figure 13: templates</em></p>
 </div>
 </div>
 
