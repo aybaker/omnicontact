@@ -164,6 +164,30 @@ métricas, reportes, grabaciones, supervisión en tiempo real, etc.
 
    output.rst
 
+
+*******************
+GESTIONES DE AGENTE
+*******************
+En esta sección se repasan todas las acciones que un agente de OMniLeads pueda realizar dentro de una operación. Cuestiones que van desde la atención/generación de
+una llamada, calificaciones, agendamiento, macación de grabaciones, transferencias de llamadas y mucho más, son tratadas en este capítulo de la documentación.
+
+
+En el siguiente video se exponen las principales acciones de agente.
+
+.. raw:: html
+
+        <iframe src="https://player.vimeo.com/video/320946591" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+
+Como siempre, se hace hincapié en el hecho de profundizar cada aspecto ingresando al link de abajo:
+
+
+ .. toctree::
+  :maxdepth: 2
+
+  agent.rst
+
+
 *******************************
 GESTIONES DEL ADMINISTRADOR IT
 *******************************
