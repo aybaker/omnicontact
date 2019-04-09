@@ -104,6 +104,9 @@ El dock expone cada herramienta de comunicación. En la versión actual SOLAMENT
 OMniLeads actualmente soporta solamente llamadas telefónicas, en versiones futuras se comenzarán a activar otros componentes.
 
 
+Pausas
+*******
+
 Logout
 *******
 
