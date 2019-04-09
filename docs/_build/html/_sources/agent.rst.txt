@@ -7,58 +7,61 @@ aaaaaaa
 Sesión del agente
 *****************
 
-aaaaaaaa
+.. toctree::
+ :maxdepth: 2
 
-.. image:: images/about_agent_login_1.png
-
-
-.. image:: images/about_agent_login_2.png
-
-
-.. image:: images/about_agent_login_3.png
-
-
-.. image:: images/about_agent_login_4.png
-
-
-.. image:: images/about_agent_login_5.png
-
+ agent_session.rst
 
 
 Campañas manuales
 *****************
 
-aaaa
+.. toctree::
+ :maxdepth: 2
+
+ agent_manual.rst
+
 Campañas preview
 ****************
 
-aaaaa
+
+.. toctree::
+ :maxdepth: 2
+
+ agent_preview.rst
+
 Campañas dialer
 ***************
 
-aaaaaa
+
+.. toctree::
+ :maxdepth: 2
+
+ agent_dialer.rst
+
+
 Campañas entrantes
 ******************
 
-aaaaaaa
+
+.. toctree::
+ :maxdepth: 2
+
+ agent_inbound.rst
+
 
 Acciones sobre las llamadas
 ***************************
 
-transferencias
-hold
-marcar llamadas
+.. toctree::
+ :maxdepth: 2
 
+ agent_actions.rst
 
-Calificaciones
-**************
+Agendas, calificaciones y contactos
+************************************
 
-aaaaa
-Contactos
-*********
+.. toctree::
+ :maxdepth: 2
 
-aaaaaaa
-Agendas de llamadas
-*******************
-
-aaaaaa
+ agent_contact_managment.rst
