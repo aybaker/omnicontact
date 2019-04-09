@@ -7,6 +7,8 @@ Vamos a dividir el manual de gestión del agente en los diferentes tópicos cita
 Sesión del agente
 *****************
 
+Todo lo inherente a la sesión del agente describimos en este inciso.
+
 .. toctree::
  :maxdepth: 2
 
@@ -56,7 +58,7 @@ Acciones sobre las llamadas
 .. toctree::
  :maxdepth: 2
 
- agent_actions.rst
+ agent_call_actions.rst
 
 Agendas, calificaciones y contactos
 ************************************

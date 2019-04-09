@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Sesión de agente &mdash; documentación de OMniLeads - develop</title>
+  <title>Login &mdash; documentación de OMniLeads - develop</title>
   
 
   
@@ -108,7 +108,9 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="agent.html">Gestiones del agente</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="agent.html#sesion-del-agente">Sesión del agente</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Sesión de agente</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Login</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#la-consola-de-agente">La consola de agente</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logout">Logout</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agent.html#campanas-manuales">Campañas manuales</a></li>
@@ -175,7 +177,7 @@
         
           <li><a href="agent.html">Gestiones del agente</a> &raquo;</li>
         
-      <li>Sesión de agente</li>
+      <li>Login</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -194,15 +196,80 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="sesion-de-agente">
-<h1>Sesión de agente<a class="headerlink" href="#sesion-de-agente" title="Enlazar permanentemente con este título">¶</a></h1>
+  <div class="section" id="login">
+<h1>Login<a class="headerlink" href="#login" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>Para acceder a la aplicación se ingresa el URL de su instancia de OMniLeads en su browser.</p>
+<p>Si la instancia de OMniLeads no dispone de certificados comerciales, al ingresar al sistema el usuario
+se topa con la advertencia de seguridad correspondiente al ingreso a un sitio <em>https</em> con un certificado auto-firmado.</p>
+<p>En ese caso, simplemente debe aceptar la advertencia y continuar, como lo indican las figuras 1 y 2.</p>
 <img alt="_images/about_agent_login_1.png" src="_images/about_agent_login_1.png" />
+<p><em>Figure 1: certificate is not trusted</em></p>
 <img alt="_images/about_agent_login_2.png" src="_images/about_agent_login_2.png" />
-<img alt="_images/about_agent_login_3.png" src="_images/about_agent_login_3.png" />
+<p><em>Figure 2: certificate is not trusted</em></p>
+<p>Al avanzar sobre el sitio, se despliega la pantalla de login, en donde el agente deberá ingresar su usuario y contraseña
+para acceder a la aplicación.</p>
 <img alt="_images/about_agent_login_4.png" src="_images/about_agent_login_4.png" />
+<p><em>Figure 3: login screen</em></p>
+<p>Luego de un login exitoso, se despliega la interfaz de agente. Lo primero que debe suceder es una advertencia
+del browser que notifica que OMniLeads desea acceder al micrófono del ordenador. Por supuesto, el usuario debe
+permitir esta acción, ya que precisa del micrófono para utilizar la aplicación a la hora de gestionar llamadas.</p>
 <img alt="_images/about_agent_login_5.png" src="_images/about_agent_login_5.png" />
-<img alt="_images/about_agent_login_6.png" src="_images/about_agent_login_6.png" />
+<p><em>Figure 4: OMniLeads wants to use your microphone</em></p>
+<p>Al permir el acceso al micrófono, entonces se procede con el resto del login. Esto implica la reproducción
+de un «audio» sobre el auricular del agente anunciando el login exitoso.</p>
+<p>Además el agente debe visualizar el webphone desplegado y en estado «Registered» como lo indica la figura 5.</p>
+<img alt="_images/about_agent_login_3.png" src="_images/about_agent_login_3.png" />
+<p><em>Figure 5: Succesful agent login</em></p>
+</div>
+<div class="section" id="la-consola-de-agente">
+<h1>La consola de agente<a class="headerlink" href="#la-consola-de-agente" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>La consola de agente es el componente sobre el cual el agente de OMniLeads puede realizar toda la gestión.
+En la figura 6 se puede observar su aspecto y además se diseccionó en sub-componentes que son explicados
+a continuación.</p>
 <img alt="_images/about_agent_console.png" src="_images/about_agent_console.png" />
+<p><em>Figure 6: the OMniLeads agent console</em></p>
+<p><strong>(1) Gestión de contactos</strong></p>
+<p>En esta sección encontramos las funcionalidades que permiten navegar entre los contactos de la base de las campañas,
+visualizar los contactos agendados para ser llamados en el futuro, listar el histórico de todas las calificaciones
+que fue realizando el agente y además acceder a las campañas del tipo Preview para solicitar contactos para gestionar.</p>
+<p>Todos estos aspectos serán ampliados en las próximas secciones.</p>
+<ol class="arabic simple" start="2">
+<li>Barra de estado</li>
+</ol>
+<p>En esta barra tenemos información sobre la sesión.</p>
+<img alt="_images/about_agent_console_statusbar.png" src="_images/about_agent_console_statusbar.png" />
+<p><em>Figure 7: status bar</em></p>
+<p>En la barra de estado hay dos cronómetros que van contabilizando la suma del tiempo de agente en pausa y en estado
+de Ready. Su color cambia de acuerdo a si el agente está en estado Ready (gris), En llamada (verde) o En pausa (amarillo)
+y además el estado también aparce como leyenda. Finalmente aparecen los botones de pausa y des-pausa, para que el agente
+pueda irse a pausa y salir de la misma.</p>
+<ol class="arabic simple" start="3">
+<li>Área de información dinámica</li>
+</ol>
+<p>En esta sección de la pantalla aparece toda la información que el agente va solicitando mientras navega en la gestión
+de contactos, así como también los datos de los contactos en el momento en que el agente procesa una nueva llamada.</p>
+<p><strong>(4) Webphone</strong></p>
+<p>El webphone OMniLeads es el componente pricipal dentro del módulo de telefonía. A continuación
+vamos a repasar los botones del mismo.</p>
+<img alt="_images/about_agent_console_webphone.png" src="_images/about_agent_console_webphone.png" />
+<p><em>Figure 8: Webphone</em></p>
+<blockquote>
+<div><ul class="simple">
+<li>a Estado del webphone. Debe siempre figurar como <em>Registered</em>. En caso contrario debe comunicarse con el administrador.</li>
+<li>b Allí se indica a qué número realizar una llamada manual.</li>
+<li>c Estos botones permiten disparar la acción de: llamar, cortar, re-llamar al último número y marcar una grabación. El botón de marcar una grabación será explicado más adelante.</li>
+<li>d Este botón permite modificar la campaña sobre la cual se procesa cada llamada manual. También se abordará más adelante en la sección «campañas manuales».</li>
+</ul>
+</div></blockquote>
+<p><strong>(5) Dock</strong></p>
+<p>El dock expone cada herramienta de comunicación. En la versión actual SOLAMENTE está funcional el webphone ya que
+OMniLeads actualmente soporta solamente llamadas telefónicas, en versiones futuras se comenzarán a activar otros componentes.</p>
+</div>
+<div class="section" id="logout">
+<h1>Logout<a class="headerlink" href="#logout" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>Para efectuar un logout se debe acceder al vértice superior izquierdo, tal como lo expone la figura 9.</p>
+<img alt="_images/about_agent_login_6.png" src="_images/about_agent_login_6.png" />
+<p><em>Figure 9: agent logout</em></p>
 </div>
 
 
