@@ -1,6 +1,6 @@
-************************
-Gestiones del agente
-************************
+****************
+Manual de agente
+****************
 
 Vamos a dividir el manual de gestión del agente en los diferentes tópicos citados debajo.
 
@@ -17,6 +17,7 @@ Todo lo inherente a la sesión del agente describimos en este inciso.
 
 Campañas manuales
 *****************
+El agente y la operación en campañas manuales.
 
 .. toctree::
  :maxdepth: 2
@@ -25,7 +26,7 @@ Campañas manuales
 
 Campañas preview
 ****************
-
+El agente y la operación en campañas preview.
 
 .. toctree::
  :maxdepth: 2
@@ -34,7 +35,7 @@ Campañas preview
 
 Campañas dialer
 ***************
-
+El agente y la operación en campañas con discador predictivo.
 
 .. toctree::
  :maxdepth: 2
@@ -45,6 +46,7 @@ Campañas dialer
 Campañas entrantes
 ******************
 
+El agente y la operación en campañas entrantes.
 
 .. toctree::
  :maxdepth: 2
@@ -54,6 +56,7 @@ Campañas entrantes
 
 Acciones sobre las llamadas
 ***************************
+Cuando un agente se encuentra en una llamada cuenta con diferentes funcionalidades que optimizan la gestión de llamadas.
 
 .. toctree::
  :maxdepth: 2
@@ -62,6 +65,8 @@ Acciones sobre las llamadas
 
 Agendas, calificaciones y contactos
 ************************************
+El agente cuenta con diferentes menúes para el manejo de los contactos de las campañas.
+
 
 .. toctree::
  :maxdepth: 2
