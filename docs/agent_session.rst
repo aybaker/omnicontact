@@ -107,6 +107,32 @@ OMniLeads actualmente soporta solamente llamadas telefónicas, en versiones futu
 Pausas
 *******
 
+El agente puede ingresar en modo pausa para que ninguna llamada de campañas entrantes o predictivas pueda ingresarle.
+Como bien se explica en la sección de "Configuración inicial", existen diferentes tipos de pausas que el administrador
+puede generar y mantener en el sistema. Por lo tanto el agente al ingresar en el estado de pausa, debe indicar
+a qué tipo de pausa.
+
+Para ingresar en una pausa se debe hacer click en el botón "Pausa" dentro de la barra de estado del agente.
+
+.. image:: images/about_agent_login_7.png
+
+*Figure 8: Pause*
+
+Se despliega entonces el menú de selección del tipo de pausa.
+
+.. image:: images/about_agent_login_8.png
+
+*Figure 9: Pause class*
+
+Finalmente, el agente entra en pausa. Debe notarse como cambia hacia el color "amarillo" la barra de estado,
+además en la barra se puede leer el tipo de pausa actual y finalmente se puede observar que
+el cronómetro de tiempo de pausa comienza a correr, mientras que el de tiempo de operación se frena.
+
+.. image:: images/about_agent_login_9.png
+
+*Figure 10: On Pause*
+
+
 Logout
 *******
 
@@ -114,4 +140,4 @@ Para efectuar un logout se debe acceder al vértice superior izquierdo, tal como
 
 .. image:: images/about_agent_login_6.png
 
-*Figure 9: agent logout*
+*Figure 11: agent logout*

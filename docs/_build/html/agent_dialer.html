@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Sesión de agente &mdash; documentación de OMniLeads - develop</title>
+  <title>Agente en modo predictivo &mdash; documentación de OMniLeads - develop</title>
   
 
   
@@ -36,8 +36,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="Sesión de agente" href="agent_inbound.html" />
-    <link rel="prev" title="Sesión de agente" href="agent_preview.html" /> 
+    <link rel="next" title="Atención de llamadas entrantes" href="agent_inbound.html" />
+    <link rel="prev" title="Campañas preview" href="agent_preview.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -111,7 +111,8 @@
 <li class="toctree-l2"><a class="reference internal" href="agent.html#campanas-manuales">Campañas manuales</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent.html#campanas-preview">Campañas preview</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="agent.html#campanas-dialer">Campañas dialer</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Sesión de agente</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Agente en modo predictivo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#como-realizar-una-llamada-manual">Como realizar una llamada manual</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agent.html#campanas-entrantes">Campañas entrantes</a></li>
@@ -175,7 +176,7 @@
         
           <li><a href="agent.html">Gestiones del agente</a> &raquo;</li>
         
-      <li>Sesión de agente</li>
+      <li>Agente en modo predictivo</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -194,8 +195,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="sesion-de-agente">
-<h1>Sesión de agente<a class="headerlink" href="#sesion-de-agente" title="Enlazar permanentemente con este título">¶</a></h1>
+  <div class="section" id="agente-en-modo-predictivo">
+<h1>Agente en modo predictivo<a class="headerlink" href="#agente-en-modo-predictivo" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>Un agente online y asignado a una campaña predictiva que se encuentre activa, puede comenzar a recibir llamadas
+del discador.</p>
+<p>El ingreso de las llamadas se notifica con un audio tipo «beep» que se reproduce sobre el auricular del agente
+e inmediatamente se exponen los datos del contacto que el discador enlazó y el agente queda en comunicación con
+dicho contacto.</p>
+<img alt="_images/about_agent_dialer_camp_1.png" src="_images/about_agent_dialer_camp_1.png" />
+<p><em>Figure 1: dialer call connect</em></p>
+<p><strong>NOTA 1:</strong> Es importante advertir de que un agente que trabaja sobre una campaña predictiva, debe estar muy alerta ya que
+generalmente el sistema se configura para que las llamadas de discador predictivo ingresen directamente al agente,
+sin brindar la posibilidad de elegir ser atendidas o no.</p>
+<p>Como se puede visualizar en la figura 1, además de la reproducción del audio de notificación,
+el agente se puede percatar del cambio en la pantalla. Por un lado la barra de estado se pinta de verde en el
+estado de «On call» y además se notifica el nombre de la campaña a la que corresponde la llamada.</p>
+<p>Una vez que la llamada finaliza (independientemente de qué lado corte la llamada), el sistema fuerza al Agente
+a ingresar a una pausa  del tipo ACW (After Call Work), que permite al agente terminar de gestionar el contacto
+con su respectiva calificación, para luego volver a quedar disponible en el estado de Connected, de manera tal que
+el discador lo visualice como un agente activo al cual enviarle llamadas.</p>
+<p><strong>NOTA 2:</strong> La salida del estado de pausa ACW puede darse induciendo al agente a que salga el mismo de la pausa o bien
+después de un periodo de tiempo (en segundos) definido por el administrador, en este último caso, el agente
+simplemente cuenta con ese periodo de tiempo de gracia para calificar el contacto y luego automñaticamente es
+puesto nuevamente en estado de disponible para otra llamada, de manera automática.</p>
+</div>
+<div class="section" id="como-realizar-una-llamada-manual">
+<h1>Como realizar una llamada manual<a class="headerlink" href="#como-realizar-una-llamada-manual" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>Surgen casos en los que el agente asignado a una campaña predictiva debe marcar a un número manualmente, en este caso
+se sugiere al agente ingresar en modo pausa y luego desde dicho estado, generar la llamada saliente. Ya que de lo
+contrario puede suceder que al momento de estar marcando el número, el discador le envíe una llamada predictiva
+y corte al medio la acción de la llamada manual al agente.</p>
+<p>La llamada manual citada puede ser a otro de los números del contacto o bien a un número externo a la base. Lo
+importante es recordar ir a pausa a la hora del intento de contactación manual al teléfono.</p>
 </div>
 
 
@@ -206,10 +237,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="agent_inbound.html" class="btn btn-neutral float-right" title="Sesión de agente" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="agent_inbound.html" class="btn btn-neutral float-right" title="Atención de llamadas entrantes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="agent_preview.html" class="btn btn-neutral float-left" title="Sesión de agente" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="agent_preview.html" class="btn btn-neutral float-left" title="Campañas preview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

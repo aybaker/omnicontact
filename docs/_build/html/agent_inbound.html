@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Sesión de agente &mdash; documentación de OMniLeads - develop</title>
+  <title>Atención de llamadas entrantes &mdash; documentación de OMniLeads - develop</title>
   
 
   
@@ -36,8 +36,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="Sesión de agente" href="agent_actions.html" />
-    <link rel="prev" title="Sesión de agente" href="agent_dialer.html" /> 
+    <link rel="next" title="Sesión de agente" href="agent_call_actions.html" />
+    <link rel="prev" title="Agente en modo predictivo" href="agent_dialer.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -112,7 +112,8 @@
 <li class="toctree-l2"><a class="reference internal" href="agent.html#campanas-preview">Campañas preview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent.html#campanas-dialer">Campañas dialer</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="agent.html#campanas-entrantes">Campañas entrantes</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Sesión de agente</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Atención de llamadas entrantes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gestion-de-contactos">Gestión de contactos</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agent.html#acciones-sobre-las-llamadas">Acciones sobre las llamadas</a></li>
@@ -175,7 +176,7 @@
         
           <li><a href="agent.html">Gestiones del agente</a> &raquo;</li>
         
-      <li>Sesión de agente</li>
+      <li>Atención de llamadas entrantes</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -194,8 +195,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="sesion-de-agente">
-<h1>Sesión de agente<a class="headerlink" href="#sesion-de-agente" title="Enlazar permanentemente con este título">¶</a></h1>
+  <div class="section" id="atencion-de-llamadas-entrantes">
+<h1>Atención de llamadas entrantes<a class="headerlink" href="#atencion-de-llamadas-entrantes" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>Como bien sabemos de la sección de «Configuración inicial», el sistema se puede configurar para que las llamadas
+entrantes generen un «Ring» sobre el webphone del agente, brindando a éste último la posibilidad de elegir atender
+o no la llamada, o bien configurar para que las llamadas entrantes ingresen y conecten directamente sobre el agente
+con una indicación de audio tipo «beep», para luego dejar a ambos extremos de la llamada en linea.</p>
+<p>En la figura 1 exponemos el comportamiento con Ring.</p>
+<img alt="_images/about_agent_in_camp_1.png" src="_images/about_agent_in_camp_1.png" />
+<p><em>Figure 1: inbound call ring</em></p>
+<p>Si en cambio la configuración asociada al agente implica que la llamada se enlace directamente, entonces al
+igual que en las campañas predictivas, el agente escuchará el «beep» que anuncia la nueva llamada conectada y
+también se informa en la pantalla el nombre de la campaña entrante a la cual pertenece la llamada conectada.</p>
+<img alt="_images/about_agent_in_camp_2.png" src="_images/about_agent_in_camp_2.png" />
+<p><em>Figure 2: inbound call campaign</em></p>
+</div>
+<div class="section" id="gestion-de-contactos">
+<h1>Gestión de contactos<a class="headerlink" href="#gestion-de-contactos" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>Como las llamadas entrantes dependen de que el número de teléfono desde el cual se origina la llamada esté por un lado
+cargado en el sistema como base de contactos y además de que el número llegue al sistema como fue cargado, suele
+ser normal que el agente se encuentre sin datos de la persona que llama, al momento de conectarse la llamada.</p>
+<img alt="_images/about_agent_in_camp_3.png" src="_images/about_agent_in_camp_3.png" />
+<p><em>Figure 3: inbound call without contact</em></p>
+<p>En este caso, el agente puede elegir calificar o no la llamada. En el caso positivo entonces se procede con la carga
+del contacto y posterior calificación de la llamada.</p>
 </div>
 
 
@@ -206,10 +229,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="agent_actions.html" class="btn btn-neutral float-right" title="Sesión de agente" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="agent_call_actions.html" class="btn btn-neutral float-right" title="Sesión de agente" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="agent_dialer.html" class="btn btn-neutral float-left" title="Sesión de agente" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="agent_dialer.html" class="btn btn-neutral float-left" title="Agente en modo predictivo" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

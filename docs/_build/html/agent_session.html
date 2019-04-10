@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="Sesión de agente" href="agent_manual.html" />
+    <link rel="next" title="Llamadas manuales desde listado de contactos" href="agent_manual.html" />
     <link rel="prev" title="Gestiones del agente" href="agent.html" /> 
 </head>
 
@@ -110,6 +110,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="agent.html#sesion-del-agente">Sesión del agente</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Login</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#la-consola-de-agente">La consola de agente</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pausas">Pausas</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#logout">Logout</a></li>
 </ul>
 </li>
@@ -265,11 +266,29 @@ vamos a repasar los botones del mismo.</p>
 <p>El dock expone cada herramienta de comunicación. En la versión actual SOLAMENTE está funcional el webphone ya que
 OMniLeads actualmente soporta solamente llamadas telefónicas, en versiones futuras se comenzarán a activar otros componentes.</p>
 </div>
+<div class="section" id="pausas">
+<h1>Pausas<a class="headerlink" href="#pausas" title="Enlazar permanentemente con este título">¶</a></h1>
+<p>El agente puede ingresar en modo pausa para que ninguna llamada de campañas entrantes o predictivas pueda ingresarle.
+Como bien se explica en la sección de «Configuración inicial», existen diferentes tipos de pausas que el administrador
+puede generar y mantener en el sistema. Por lo tanto el agente al ingresar en el estado de pausa, debe indicar
+a qué tipo de pausa.</p>
+<p>Para ingresar en una pausa se debe hacer click en el botón «Pausa» dentro de la barra de estado del agente.</p>
+<img alt="_images/about_agent_login_7.png" src="_images/about_agent_login_7.png" />
+<p><em>Figure 8: Pause</em></p>
+<p>Se despliega entonces el menú de selección del tipo de pausa.</p>
+<img alt="_images/about_agent_login_8.png" src="_images/about_agent_login_8.png" />
+<p><em>Figure 9: Pause class</em></p>
+<p>Finalmente, el agente entra en pausa. Debe notarse como cambia hacia el color «amarillo» la barra de estado,
+además en la barra se puede leer el tipo de pausa actual y finalmente se puede observar que
+el cronómetro de tiempo de pausa comienza a correr, mientras que el de tiempo de operación se frena.</p>
+<img alt="_images/about_agent_login_9.png" src="_images/about_agent_login_9.png" />
+<p><em>Figure 10: On Pause</em></p>
+</div>
 <div class="section" id="logout">
 <h1>Logout<a class="headerlink" href="#logout" title="Enlazar permanentemente con este título">¶</a></h1>
 <p>Para efectuar un logout se debe acceder al vértice superior izquierdo, tal como lo expone la figura 9.</p>
 <img alt="_images/about_agent_login_6.png" src="_images/about_agent_login_6.png" />
-<p><em>Figure 9: agent logout</em></p>
+<p><em>Figure 11: agent logout</em></p>
 </div>
 
 
@@ -280,7 +299,7 @@ OMniLeads actualmente soporta solamente llamadas telefónicas, en versiones futu
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="agent_manual.html" class="btn btn-neutral float-right" title="Sesión de agente" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="agent_manual.html" class="btn btn-neutral float-right" title="Llamadas manuales desde listado de contactos" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="agent.html" class="btn btn-neutral float-left" title="Gestiones del agente" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
