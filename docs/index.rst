@@ -10,7 +10,7 @@ OMniLeads ofrece funcionalidades que permiten desarrollar operaciones de Call Ce
 Contact Center ya sea dentro del marco de una compañia u organización que necesita su propio Contact Center integrado al PBX operativo dentro de su sistema de telefonía, así como
 también funcionando como Núcleo de Comunicaciones de una compañía que brinda servicios de Customer Contact (Business Outsourcing Process - BPO).
 
-De gestión y operación 100% Web, los agentes disponen de una interfaz basada en`WebRTC <https://www.webrtc.org/>`_ para la gestión de comunicaciones mientras que los supervisores
+De gestión y operación 100% Web, los agentes disponen de una interfaz basada en `WebRTC <https://www.webrtc.org/>`_ para la gestión de comunicaciones mientras que los supervisores
 utilizan WebRTC para realizar acciones de channel spy, coaching de agentes, gestión de QA o three way conferences. Por otro lado, los administradores
 cuentan con una interfaz que permite mantener usuarios, campañas, bases de datos, a su vez extraer métricas y estadísticas, gestionar las grabaciones
 de las comunicaciones entre otras funcionalidades.
@@ -28,7 +28,7 @@ OMniLeads fue concebido desde cero, como una plataforma Standalone orientada y o
 
 Cómo lo obtengo ?
 *****************
-Nuestro repositorio  <https://gitlab.com/omnileads/ominicontacto>`_ se encuentra disponible en GitLab, para libre descarga, instalación y uso del Software.
+`Nuestro repositorio  <https://gitlab.com/omnileads/ominicontacto>`_ se encuentra disponible en GitLab, para libre descarga, instalación y uso del Software.
 
 
 Donde se puede instalar ?
