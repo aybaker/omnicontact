@@ -28,7 +28,7 @@ OMniLeads fue concebido desde cero, como una plataforma Standalone orientada y o
 
 Cómo lo obtengo ?
 *****************
-`Nuestro repositorio  <https://gitlab.com/omnileads/ominicontacto>`_ se encuentra disponible en GitLab, para libre descarga, instalación y uso del Software.
+Nuestro repositorio  <https://gitlab.com/omnileads/ominicontacto>`_ se encuentra disponible en GitLab, para libre descarga, instalación y uso del Software.
 
 
 Donde se puede instalar ?
