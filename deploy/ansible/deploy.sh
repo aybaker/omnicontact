@@ -93,8 +93,6 @@ TagCheck() {
     tag="docker_build"
   elif [ "$arg1" == "--docker-deploy" ]; then
     tag="docker_deploy"
-  elif [ "$arg1" == "--integration-tests" ]; then
-    tag="all,integration-tests"
   fi
 }
 
@@ -247,7 +245,7 @@ OSValidation
 for i in "$@"
 do
   case $i in
-    --upgrade|-u|--install|-i|--kamailio|-k|--asterisk|-a|--omniapp|-o|--omnivoip|--dialer|-di|--database|-da|--change-network|-cnet|--change-passwords|-cp|--docker-build|--docker-deploy|--integration-tests)
+    --upgrade|-u|--install|-i|--kamailio|-k|--asterisk|-a|--omniapp|-o|--omnivoip|--dialer|-di|--database|-da|--change-network|-cnet|--change-passwords|-cp|--docker-build|--docker-deploy)
       TagCheck
       shift
     ;;
