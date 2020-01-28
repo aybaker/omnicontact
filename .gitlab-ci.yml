@@ -42,11 +42,6 @@ test:
     - touch /opt/omnileads/ominicontacto/django.log
     - mkdir -p /opt/omnileads/static
     - mkdir -p /opt/omnileads/media_root
-    # FIXME: what follows is a hack to simulate we have the 'sox' program, we should have the real program
-    # as a docker image or installed by this script
-    #- touch sox
-    #- chmod +x sox
-    #- mv sox /usr/bin/
     - pip install -r requirements/tests.txt
   variables:
     POSTGRES_DB: omnileads
@@ -89,7 +84,7 @@ docker-prodenv-build-push:
 staging-centos:
   stage: build
   script:
-    - export CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME
+  #  - export CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME STAGING_IP_CENTOS=$STAGING_IP_CENTOS
     - bash /home/ftsinfra/git_cleanup.sh
     - cd /home/ftsinfra/ominicontacto/deploy/vagrant/host_node/
     - vagrant halt centos
@@ -109,12 +104,34 @@ staging-centos:
     - schedules
     - web
   except:
-      - merge_requests
+    - merge_requests
 
 staging-self-hosted:
   stage: build
   script:
-    - export BRANCH=$CI_COMMIT_REF_NAME
+    - export BRANCH=$CI_COMMIT_REF_NAME CENTOS_IP=$STAGING_IP_CENTOS MODE=AIO
+    - bash /home/ftsinfra/git_cleanup.sh
+    - cd /home/ftsinfra/ominicontacto/deploy/vagrant/self_hosted/
+    - vagrant halt; RC=0
+    - vagrant destroy -f; RC=0
+    - ./vagrantsh.sh
+    - vagrant up --provision
+    - vagrant halt
+    - vagrant destroy -f
+  tags:
+    - build-aio
+  only:
+    - /.*ansible-selfhosted.*$/
+    - /^pre-release-.*$/
+    - schedules
+    - web
+  except:
+    - merge_requests
+
+staging-centos-docker:
+  stage: build
+  script:
+    - export BRANCH=$CI_COMMIT_REF_NAME CENTOS_IP=$STAGING_IP_CENTOS MODE=DCKER
     - bash /home/ftsinfra/git_cleanup.sh
     - cd /home/ftsinfra/ominicontacto/deploy/vagrant/self_hosted/
     - vagrant halt; RC=0
@@ -180,5 +197,3 @@ prod-centos:
     - deploy-aio
   only:
     - /^release-.*$/
-  except:
-    - merge_requests
