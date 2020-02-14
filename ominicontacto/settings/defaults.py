@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'api_app',
     'constance',
     'django_js_reverse',
+    'constance.backends.database',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -384,3 +385,5 @@ LANGUAGE_CODE = 'es'
 TOKEN_EXPIRED_AFTER_SECONDS = None
 
 ALLOW_FEEDBACK = False
+
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
