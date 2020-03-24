@@ -9,10 +9,10 @@ body {
     color: #2F342F;
 }
 a {
-    color: #8FC641;
+    color: #0daae0;
 }
 a, a:hover, a:focus {
-    color: #76AA2E;
+    color: #0daae0;
     text-decoration: none;
     transition: all 0.3s;
 }
@@ -52,12 +52,12 @@ h4 {
 
 .btn-primary {
     color: #FFFFFF !important;
-    background-color: #8FC641;
-    border-color: #8FC641;
+    background-color: #0daae0;
+    border-color: #0daae0;
 }
 .btn-primary:hover {
-    background-color: #9FD84E;
-    border-color: #8FC641;
+    background-color: #0daae0;
+    border-color: #0daae0;
 }
 .btn-light {
     background-color: #FFFFFF;
@@ -67,12 +67,12 @@ h4 {
     background-color: #F0F0F0;
 }
 .btn-outline-primary {
-    color: #8FC641 !important;
-    border-color: #8FC641;
+    color: #0daae0 !important;
+    border-color: #0daae0;
 }
 .btn-outline-primary:hover {
-    color: #8FC641 !important;
-    border-color: #8FC641;
+    color: #0daae0 !important;
+    border-color: #0daae0;
     background-color: #F9FDF3;
 }
 .btn-outline-danger {
@@ -155,12 +155,12 @@ ul.nav-indicators a {
     display: inline-block;
 }
 ul.nav-indicators li.active a {
-    color: #8FC641;
+    color: #0daae0;
     font-weight: 500;
-    border-bottom: 4px solid #8FC641;
+    border-bottom: 4px solid #0daae0;
 }
 ul.nav-indicators li.active a:hover {
-    color: #8FC641;
+    color: #0daae0;
     background-color: transparent;
 }
 ul.nav-indicators li.disabled a {
@@ -312,11 +312,11 @@ ul.errorlist li {
 */
 
 .page-link, .page-link:hover {
-    color: #8FC641;
+    color: #0daae0;
 }
 .page-item.active .page-link {
-    background-color: #8FC641;
-    border-color: #8FC641;
+    background-color: #0daae0;
+    border-color: #0daae0;
 }
 
 /* ///// Modals
@@ -336,7 +336,7 @@ input[type=file].form-control {
 */
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: #8FC641 !important;
+    background-color: #0daae0 !important;
     color: white;
 }
 
@@ -354,30 +354,30 @@ input[type=file].form-control {
     margin-top: 8px;
 }
 .daterangepicker .btn-success {
-    background-color: #8FC641;
-    border-color: #8FC641;
+    background-color: #0daae0;
+    border-color: #0daae0;
 }
 .daterangepicker .btn-success:hover {
-    background-color: #9FD84E;
-    border-color: #8FC641;
+    background-color: #8FAAE0;
+    border-color: #0daae0;
 }
 .daterangepicker .ranges li.active {
-    background: #8FC641;
-    border: 1px solid #8FC641;
+    background: #0daae0;
+    border: 1px solid #0daae0;
     color: #fff;
 }
 .daterangepicker .ranges li.active {
-    background: #8FC641;
-    border: 1px solid #8FC641;
+    background: #0daae0;
+    border: 1px solid #0daae0;
     color: #fff;
 }
 .daterangepicker .ranges li:hover {
-    background: #8FC641;
-    border: 1px solid #8FC641;
+    background: #0daae0;
+    border: 1px solid #0daae0;
     color: #fff;
 }
 .daterangepicker td.active, .daterangepicker td.active:hover {
-    background-color: #8FC641;
+    background-color: #0daae0;
 }
 
 /*///// Datetime picker widget
@@ -387,10 +387,10 @@ input[type=file].form-control {
     width: 14em;
 }
 .bootstrap-datetimepicker-widget table td.active, .bootstrap-datetimepicker-widget table td.active:hover {
-    background-color: #8FC641;
+    background-color: #0daae0;
 }
 .bootstrap-datetimepicker-widget table td span.active {
-    background-color: #8FC641;
+    background-color: #0daae0;
 }
 /*///// Welcome screen
 */
@@ -416,7 +416,6 @@ input[type=file].form-control {
 }
 .wrapper-content.login img {
     width: 270px;
-    margin-bottom: 40px;
 }
 .wrapper-content.login form > div:first-of-type {
     border-bottom: 1px solid rgba(0,0,0,0.15);
@@ -493,11 +492,11 @@ input[type=file].form-control {
     padding-left: 50px;
 }
 #sidebar ul a.active {
-    background-color: #8FC641;
+    background-color: #0daae0;
     color: #ffffff;
 }
 #sidebar ul a.active:hover {
-    background-color: #80B13A;
+    background-color: #8FAAE0;
 }
 
 /* ///// Sidebar chevron icons
@@ -555,11 +554,11 @@ input[type=file].form-control {
         background-color: #DFE1DD;
     }
     #sidebar.active .menu-link.active {
-        background-color: #8FC641;
+        background-color: #0daae0;
         color: #ffffff;
     }
     #sidebar.active .menu-link.active:hover {
-        background-color: #80B13A;
+        background-color: #8FAAE0;
     }
     #sidebar.active .menu-header {
         background-color: #C9CBC7;
@@ -673,7 +672,7 @@ input[type=file].form-control {
 */
 
 a span.fa-play, a span.fa-pause-circle {
-    color: #76AA2E;
+    color: #0daae0;
 }
 
 /* ///// Campaign dialer

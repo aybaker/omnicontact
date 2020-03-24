@@ -308,7 +308,7 @@ var PHONE_STATUS_CONFIGS = {
     'OnCall': {
         keypad_enabled: true,
         enabled_buttons: ['onHold', 'Transfer', 'endCall', 'SignCall', 'recordCall'],
-        color: '#8fc641',
+        color: '#0daae0',
     },
     'DialingTransfer': {
         keypad_enabled: false,

@@ -25,7 +25,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 <html lang='es'>
 <head>
     <meta charset="utf-8">
-    <title>{% trans 'OmniLeads' %}</title>
+    <title>{% trans 'Interaction Center 2.0' %}</title>
+    <link rel="shortcut icon" href="{% static 'ominicontacto/Img/favicon.png' %}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Stylesheets -->
@@ -494,40 +495,41 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
         <ul id="navMainMenu" class="list-unstyled">
             <div class="row">
                 <div class="col-md-3">
-                  <img src="{% static 'ominicontacto/Img/ic_logo.png' %}" id="nav-logo">
+                  <img src="{% static 'ominicontacto/Img/logo_ICV2.0_horizontal.png' %}" id="nav-logo">
                 </div>
             </div>
-            <li class="main-menu-li">
-                <span class="icon icon-notebook"></span>
-                <a class="menu-header" href="#menuContacts" role="button" data-toggle="collapse" aria-expanded="false">{% trans 'Contactos' %}</a>
-                <ul class="collapse list-unstyled submenu" id="menuContacts" data-parent="#navMainMenu">
-                    <li id="wombatId"></li>
-                    <li>
-                        <a href="{% url 'seleccion_campana_adicion_contacto' %}" target="crm">{% trans 'Nuevo contacto' %}</a>
+                    <li class="main-menu-li">
+                        <span class="icon icon-notebook"></span>
+                        <a class="menu-header" href="#menuContacts" role="button" data-toggle="collapse" aria-expanded="false">{% trans 'Contactos' %}</a>
+                        <ul class="collapse list-unstyled submenu" id="menuContacts" data-parent="#navMainMenu">
+                            <li id="wombatId"></li>
+                            <li>
+                                <a href="{% url 'seleccion_campana_adicion_contacto' %}" target="crm">{% trans 'Nuevo contacto' %}</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'contacto_list' %}" target="crm">{% trans 'Lista de contactos' %}</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <a href="{% url 'contacto_list' %}" target="crm">{% trans 'Lista de contactos' %}</a>
+                    <li class="main-menu-li">
+                        <span class="icon icon-agenda"></span>
+                        <a class="menu-link" href="{% url 'agenda_contacto_listado' %}" target="crm">{% trans 'Agendas' %}</a>
                     </li>
-                </ul>
-            </li>
-            <li class="main-menu-li">
-                <span class="icon icon-agenda"></span>
-                <a class="menu-link" href="{% url 'agenda_contacto_listado' %}" target="crm">{% trans 'Agendas' %}</a>
-            </li>
-            <li class="main-menu-li">
-                <span class="icon icon-ratings"></span>
-                <a class="menu-link" href="{% url 'reporte_agente_calificaciones' agente_profile.pk %}" target="crm">{% trans 'Calificaciones' %}</a>
-            </li>
-            {% if campanas_preview_activas %}
-            <li class="main-menu-li">
-                <span class="icon icon-agenda"></span>
-                <a class="menu-link" href="{% url 'campana_preview_activas_miembro' %}" target="crm">{% trans 'Campañas preview' %}</a>
-            </li>
-            {% endif %}
-            <li class="main-menu-li">
-                <span class="icon icon-audio-file"></span>
-                <a class="menu-link" href="{% url 'grabacion_agente_buscar' 1 %}" target="crm">{% trans 'Grabaciones' %}</a>
-            </li>
+                    <li class="main-menu-li">
+                        <span class="icon icon-ratings"></span>
+                        <a class="menu-link" href="{% url 'reporte_agente_calificaciones' agente_profile.pk %}" target="crm">{% trans 'Calificaciones' %}</a>
+                    </li>
+                    {% if campanas_preview_activas %}
+                    <li class="main-menu-li">
+                        <span class="icon icon-agenda"></span>
+                        <a class="menu-link" href="{% url 'campana_preview_activas_miembro' %}" target="crm">{% trans 'Campañas preview' %}</a>
+                    </li>
+                    {% endif %}
+                    <li class="main-menu-li">
+                        <span class="icon icon-audio-file"></span>
+                        <a class="menu-link" href="{% url 'grabacion_agente_buscar' 1 %}" target="crm">{% trans 'Grabaciones' %}</a>
+                    </li>
+            </div>
 
 <!--                 <li class="main-menu-li">
                 <span class="icon icon-user"></span>

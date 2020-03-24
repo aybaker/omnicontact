@@ -6,10 +6,10 @@ body {
     color: #2F342F;
 }
 a {
-    color: #8FC641;
+    color: #0daae0;
 }
 a, a:hover, a:focus {
-    color: #76AA2E;
+    color: #0daae0;
     text-decoration: none;
     -webkit-transition: all 0.3s;
     transition: all 0.3s;
@@ -24,6 +24,7 @@ hr {
 .hidden {
     display: none;
 }
+
 
 /*///// Fonts
 */
@@ -46,12 +47,12 @@ h4 {
 
 .btn-primary {
     color: #FFFFFF;
-    background-color: #8FC641;
-    border-color: #8FC641;
+    background-color: #0daae0;
+    border-color: #0daae0;
 }
 .btn-primary:hover {
-    background-color: #9FD84E;
-    border-color: #8FC641;
+    background-color: #8FAAE0;
+    border-color: #0daae0;
 }
 .btn-primary.disabled, .btn-primary:disabled {
   color: #8D938D;
@@ -84,12 +85,12 @@ h4 {
   border-color: #E5E7E3;
 }
 .btn-outline-primary {
-    color: #8FC641;
-    border-color: #8FC641;
+    color: #0daae0;
+    border-color: #0daae0;
 }
 .btn-outline-primary:hover {
-    color: #8FC641;
-    border-color: #8FC641;
+    color: #0daae0;
+    border-color: #0daae0;
     background-color: #F9FDF3;
 }
 .btn-outline-primary.disabled, .btn-outline-primary:disabled {
@@ -172,12 +173,12 @@ ul.nav-indicators a {
     display: inline-block;
 }
 ul.nav-indicators li.active a {
-    color: #8FC641;
+    color: #0daae0;
     font-weight: 500;
-    border-bottom: 4px solid #8FC641;
+    border-bottom: 4px solid #0daae0;
 }
 ul.nav-indicators li.active a:hover {
-    color: #8FC641;
+    color: #0daae0;
     background-color: transparent;
 }
 ul.nav-indicators li.disabled a {
@@ -306,7 +307,7 @@ ul.errorlist li {
 */
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: #8FC641 !important;
+    background-color: #0daae0 !important;
     color: white;
 }
 
@@ -324,30 +325,30 @@ ul.errorlist li {
     margin-top: 8px;
 }
 .daterangepicker .btn-success {
-    background-color: #8FC641;
-    border-color: #8FC641;
+    background-color: #0daae0;
+    border-color: #0daae0;
 }
 .daterangepicker .btn-success:hover {
-    background-color: #9FD84E;
-    border-color: #8FC641;
+    background-color: #8FAAE0;
+    border-color: #0daae0;
 }
 .daterangepicker .ranges li.active {
-    background: #8FC641;
-    border: 1px solid #8FC641;
+    background: #0daae0;
+    border: 1px solid #0daae0;
     color: #fff;
 }
 .daterangepicker .ranges li.active {
-    background: #8FC641;
-    border: 1px solid #8FC641;
+    background: #0daae0;
+    border: 1px solid #0daae0;
     color: #fff;
 }
 .daterangepicker .ranges li:hover {
-    background: #8FC641;
-    border: 1px solid #8FC641;
+    background: #0daae0;
+    border: 1px solid #0daae0;
     color: #fff;
 }
 .daterangepicker td.active, .daterangepicker td.active:hover {
-    background-color: #8FC641;
+    background-color: #0daae0;
 }
 
 /*///// Datetime picker widget
@@ -357,10 +358,10 @@ ul.errorlist li {
     width: 14em;
 }
 .bootstrap-datetimepicker-widget table td.active, .bootstrap-datetimepicker-widget table td.active:hover {
-    background-color: #8FC641;
+    background-color: #0daae0;
 }
 .bootstrap-datetimepicker-widget table td span.active {
-    background-color: #8FC641;
+    background-color: #0daae0;
 }
 
 /* ///// Modals
@@ -436,6 +437,14 @@ ul.errorlist li {
     #navBar > ul > li:hover ul.submenu {
         display: block;
     }
+    #navMainMenu {
+      display: flex;
+      align-items: center;
+    }
+    #nav-logo {
+      margin-right: 30px;
+    }
+
 }
 
 /* ///// Navbar chevron icons
@@ -641,7 +650,7 @@ body > h1 {
 }
 
 #phoneKeysNumbers button {
-  color: #8FC641;
+  color: #0daae0;
 }
 #phoneKeysNumbers .astBtn {
   font-size: 3rem;
@@ -913,11 +922,11 @@ body > h1 {
         padding-left: 34px;
     }
     #navBar ul a.active {
-        background-color: #8FC641;
+        background-color: #0daae0;
         color: #ffffff;
     }
     #navBar ul a.active:hover {
-        background-color: #80B13A;
+        background-color: #8FAAE0;
     }
     #navBar.active {
         margin-left: 0;

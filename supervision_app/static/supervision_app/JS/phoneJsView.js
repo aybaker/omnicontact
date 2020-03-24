@@ -107,7 +107,7 @@ var STATUS_COLOR = {
     'Ready': '#ECEEEA',
     'Paused': '#e0b93d',
     'Calling': '#bfef7a',
-    'OnCall': '#8fc641',
+    'OnCall': '#0daae0',
     'OnHold': '#9ab97b',
     'DialingTransfer': '#bfef7a',
     'Transfering': '#bfef7a',
