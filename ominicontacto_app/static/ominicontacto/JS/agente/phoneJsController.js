@@ -340,14 +340,14 @@ class PhoneJSController {
         /** User Agent **/
         this.phone.eventsCallbacks.onUserAgentRegistered.add(function () {
             self.view.setSipStatus('REGISTERED');
-            self.view.setCallStatus(gettext('Conectando a asterisk  ..'), 'yellowgreen');
+            self.view.setCallStatus(gettext('Conectando a ICV  ..'), 'yellowgreen');
             var login_ok = function(){
                 self.phone_fsm.registered();
-                self.view.setCallStatus(gettext('Agente conectado a asterisk'), 'orange');
+                self.view.setCallStatus(gettext('Agente conectado a ICV'), 'orange');
                 self.phone.Sounds('Welcome', 'play');
             };
             var login_error = function(){
-                self.view.setCallStatus(gettext('Agente no conectado a asterisk, contacte a su administrador'), 'red');
+                self.view.setCallStatus(gettext('Agente no conectado a ICV, contacte a su administrador'), 'red');
                 self.phone_fsm.failedRegistration();
             };
             self.oml_api.asteriskLogin(login_ok, login_error);

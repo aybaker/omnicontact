@@ -84,6 +84,16 @@ msgstr ""
 msgid "Se recibieron campos incorrectos"
 msgstr ""
 
+#: api_app/utiles.py:83
+#, python-brace-format
+msgid "Esta entrada tiene datos incompletos: {0}"
+msgstr ""
+
+#: api_app/utiles.py:110 api_app/utiles.py:119
+#, python-brace-format
+msgid "Inconsistencias en datos de agente: {0}"
+msgstr ""
+
 #: api_app/views/agente.py:169 api_app/views/agente.py:203
 #: api_app/views/base.py:75 api_app/views/base.py:190
 msgid "Hubo errores en los datos recibidos"
@@ -134,7 +144,7 @@ msgid "Audios"
 msgstr ""
 
 #: configuracion_telefonia_app/apps.py:74
-msgid "Paquetes de Audio de Asterisk"
+msgid "Paquetes de Audio de ICV"
 msgstr ""
 
 #: configuracion_telefonia_app/apps.py:78
@@ -576,8 +586,7 @@ msgstr ""
 
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:88
 msgid ""
-"Hubo un inconveniente al crear el archivo de configuracion de rutas de "
-"Asterisk. "
+"Hubo un inconveniente al crear el archivo de configuracion de rutas de ICV. "
 msgstr ""
 
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:104
@@ -594,7 +603,7 @@ msgstr ""
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:107
 msgid ""
 "Hubo un inconveniente al insertar los registros de las rutas en la base de "
-"datos de Asterisk. "
+"datos de ICV. "
 msgstr ""
 
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:118
@@ -606,7 +615,7 @@ msgstr ""
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:133
 msgid ""
 "Hubo un inconveniente al eliminar los registros de las rutas en la base de "
-"datos de Asterisk. "
+"datos de ICV. "
 msgstr ""
 
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:168
@@ -619,20 +628,19 @@ msgstr ""
 
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:172
 msgid ""
-"Hubo un inconveniente al crear el archivo de configuracion de trunks de "
-"Asterisk. "
+"Hubo un inconveniente al crear el archivo de configuracion de trunks de ICV. "
 msgstr ""
 
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:183
 msgid ""
 "Hubo un inconveniente al crear el archivo de configuracion de trunks "
-"registration de Asterisk. "
+"registration de ICV. "
 msgstr ""
 
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:203
 msgid ""
 "Hubo un inconveniente al insertar los registros del troncal en la base de "
-"datos de Asterisk. "
+"datos de ICV. "
 msgstr ""
 
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:214
@@ -642,7 +650,7 @@ msgstr ""
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:216
 msgid ""
 "Hubo un inconveniente al eliminar los registros de los troncales en la base "
-"de datos de Asterisk. "
+"de datos de ICV. "
 msgstr ""
 
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:244
@@ -654,7 +662,7 @@ msgstr ""
 #, python-brace-format
 msgid ""
 "Hubo un inconveniente al insertar los registros de la family {0} en la base "
-"de datos de Asterisk. "
+"de datos de ICV. "
 msgstr ""
 
 #: configuracion_telefonia_app/regeneracion_configuracion_telefonia.py:257
@@ -666,11 +674,11 @@ msgstr ""
 #, python-brace-format
 msgid ""
 "Hubo un inconveniente al eliminar los registros de la family {0} en la base "
-"de datos de Asterisk. "
+"de datos de ICV. "
 msgstr ""
 
 #: configuracion_telefonia_app/templates/adicionar_audios_asterisk.html:31
-msgid "Adicionar audios de Asterisk"
+msgid "Adicionar audios de ICV"
 msgstr ""
 
 #: configuracion_telefonia_app/templates/adicionar_audios_asterisk.html:33

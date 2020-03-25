@@ -86,7 +86,7 @@ class SincronizadorDeConfiguracionDeRutaSalienteEnAsterisk(object):
 
             proceso_ok = False
             mensaje_error += _("Hubo un inconveniente al crear el archivo de "
-                               "configuracion de rutas de Asterisk. ")
+                               "configuracion de rutas de ICV. ")
         if not proceso_ok:
             raise(RestablecerConfiguracionTelefonicaError(mensaje_error))
         else:
@@ -105,7 +105,7 @@ class SincronizadorDeConfiguracionDeRutaSalienteEnAsterisk(object):
                 e)) + _("intentar regenerar_familys_rutas()")
             logger.exception(msg)
             mensaje_error += _("Hubo un inconveniente al insertar los registros de las rutas en "
-                               "la base de datos de Asterisk. ")
+                               "la base de datos de ICV. ")
             raise (RestablecerConfiguracionTelefonicaError(mensaje_error))
 
     def _eliminar_ruta_en_astdb(self, ruta):
@@ -118,7 +118,7 @@ class SincronizadorDeConfiguracionDeRutaSalienteEnAsterisk(object):
                 e)) + _("intentar delete_family_ruta()")
             logger.exception(msg)
             mensaje_error += _("Hubo un inconveniente al eliminar los registros de las rutas en "
-                               "la base de datos de Asterisk. ")
+                               "la base de datos de ICV. ")
             raise (RestablecerConfiguracionTelefonicaError(mensaje_error))
 
     def _regenerar_troncales_ruta_en_astdb(self, ruta):
@@ -131,7 +131,7 @@ class SincronizadorDeConfiguracionDeRutaSalienteEnAsterisk(object):
                 e)) + _("intentar delete_family_ruta()")
             logger.exception(msg)
             mensaje_error += _("Hubo un inconveniente al eliminar los registros de las rutas en "
-                               "la base de datos de Asterisk. ")
+                               "la base de datos de ICV. ")
             raise (RestablecerConfiguracionTelefonicaError(mensaje_error))
 
     def regenerar_rutas_salientes(self, ruta=None):
@@ -170,7 +170,7 @@ class SincronizadorDeConfiguracionTroncalSipEnAsterisk(object):
             logger.exception(msg)
             proceso_ok = False
             mensaje_error += _("Hubo un inconveniente al crear el archivo de "
-                               "configuracion de trunks de Asterisk. ")
+                               "configuracion de trunks de ICV. ")
 
         try:
             self.generador_trunks_registration_en_asterisk_conf.create_config_asterisk(
@@ -181,7 +181,7 @@ class SincronizadorDeConfiguracionTroncalSipEnAsterisk(object):
             logger.exception(msg)
             proceso_ok = False
             mensaje_error += _("Hubo un inconveniente al crear el archivo de "
-                               "configuracion de trunks registration de Asterisk. ")
+                               "configuracion de trunks registration de ICV. ")
 
         if not proceso_ok:
             raise(RestablecerConfiguracionTelefonicaError(mensaje_error))
@@ -201,7 +201,7 @@ class SincronizadorDeConfiguracionTroncalSipEnAsterisk(object):
                 e)) + _("intentar regenerar_familys_rutas()")
             logger.exception(msg)
             mensaje_error += _("Hubo un inconveniente al insertar los registros del troncal en "
-                               "la base de datos de Asterisk. ")
+                               "la base de datos de ICV. ")
             raise (RestablecerConfiguracionTelefonicaError(mensaje_error))
 
     def _eliminar_trunk_en_astdb(self, trunk):
@@ -214,7 +214,7 @@ class SincronizadorDeConfiguracionTroncalSipEnAsterisk(object):
                 e)) + _("intentar delete_family_trunk()")
             logger.exception(msg)
             mensaje_error += _("Hubo un inconveniente al eliminar los registros de los troncales"
-                               " en la base de datos de Asterisk. ")
+                               " en la base de datos de ICV. ")
             raise (RestablecerConfiguracionTelefonicaError(mensaje_error))
 
     def regenerar_troncales(self, trunk=None):
@@ -244,7 +244,7 @@ class AbstractConfiguracionAsterisk(object):
             logger.exception(_("Error {0} en la family {1} "
                                "al intentar regenerar_family()".format(e, nombre_families)))
             mensaje_error += _("Hubo un inconveniente al insertar los registros de la family {0} "
-                               "en la base de datos de Asterisk. ".format(nombre_families))
+                               "en la base de datos de ICV. ".format(nombre_families))
             raise (RestablecerConfiguracionTelefonicaError(mensaje_error))
 
     def _eliminar_family_en_astdb(self, family_member):
@@ -257,7 +257,7 @@ class AbstractConfiguracionAsterisk(object):
             logger.exception(_("Error {0} en la family {1} al "
                                "intentar delete_family()".format(e, nombre_families)))
             mensaje_error += _("Hubo un inconveniente al eliminar los registros de la family {0} "
-                               "en la base de datos de Asterisk. ".format(nombre_families))
+                               "en la base de datos de ICV. ".format(nombre_families))
             raise (RestablecerConfiguracionTelefonicaError(mensaje_error))
 
     def regenerar_asterisk(self, family_member=None):

@@ -71,7 +71,7 @@ class ConfiguracionTelefoniaAppConfig(AppConfig):
                     'id': 'menuAllAudios',
                     'children': [
                         {
-                            'label': _('Paquetes de Audio de Asterisk'),
+                            'label': _('Paquetes de Audio de ICV'),
                             'url': reverse('adicionar_audios_asterisk'),
                         },
                         {
