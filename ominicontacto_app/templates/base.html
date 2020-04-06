@@ -86,13 +86,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
                     <a class="menu-header" href="#menuUsersGroups" role="button" data-toggle="collapse" aria-expanded="false">{% trans 'Usuarios y grupos' %} </a>
                     <ul class="collapse list-unstyled submenu" id="menuUsersGroups" data-parent="#nav-main-menu">
                         <li>
+                            <a href="{% url 'user_nuevo' %}" id="newUser">{% trans 'Nuevo Usuario' %}</a>
+                        </li>
+                        <li>
                             <a href="#menuUsers" role="button" data-toggle="collapse" aria-expanded="false">{% trans 'Lista de usuarios' %} </a>
                             <ul class="collapse list-unstyled submenu-two" id="menuUsers" data-parent="">
                                 <li>
                                     <a href="{% url 'user_list' page=1 %}">{% trans 'Usuarios' %}</a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'user_nuevo' %}" id="newUser">{% trans 'Nuevo Usuario' %}</a>
                                 </li>
                                 <li>
                                     <a href="{% url 'agente_list' %}">{% trans 'Agentes' %}</a>
@@ -109,15 +109,12 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
                                 {% endif %}
                             </ul>
                         </li>
-
-                        <li>
-                            <a href="{% url 'grupo_list' %}">{% trans 'Grupos de agentes' %}</a>
-                        </li>
-
                         <li>
                             <a href="{% url 'grupo_nuevo' %}">{% trans 'Nuevo Grupo de agentes' %}</a>
                         </li>
-
+                        <li>
+                            <a href="{% url 'grupo_list' %}">{% trans 'Lista Grupos de agentes' %}</a>
+                        </li>
                     </ul>
                 </li>
                 {% endif %}

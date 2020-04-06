@@ -22,7 +22,7 @@ sip extension y sip password"""
 
 from __future__ import unicode_literals
 
-from formtools.wizard.views import SessionWizardView
+from django.views.generic import FormView
 
 from django.utils.translation import ugettext as _
 from django.contrib import messages
@@ -31,7 +31,8 @@ from django.http import HttpResponseRedirect
 from django.views.generic import UpdateView, ListView, DeleteView, RedirectView
 
 from ominicontacto_app.forms import (
-    CustomUserCreationForm, SupervisorProfileForm, UserChangeForm, AgenteProfileForm,
+    CustomUserCreationForm, SupervisorProfileForm, UserChangeForm, GrupoAgenteForm,
+    AgenteProfileForm
 )
 
 from ominicontacto_app.models import (
@@ -41,7 +42,6 @@ from ominicontacto_app.models import (
 from ominicontacto_app.views_queue_member import activar_cola, remover_agente_cola_asterisk
 
 from .services.asterisk_service import ActivacionAgenteService, RestablecerConfigSipError
-
 
 import logging as logging_
 
@@ -60,15 +60,10 @@ def show_supervisor_profile_form_condition(wizard):
     return cleaned_data.get('is_supervisor', True)
 
 
-class CustomUserWizard(SessionWizardView):
-    USER = '0'
-    SUPERVISOR = '1'
-    AGENTE = '2'
-    condition_dict = {SUPERVISOR: show_supervisor_profile_form_condition,
-                      AGENTE: show_agente_profile_form_condition}
-    form_list = [(USER, CustomUserCreationForm),
-                 (SUPERVISOR, SupervisorProfileForm),
-                 (AGENTE, AgenteProfileForm), ]
+class CustomUserFormView(FormView):
+    form_class = CustomUserCreationForm
+    grupo_form_class = AgenteProfileForm
+    rol_form_class = SupervisorProfileForm
     template_name = "user/user_create_form.html"
 
     def _grupos_disponibles(self):
@@ -80,51 +75,20 @@ class CustomUserWizard(SessionWizardView):
             message = _(u"Para poder crear un Usuario Agente asegurese de contar con al menos "
                         "un Grupo cargado.")
             messages.warning(self.request, message)
-        return super(CustomUserWizard, self).dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, form, **kwargs):
-        context = super(CustomUserWizard, self).get_context_data(form=form, **kwargs)
-        if self.steps.current == self.USER:
-            context['titulo'] = _('Nuevo Usuario: Datos Básicos')
-        elif self.steps.current == self.SUPERVISOR:
-            context['titulo'] = _('Nuevo Usuario: Perfil de Supervisor')
-        elif self.steps.current == self.AGENTE:
-            context['titulo'] = _('Nuevo Usuario: Perfil de Agente')
-
-        return context
-
-    def get_form_kwargs(self, step):
-        kwargs = super(CustomUserWizard, self).get_form_kwargs(step)
-        if step == self.USER:
-            # TODO: Limitar los tipos de Usuarios que puede crear segun el tipo de usuario
-            # Admin y gerentes: Agentes y Supervisores
-            # Supervisores: Agentes y ¿Supervisores?
-            if not self._grupos_disponibles():
-                kwargs['deshabilitar_agente'] = True
-        if step == self.SUPERVISOR:
-            kwargs['rol'] = SupervisorProfile.ROL_GERENTE
-            # TODO: Limitar los roles que puede seleccionar segun el tipo de usuario
-            # Admin: Todos - Gerentes: Supervisores y Clientes
-            # Supervisores: ¿Clientes?
-        if step == self.AGENTE:
-            # TODO: Limitar los agentes y grupos que puede seleccionar segun el tipo de usuario
-            kwargs['grupos_queryset'] = Grupo.objects.all()
-        return kwargs
+        return super(CustomUserFormView, self).dispatch(request, *args, **kwargs)
 
     def _save_supervisor_form(self, user, form):
-        supervisor = form.save(commit=False)
-
-        rol = form.cleaned_data['rol']
-        supervisor.is_administrador = False
-        supervisor.is_customer = False
+        rol = form['rol']
+        rol_user = form.save(commit=False)
+        rol_user.is_administrador = False
+        rol_user.is_customer = False
         if rol == SupervisorProfile.ROL_ADMINISTRADOR:
-            supervisor.is_administrador = True
+            rol_user.is_administrador = True
         elif rol == SupervisorProfile.ROL_CLIENTE:
-            supervisor.is_customer = True
-
-        supervisor.user = user
-        supervisor.sip_extension = 1000 + user.id
-        supervisor.save()
+            rol_user.is_customer = True
+        rol_user.user = user
+        rol_user.sip_extension = 1000 + user.id
+        rol_user.save()
         asterisk_sip_service = ActivacionAgenteService()
         try:
             asterisk_sip_service.activar(regenerar_families=False)
@@ -137,7 +101,7 @@ class CustomUserWizard(SessionWizardView):
                 message,
             )
 
-    def _save_agente_form(self, user, form):
+    def _save_grupo_form(self, user, form):
         agente_profile = form.save(commit=False)
         agente_profile.user = user
         agente_profile.sip_extension = 1000 + user.id
@@ -173,23 +137,39 @@ class CustomUserWizard(SessionWizardView):
                 message,
             )
 
-    def done(self, form_list, **kwargs):
-        # Ver el tipo de Usuario que se crea.
-        # TODO: ver como convertir de forma mas elegante un odict_values a lista
-        # en python3
-        form_list = [i for i in form_list]
-        user_form = form_list[int(self.USER)]
-        user = user_form.save()
+    def get_context_data(self, **kwargs):
+        context = super(CustomUserFormView, self).get_context_data(**kwargs)
+        sup_form = SupervisorProfileForm
+        agente_form = GrupoAgenteForm
+        context['supervisor_form'] = sup_form(self.request.POST or None)
+        context['agente_form'] = agente_form(self.request.POST or None)
+        return context
 
-        # Como no se usan los dos formularios, el segundo formulario es el de agente o supervisor
-        if user.is_supervisor:
-            self._save_supervisor_form(user, form_list[1])
-        elif user.is_agente:
-            self._save_agente_form(user, form_list[1])
-        elif user.is_cliente_webphone:
-            self._save_cliente_webphone(user)
+    def form_valid(self, form):
+        import ipdb; ipdb.set_trace()
+        datos = self.request.POST
+        user = form
 
-        return HttpResponseRedirect(reverse('user_list', kwargs={"page": 1}))
+        if user.is_valid():
+            user_form = user.save()
+            if user_form.is_agente:
+                # guardo los datos ingresados en AgenteProfileForm
+                grupo_form = AgenteProfileForm.grupo = datos['grupo']
+                user.agente = self.save_grupo_form(user_form, grupo_form)
+            elif user_form.user.is_supervisor:
+                # guardo los datos ingresados en SupervisorProfileForm
+                supervisor_form = SupervisorProfileForm.rol = datos['rol']
+                self._save_rol_form(user_form, supervisor_form)
+            elif user_form.is_cliente_webphone:
+                user.webphone = self._save_cliente_webphone(user_form)
+            messages.success(self.request,
+                             ('El usuario fue creado correctamente'))
+            return super(CustomUserFormView, self).form_valid(user_form)
+        else:
+            return super(CustomUserFormView, self).form_invalid(user_form)
+
+    def get_success_url(self):
+        return reverse('user_list', kwargs={"page": 1})
 
 
 class CustomerUserUpdateView(UpdateView):

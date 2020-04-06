@@ -30,6 +30,12 @@ button:hover {
     display: flex;
     align-items: stretch;
 }
+.datos h1, .perfil h1{
+    text-decoration-color: #8FC641;
+    text-decoration-line: underline;
+    text-underline-position: under;
+    padding-bottom: 10px
+}
 
 /*///// Fonts
 */

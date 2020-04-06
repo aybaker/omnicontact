@@ -78,7 +78,7 @@ urlpatterns = [
     # Usuarios y Perfiles
     # ==========================================================================
     url(r'^user/nuevo/$',
-        administrador_o_supervisor_requerido(views_user_profiles.CustomUserWizard.as_view()),
+        administrador_o_supervisor_requerido(views_user_profiles.CustomUserFormView.as_view()),
         name='user_nuevo',
         ),
     url(r'^user/list/page(?P<page>[0-9]+)/$',
