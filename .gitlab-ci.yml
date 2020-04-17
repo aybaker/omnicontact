@@ -56,6 +56,7 @@ test:
     - python manage.py test --failfast
     - python manage.py compilemessages
   only:
+    - /^pre-release-.*$/
     - merge_requests
     - schedules
     - web
