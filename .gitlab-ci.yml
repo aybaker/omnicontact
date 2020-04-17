@@ -96,9 +96,8 @@ staging-centos:
     - vagrant halt centos
   tags:
     - build-aio
-  rules:
-    - if: $CI_COMMIT_BRANCH == '/^pre-release-.*$/'
   only:
+    - '/^pre-release-.*$/'
     - schedules
     - web
   except:
@@ -119,9 +118,8 @@ staging-self-hosted:
     - vagrant destroy -f
   tags:
     - build-aio
-  rules:
-    - if: $CI_COMMIT_BRANCH == '/^pre-release-.*$/'
   only:
+    - '/^pre-release-.*$/'
     - schedules
     - web
   except:
@@ -142,9 +140,8 @@ staging-self-hosted:
 #    - vagrant destroy -f
 #  tags:
 #    - build-aio
-#  rules:
-#    - if: $CI_COMMIT_BRANCH == '/^pre-release-.*$/'
 #  only:
+#    - '/^pre-release-.*$/'
 #    - schedules
 #    - web
 #  except:
