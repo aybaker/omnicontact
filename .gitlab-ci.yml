@@ -55,9 +55,9 @@ test:
     - flake8
     - python manage.py test --failfast
     - python manage.py compilemessages
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
   only:
-    - merge_requests
-    - /^pre-release-.*$/
     - schedules
     - web
 
@@ -72,10 +72,10 @@ docker-prodenv-build-push:
     - echo "$FTSINFRA_PASS" | sudo -S ./deploy.sh --docker-build
   tags:
     - build-docker
+  rules:
+    - if: $CI_COMMIT_BRANCH == '/^pre-release-.*$/'
+    - if: $CI_COMMIT_BRANCH == '/^release-.*$/'
   only:
-    - /.*docker-build.*$/
-    - /^pre-release-.*$/
-    - /^release-.*$/
     - schedules
     - web
   except:
@@ -98,9 +98,9 @@ staging-centos:
     - vagrant halt centos
   tags:
     - build-aio
+  rules:
+    - if: $CI_COMMIT_BRANCH == '/^pre-release-.*$/'
   only:
-    - /.*ansible-hostnode.*$/
-    - /^pre-release-.*$/
     - schedules
     - web
   except:
@@ -120,9 +120,9 @@ staging-self-hosted:
     - vagrant destroy -f
   tags:
     - build-aio
+  rules:
+    - if: $CI_COMMIT_BRANCH == '/^pre-release-.*$/'
   only:
-    - /.*ansible-selfhosted.*$/
-    - /^pre-release-.*$/
     - schedules
     - web
   except:
@@ -142,9 +142,9 @@ staging-centos-docker:
     - vagrant destroy -f
   tags:
     - build-aio
+  rules:
+    - if: $CI_COMMIT_BRANCH == '/^pre-release-.*$/'
   only:
-    - /.*ansible-selfhosted.*$/
-    - /^pre-release-.*$/
     - schedules
     - web
   except:
@@ -195,5 +195,5 @@ prod-centos:
     - rm -rf centos-$CI_COMMIT_REF_NAME.box
   tags:
     - deploy-aio
-  only:
-    - /^release-.*$/
+  rules:
+    - if: $CI_COMMIT_BRANCH == '/^release-.*$/'
