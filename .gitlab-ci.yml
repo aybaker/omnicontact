@@ -57,7 +57,7 @@ test:
     - python manage.py compilemessages
   rules:
     - if: $CI_MERGE_REQUEST_ID
-    - if: $CI_COMMIT_REF_NAME == "/^pre-release-.*$/"
+    - if: '$CI_COMMIT_REF_NAME == "/^pre-release-.*$/"'
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "web"
 
@@ -72,6 +72,6 @@ docker-prodenv-build-push:
   tags:
     - build-docker
   rules:
-    - if: $CI_COMMIT_REF_NAME == "/^pre-release-.*$/"
+    - if: '$CI_COMMIT_REF_NAME == "/^pre-release-.*$/"'
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "web"
