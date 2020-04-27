@@ -142,7 +142,7 @@ upgrade-aio:
     - export CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME RELEASE_TO_UPGRADE=$RELEASE_TO_UPGRADE
     - bash /home/ftsinfra/git_cleanup.sh
     - cd /home/ftsinfra/oml-boxes
-    - vagrant box add centos-release-$RELEASE_TO_UPGRADE.box –name centos-release-$RELEASE_TO_UPGRADE
+    - vagrant box add centos-release-$RELEASE_TO_UPGRADE.box --name centos-release-$RELEASE_TO_UPGRADE
     - cd /home/ftsinfra/ominicontacto/deploy/vagrant/releases
     - vagrant halt
     - vagrant destroy -f
