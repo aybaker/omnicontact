@@ -57,7 +57,6 @@ test:
     - python manage.py compilemessages
   only:
     - merge_requests
-    - /^pre-release-.*$/
     - schedules
     - web
 
@@ -73,13 +72,8 @@ docker-prodenv-build-push:
   tags:
     - build-docker
   only:
-    - /.*docker-build.*$/
-    - /^pre-release-.*$/
-    - /^release-.*$/
     - schedules
     - web
-  except:
-    - merge_requests
 
 staging-centos:
   stage: build
@@ -99,12 +93,8 @@ staging-centos:
   tags:
     - build-aio
   only:
-    - /.*ansible-hostnode.*$/
-    - /^pre-release-.*$/
     - schedules
     - web
-  except:
-    - merge_requests
 
 staging-self-hosted:
   stage: build
@@ -125,57 +115,50 @@ staging-self-hosted:
     - /^pre-release-.*$/
     - schedules
     - web
-  except:
-    - merge_requests
 
-staging-centos-docker:
-  stage: build
-  script:
-    - export BRANCH=$CI_COMMIT_REF_NAME CENTOS_IP=$STAGING_IP_CENTOS MODE=DCKER
-    - bash /home/ftsinfra/git_cleanup.sh
-    - cd /home/ftsinfra/ominicontacto/deploy/vagrant/self_hosted/
-    - vagrant halt; RC=0
-    - vagrant destroy -f; RC=0
-    - ./vagrantsh.sh
-    - vagrant up --provision
-    - vagrant halt
-    - vagrant destroy -f
-  tags:
-    - build-aio
-  only:
-    - /.*ansible-selfhosted.*$/
-    - /^pre-release-.*$/
-    - schedules
-    - web
-  except:
-    - merge_requests
-
-#TODO: dejo template de lo que sería el job de upgrade, a probar luego de que salga release-1.3.1
-#upgrade-centos:
+#staging-centos-docker:
 #  stage: build
 #  script:
-#    - export CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME
+#    - export BRANCH=$CI_COMMIT_REF_NAME CENTOS_IP=$STAGING_IP_CENTOS MODE=DCKER
 #    - bash /home/ftsinfra/git_cleanup.sh
-#    - cd /home/ftsinfra/oml-boxes
-#    - vagrant box add centos-release-1.3.1.box –name centos-release-1.3.1
-#    - cd /home/ftsinfra/ominicontacto/deploy/vagrant/releases
+#    - cd /home/ftsinfra/ominicontacto/deploy/vagrant/self_hosted/
+#    - vagrant halt; RC=0
+#    - vagrant destroy -f; RC=0
+#    - ./vagrantsh.sh
+#    - vagrant up --provision
 #    - vagrant halt
 #    - vagrant destroy -f
-#    - ./vagrantup.sh centos
-#    - python ../edit_ansible.py --internal_ip=172.16.20.63 --self_hosted=no --admin_pass=$DJANGO_PASS --databases_pass=$DATABASES_PASS
-#    - cd ../../ansible
-#    - echo "$FTSINFRA_PASS" | sudo -S IS_CICD=$IS_CICD ./deploy.sh -u
-#    - cd /home/ftsinfra/ominicontacto/deploy/vagrant/releases
-#    - vagrant halt centos
 #  tags:
 #    - build-aio
 #  only:
-#    - /.*ansible-upgrade.*$/
-  #  - /^pre-release-.*$/
+#    - /.*ansible-selfhosted.*$/
+#    - /^pre-release-.*$/
 #    - schedules
 #    - web
 
-prod-centos:
+upgrade-aio:
+  stage: build
+  script:
+    - export CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME RELEASE_TO_UPGRADE=$RELEASE_TO_UPGRADE
+    - bash /home/ftsinfra/git_cleanup.sh
+    - cd /home/ftsinfra/oml-boxes
+    - vagrant box add centos-release-$RELEASE_TO_UPGRADE.box –name centos-release-$RELEASE_TO_UPGRADE
+    - cd /home/ftsinfra/ominicontacto/deploy/vagrant/releases
+    - vagrant halt
+    - vagrant destroy -f
+    - ./vagrantup.sh centos
+    - python ../edit_inventory.py --internal_ip=192.168.99.63 --self_hosted=no
+    - cd ../../ansible
+    - echo "$FTSINFRA_PASS" | sudo -S IS_CICD=$IS_CICD ./deploy.sh -u
+    - cd /home/ftsinfra/ominicontacto/deploy/vagrant/releases
+    - vagrant halt centos
+  tags:
+    - build-aio
+  only:
+    - schedules
+    - web
+
+prod-aio:
   stage: deploy
   environment: FTS-CENTOS7
   script:
