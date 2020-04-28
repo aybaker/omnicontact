@@ -10,6 +10,7 @@ git checkout $BRANCH
 if [ "$MODE" == "AIO" ]; then
   python deploy/vagrant/edit_inventory.py --self_hosted=yes
   cd deploy/ansible
+  exit 1
   ./deploy.sh -i --iface=eth1
 elif [ "$MODE" == "DOCKER" ];then
     cd deploy/docker/prodenv
