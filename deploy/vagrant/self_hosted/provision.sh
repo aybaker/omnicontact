@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "Installing git"
-yum install git -y
+echo "Installing git and net-tools"
+yum install git net-tools -y
 cd /var/tmp/
 git clone https://gitlab.com/omnileads/ominicontacto.git
 cd ominicontacto
@@ -10,7 +10,6 @@ git checkout $BRANCH
 if [ "$MODE" == "AIO" ]; then
   python deploy/vagrant/edit_inventory.py --self_hosted=yes
   cd deploy/ansible
-  exit 1
   ./deploy.sh -i --iface=eth1
 elif [ "$MODE" == "DOCKER" ];then
     cd deploy/docker/prodenv
