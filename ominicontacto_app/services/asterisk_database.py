@@ -146,6 +146,8 @@ class CampanaFamily(AbstractFamily):
             'IDJSON': "",
             'PERMITOCCULT': "",
             'MAXCALLS': "",
+            'OUTR': campana.outr,
+            'OUTCID': campana.outcid,
         }
 
         if campana.queue_campana.audio_para_contestadores:

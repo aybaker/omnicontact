@@ -543,6 +543,14 @@ class CampanaMixinForm(object):
             raise forms.ValidationError(msg)
         return id_externo
 
+    def clean_outcid(self):
+        ruta_saliente = self.cleaned_data.get('outr')
+        id_ruta_saliente = self.cleaned_data.get('outcid')
+        if ruta_saliente and not id_ruta_saliente:
+            msg = _("No se puede indicar una Ruta Saliente sin un ID de Ruta Saliente .")
+            raise forms.ValidationError(msg)
+        return id_ruta_saliente
+
 
 class CampanaForm(CampanaMixinForm, forms.ModelForm):
 
