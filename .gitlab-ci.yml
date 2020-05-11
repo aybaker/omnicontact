@@ -127,7 +127,6 @@ staging-centos-docker:
     - python ../edit_inventory.py --internal_ip=$STAGING_IP_CENTOS --docker_deploy=yes
     - cd ../../ansible
     - echo "$FTSINFRA_PASS" | sudo -S IS_CICD=$IS_CICD ./deploy.sh --docker-deploy
-    - TESTS_INTEGRACION=True TESTS_INTEGRACION_HOSTNAME=$STAGING_HOST_CENTOS ADMIN_USERNAME=admin ADMIN_PASSWORD=$DJANGO_PASS LOGIN_FAILURE_LIMIT=$LOGIN_FAILURE_LIMIT python /home/ftsinfra/ominicontacto/ominicontacto_app/tests/tests.py
     - cd /home/ftsinfra/ominicontacto/deploy/vagrant/host_node/
     - vagrant halt centos
   tags:
