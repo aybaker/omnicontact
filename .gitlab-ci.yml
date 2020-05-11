@@ -68,7 +68,7 @@ docker-prodenv-build-push:
     - cd /home/ftsinfra/ominicontacto/deploy/vagrant
     - python edit_inventory.py --docker_build -tag=$CI_COMMIT_REF_NAME -dlu=$DOCKER_LOGIN_USER -dle=$DOCKER_LOGIN_EMAIL -dlp=$DOCKER_LOGIN_PASSWORD
     - cd /home/ftsinfra/ominicontacto/deploy/ansible
-    - echo "$FTSINFRA_PASS" | sudo -S ./deploy.sh --docker-build
+    - echo "$FTSINFRA_PASS" | sudo -S ./deploy.sh --docker-build=yes
   tags:
     - build-docker
   only:
@@ -99,7 +99,7 @@ staging-centos:
 staging-self-hosted:
   stage: build
   script:
-    - export BRANCH=$CI_COMMIT_REF_NAME CENTOS_IP=$STAGING_IP_CENTOS MODE=AIO
+    - export BRANCH=$CI_COMMIT_REF_NAME CENTOS_IP=$STAGING_IP_CENTOS
     - bash /home/ftsinfra/git_cleanup.sh
     - cd /home/ftsinfra/ominicontacto/deploy/vagrant/self_hosted/
     - vagrant halt; RC=0

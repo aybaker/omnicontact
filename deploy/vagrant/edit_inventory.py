@@ -151,7 +151,7 @@ if args.docker_deploy == "yes":
     sys.exit()
 
 if args.docker_login_user and args.docker_login_email and args.docker_login_password \
-   and args.tag_docker_images and args.docker_build:
+   and args.tag_docker_images and args.docker_build == "yes":
     # editamos las líneas del inventory que indican que se va hacer un build
     # de imágenes de producción de los componentes del sistema
     # 1) modificando inventory
