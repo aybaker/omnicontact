@@ -107,7 +107,7 @@ class IntegrationTests(unittest.TestCase):
         chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en'})
         chrome_options.add_argument('--ignore-certificate-errors')
         # si se pone visible=1 se muestra el browser en medio de los tests
-        self.display = Display(visible=0, size=(1366, 768))
+        self.display = Display(visible=1, size=(1366, 768))
         self.display.start()
         self.browser = webdriver.Chrome(options=chrome_options)
 
@@ -775,8 +775,8 @@ class IntegrationTests(unittest.TestCase):
             print('--ERROR: No se pudo crear una BD Multinum.--')
         # Agregar un Contacto
         try:
-            agregar_contacto = '//tr[@id=\'{0}\']//td//a[contains(@href, "/agregar/")]'.format(
-                BD_nueva)
+            agregar_contacto = '//tr[@id=\'{0}\']//td//a[contains'\
+                               '(@href, "/agregar_contacto/")]'.format(BD_nueva)
             self.get_href(agregar_contacto)
             telefono = '3456789'
             cell = '154352879'
@@ -797,6 +797,7 @@ class IntegrationTests(unittest.TestCase):
     def test_crear_agregar_csv_base_multinum(self):
         # Agregar un CSV
         try:
+            import ipdb; ipdb.set_trace()
             csv_path = "/home/{0}/ominicontacto/test/base_prueba_multinum.csv".format(USER)
             BD_nueva = 'BD' + uuid.uuid4().hex[:5]
             multinum = True
