@@ -66,7 +66,7 @@ docker-prodenv-build-push:
   script:
     - bash /home/ftsinfra/git_cleanup.sh
     - cd /home/ftsinfra/ominicontacto/deploy/vagrant
-    - python edit_inventory.py -tag=$CI_COMMIT_REF_NAME -dlu=$DOCKER_LOGIN_USER -dle=$DOCKER_LOGIN_EMAIL -dlp=$DOCKER_LOGIN_PASSWORD
+    - python edit_inventory.py --docker_build -tag=$CI_COMMIT_REF_NAME -dlu=$DOCKER_LOGIN_USER -dle=$DOCKER_LOGIN_EMAIL -dlp=$DOCKER_LOGIN_PASSWORD
     - cd /home/ftsinfra/ominicontacto/deploy/ansible
     - echo "$FTSINFRA_PASS" | sudo -S ./deploy.sh --docker-build
   tags:
@@ -84,7 +84,7 @@ staging-centos:
     - vagrant halt centos
     - vagrant destroy centos -f
     - ./vagrantup.sh centos
-    - python ../edit_inventory.py --internal_ip=$STAGING_IP_CENTOS --self_hosted=no
+    - python ../edit_inventory.py --internal_ip=$STAGING_IP_CENTOS --host_node=yes
     - cd ../../ansible
     - echo "$FTSINFRA_PASS" | sudo -S IS_CICD=$IS_CICD ./deploy.sh -i
     - TESTS_INTEGRACION=True TESTS_INTEGRACION_HOSTNAME=$STAGING_HOST_CENTOS ADMIN_USERNAME=admin ADMIN_PASSWORD=$DJANGO_PASS LOGIN_FAILURE_LIMIT=$LOGIN_FAILURE_LIMIT python /home/ftsinfra/ominicontacto/ominicontacto_app/tests/tests.py
@@ -119,15 +119,17 @@ staging-self-hosted:
 staging-centos-docker:
   stage: build
   script:
-    - export BRANCH=$CI_COMMIT_REF_NAME CENTOS_IP=$STAGING_IP_CENTOS MODE=DOCKER
     - bash /home/ftsinfra/git_cleanup.sh
-    - cd /home/ftsinfra/ominicontacto/deploy/vagrant/self_hosted/
-    - vagrant halt; RC=0
-    - vagrant destroy -f; RC=0
-    - ./vagrantsh.sh
-    - vagrant up --provision
-    - vagrant halt
-    - vagrant destroy -f
+    - cd /home/ftsinfra/ominicontacto/deploy/vagrant/host_node/
+    - vagrant halt centos
+    - vagrant destroy centos -f
+    - ./vagrantup.sh centos
+    - python ../edit_inventory.py --internal_ip=$STAGING_IP_CENTOS --docker_deploy=yes
+    - cd ../../ansible
+    - echo "$FTSINFRA_PASS" | sudo -S IS_CICD=$IS_CICD ./deploy.sh --docker-deploy
+    - TESTS_INTEGRACION=True TESTS_INTEGRACION_HOSTNAME=$STAGING_HOST_CENTOS ADMIN_USERNAME=admin ADMIN_PASSWORD=$DJANGO_PASS LOGIN_FAILURE_LIMIT=$LOGIN_FAILURE_LIMIT python /home/ftsinfra/ominicontacto/ominicontacto_app/tests/tests.py
+    - cd /home/ftsinfra/ominicontacto/deploy/vagrant/host_node/
+    - vagrant halt centos
   tags:
     - build-docker
   only:
