@@ -115,7 +115,7 @@ inventory_file.seek(0)
 inventory_file.truncate()
 inventory_file.write(inventory_contents)
 
-if args.internal_ip and args.self_hosted == "yes":
+if args.internal_ip and args.host_node == "yes":
     # modificamos el setting que define el servidor externo donde se va a instalar
     # el sistema
     inventory_file.seek(0)
@@ -127,7 +127,7 @@ if args.internal_ip and args.self_hosted == "yes":
             args.internal_ip, args.remote_port)))
     sys.exit()
 
-if args.host_node == "yes":
+if args.self_hosted == "yes":
     # modificamos el setting que define el servidor externo donde se va a instalar
     # el sistema
     inventory_file.seek(0)
